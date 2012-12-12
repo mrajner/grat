@@ -6,7 +6,7 @@
 !! correction more easy.
 !!
 !! \version v. 1.0
-!! \date 2012-11-03
+!! \date 2012-12-12
 !! \author Marcin Rajner\n 
 !! Politechnika Warszawska\n
 !! (Warsaw University of Technology)
