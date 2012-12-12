@@ -20,7 +20,7 @@ all:\
 %.o: %.f90
 	$(FC) $< -c
 
-# $(POLY)/polygon_check: polygon_check.f90 $(OBJS)
+$(POLY)/polygon_check: polygon_check.f90 $(OBJS)
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS)
 #   ./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
 
