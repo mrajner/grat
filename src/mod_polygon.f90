@@ -4,7 +4,6 @@ use constants
 use get_cmd_line
 
 contains
-
 ! ==============================================================================
 !> \brief Reads polygon data
 !!

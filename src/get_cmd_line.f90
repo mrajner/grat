@@ -5,6 +5,8 @@
 module get_cmd_line
   use iso_fortran_env
   use constants 
+  ! todo
+!  use mod_polygon
 
   implicit none
 
@@ -360,11 +362,13 @@ subroutine parse_option (cmd_line_entry , program_calling)
         open (newunit = output%unit , file = output%name , action = "write" )
       endif
     case ('-P')
-      do i = 1 , size(cmd_line_entry%field) 
+      do i = 1 , 2 !size(cmd_line_entry%field) 
         polygons(i)%name=cmd_line_entry%field(i)
         if (file_exists((polygons(i)%name))) then
           write(fileunit_tmp, form_62), 'polygon file was set: ' , polygons(i)%name
           polygons(i)%if=.true.
+          ! todo
+!          call read_polygon (polygons(i))
         else
           write(fileunit_tmp, form_62), 'file do not exist. Polygon file was IGNORED'
         endif
@@ -800,38 +804,22 @@ logical function file_exists(string)
   file_exists=exists
 end function 
 
-! =============================================================================
-! =============================================================================
-subroutine obliczenia_pomocnicze()
-!      ct = cos(d2r(90.-szerokosc_stacji))
-!      st = sin(d2r(90.-szerokosc_stacji))
-end subroutine
 
 ! =============================================================================
 !> degree -> radian
 ! =============================================================================
-real(sp) function d2r (degree)
-  real(sp) , intent (in) :: degree
+real(dp) function d2r (degree)
+  real(dp) , intent (in) :: degree
   d2r= pi / 180.0 * degree
 end function
 
 ! =============================================================================
 !> radian -> degree
 ! =============================================================================
-real function r2d ( radian )
-  real, intent (in) :: radian
-  r2d= 180.0 / pi * radian
+real(dp) function r2d ( radian )
+  real(dp), intent (in) :: radian
+  r2d= 180. / pi * radian
 end function
-
-! =============================================================================
-! =============================================================================
-subroutine licz_pole(dist ,ddist, azstp,  pole)
-  real,intent(out) :: pole
-  real, intent(in) :: dist,ddist ,azstp
-
-  pole = sin ( d2r(dist) ) * d2r(ddist) * azstp
-end subroutine
-
 
 ! =============================================================================
 !> Print version of program depending on program calling

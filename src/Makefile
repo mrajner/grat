@@ -8,6 +8,7 @@
   LND= ../data/landsea/test.grd:z:x:y
   GRN_r= ../dat/rajner_green.dat
   GRN_m= ../dat/merriam_green.dat
+	POL= ../polygon/tmp.poly
 
   SRCS  = constants.f90 get_cmd_line.f90 mod_polygon.f90 mod_data.f90 aggf.f90 mod_green.f90
   OBJS  = $(SRCS:.f90=.o)
@@ -25,13 +26,13 @@ $(POLY)/polygon_check: polygon_check.f90 $(OBJS)
 #   ./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
 
 $(BIN)/grat: grat.f90  $(OBJS)
-#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 $(BIN)/value_check: value_check.f90  $(OBJS)
 #   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	$(BIN)/grat -F$(SFC),4,../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,52:zeby,21 -Vtmp -D20090101,2009010112,6 -G$(GRN_m):1:2,$(GRN_r)::4,$(GRN_r):1:2
+	$(BIN)/grat -F$(SFC),4,../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,52:zeby,21 -V tmp -D20090101,2009010112,6 -G$(GRN_m):1:2,$(GRN_r)::,$(GRN_r):1:2,$(GRN_r):1:2 -P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4
 
 #   cd /home/mrajner/dr/data/site_vs_model/ && make -B

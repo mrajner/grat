@@ -2,6 +2,7 @@ module mod_green
   use constants
   use get_cmd_line
   use aggf
+  use mod_data
   implicit none
 
 
@@ -26,7 +27,6 @@ subroutine green_unification (green , green_common , denser)
     enddo
   enddo
 !  x(size(x)) = green(1)%distance(size(green(1)%distance))
-
   allocate(green_common (size(x) , 6))
   green_common(:,1) = x
   green_common(:,2) = dist
@@ -39,65 +39,78 @@ subroutine green_unification (green , green_common , denser)
     endif
   enddo
 end subroutine
+! =============================================================================
+! =============================================================================
+subroutine spher_area (distance ,ddistance, azstp,  area )
+  real(dp),intent(out) :: area
+  real(dp), intent(in) :: distance,ddistance ,azstp
+  area = sin ( d2r(distance) ) * d2r(ddistance) * d2r(azstp)
 
-subroutine convolve (green , daz , ddist ,denser , nazimuths )
+end subroutine
+
+subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
+  real(dp) , intent(in)  :: distance , azimuth
+  real(sp) , intent(in)  :: latin , lonin 
+  real(dp) , intent(out) :: latout, lonout 
+  real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
+
+  ct  = cos (d2r(90.-dble(latin)))
+  st  = sin (d2r(90.-dble(latin)))
+  cd  = cos (d2r(distance))
+  sd  = sin (d2r(distance))
+  saz = sin (d2r(azimuth))
+  caz = cos (d2r(azimuth))
+  cb = cd*ct + sd*st*caz
+  !todo !if(abs(cb).gt.1) cb = cb/abs(cb)
+  sb = sqrt(1.-cb*cb)
+  latout = 90 - r2d(acos(cb))
+  lonout = 0.
+  if(sb.gt.1.e-3) then
+    sg = sd*saz/sb
+    cg = (st*cd - sd*ct*caz)/sb
+    lonout = lonin + r2d(atan2(sg,cg))
+  endif
+end subroutine
+
+! =============================================================================
+! =============================================================================
+subroutine convolve (site,  green , denserdist , denseraz )
   type(green_functions), allocatable , dimension(:) :: green
-  real (sp) , optional :: daz , ddist
-  integer, optional :: denser , nazimuths
+  integer, optional :: denserdist , denseraz
   integer ::  ndenser , igreen  , iazimuth , nazimuth
   real(dp), allocatable , dimension(:,:)  :: green_common
   real(dp) :: azimuth
+  type(site_data) :: site
+  real(dp) :: lat , lon , area
+  real(sp) :: val 
 
-  ndenser = 0
-  nazimuth=10
-  if (present(denser))    ndenser = denser
-  if (present(nazimuths)) nazimuth = nazimuths
+  ndenser =   0
+  nazimuth= 1 !< todo set to 150 at least
+  if (present(denserdist))    ndenser = denserdist
+  if (present(denseraz))     nazimuth = nazimuth * denseraz
   call green_unification (green , green_common , denser = ndenser)
 
-  write(* , "(6f15.7)" ) ,( green_common (ndenser,:) , ndenser = 1,10)
-  write(* , "(6f15.7)" ) , green_common (size(green_common(:,1)),:) 
+  write(* , "( 6f15.7 )" ) ,( green_common (ndenser,:) , ndenser = 1,1 )
+  write(* , "( 6f15.7 )" ) ,  green_common (size(green_common(:,1)),:) 
 
-  do igreen = 1 ,  1 ! size(green_common(:,1)) !todo 
-    do iazimuth  = 1 , nazimuth
-
-      azimuth = iazimuth * 360./nazimuth
-      print * , azimuth 
-
-
-    enddo
-
-  enddo
   
+  open (22, file = "tmp.dat" , action ="write")
 
+  do igreen = 1 ,size(green_common(:,1)), 1 !todo 
+  
+    do iazimuth  = 1 , nazimuth
+      azimuth = (iazimuth - 1) * 360./nazimuth
+      call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
+      call get_value (model(1) , real(lat) , real(lon) , val )
+      call spher_area(green_common(igreen,1) , green_common(igreen,2), 
+              write (22, *)  lat , lon 
+              write (*, '(10(go,x))')  lat , lon, val
+    enddo
+  enddo
+  print * , site%lat
 end subroutine
-!      del = d2r(dist)
-!      cd = cos(del)
-!      sd = sin(del)
-!      naz = 360.*sd
-!      if(dist.lt.180.) naz = max0(naz,minaz)
-!      azstp = 2 * pi / naz
-!      azstpd = 360./naz
-!      azimuth = azstpd/2
-!      caz = cos(azstp/2)
-!      saz = sin(azstp/2)
-!      saztp = sin(azstp)
-!      caztp = cos(azstp)
-!      stpfac = 2*saz
 
 
-!      do 16 jj=1,naz
-!      cb = cd*ct + sd*st*caz
-!      if(abs(cb).gt.1) cb = cb/abs(cb)
-!      sb = sqrt(1.-cb*cb)
-!      rlato = 90  - r2d ( acos(cb) )
-!      rlong = 0.
-!      if(sb.gt.1.e-3) then
-!         sb = 1./sb
-!         sg = sd*saz*sb
-!         cg = (st*cd - sd*ct*caz)*sb
-!         rlong = dlugosc_stacji + r2d(atan2(sg,cg))
-!      endif
-!      call licz_pole(dist, ddist, azstp, pole)
 !      call wywolaj_model(rlato, rlong, wartosc_komorki)
 !      call wywolaj_model_t(rlato, rlong, wartosc_komorki_t)
 !      call wywolaj_model_h(rlato, rlong, wartosc_komorki_t)
