@@ -43,14 +43,15 @@ end subroutine
 ! =============================================================================
 subroutine spher_area (distance ,ddistance, azstp,  area )
   real(dp),intent(out) :: area
-  real(dp), intent(in) :: distance,ddistance ,azstp
-  area = sin ( d2r(distance) ) * d2r(ddistance) * d2r(azstp)
+  real(dp), intent(in) :: distance,ddistance 
+  real(sp):: azstp
+  area = sin ( d2r(distance) ) * d2r(ddistance) * d2r(dble(azstp))
 
 end subroutine
 
 subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
-  real(dp) , intent(in)  :: distance , azimuth
-  real(sp) , intent(in)  :: latin , lonin 
+  real(dp) , intent(in)  :: distance 
+  real(sp) , intent(in)  :: latin , lonin , azimuth
   real(dp) , intent(out) :: latout, lonout 
   real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
 
@@ -58,8 +59,8 @@ subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
   st  = sin (d2r(90.-dble(latin)))
   cd  = cos (d2r(distance))
   sd  = sin (d2r(distance))
-  saz = sin (d2r(azimuth))
-  caz = cos (d2r(azimuth))
+  saz = sin (d2r(dble(azimuth)))
+  caz = cos (d2r(dble(azimuth)))
   cb = cd*ct + sd*st*caz
   !todo !if(abs(cb).gt.1) cb = cb/abs(cb)
   sb = sqrt(1.-cb*cb)
@@ -79,9 +80,9 @@ subroutine convolve (site,  green , denserdist , denseraz )
   integer, optional :: denserdist , denseraz
   integer ::  ndenser , igreen  , iazimuth , nazimuth
   real(dp), allocatable , dimension(:,:)  :: green_common
-  real(dp) :: azimuth
-  type(site_data) :: site
-  real(dp) :: lat , lon , area
+  real(sp) :: azimuth
+  type(site_data), intent(in) :: site
+  real(dp) :: lat , lon , area 
   real(sp) :: val 
 
   ndenser =   0
@@ -102,18 +103,54 @@ subroutine convolve (site,  green , denserdist , denseraz )
       azimuth = (iazimuth - 1) * 360./nazimuth
       call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
       call get_value (model(1) , real(lat) , real(lon) , val )
-      call spher_area(green_common(igreen,1) , green_common(igreen,2), 
-              write (22, *)  lat , lon 
-              write (*, '(10(go,x))')  lat , lon, val
+      call spher_area(green_common(igreen,1) , green_common(igreen,2), 360./nazimuth , area) 
+      if (moreverbose%if) then
+        call convolve_moreverbose (site , azimuth , green_common(igreen,1))
+!        call ldbxdr(azimuth,dist,azstpd,spc)
+      endif
+
+    write (22, *)  lat , lon 
+    write (*, '(10(go,x))')  lat , lon, val * real(area) * green_common(igreen,3)
     enddo
   enddo
   print * , site%lat
 end subroutine
 
+subroutine convolve_moreverbose (site , azimuth , distance)
+  type(site_data),intent(in) :: site
+  real(sp), intent(in) :: azimuth
+  real(dp) :: distance
+  real(sp) :: ca , sa
 
-!      call wywolaj_model(rlato, rlong, wartosc_komorki)
-!      call wywolaj_model_t(rlato, rlong, wartosc_komorki_t)
-!      call wywolaj_model_h(rlato, rlong, wartosc_komorki_t)
+      ca = cos(d2r(dble(azimuth)))
+      sa = sin(d2r(dble(azimuth)))
+!        write(moreverbose%unit , *) "D"
+!      subroutine invspt(alp,del,b,rlong)
+!c  solves the inverse spherical triangle problem - given a station whose
+!c  colatitude is t, and east longitude rlam (in degrees), returns the
+!c  colatitude b and east longitude rlong of the place which is at a distance
+!c  of delta degrees and at an azimuth of alp (clockwise from north).
+!c  the common block stloc holds the cosine and sine of the station colatitude,
+!c  and its east longitude.
+!      sa = sin(alp*dtr)
+!      cd = cos(del*dtr)
+!      sd = sin(del*dtr)
+!      cb = cd*ct + sd*st*ca
+!      sb = sqrt(1.-cb*cb)
+!      b = acos(cb)/dtr
+!      if(sb.le.1.e-3) then
+!c  special case - the point is at the poles
+!   rlong = 0
+!   return
+!      endif
+!      sg = sd*sa/sb
+!      cg = (st*cd-sd*ct*ca)/sb
+!      g = atan2(sg,cg)/dtr
+!      rlong = rlam + g
+end subroutine
+
+
+
 !      if (lnd.eq.2) wartosc_komorki_h = 0.
 
 !        if(wartosc_komorki.ne.0.) then

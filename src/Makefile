@@ -32,7 +32,7 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 #   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	$(BIN)/grat -F$(SFC),4,../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,52:zeby,21 -V tmp -D20090101,2009010112,6 -G$(GRN_m):1:2,$(GRN_r)::,$(GRN_r):1:2,$(GRN_r):1:2 -P$(POL),$(POL)
+	$(BIN)/grat -F$(SFC),4,../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,52:zeby,21 -V tmp -D20090101,2009010112,6 -G$(GRN_m):1:2,$(GRN_r)::,$(GRN_r):1:2,$(GRN_r):1:2 -P$(POL),$(POL) -Ltmpmore
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4
 
 #   cd /home/mrajner/dr/data/site_vs_model/ && make -B

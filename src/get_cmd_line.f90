@@ -243,7 +243,7 @@ logical function if_switch_program (program_calling , switch )
   if (program_calling.eq."grat") then
     allocate( accepted_switch (15) )
     accepted_switch = [ "V" , "f" , "S", "B" , "L" , "G" , "P" , "p", &
-      "o" , "F" , "R" , "D" , "d" , "v" , "h"  ]
+      "o" , "F" , "R" , "D" , "d" , "v" , "h"   ]
   elseif (program_calling.eq."polygon_check") then
     allocate( accepted_switch (12) )
     accepted_switch = [ "V" , "f" , "A", "B" , "L" , "P" , "o", "S" , & 

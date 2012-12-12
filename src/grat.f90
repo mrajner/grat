@@ -81,7 +81,7 @@ program grat
 
     do i = 1 , size(sites)
       call get_value(model(1), sites(i)%lat, sites(i)%lon , val)
-      write(output%unit ,  '(f15.4,2x,i4,5i2.2,3f13.4)') ,mjd (dates(j)%date) , dates(j)%date , sites%lat, sites%lon, val
+!      write(output%unit ,  '(f15.4,2x,i4,5i2.2,3f13.4)') ,mjd (dates(j)%date) , dates(j)%date , sites%lat, sites%lon, val
   call convolve (sites(1) , green , denserdist = 0 , denseraz =1)
     enddo
   enddo
