@@ -1,3 +1,5 @@
+#>
+## \todo year
 # This file contains the AGGF computed by Huang et al. (1992)  
 #phi[deg]   GN[muGal/mb]   dGN/dT[muGal/mb/degC]   dGN/dh[muGal/mb/m]  dGN/dz[muGal/mb/m]
   0.00001 -4910.0951 17.070873  0.474041 -0.000386
