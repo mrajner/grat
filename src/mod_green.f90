@@ -3,6 +3,7 @@ module mod_green
   use get_cmd_line
   use aggf
   use mod_data
+  use mod_polygon
   implicit none
 
 
@@ -27,10 +28,10 @@ subroutine green_unification (green , green_common , denser)
     enddo
   enddo
 !  x(size(x)) = green(1)%distance(size(green(1)%distance))
-  allocate(green_common (size(x) , 6))
+  allocate(green_common (size(x) , 7))
   green_common(:,1) = x
   green_common(:,2) = dist
-  do i = 1 , 4
+  do i = 1 , 5
     if (allocated(green(i)%distance)) then
       call spline_interpolation (green(i)%distance , green(i)%data, x , y)
       green_common(:,i+2) = y
@@ -45,8 +46,8 @@ subroutine spher_area (distance ,ddistance, azstp,  area )
   real(dp),intent(out) :: area
   real(dp), intent(in) :: distance,ddistance 
   real(sp):: azstp
-  area = sin ( d2r(distance) ) * d2r(ddistance) * d2r(dble(azstp))
-
+!  area = sin ( d2r(distance) ) * d2r(ddistance) * d2r(dble(azstp))
+  area =  abs(sin(d2r(90.-distance+ddistance/2.))-sin(d2r(90.-distance-ddistance/2.))) * d2r(dble(azstp))
 end subroutine
 
 subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
@@ -63,27 +64,33 @@ subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
   caz = cos (d2r(dble(azimuth)))
   cb = cd*ct + sd*st*caz
   !todo !if(abs(cb).gt.1) cb = cb/abs(cb)
-  sb = sqrt(1.-cb*cb)
+  sb = sqrt(1.-cb**2)
   latout = 90 - r2d(acos(cb))
-  lonout = 0.
-  if(sb.gt.1.e-3) then
-    sg = sd*saz/sb
-    cg = (st*cd - sd*ct*caz)/sb
-    lonout = lonin + r2d(atan2(sg,cg))
-  endif
+  lonout = lonin + r2d(atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb))
 end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine convolve (site,  green , denserdist , denseraz )
+subroutine convolve (site ,  green , denserdist , denseraz  )
+  type(site_data) , intent(in) :: site
   type(green_functions), allocatable , dimension(:) :: green
   integer, optional :: denserdist , denseraz
+  real(sp) :: latin , lonin
   integer ::  ndenser , igreen  , iazimuth , nazimuth
   real(dp), allocatable , dimension(:,:)  :: green_common
   real(sp) :: azimuth
-  type(site_data), intent(in) :: site
-  real(dp) :: lat , lon , area 
-  real(sp) :: val 
+  real(dp) :: lat , lon , area  
+  real(sp) :: val(4) , ref_p
+  integer :: i , iok(2)
+  real(dp) :: normalize 
+  type results
+    real(sp) :: N=0. , dt=0. ,E=0. , dh=0.,dz=0.
+  end type
+  type (results) :: result 
+ 
+
+  result%dt=0.
+  result%dh=0.
 
   ndenser =   0
   nazimuth= 1 !< todo set to 150 at least
@@ -91,96 +98,78 @@ subroutine convolve (site,  green , denserdist , denseraz )
   if (present(denseraz))     nazimuth = nazimuth * denseraz
   call green_unification (green , green_common , denser = ndenser)
 
-  write(* , "( 6f15.7 )" ) ,( green_common (ndenser,:) , ndenser = 1,1 )
-  write(* , "( 6f15.7 )" ) ,  green_common (size(green_common(:,1)),:) 
-
-  
-  open (22, file = "tmp.dat" , action ="write")
-
   do igreen = 1 ,size(green_common(:,1)), 1 !todo 
-  
     do iazimuth  = 1 , nazimuth
       azimuth = (iazimuth - 1) * 360./nazimuth
+
+      ! get lat and lon of point
       call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
-      call get_value (model(1) , real(lat) , real(lon) , val )
-      call spher_area(green_common(igreen,1) , green_common(igreen,2), 360./nazimuth , area) 
-      if (moreverbose%if) then
-        call convolve_moreverbose (site , azimuth , green_common(igreen,1))
-!        call ldbxdr(azimuth,dist,azstpd,spc)
+
+      ! get values of model
+      do i = 1 ,4
+        if(model(i)%if) then 
+          call get_value (model(i) , real(lat) , real(lon) , val(i) , method =model(i)%interpolation)
+        else 
+          val(i) = 0.
+        endif
+      enddo
+
+          call get_value (refpres , real(lat) , real(lon) , ref_p , method =2)
+
+      ! get polygons
+      do i = 1 , 2
+        if (polygons(i)%if) then
+          call chkgon ( real(lon), real(lat) , polygons(i) , iok(i) )
+        else
+          iok(i)=1
+        endif
+      end do
+
+      ! calculate area using spherical formulae
+      if (val(1).ne.0) then
+        call spher_area(green_common(igreen,1) , green_common(igreen,2), 360./nazimuth , area) 
+
+        ! force topography to zero over oceans
+        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
+
+        
+       normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1e5  )
+
+       ! elastic part
+       ! if the cell is not over sea and inverted barometer assumption was not set 
+       ! and is not excluded by polygon
+       if (.not.((val(4).eq.0.and.inverted_barometer) .or. iok(2).eq.0)) then
+         result%e = result%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
+       endif
+
+       ! newtonian
+       if(.not. iok(1).eq.0) then
+         !> \todo huang na metr ja i merriam na km
+         result%n = result%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
+         result%dt = result%dt + (val(1)/ 100.-ref_p) * &
+          (green_common(igreen,4)*(val(2)-t0) ) * area * normalize
+         result%dh = result%dh + (val(1)/ 100.-ref_p) * &
+          (green_common(igreen,5)*(site%height) ) * area * normalize
+         result%dz = result%dz + (val(1)/ 100.-ref_p) * &
+          (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
+       endif
+
+
       endif
 
-    write (22, *)  lat , lon 
-    write (*, '(10(go,x))')  lat , lon, val * real(area) * green_common(igreen,3)
+      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+        call convolve_moreverbose (site%lat,site%lon , azimuth , 360./ nazimuth , green_common(igreen,1), green_common(igreen,1))
+        write (moreverbose%unit, '(">")')
+      endif
     enddo
+!  print *, val(1:4)
   enddo
-  print * , site%lat
+ call get_value(model(1), site%lat, site%lon , val(1), 2)
+
+  print '(100(g0,x))' ,val(1)/100, result%e , result%n , result%dt , result%dh , result%dz
 end subroutine
-
-subroutine convolve_moreverbose (site , azimuth , distance)
-  type(site_data),intent(in) :: site
-  real(sp), intent(in) :: azimuth
-  real(dp) :: distance
-  real(sp) :: ca , sa
-
-      ca = cos(d2r(dble(azimuth)))
-      sa = sin(d2r(dble(azimuth)))
-!        write(moreverbose%unit , *) "D"
-!      subroutine invspt(alp,del,b,rlong)
-!c  solves the inverse spherical triangle problem - given a station whose
-!c  colatitude is t, and east longitude rlam (in degrees), returns the
-!c  colatitude b and east longitude rlong of the place which is at a distance
-!c  of delta degrees and at an azimuth of alp (clockwise from north).
-!c  the common block stloc holds the cosine and sine of the station colatitude,
-!c  and its east longitude.
-!      sa = sin(alp*dtr)
-!      cd = cos(del*dtr)
-!      sd = sin(del*dtr)
-!      cb = cd*ct + sd*st*ca
-!      sb = sqrt(1.-cb*cb)
-!      b = acos(cb)/dtr
-!      if(sb.le.1.e-3) then
-!c  special case - the point is at the poles
-!   rlong = 0
-!   return
-!      endif
-!      sg = sd*sa/sb
-!      cg = (st*cd-sd*ct*ca)/sb
-!      g = atan2(sg,cg)/dtr
-!      rlong = rlam + g
-end subroutine
-
-
-
-!      if (lnd.eq.2) wartosc_komorki_h = 0.
-
-!        if(wartosc_komorki.ne.0.) then
-!          normalizacja= 1 / ( 2. * pi * ( 1. - cos ( d2r(1.) ) ) * d2r(dist) *1e5  )
-!          if (lnd.eq.1) then
-!            grav_merriam_e = grav_merriam_e  + values_interpolowane(5) * wartosc_komorki * pole * normalizacja 
-!          endif
-!          grav_merriam_e_nib = grav_merriam_e_nib  + values_interpolowane(5) * wartosc_komorki * pole * normalizacja 
-!          grav_merriam_n = grav_merriam_n  + values_interpolowane(1) * wartosc_komorki * pole * normalizacja 
-!          grav_merriam_n_t = grav_merriam_n_t  + ( values_interpolowane(1) +values_interpolowane(2)* (wartosc_komorki_t/10-15)) * wartosc_komorki * pole * normalizacja 
-!          grav_merriam_n_h =&
-!            grav_merriam_n_h  + (&
-!              values_interpolowane(1) &
-!             +values_interpolowane(2)* (wartosc_komorki_t/10-15) &
-!             +values_interpolowane(3)*((wartosc_komorki_h - wysokosc_stacji_etopo2) /1000 ) &
-!             +values_interpolowane(4)*((wartosc_komorki_h - wysokosc_stacji_etopo2) /1000 /( d2r(dist) * a/1000 )**2 ) &
-!              ) &
-!            * wartosc_komorki * pole * normalizacja 
-!        endif
-!      azimuth = azimuth + azstpd
-!      xx = saz*caztp + caz*saztp
-!      caz = caz*caztp - saz*saztp
-!      saz = xx
-!      cale_pole = cale_pole + pole
-!      licznik=licznik+1
-! 16   continue
-
-!  enddo
-!print '(2(f14.6,x))' , (table(i), green(1)%distance(i) , i =1,20) 
-!    print * , table2
+!> \todo site height from model 
+! todo dh dz in conv
 
 
 !subroutine wczytaj_linie_informacyjne
@@ -192,6 +181,19 @@ end subroutine
 !      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
 !end subroutine
 
+subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
+  real(sp), intent(in) :: azimuth ,azstep, latin, lonin
+  real(dp) :: distance, lat , lon , distancestep
+
+  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth - azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth + azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth + azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+end subroutine
 !subroutine plot2green(green_file)
 !  implicit none
 !  character(len=*),intent (in) :: green_file

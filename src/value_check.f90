@@ -47,8 +47,8 @@ use ieee_arithmetic
 
       write (output%unit ,   '(30f15.4, 1x)') , sites(i)%lon , sites(i)%lat , val
 
-      if (moreverbose%if) then
-        write (moreverbose%unit ,   '("c",30f15.4)'), sites(i)%lon , sites(i)%lat , val
+      if (moreverbose%if.and.moreverbose%names(1).eq."c") then
+        write (moreverbose%unit ,   '(30f15.4)'), sites(i)%lon , sites(i)%lat , val
       endif
 
     enddo

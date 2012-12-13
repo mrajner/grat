@@ -111,6 +111,7 @@ subroutine get_variable( model , date )
       write(log%unit,form_61) "Cannot find date:", date, &
         "var:", trim(model%names(1)), "file:" , model%name
         model%data= sqrt(-1.)
+!        stop "PROBLEM getting variable"
       return
     endif
   else
@@ -245,8 +246,12 @@ subroutine get_value( model,  lat , lon , val , method )
     .or. (lon.gt.max(model%latrange(1), model%latrange(2)) &
        .and.   lon.gt.max(model%latrange(1), model%latrange(2))) &
   ) then
-    val = 0
+    val = sqrt(-1.)
   endif
+  if (model%if_constant_value) then
+    val = model%constant_value
+    return
+  end if
 
   ilat = minloc(abs(model%lat-lat),1)
   ilon = minloc(abs(model%lon-lon),1)
@@ -261,8 +266,8 @@ subroutine get_value( model,  lat , lon , val , method )
       array_aux (2,:) = [ model%lon(ilon)  , model%lat(ilat2) , model%data(ilon,ilat2 , 1) ]
       array_aux (3,:) = [ model%lon(ilon2)  , model%lat(ilat) , model%data(ilon2,ilat , 1) ]
       array_aux (4,:) = [ model%lon(ilon2)  , model%lat(ilat2) , model%data(ilon2,ilat2 , 1) ]
-      if (moreverbose%if) then
-          write(moreverbose%unit ,  '("b",3f15.4)') , (array_aux(i,:), i = 1 ,4)
+      if (moreverbose%if.and.moreverbose%names(1).eq."b") then
+          write(moreverbose%unit ,  '(3f15.4)') , (array_aux(i,:), i = 1 ,4)
           write(moreverbose%unit ,  '(">")')
       endif
         val = bilinear ( lon , lat , array_aux )
@@ -275,8 +280,8 @@ subroutine get_value( model,  lat , lon , val , method )
   if (ilon .eq. size (model%lon) ) then
     if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
   endif
-  if (moreverbose%if) then
-    write(moreverbose%unit ,  '("n",3f15.4)') , &
+  if (moreverbose%if.and.moreverbose%names(1).eq."n") then
+    write(moreverbose%unit ,  '(3f15.4)') , &
        model%lon(ilon) , model%lat(ilat) , model%data(ilon,ilat,1)
     write(moreverbose%unit ,  '(">")')
   endif

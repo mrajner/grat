@@ -128,21 +128,19 @@ module get_cmd_line
   end type
 
   ! External files
-  type(file) ::  log  , output , moreverbose
+  type(file) ::  log  , output , moreverbose , refpres
   type(file) , allocatable, dimension (:) :: model
 
   character (len =40) :: model_names (5) = ["pressure_surface" , &
     "temperature_surface" , "topography" , "landsea" , "pressure levels" ]
 
 
+  character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
+
+
   ! Verbose information and the output for \c log_file
   logical :: if_verbose  = .false.  !< whether print all information
-  logical :: inverted_barometer  = .true.  !< whether print all information
-
-
-  !> Logical parameters for easy operation
-!  logical :: if_interval(2) = .false.
-!  real(sp) :: interval(2) = 1.
+  logical :: inverted_barometer  = .true.  
 
   character (50) :: interpolation_names (2) &
     = [ "nearest" , "bilinear" ]
@@ -243,7 +241,7 @@ logical function if_switch_program (program_calling , switch )
   if (program_calling.eq."grat") then
     allocate( accepted_switch (15) )
     accepted_switch = [ "V" , "f" , "S", "B" , "L" , "G" , "P" , "p", &
-      "o" , "F" , "R" , "D" , "d" , "v" , "h"   ]
+      "o" , "F" , "I" , "D" , "d" , "v" , "h"   ]
   elseif (program_calling.eq."polygon_check") then
     allocate( accepted_switch (12) )
     accepted_switch = [ "V" , "f" , "A", "B" , "L" , "P" , "o", "S" , & 
@@ -336,7 +334,8 @@ subroutine parse_option (cmd_line_entry , program_calling)
     case ("-L")
       moreverbose%if=.true.
       moreverbose%name=cmd_line_entry%field(1)
-      write (fileunit_tmp , form_62) "printing additional inforamtion"
+      moreverbose%names(1) = cmd_line_entry%fieldnames(1)%names(1)
+      write (fileunit_tmp , form_62) "printing additional information"
       if (len(moreverbose%name).gt.0 .and. moreverbose%name.ne."") then
         open (newunit = moreverbose%unit , file = moreverbose%name , action = "write" )
       endif
@@ -399,6 +398,14 @@ subroutine parse_green ( cmd_line_entry)
               read( cmd_line_entry%fieldnames(i)%names(ii) , *) fields(ii)
             endif
           enddo
+          if (cmd_line_entry%fieldnames(i)%names(1).eq."m") then
+            if(i.eq.1) fields=[1,2]
+            if(i.eq.2) fields=[1,3]
+            if(i.eq.4) fields=[1,4]
+            if(i.eq.5) fields=[1,6]
+          elseif (cmd_line_entry%fieldnames(i)%names(1).eq."h") then
+          elseif (cmd_line_entry%fieldnames(i)%names(1).eq."r") then
+          endif
         endif
         allocate(tmp(max(fields(1),fields(2))))
         lines = 0
@@ -423,7 +430,8 @@ subroutine parse_green ( cmd_line_entry)
         enddo
         deallocate(tmp)
         close(iunit)
-        write(fileunit_tmp , form_63) i, cmd_line_entry%field(i)
+        write(fileunit_tmp , form_63) trim(green_names(i)), &
+          trim(cmd_line_entry%field(i)),":", fields
       endif
     enddo
 end subroutine

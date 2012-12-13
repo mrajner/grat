@@ -33,30 +33,8 @@ program grat
 
 
   implicit none
-!  character(255) :: dummy
-!  real :: del, grav=0. ,cd ,sd, rlato ,rlong , ddist, pole ,cale_pole, normalizacja, cisnienie_stacja, temperatura_stacja
-!  integer :: ii , naz , jj , i , j
-!  integer , parameter :: minaz =50 !mrajner 2012-10-03 14:24
-!  !integer , parameter :: minaz =1
-!  integer , parameter :: ile  = 5 !mrajner 2012-10-03 14:24
-!  !integer , parameter :: ile   = 1
-!  real :: azstp, azstpd, azimuth ,caz ,saz,saztp, caztp,stpfac ,cb , sb ,sg ,cg
-!  real ::  xx 
-!  real :: grav_merriam_e=0. ,grav_merriam_n=0. , grav_merriam_s=0. ,grav_merriam_e_nib=0.
-!  real ::grav_merriam_n_t=0. 
-!  real ::grav_merriam_n_h=0. 
-!  real :: admit3
-!  real,dimension(85) :: b,c,d
-!  integer:: przebieg ,licznik
-!  real, dimension(6) :: values_interpolowane
-!  real , dimension(:,:), allocatable :: tablica
-!  integer :: ile_plikow
-!  real :: szerokosc_zmienna , dlugosc_zmienna , wysokosc_stacji_etopo2
-!  logical :: czy_otworzyc_nowy_plik=.true.
-
-
   real(sp) :: x , y , z , lat ,lon ,val !tmp variables
-  integer :: i , j
+  integer :: i , j , ii
   integer :: d(6)
 
   !> program starts here with time stamp
@@ -69,24 +47,33 @@ program grat
   call print_settings (program_calling = "grat")
 
   
+  ! read polygons
+  do i =1 , 2
+   call read_polygon (polygons(i))
+  enddo
+
   ! read models into memory
   do i =1 , size(model)
     if (model(i)%if) call read_netCDF ( model(i) )
   enddo
 
+  refpres%name="/home/mrajner/src/grat/data/refpres/vienna_p0.grd"
+  call read_netCDF (refpres)
+   
+
     
 
-  do j = 1 , size (dates)
-      call get_variable ( model(1) , date = dates(j)%date)
+  do j = 1 , max(size (dates),1)
+  
+    do ii = 1 , 2
+      call get_variable ( model(ii) , date = dates(j)%date)
+    enddo
 
     do i = 1 , size(sites)
-      call get_value(model(1), sites(i)%lat, sites(i)%lon , val)
-!      write(output%unit ,  '(f15.4,2x,i4,5i2.2,3f13.4)') ,mjd (dates(j)%date) , dates(j)%date , sites%lat, sites%lon, val
-  call convolve (sites(1) , green , denserdist = 0 , denseraz =1)
+      call convolve (sites(1)  , green , denserdist = 0 , denseraz =1)
     enddo
   enddo
   
-  ! todo wysokosci nad wodą ustaw na 0. Głębokość nie jest interesująca
 
 
 
