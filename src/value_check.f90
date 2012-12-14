@@ -1,7 +1,7 @@
 program value_check 
   use get_cmd_line
   use mod_data
-use ieee_arithmetic
+  use ieee_arithmetic
   implicit none
 
   real (sp) , allocatable , dimension(:) :: val
@@ -19,13 +19,10 @@ use ieee_arithmetic
   start =0 
   if (size(dates).gt.0) start=1
 
-  print * , val
   do j = start , size (dates)
     do i = 1 , size(model)
       if (model(i)%if) call get_variable ( model(i) , date = dates(j)%date)
     enddo
-
-
 
     do i = 1 , size(sites)
       ! add time stamp if -D option was specified

@@ -5,8 +5,6 @@
 module get_cmd_line
   use iso_fortran_env
   use constants 
-  ! todo
-!  use mod_polygon
 
   implicit none
 
@@ -19,8 +17,8 @@ module get_cmd_line
     real(dp),allocatable,dimension(:) :: data
     logical  :: if
   end type
-
   type(green_functions), allocatable , dimension(:) :: green
+  integer :: denser(2) = [1,1] 
   
   !----------------------------------------------------
   ! polygons
@@ -382,57 +380,99 @@ end subroutine
 !> This subroutine parse -G option i.e. reads Greens function
 ! =============================================================================
 subroutine parse_green ( cmd_line_entry)
-  type (cmd_line), intent(in) :: cmd_line_entry
+  type (cmd_line)  :: cmd_line_entry
+  character (60) :: filename
   integer :: i , iunit , io_status , lines ,  ii
   integer :: fields(2)= [1,2]
   real (sp) , allocatable , dimension(:) :: tmp
 
     write(fileunit_tmp , form_62) "Green function file was set:"
     allocate (green (cmd_line_entry%fields))
-    
+
     do i = 1 , cmd_line_entry%fields
-      if (file_exists(cmd_line_entry%field(i))) then
-        if (allocated(cmd_line_entry%fieldnames(i)%names)) then
+
+      if (i.eq.6) then
+        if (is_numeric(cmd_line_entry%field(i))) then
+          read( cmd_line_entry%field(i), *) denser(1)
+          if (is_numeric(cmd_line_entry%fieldnames(i)%names(1))) then
+            read( cmd_line_entry%fieldnames(i)%names(1), *) denser(2)
+          endif
+          return
+         endif
+      endif
+      
+      if (.not.file_exists(cmd_line_entry%field(i)) &
+      .and. (.not. cmd_line_entry%field(i).eq."merriam" &
+      .and. .not. cmd_line_entry%field(i).eq."huang" &
+      .and. .not. cmd_line_entry%field(i).eq."rajner" )) then
+        cmd_line_entry%field(i)="merriam"
+      endif
+
+
+      !> change the paths accordingly
+      if (cmd_line_entry%field(i).eq."merriam") then
+        filename="/home/mrajner/src/grat/dat/merriam_green.dat"
+        if (i.eq.1) fields = [1,2]
+        if (i.eq.2) fields = [1,3]
+        if (i.eq.3) fields = [1,4]
+        if (i.eq.4) fields = [1,4]
+        if (i.eq.5) fields = [1,6]
+      elseif (cmd_line_entry%field(i).eq."huang") then
+        filename="/home/mrajner/src/grat/dat/huang_green.dat"
+        if (i.eq.1) fields = [1,2]
+        if (i.eq.2) fields = [1,3]
+        if (i.eq.3) fields = [1,4]
+        if (i.eq.4) fields = [1,5]
+        if (i.eq.5) fields = [1,6]
+      elseif (cmd_line_entry%field(i).eq."rajner") then
+        filename="/home/mrajner/src/grat/dat/rajner_green.dat"
+        if (i.eq.1) fields = [1,2]
+        if (i.eq.2) fields = [1,3]
+        if (i.eq.3) fields = [1,4]
+        if (i.eq.4) fields = [1,5]
+        if (i.eq.5) fields = [1,6]
+      elseif (file_exists(cmd_line_entry%field(i))) then
+        filename = cmd_line_entry%field(i)
+        if (size(cmd_line_entry%fieldnames).ne.0 .and. allocated(cmd_line_entry%fieldnames(i)%names)) then
           do ii=1, 2
             if(is_numeric (cmd_line_entry%fieldnames(i)%names(ii) ) ) then
-              read( cmd_line_entry%fieldnames(i)%names(ii) , *) fields(ii)
+              read( cmd_line_entry%fieldnames(i)%names(ii), *) fields(ii)
             endif
           enddo
-          if (cmd_line_entry%fieldnames(i)%names(1).eq."m") then
-            if(i.eq.1) fields=[1,2]
-            if(i.eq.2) fields=[1,3]
-            if(i.eq.4) fields=[1,4]
-            if(i.eq.5) fields=[1,6]
-          elseif (cmd_line_entry%fieldnames(i)%names(1).eq."h") then
-          elseif (cmd_line_entry%fieldnames(i)%names(1).eq."r") then
-          endif
         endif
-        allocate(tmp(max(fields(1),fields(2))))
-        lines = 0
-        open ( newunit =iunit,file=cmd_line_entry%field(i),action="read")
-        do 
-          call skip_header (iunit)
-          read (iunit , * , iostat = io_status)
-          if (io_status == iostat_end) exit
-          lines = lines + 1
-        enddo
-        allocate (green(i)%distance(lines))
-        allocate (green(i)%data(lines))
-        rewind(iunit)
-        lines = 0
-        do 
-          call skip_header (iunit)
-          lines = lines + 1
-          read (iunit , * , iostat = io_status) tmp
-          if (io_status == iostat_end) exit
-          green(i)%distance(lines) = tmp (fields(1))
-          green(i)%data(lines)     = tmp (fields(2))
-        enddo
-        deallocate(tmp)
-        close(iunit)
-        write(fileunit_tmp , form_63) trim(green_names(i)), &
-          trim(cmd_line_entry%field(i)),":", fields
       endif
+        
+      allocate(tmp(max(fields(1),fields(2))))
+      lines = 0
+      open ( newunit =iunit,file=filename,action="read")
+      do 
+        call skip_header (iunit)
+        read (iunit , * , iostat = io_status)
+        if (io_status == iostat_end) exit
+        lines = lines + 1
+      enddo
+      allocate (green(i)%distance(lines))
+      allocate (green(i)%data(lines))
+      rewind(iunit)
+      lines = 0
+      do 
+        call skip_header (iunit)
+        lines = lines + 1
+        read (iunit , * , iostat = io_status) tmp
+        if (io_status == iostat_end) exit
+        green(i)%distance(lines) = tmp (fields(1))
+        green(i)%data(lines)     = tmp (fields(2))
+      enddo
+      deallocate(tmp)
+      close(iunit)
+      if (cmd_line_entry%field(i).eq."merriam" .and. i.eq.4) then
+        green(i)%data = green(i)%data * (-1.)
+      endif
+      if (cmd_line_entry%field(i).eq."huang" .and. (i.eq.3.or.i.eq.4)) then
+        green(i)%data = green(i)%data * 1000.
+      endif
+      write(fileunit_tmp , form_63) trim(green_names(i)), &
+        trim(cmd_line_entry%field(i)),":", fields
     enddo
 end subroutine
 
@@ -477,6 +517,7 @@ subroutine get_cmd_line_entry (dummy , cmd_line_entry , program_calling )
     return
   endif
 
+
   dummy=dummy(3:)
 
   cmd_line_entry%fields = count_separator (dummy) + 1
@@ -517,6 +558,7 @@ subroutine get_model_info ( model , cmd_line_entry , field)
   integer :: field , i 
 
   model%name = trim(cmd_line_entry%field(field))
+!  if (model%name.eq."") return
   if ( file_exists (model%name) ) then
     write (fileunit_tmp , form_62) , trim (model_names(field) )
     write(fileunit_tmp, form_63), trim(model%name)
@@ -537,7 +579,7 @@ subroutine get_model_info ( model , cmd_line_entry , field)
     write(fileunit_tmp, form_63), 'constant value was set: ' , model%constant_value
     model%if_constant_value=.true.
   else
-!    write (fileunit_tmp , form_63 ) "no (correct) model in field: ", field
+    write (fileunit_tmp , form_63 ) "no (correct) model in field: ", field
   endif
 end subroutine
 

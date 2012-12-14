@@ -34,8 +34,7 @@ program grat
 
   implicit none
   real(sp) :: x , y , z , lat ,lon ,val !tmp variables
-  integer :: i , j , ii
-  integer :: d(6)
+  integer :: i , j , ii, iii
 
   !> program starts here with time stamp
   call cpu_time(cpu_start)
@@ -45,7 +44,6 @@ program grat
 
   ! print header to log: version, date and summary of command line options
   call print_settings (program_calling = "grat")
-
   
   ! read polygons
   do i =1 , 2
@@ -60,24 +58,33 @@ program grat
   refpres%name="/home/mrajner/src/grat/data/refpres/vienna_p0.grd"
   call read_netCDF (refpres)
    
-
-    
-
+  allocate (results(size(sites)*max(size(dates),1)))
+  iii=0
   do j = 1 , max(size (dates),1)
+    if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date
   
-    do ii = 1 , 2
-      call get_variable ( model(ii) , date = dates(j)%date)
+    do ii = 1 , min(2,size(model))
+      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
     enddo
 
+
+
+!!call read_netCDF (model(6))
+!todo
     do i = 1 , size(sites)
-      call convolve (sites(1)  , green , denserdist = 0 , denseraz =1)
+      write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
+      iii=iii+1
+      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))
+      write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
     enddo
   enddo
+
+! print '(15f13.5)',  results(maxloc (results%e))%e - results(minloc (results%e))%e       ,&
+!           results(maxloc (results%n))%n - results(minloc (results%n))%n       ,&
+!           results(maxloc (results%dh))%dh - results(minloc (results%dh))%dh   ,&
+!           results(maxloc (results%dz))%dz - results(minloc (results%dz))%dz   ,&
+!           results(maxloc (results%dt))%dt - results(minloc (results%dt))%dt
   
-
-
-
-
 
   call cpu_time(cpu_finish)
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start

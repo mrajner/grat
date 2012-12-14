@@ -4,12 +4,13 @@
   FC = ifort
   FLAGS = -r8 -O2 -CB  # -g -traceback
   NETCDFLIB = -L/usr/local/lib -lnetcdff -lnetcdf 
-  SFC= ../data/ncep_reanalysis/pres.sfc.2009.nc:pres:lon:lat:level:time
-  TMP= ../data/ncep_reanalysis/air.sig995.2009.nc:air:lon:lat:level:time
+  SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
+  TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
   LND= ../data/landsea/test.grd:z:x:y
   GRN_r= ../dat/rajner_green.dat
   GRN_m= ../dat/merriam_green.dat
 	POL= ../polygon/tmp.poly
+	GPT= ../data/ncep_reanalysis/hgt.2011.nc
 
   SRCS  = constants.f90 get_cmd_line.f90 mod_polygon.f90 mod_data.f90 aggf.f90 mod_green.f90
   OBJS  = $(SRCS:.f90=.o)
@@ -33,7 +34,9 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 #   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	$(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BI -G$(GRN_m):m,$(GRN_m):m,$(GRN_m):m,$(GRN_m):m,$(GRN_m):m -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
+	$(BIN)/grat -F$(SFC) $(GPT)  -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -I1 -o tmp P$(POL),$(POL) -otmp2.dat
+#   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL) -otmp.dat
+#   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
 
 #   cd /home/mrajner/dr/data/site_vs_model/ && make -B

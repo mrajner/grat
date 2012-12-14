@@ -5,6 +5,11 @@ module mod_green
   use mod_data
   use mod_polygon
   implicit none
+  real(dp), allocatable , dimension(:,:)  :: green_common
+  type result
+    real(sp) :: N=0. , dt=0. ,E=0. , dh=0.,dz=0.
+  end type
+  type (result), allocatable, dimension(:) :: results
 
 
 contains
@@ -32,13 +37,17 @@ subroutine green_unification (green , green_common , denser)
   green_common(:,1) = x
   green_common(:,2) = dist
   do i = 1 , 5
-    if (allocated(green(i)%distance)) then
+    if (size(green).ge.i .and. allocated(green(i)%distance)) then
       call spline_interpolation (green(i)%distance , green(i)%data, x , y)
       green_common(:,i+2) = y
     else 
       green_common(:,i+2) = 0
     endif
   enddo
+  if (moreverbose%if.and. moreverbose%names(1).eq."G") then
+    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
+  endif
+
 end subroutine
 ! =============================================================================
 ! =============================================================================
@@ -71,42 +80,36 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine convolve (site ,  green , denserdist , denseraz  )
+subroutine convolve (site ,  green , results, denserdist , denseraz  )
   type(site_data) , intent(in) :: site
   type(green_functions), allocatable , dimension(:) :: green
-  integer, optional :: denserdist , denseraz
+  integer , intent (in) :: denserdist , denseraz
   real(sp) :: latin , lonin
   integer ::  ndenser , igreen  , iazimuth , nazimuth
-  real(dp), allocatable , dimension(:,:)  :: green_common
   real(sp) :: azimuth
   real(dp) :: lat , lon , area  
   real(sp) :: val(4) , ref_p
-  integer :: i , iok(2)
+  integer :: i , iok(2) , npoints
   real(dp) :: normalize 
-  type results
-    real(sp) :: N=0. , dt=0. ,E=0. , dh=0.,dz=0.
-  end type
-  type (results) :: result 
- 
+  type (result) ,intent(out)  :: results
 
-  result%dt=0.
-  result%dh=0.
+  if (.not.allocated(green_common))  then
+    call green_unification (green , green_common , denser = denserdist-1)
+  endif
 
-  ndenser =   0
-  nazimuth= 1 !< todo set to 150 at least
-  if (present(denserdist))    ndenser = denserdist
-  if (present(denseraz))     nazimuth = nazimuth * denseraz
-  call green_unification (green , green_common , denser = ndenser)
-
-  do igreen = 1 ,size(green_common(:,1)), 1 !todo 
+  npoints=0
+  do igreen = 1 ,size(green_common(:,1))
+    nazimuth = max(int(360*sin(d2r(green_common(igreen,1)))),100) * denseraz
     do iazimuth  = 1 , nazimuth
+      npoints = npoints + 1
       azimuth = (iazimuth - 1) * 360./nazimuth
 
       ! get lat and lon of point
       call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
 
       ! get values of model
-      do i = 1 ,4
+      
+      do i = 1 , size(model)
         if(model(i)%if) then 
           call get_value (model(i) , real(lat) , real(lon) , val(i) , method =model(i)%interpolation)
         else 
@@ -114,7 +117,7 @@ subroutine convolve (site ,  green , denserdist , denseraz  )
         endif
       enddo
 
-          call get_value (refpres , real(lat) , real(lon) , ref_p , method =2)
+       call get_value (refpres , real(lat) , real(lon) , ref_p , method =1)
 
       ! get polygons
       do i = 1 , 2
@@ -132,54 +135,46 @@ subroutine convolve (site ,  green , denserdist , denseraz  )
         ! force topography to zero over oceans
         if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
 
-        
-       normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1e5  )
+        ! normalization according to Merriam (1992) 
+        normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1.e5  )
 
        ! elastic part
-       ! if the cell is not over sea and inverted barometer assumption was not set 
-       ! and is not excluded by polygon
-       if (.not.((val(4).eq.0.and.inverted_barometer) .or. iok(2).eq.0)) then
-         result%e = result%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
-       endif
+        ! if the cell is not over sea and inverted barometer assumption was not set 
+        ! and is not excluded by polygon
+        if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+          results%e = results%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
+        endif
+  !       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
+  !       stop 
 
-       ! newtonian
-       if(.not. iok(1).eq.0) then
-         !> \todo huang na metr ja i merriam na km
-         result%n = result%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
-         result%dt = result%dt + (val(1)/ 100.-ref_p) * &
-          (green_common(igreen,4)*(val(2)-t0) ) * area * normalize
-         result%dh = result%dh + (val(1)/ 100.-ref_p) * &
-          (green_common(igreen,5)*(site%height) ) * area * normalize
-         result%dz = result%dz + (val(1)/ 100.-ref_p) * &
+        ! newtonian part
+        if(.not. iok(1).eq.0) then
+         results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
+
+         if (model(2)%if.and.size(model).ge.2) then
+            results%dt = results%dt + (val(1)/ 100.-ref_p) * &
+              (green_common(igreen,4)*(val(2)-t0) ) * area * normalize
+          endif
+
+         results%dh = results%dh + (val(1)/ 100.-ref_p) * &
+          (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
+
+         results%dz = results%dz + (val(1)/ 100.-ref_p) * &
           (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
        endif
-
-
       endif
-
       if (moreverbose%if.and. moreverbose%names(1).eq."g") then
         call convolve_moreverbose (site%lat,site%lon , azimuth , 360./ nazimuth , green_common(igreen,1), green_common(igreen,1))
         write (moreverbose%unit, '(">")')
       endif
     enddo
-!  print *, val(1:4)
   enddo
- call get_value(model(1), site%lat, site%lon , val(1), 2)
-
-  print '(100(g0,x))' ,val(1)/100, result%e , result%n , result%dt , result%dh , result%dz
+  if (moreverbose%if.and. moreverbose%names(1).eq."i") then
+    write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
+  endif
 end subroutine
 !> \todo site height from model 
-! todo dh dz in conv
 
-
-!subroutine wczytaj_linie_informacyjne
-!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
-!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
-!      linie_informacyjne%deltal = (/ 0.0011, 0.0205, 0.0550, 1.0500, 10.2500, 90.5000  /)
-!      linie_informacyjne%deltah = (/ 0.0199, 0.0495, 0.9950, 9.9500, 89.7500, 179.5000 /)
-!      linie_informacyjne%delta  = (/ 0.0002, 0.0010, 0.0100, 0.1000, 0.5000 , 1.0000   /)
-!      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
-!end subroutine
 
 subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
   real(sp), intent(in) :: azimuth ,azstep, latin, lonin
@@ -194,6 +189,16 @@ subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , 
   call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
   write(moreverbose%unit, '(2f12.6)') , lat , lon
 end subroutine
+
+!subroutine wczytaj_linie_informacyjne
+!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
+!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
+!      linie_informacyjne%deltal = (/ 0.0011, 0.0205, 0.0550, 1.0500, 10.2500, 90.5000  /)
+!      linie_informacyjne%deltah = (/ 0.0199, 0.0495, 0.9950, 9.9500, 89.7500, 179.5000 /)
+!      linie_informacyjne%delta  = (/ 0.0002, 0.0010, 0.0100, 0.1000, 0.5000 , 1.0000   /)
+!      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
+!end subroutine
+
 !subroutine plot2green(green_file)
 !  implicit none
 !  character(len=*),intent (in) :: green_file

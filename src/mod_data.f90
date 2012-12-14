@@ -14,10 +14,8 @@ module mod_data
 !  use mod_polygon
   use netcdf
   implicit none
-  
 
 contains
-
 
 ! =============================================================================
 !> Put netCDF COARDS compliant 
@@ -87,12 +85,11 @@ subroutine get_variable( model , date )
   integer::tmp(6)
 
   index_time = 0
-  write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
+!  write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
   call check ( nf90_inq_varid ( model%ncid , model%names(1) ,  varid ) )
   if (allocated(model%data)) deallocate(model%data)
   allocate (model%data ( size (model%lon)  , size(model%lat  ), &
                          size (model%level)))
-                        
  
   if (size(dates).gt.0 .and. present(date)) then                       
     outer: do i = 1 , size(model%date(:,1))
@@ -262,10 +259,10 @@ subroutine get_value( model,  lat , lon , val , method )
 
     if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
     else
-      array_aux (1,:) = [ model%lon(ilon)  , model%lat(ilat) , model%data(ilon,ilat , 1) ]
-      array_aux (2,:) = [ model%lon(ilon)  , model%lat(ilat2) , model%data(ilon,ilat2 , 1) ]
-      array_aux (3,:) = [ model%lon(ilon2)  , model%lat(ilat) , model%data(ilon2,ilat , 1) ]
-      array_aux (4,:) = [ model%lon(ilon2)  , model%lat(ilat2) , model%data(ilon2,ilat2 , 1) ]
+      array_aux (1, :) = [ model%lon(ilon) , model%lat(ilat) , model%data(ilon , ilat , 1) ]
+      array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, 1) ]
+      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , 1) ]
+      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, 1) ]
       if (moreverbose%if.and.moreverbose%names(1).eq."b") then
           write(moreverbose%unit ,  '(3f15.4)') , (array_aux(i,:), i = 1 ,4)
           write(moreverbose%unit ,  '(">")')
