@@ -30,6 +30,9 @@ call wczytaj_linie_informacyjne
         write(2,'(7e13.6)') grav
       enddo
   enddo
+  fdlkfdsjkfhd 
+  dfdkjfhdf
+  dfkdf
 
 close(2)
 print *, "../green/ignewt.dat"//trim(adjustl(dummy))
