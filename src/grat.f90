@@ -33,7 +33,7 @@ program grat
 
 
   implicit none
-  real(sp) :: x , y , z , lat ,lon ,val !tmp variables
+  real(sp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
   integer :: i , j , ii, iii
 
   !> program starts here with time stamp
@@ -69,7 +69,6 @@ program grat
 
 
 
-!!call read_netCDF (model(6))
 !todo
     do i = 1 , size(sites)
       write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
@@ -89,5 +88,16 @@ program grat
   call cpu_time(cpu_finish)
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
   write(log%unit, form_separator)
+
+  print * , model(6)%level
+  print *
+  lat =00
+  lon = 00
+  call get_value(model(7),lat,lon, val(0))
+  do i =1, size(model(6)%level)
+  call get_value(model(6),lat,lon, val(i), level = i, method=2)
+  enddo
+  print  '(30f10.2)', lat , lon , (val(i), i=0,size(model(6)%level))
+  print  '(30f10.2)' , lat , lon , (geop2geom(val(i)/1000)*1000., i=0,size(model(6)%level))
 
 end program 

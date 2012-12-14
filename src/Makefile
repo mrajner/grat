@@ -10,7 +10,8 @@
   GRN_r= ../dat/rajner_green.dat
   GRN_m= ../dat/merriam_green.dat
 	POL= ../polygon/tmp.poly
-	GPT= ../data/ncep_reanalysis/hgt.2011.nc
+GPT= ../data/ncep_reanalysis/hgt.2011.nc:hgt
+H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 
   SRCS  = constants.f90 get_cmd_line.f90 mod_polygon.f90 mod_data.f90 aggf.f90 mod_green.f90
   OBJS  = $(SRCS:.f90=.o)
@@ -18,7 +19,8 @@
 
 all:\
 	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(POLY)/polygon_check \
-	$(BIN)/value_check example 
+	$(BIN)/real_vs_standard \
+	$(BIN)/value_check example
 
 %.o: %.f90
 	$(FC) $< -c
@@ -28,13 +30,17 @@ $(POLY)/polygon_check: polygon_check.f90 $(OBJS)
 #   ./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
 
 $(BIN)/grat: grat.f90  $(OBJS)
+#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+
+$(BIN)/real_vs_standard: real_vs_standard.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 $(BIN)/value_check: value_check.f90  $(OBJS)
 #   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	$(BIN)/grat -F$(SFC) $(GPT)  -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -I1 -o tmp P$(POL),$(POL) -otmp2.dat
+	$(BIN)/real_vs_standard -F$(SFC) -Sjoze,52,21 -V
+#   $(BIN)/grat -F$(SFC),,,,,$(GPT),$(H__)  -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20110102  -BI -G,,,,,  -I1 -o tmp P$(POL),$(POL) 
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL) -otmp.dat
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c

@@ -111,7 +111,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
       
       do i = 1 , size(model)
         if(model(i)%if) then 
-          call get_value (model(i) , real(lat) , real(lon) , val(i) , method =model(i)%interpolation)
+          call get_value (model(i) , real(lat) , real(lon) , val(i) , level=1, method =model(i)%interpolation)
         else 
           val(i) = 0.
         endif

@@ -226,16 +226,18 @@ end subroutine check
 !! if it is first call it loads the model into memory
 !! inspired by spotl \cite Agnew97
 ! =============================================================================
-subroutine get_value( model,  lat , lon , val , method )
+subroutine get_value( model,  lat , lon , val ,level, method )
 
   type(file) , intent (in) :: model
   real(sp) , intent (in) :: lat,lon
   real(sp) , intent(out) ::  val 
   integer , optional , intent(in) :: method
-  integer :: i 
+  integer , optional , intent(in) :: level
+  integer :: i , ilevel =1 
   integer  :: ilon, ilat , ilon2 , ilat2
   real(sp), dimension(4,3) :: array_aux 
 
+  if (present(level)) ilevel=level
   ! check if inside model range
   if (   lat.lt.min(model%latrange(1), model%latrange(2))  &
     .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
@@ -259,10 +261,10 @@ subroutine get_value( model,  lat , lon , val , method )
 
     if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
     else
-      array_aux (1, :) = [ model%lon(ilon) , model%lat(ilat) , model%data(ilon , ilat , 1) ]
-      array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, 1) ]
-      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , 1) ]
-      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, 1) ]
+      array_aux (1, :) = [ model%lon(ilon) , model%lat(ilat) , model%data(ilon , ilat , ilevel) ]
+      array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, ilevel) ]
+      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
+      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
       if (moreverbose%if.and.moreverbose%names(1).eq."b") then
           write(moreverbose%unit ,  '(3f15.4)') , (array_aux(i,:), i = 1 ,4)
           write(moreverbose%unit ,  '(">")')
@@ -279,10 +281,10 @@ subroutine get_value( model,  lat , lon , val , method )
   endif
   if (moreverbose%if.and.moreverbose%names(1).eq."n") then
     write(moreverbose%unit ,  '(3f15.4)') , &
-       model%lon(ilon) , model%lat(ilat) , model%data(ilon,ilat,1)
+       model%lon(ilon) , model%lat(ilat) , model%data(ilon,ilat,ilevel)
     write(moreverbose%unit ,  '(">")')
   endif
-  val = model%data (ilon , ilat, 1)
+  val = model%data (ilon , ilat, ilevel)
 end subroutine 
 
 real function bilinear (x , y , aux )

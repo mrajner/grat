@@ -300,10 +300,10 @@ end subroutine
 ! =============================================================================
 !> \brief Compute geometric height from geopotential heights
 ! =============================================================================
-real(sp) function geometric_height (geopotential_height)
+real(sp) function geop2geom (geopotential_height)
   real (sp) :: geopotential_height
 
-  geometric_height = geopotential_height * (R0 / ( R0 + geopotential_height ) )
+  geop2geom = geopotential_height * (R0 / ( R0 + geopotential_height ) )
 end function
 
 
