@@ -15,8 +15,10 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
   SRCS  = constants.f90 get_cmd_line.f90 mod_polygon.f90 mod_data.f90 aggf.f90 mod_green.f90
   OBJS  = $(SRCS:.f90=.o)
  
+barometric_formula: barometric_formula.f90
+	gfortran barometric_formula.f90
 
-all:\
+# all:\
 	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(BIN)/polygon_check \
 	$(BIN)/real_vs_standard \
 	$(BIN)/value_check example
