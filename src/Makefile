@@ -1,9 +1,8 @@
   BIN = ../bin
   EXMPL = ../examples
-  POLY = ../polygon
   FC = ifort
   FLAGS = -r8 -O2 -CB  # -g -traceback
-  NETCDFLIB = -L/usr/local/lib -lnetcdff -lnetcdf 
+  NETCDFLIB = -I/usr/local/lib -L/usr/local/lib -lnetcdff -lnetcdf 
   SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
   TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
   LND= ../data/landsea/test.grd:z:x:y
@@ -18,16 +17,16 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
  
 
 all:\
-	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(POLY)/polygon_check \
+	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(BIN)/polygon_check \
 	$(BIN)/real_vs_standard \
 	$(BIN)/value_check example
 
 %.o: %.f90
 	$(FC) $< -c
 
-$(POLY)/polygon_check: polygon_check.f90 $(OBJS)
-#   $(FC) $(FLAGS) $< -o $@ $(OBJS)
-#   ./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
+$(BIN)/polygon_check: polygon_check.f90 $(OBJS)
+	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+	./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
 
 $(BIN)/grat: grat.f90  $(OBJS)
 #   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
