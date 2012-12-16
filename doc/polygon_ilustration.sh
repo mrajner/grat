@@ -1,0 +1,22 @@
+#!/bin/bash - 
+#===============================================================================
+#          FILE: polygon_ilustration.sh
+#         USAGE: ./polygon_ilustration.sh 
+#   DESCRIPTION: 
+#       OPTIONS: ---
+#        AUTHOR: mrajner
+#       CREATED: 16.11.2012 15:11:23 CET
+#      REVISION:  ---
+#===============================================================================
+
+set -o nounset                              # Treat unset variables as an error
+
+R="0/25/40/60"
+
+
+for i in 1 2 3
+do
+../polygon/polygon_check -S$R,0.5,0.3 -Pmapa${i}.poly  -omapa${i}.points 
+../polygon/polygon_map.sh -R$R -f mapa${i}.poly -o mapa${i} -p mapa${i}.points
+done
+

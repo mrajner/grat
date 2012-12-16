@@ -1,0 +1,32 @@
+\appendix
+ \chapter{Polygon}
+  This examples show how the exclusion of~selected polygons works
+  \begin{figure}[htb]
+    \includegraphics[width=0.5\textwidth]{../mapa1}
+    \caption{If only excluded polygons (red area) are given 
+    all points falling in~it will be excluded (red points) all other
+    will be included}
+  \end{figure}
+  \begin{figure}
+    \includegraphics[width=0.5\textwidth]{../mapa2}
+    \caption{If at least one included are are given
+    (green area) than all points which not fall into included area will
+    be excluded}
+  \end{figure}
+  \begin{figure}
+    \includegraphics[width=0.5\textwidth]{../mapa3}
+    \caption{If there is overlap of~polygons the exclusion has higher
+    priority}
+  \end{figure}
+  \chapter{Interpolation}
+  \begin{figure}
+  \input{/home/mrajner/src/grat/doc/interpolation_ilustration.tex}
+  \caption{Interpoloation}
+  \end{figure}
+  
+  
+
+\newpage \bibliographystyle{plainnat}
+\bibliography{bib}
+\printindex
+\end{document}
