@@ -230,16 +230,13 @@ subroutine standard_pressure (height, pressure , &
   sfc_pressure = p0
   if (present(p_zero)) sfc_pressure = p_zero
 
-  call standard_temperature ( height,temperature,t_zero=t_zero, &
-                              fels_type =fels_type) 
-  call standard_gravity     ( height , g )
 
-  lambda = R_air * temperature / g
+  lambda = R_air * T0 / g0
 
   if (present (if_simplificated) .and. if_simplificated ) then
     ! use simplified formulae 
     alpha = -6.5 
-    pressure = sfc_pressure * ( 1 + alpha / T0 * height ) ** ( -g0 / (R_air * alpha / 1000 ) )
+    pressure = sfc_pressure * ( 1 + alpha / T0 * height ) ** ( -g0 / (R_air * alpha / 1000. ) )
   else
     ! use precise formulae
     pressure = sfc_pressure  * exp ( -1000. * height / lambda ) 

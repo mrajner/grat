@@ -23,7 +23,7 @@ program example_aggf
 ! call aggf_resp_h ()
 ! call aggfdt_resp_dt ()
 ! call compare_fels_profiles ()
-! call compute_tabulated_green_functions ()
+ call compute_tabulated_green_functions ()
 ! call aggf_thin_layer ()
 ! call aggf_resp_fels_profiles ()
 ! call compare_tabulated_green_functions ()
