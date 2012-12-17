@@ -1,9 +1,8 @@
   BIN = ../bin
   EXMPL = ../examples
-  POLY = ../polygon
   FC = ifort
   FLAGS = -r8 -O2 -CB  # -g -traceback
-  NETCDFLIB = -L/usr/local/lib -lnetcdff -lnetcdf 
+  NETCDFLIB = -I/usr/local/lib -L/usr/local/lib -lnetcdff -lnetcdf 
   SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
   TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
   LND= ../data/landsea/test.grd:z:x:y
@@ -16,18 +15,22 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
   SRCS  = constants.f90 get_cmd_line.f90 mod_polygon.f90 mod_data.f90 aggf.f90 mod_green.f90
   OBJS  = $(SRCS:.f90=.o)
  
+$(BIN)/barometric_formula: barometric_formula.f90 lib
+	$(FC) $< -o $@ -lgrat -L.
+	./$@
+	
 
 all:\
-	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(POLY)/polygon_check \
+	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(BIN)/polygon_check \
 	$(BIN)/real_vs_standard \
 	$(BIN)/value_check example
 
 %.o: %.f90
 	$(FC) $< -c
 
-$(POLY)/polygon_check: polygon_check.f90 $(OBJS)
-#   $(FC) $(FLAGS) $< -o $@ $(OBJS)
-#   ./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
+$(BIN)/polygon_check: polygon_check.f90 $(OBJS)
+	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+	./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
 
 $(BIN)/grat: grat.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
@@ -39,7 +42,7 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	$(BIN)/real_vs_standard -F$(SFC) -Sjoze,52,21 -V
+	$(BIN)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V
 #   $(BIN)/grat -F$(SFC),,,,,$(GPT),$(H__)  -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20110102  -BI -G,,,,,  -I1 -o tmp P$(POL),$(POL) 
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL) -otmp.dat
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
@@ -78,7 +81,7 @@ $(BIN)/press2spotl: press2spotl.f90 get_cmd_line.o  ispand.o dane.o
 
 
 $(EXMPL)/example_aggf:example_aggf.f90 aggf.o  constants.o
-#   $(FC) $(FLAGS) $< aggf.o constants.o -o $@
+	$(FC) $(FLAGS) $< aggf.o constants.o -o $@
 #   $(EXMPL)/example_aggf
 
 clean:

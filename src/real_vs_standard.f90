@@ -1,9 +1,10 @@
 program real_vs_standard
-!  use iso_fortran_env
   use get_cmd_line
 !  use mod_polygon
   use mod_data
+  use aggf
 !  use mod_green
+  
 
 
   implicit none
@@ -55,12 +56,12 @@ program real_vs_standard
   print *
   lat =00
   lon = 00
-!  call get_value(model(7),lat,lon, val(0))
-!  do i =1, size(model(6)%level)
-!  call get_value(model(6),lat,lon, val(i), level = i, method=2)
-!  enddo
-!  print  '(30f10.2)', lat , lon , (val(i), i=0,size(model(6)%level))
-!  print  '(30f10.2)' , lat , lon , (geop2geom(val(i)/1000)*1000., i=0,size(model(6)%level))
+  call get_value(model(1),lat,lon, val(0))
+
+  do i =1, size(model(2)%level)
+    call get_value(model(2),lat,lon, val(i), level = i, method=1)
+  enddo
+  print  '(2f10.2)', lat , lon , (val(i),geop2geom(val(i)/1000)*1000., i=0,size(model(2)%level))
 
 
 end program
