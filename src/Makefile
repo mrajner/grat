@@ -1,7 +1,7 @@
   BIN = ../bin
   EXMPL = ../examples
   FC = ifort
-  FLAGS = -r8 -O2 -CB  # -g -traceback
+  FLAGS = -r8 -O2 -CB -Wunused -Wall  # -g -traceback
   NETCDFLIB = -I/usr/local/lib -L/usr/local/lib -lnetcdff -lnetcdf 
   SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
   TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
@@ -89,8 +89,8 @@ clean:
 
 lib:
 	make $(OBJS)
-	rm libgrat.a
 	ar rvs libgrat.a *.o
+#   rm libgrat.a
 
 
 PACKAGE = grat-src
@@ -115,3 +115,5 @@ dochtml:
 docext: 
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman
 	
+link:
+	cd ~/.local/bin && ln -s ${G}bin/* .
