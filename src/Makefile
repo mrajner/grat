@@ -33,13 +33,13 @@ $(BIN)/polygon_check: polygon_check.f90 $(OBJS)
 	./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
 
 $(BIN)/grat: grat.f90  $(OBJS)
-#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 $(BIN)/real_vs_standard: real_vs_standard.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 $(BIN)/value_check: value_check.f90  $(OBJS)
-#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
 	$(BIN)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V
