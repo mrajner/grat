@@ -247,6 +247,9 @@ logical function if_switch_program (program_calling , switch )
   elseif (program_calling.eq."value_check") then
     allocate( accepted_switch (9) )
     accepted_switch = [ "V" , "F" , "o", "S" , "h" , "v" , "I" , "D" , "L"]
+  else
+    if_switch_program=.true.
+    return
   endif
 
   ! loop trough accepted switches
