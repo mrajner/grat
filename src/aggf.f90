@@ -217,32 +217,45 @@ end subroutine
 !! Simplified method if optional argument if_simplificated = .true.
 ! =============================================================================
 subroutine standard_pressure (height, pressure , &
-          p_zero , t_zero ,  if_simplificated ,fels_type , inverted)
+          p_zero , t_zero , h_zero,  if_simplificated ,fels_type , inverted)
   implicit none
   real(dp) , intent(in)            :: height
-  real(dp) , intent(in) , optional :: t_zero , p_zero
+  real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
   character(len = 22) , optional :: fels_type
   logical         , intent(in) , optional :: if_simplificated
   logical         , intent(in) , optional :: inverted
   real(dp), intent(out) :: pressure
-  real(dp) ::  lambda , temperature , g , alpha , sfc_pressure
+  real(dp) ::  lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
 
+  sfc_temperature = T0
   sfc_pressure = p0
+  sfc_height = 0.
+  sfc_gravity = g0
+
+  if (present(h_zero)) then
+    sfc_height = h_zero
+    call standard_temperature (sfc_height , sfc_temperature )
+    call standard_temperature (sfc_height , sfc_temperature )
+    call standard_gravity (sfc_height , sfc_gravity )
+  endif
+
   if (present(p_zero)) sfc_pressure = p_zero
+  if (present(t_zero)) sfc_temperature = t_zero
 
-
-  lambda = R_air * T0 / g0
+  lambda = R_air * sfc_temperature / sfc_gravity
 
   if (present (if_simplificated) .and. if_simplificated ) then
     ! use simplified formulae 
     alpha = -6.5 
-    pressure = sfc_pressure * ( 1 + alpha / T0 * height ) ** ( -g0 / (R_air * alpha / 1000. ) )
+    pressure = sfc_pressure  &
+      * ( 1 + alpha / sfc_temperature * (height-sfc_height)) &
+      ** ( -sfc_gravity / (R_air * alpha / 1000. ) )
   else
     ! use precise formulae
-    pressure = sfc_pressure  * exp ( -1000. * height / lambda ) 
+    pressure = sfc_pressure * exp ( -1000. * (height -sfc_height) / lambda ) 
   endif 
   if (present(inverted).and.inverted) then
-    pressure = sfc_pressure  / ( exp ( -1000. * height / lambda ) )
+    pressure = sfc_pressure  / ( exp ( -1000. * (height-sfc_height) / lambda ) )
   endif
 end subroutine
 
@@ -250,6 +263,7 @@ end subroutine
 ! > This will transfer pressure beetween different height using barometric
 ! formulae
 ! =============================================================================
+!> \warning OBSOLETE ROUTINE -- use standard_pressure instead with optional args
 subroutine transfer_pressure (height1 , height2 , pressure1 , pressure2 , &
   temperature , polish_meteo )
   real (dp) , intent (in) :: height1 , height2 , pressure1
@@ -259,7 +273,6 @@ subroutine transfer_pressure (height1 , height2 , pressure1 , pressure2 , &
   real(dp) , intent(out) :: pressure2
   
   sfc_temp = t0
-
 
   ! formulae used to reduce press to sfc in polish meteo service
   if (present(polish_meteo) .and. polish_meteo) then
