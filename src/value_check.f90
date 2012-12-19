@@ -10,6 +10,7 @@ program value_check
   call intro (program_calling = "value_check" )
   call print_settings (program_calling = "value_check")
 
+
   do i = 1 , size(model)
     if (model(i)%if) call read_netCDF(model(i))
   enddo
@@ -35,7 +36,7 @@ program value_check
         if (model(ii)%if .or. model(ii)%if_constant_value) then
           imodel = imodel + 1
           if (model(ii)%if) then 
-            call get_value ( model(ii) , sites(i)%lat , sites(i)%lon , val(imodel) , model(ii)%interpolation )
+            call get_value ( model(ii) , sites(i)%lat , sites(i)%lon , val(imodel) , method = model(ii)%interpolation )
           elseif (model(ii)%if_constant_value) then
             val(imodel) = model(ii)%constant_value
           endif

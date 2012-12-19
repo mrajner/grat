@@ -169,13 +169,17 @@ subroutine get_dimension ( model , i )
   if (i .eq. 3 ) then
     allocate(model%lat (length) )
     call check(nf90_get_var  (model%ncid,  varid , model%lat))
-    call check (nf90_get_att ( model%ncid ,varid , &
-      "actual_range" , model%latrange) )
+    status = nf90_get_att ( model%ncid ,varid , &
+      "actual_range" , model%latrange) 
+      if (status /= nf90_noerr ) model%latrange &
+        =[model%lat(1) , model%lat(size(model%lat)) ]
   elseif (i.eq.2 ) then
     allocate(model%lon (length) )
     call check(nf90_get_var  (model%ncid,  varid , model%lon))
-    call check (nf90_get_att ( model%ncid ,varid , &
-      "actual_range" , model%lonrange) )
+    status = nf90_get_att ( model%ncid ,varid , &
+      "actual_range" , model%lonrange) 
+      if (status /= nf90_noerr ) model%lonrange &
+        =[model%lon(1) , model%lon(size(model%lon)) ]
   elseif (i.eq.4 ) then
     allocate(model%level (length) )
     status = nf90_get_var  (model%ncid,  varid , model%level)

@@ -561,15 +561,18 @@ subroutine get_model_info ( model , cmd_line_entry , field)
   integer :: field , i 
 
   model%name = trim(cmd_line_entry%field(field))
-!  if (model%name.eq."") return
+  if (model%name.eq."") return
   if ( file_exists (model%name) ) then
     write (fileunit_tmp , form_62) , trim (model_names(field) )
     write(fileunit_tmp, form_63), trim(model%name)
+
     do i =1 , size (model%names)
-      if (i.le.size (cmd_line_entry%fieldnames(field)%names) &
-        .and. cmd_line_entry%fieldnames(field)%names(i).ne."" &
-        ) then
-        model%names(i) = cmd_line_entry%fieldnames(field)%names(i)
+      if (size(cmd_line_entry%fieldnames).gt.0) then
+        if (i.le.size (cmd_line_entry%fieldnames(field)%names) &
+          .and. cmd_line_entry%fieldnames(field)%names(i).ne."" &
+          ) then
+          model%names(i) = cmd_line_entry%fieldnames(field)%names(i)
+        endif
       endif
       write(fileunit_tmp, form_63, advance="no") , trim( model%names(i))
     enddo
