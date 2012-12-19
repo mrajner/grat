@@ -19,7 +19,7 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 #  fnl_ = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
-sprawdz: $(BIN)/value_check
+sprawdz: $(BIN)/value_check example
 	$(BIN)/value_check -F$(fnl_) -S,52,21  -I2 -L:b
 
 # $(BIN)/joinnc: joinnc.f90
