@@ -34,7 +34,8 @@ $(BIN)/barometric_formula: barometric_formula.f90 lib
 all:\
 	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(BIN)/polygon_check \
 	$(BIN)/real_vs_standard \
-	$(BIN)/value_check example
+	$(BIN)/value_check example\
+	folders
 
 %.o: %.f90
 	$(FC) $< -c
@@ -81,34 +82,28 @@ green.o: green.f90
 #   $(FC) $(FLAGS) green_aux.f90 green.o get_cmd_line.o  -o $@
 #   ../green/green_aux 
 
-../green/ignewt: ignewt.f90 green.o get_cmd_line.o 
-#   $(FC) $(FLAGS) ignewt.f90 green.o get_cmd_line.o  -o ../green/ignewt 
-#   ../green/ignewt -B52. -L21. -H33.  
-
-$(BIN)/press2spotl: press2spotl.f90 get_cmd_line.o  ispand.o dane.o
-#   $(FC) $(FLAGS) press2spotl.f90 dane.o get_cmd_line.o  ispand.o -o $@
-#   $(BIN)/press2spotl  -F../dane/ncep_surf_pres/txt/pres_20100101000000.txt -I2.5 -W1 -Glbv
-#   $(BIN)/press2spotl -F../dane/ncep_sig995_temp/txt/temp_20090101000000.txt -I2.5 -W5.5 -Glbv -R+-273.15 
 
 
 $(EXMPL)/example_aggf:example_aggf.f90 aggf.o  constants.o
 	$(FC) $(FLAGS) $< aggf.o constants.o -o $@
 #   $(EXMPL)/example_aggf
 
+folders: ../bin
+	mkdir -p ../bin/
+
 clean:
-	rm *.o *.mod tmp.*
+	rm *.o *.mod tmp.* *.a
 
 lib:
 	make $(OBJS)
 	ar rs libgrat.a *.o
-
 
 PACKAGE = grat-src
 VER     = 1.0
 DATE     = `date +%Y%m%d`
 
 package: 
-	@echo $(PACKAGE)_$(VER)_$(DATE)
+	tar jcf $(PACKAGE)_$(VER)_$(DATE).tar.bz2 ../../grat/src/{*.f90,Makefile} ../../grat/dat/*.dat
 
 doc:
 	cd ../doc  &&  doxygen Doxyfile

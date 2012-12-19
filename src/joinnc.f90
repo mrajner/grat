@@ -27,14 +27,6 @@ program joinnc
     call check( nf90_inq_dimid(incid, "lon_0" , idimid(2) ))
 
     print * , idimid
-
-    
-    
-    
-    
-    
-    
-
   enddo
 
 
