@@ -229,6 +229,10 @@ end subroutine check
 !!
 !! if it is first call it loads the model into memory
 !! inspired by spotl \cite Agnew97
+!!
+!! Get value can
+!! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf
+!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.jpg
 ! =============================================================================
 subroutine get_value( model,  lat , lon , val ,level, method )
 
