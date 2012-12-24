@@ -1,5 +1,6 @@
 ! =============================================================================
-!> \brief This module sets the initial values for parameters
+!> \file
+!! \brief This module sets the initial values for parameters
 !! reads from command line and gives help
 !! it allows to specify commands with or without spaces therefore it is 
 !! convienient to use with auto completion of names

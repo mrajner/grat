@@ -316,7 +316,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 </div><div class="memdoc">
 
 <p>Compute first derivative of AGGF with respect to temperature for specific angular distance (psi) </p>
-<p>optional argument define (-dt;-dt) range See equation 19 in <a class="el" href="citelist.html#CITEREF_Huang05">Huang05</a> Same simple method is applied for aggf(gn) if <code>aggf</code> optional parameter is set to <code></code>.true. </p>
+<p>optional argument define (-dt;-dt) range See equation 19 in <a class="el" href="citelist.html#CITEREF_Huang05">[4]</a> Same simple method is applied for aggf(gn) if <code>aggf</code> optional parameter is set to <code></code>.true. </p>
 <dl class="section warning"><dt>Warning:</dt><dd>Please do not use <code>aggf=</code>.true. this option was added only for testing some numerical routines </dd></dl>
 
 <p>Definition at line <a class="el" href="aggf_8f90_source.html#l00027">27</a> of file <a class="el" href="aggf_8f90_source.html">aggf.f90</a>.</p>
@@ -338,7 +338,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 </div><div class="memdoc">
 
 <p>Compute AGGF GN for thin layer. </p>
-<p>Simple function added to provide complete module but this should not be used for atmosphere layer See eq p. 491 in <a class="el" href="citelist.html#CITEREF_Merriam92">Merriam92</a> </p>
+<p>Simple function added to provide complete module but this should not be used for atmosphere layer See eq p. 491 in <a class="el" href="citelist.html#CITEREF_Merriam92">[5]</a> </p>
 
 <p>Definition at line <a class="el" href="aggf_8f90_source.html#l00455">455</a> of file <a class="el" href="aggf_8f90_source.html">aggf.f90</a>.</p>
 
@@ -370,9 +370,9 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 
 <p>Wczytuje tablice danych AGGF. </p>
 <ul>
-<li>merriam <a class="el" href="citelist.html#CITEREF_Merriam92">Merriam92</a> </li>
-<li>huang <a class="el" href="citelist.html#CITEREF_Huang05">Huang05</a> </li>
-<li>rajner <a class="el" href="citelist.html#CITEREF_Rajnerdr">Rajnerdr</a></li>
+<li>merriam <a class="el" href="citelist.html#CITEREF_Merriam92">[5]</a> </li>
+<li>huang <a class="el" href="citelist.html#CITEREF_Huang05">[4]</a> </li>
+<li>rajner <a class="el" href="citelist.html#CITEREF_Rajnerdr">[7]</a></li>
 </ul>
 <p>This is just quick solution for <code>example_aggf</code> program in <code>grat</code> see the more general routine <code>parse_green()</code> </p>
 
@@ -395,7 +395,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 </div><div class="memdoc">
 
 <p>Bouger plate computation see eq. page 288. </p>
-<p><a class="el" href="citelist.html#CITEREF_Warburton77">Warburton77</a> </p>
+<p><a class="el" href="citelist.html#CITEREF_Warburton77">[8]</a> </p>
 
 <p>Definition at line <a class="el" href="aggf_8f90_source.html#l00501">501</a> of file <a class="el" href="aggf_8f90_source.html">aggf.f90</a>.</p>
 
@@ -469,8 +469,8 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 </div><div class="memdoc">
 
 <p>first derivative (respective to station height) micro Gal height / km </p>
-<p>direct derivative of equation 20 <a class="el" href="citelist.html#CITEREF_Huang05">Huang05</a> first derivative (respective to column height) according to equation 26 in <a class="el" href="citelist.html#CITEREF_Huang05">Huang05</a> micro Gal / hPa / km aggf GN micro Gal / hPa if you put the optional parameter <code>if_normalization=</code>.false. this block will be skipped by default the normalization is applied according to <a class="el" href="citelist.html#CITEREF_Merriam92">Merriam92</a> Compute air density for given altitude for standard atmosphere</p>
-<p>using formulae 12 in <a class="el" href="citelist.html#CITEREF_Huang05">Huang05</a></p>
+<p>direct derivative of equation 20 <a class="el" href="citelist.html#CITEREF_Huang05">[4]</a> first derivative (respective to column height) according to equation 26 in <a class="el" href="citelist.html#CITEREF_Huang05">[4]</a> micro Gal / hPa / km aggf GN micro Gal / hPa if you put the optional parameter <code>if_normalization=</code>.false. this block will be skipped by default the normalization is applied according to <a class="el" href="citelist.html#CITEREF_Merriam92">[5]</a> Compute air density for given altitude for standard atmosphere</p>
+<p>using formulae 12 in <a class="el" href="citelist.html#CITEREF_Huang05">[4]</a></p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">height</td><td>height [km]</td></tr>
@@ -508,7 +508,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 </div><div class="memdoc">
 
 <p>Compute gravity acceleration of the Earth for the specific height using formula. </p>
-<p>see <a class="el" href="citelist.html#CITEREF_US1976">US1976</a> </p>
+<p>see <a class="el" href="citelist.html#CITEREF_US1976">[2]</a> </p>
 
 <p>Definition at line <a class="el" href="aggf_8f90_source.html#l00301">301</a> of file <a class="el" href="aggf_8f90_source.html">aggf.f90</a>.</p>
 
@@ -575,7 +575,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 </div><div class="memdoc">
 
 <p>Computes pressure [hPa] for specific height. </p>
-<p>See <a class="el" href="citelist.html#CITEREF_US1976">US1976</a> or <a class="el" href="citelist.html#CITEREF_Huang05">Huang05</a> for details. Uses formulae 5 from <a class="el" href="citelist.html#CITEREF_Huang05">Huang05</a>. Simplified method if optional argument if_simplificated = .true. </p>
+<p>See <a class="el" href="citelist.html#CITEREF_US1976">[2]</a> or <a class="el" href="citelist.html#CITEREF_Huang05">[4]</a> for details. Uses formulae 5 from <a class="el" href="citelist.html#CITEREF_Huang05">[4]</a>. Simplified method if optional argument if_simplificated = .true. </p>
 
 <p>Definition at line <a class="el" href="aggf_8f90_source.html#l00219">219</a> of file <a class="el" href="aggf_8f90_source.html">aggf.f90</a>.</p>
 
@@ -618,7 +618,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 </div><div class="memdoc">
 
 <p>Compute standard temperature [K] for specific height [km]. </p>
-<p>if t_zero is specified use this as surface temperature otherwise use T0. A set of predifined temperature profiles ca be set using optional argument  fels_type <a class="el" href="citelist.html#CITEREF_Fels86">Fels86</a></p>
+<p>if t_zero is specified use this as surface temperature otherwise use T0. A set of predifined temperature profiles ca be set using optional argument  fels_type <a class="el" href="citelist.html#CITEREF_Fels86">[3]</a></p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">fels_type</td><td><ul>
@@ -700,7 +700,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classaggf.html">aggf</a></li>
-    <li class="footer">Generated on Sat Dec 22 2012 19:36:10 for grat by
+    <li class="footer">Generated on Mon Dec 24 2012 10:31:02 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>
