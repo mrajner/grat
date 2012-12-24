@@ -117,8 +117,11 @@ $(document).ready(function(){initNavTree('mod__polygon_8f90.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="keyword">use </span><a class="code" href="classget__cmd__line.html">get_cmd_line</a></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">contains</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">! ==============================================================================</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">! ==============================================================================</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">! ==============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">!&gt; \brief Reads polygon data</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">!! inspired by spotl \cite Agnew97</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"></span><span class="comment">! ==============================================================================</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="classmod__polygon.html#a3ef54cfb8bdfb337ef07a0a15b9d7f23">   12</a></span>&#160;<span class="keyword">subroutine </span>read_polygon ( polygon  )</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">implicit none</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordtype">type(</span><a class="code" href="structget__cmd__line_1_1polygon__info.html">polygon_info</a><span class="keywordtype">)</span>:: polygon</div>
@@ -174,8 +177,14 @@ $(document).ready(function(){initNavTree('mod__polygon_8f90.html','');});
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">! ==============================================================================</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">!  returns iok=0 if</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">! ==============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">!&gt; \brief check if point is in closed polygon</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">!! if it is first call it loads the model into memory</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">!! inspired by spotl \cite Agnew97</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">!! adopted to grat and Fortran90 syntax</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">!! From original description</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"></span><span class="comment">!  returns iok=0 if</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">!     1. there is any polygon (of all those read in) in which the</span></div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">!        coordinate should not fall, and it does</span></div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">!             or</span></div>
@@ -279,8 +288,24 @@ $(document).ready(function(){initNavTree('mod__polygon_8f90.html','');});
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  return</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="keyword">end function </span></div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment">! ==============================================================================</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment">! ==============================================================================</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment">! ==============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment">!&gt; \brief finds whether the segment from point 1 to point 2 crosses</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment">!!   the negative x-axis or goes through the origin (this is</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="comment">!!   the signed crossing number)</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">!!     return value       nature of crossing</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">!!         4               segment goes through the origin</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">!!         2               segment crosses from below</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment">!!         1               segment ends on -x axis from below</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">!!                          or starts on it and goes up</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">!!         0               no crossing</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">!!        -1               segment ends on -x axis from above</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">!!                          or starts on it and goes down</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment">!!        -2               segment crosses from above</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment">!! taken from spotl \cite Agnew97</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment">!! slightly modified</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment"></span><span class="comment">! ==============================================================================</span></div>
 <div class="line"><a name="l00196"></a><span class="lineno"><a class="code" href="classmod__polygon.html#a76970268e279b676424f43224f894aa0">  196</a></span>&#160;<span class="keyword">integer </span><span class="keyword">function </span>ncross(x1,y1,x2,y2)</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <span class="keyword">implicit none</span></div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keywordtype">real(sp)</span> , <span class="keywordtype">intent(in)</span> :: x1 , y1, x2 , y2 </div>
@@ -337,7 +362,7 @@ $(document).ready(function(){initNavTree('mod__polygon_8f90.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><b>mod_polygon.f90</b></li>
-    <li class="footer">Generated on Mon Dec 24 2012 10:31:02 for grat by
+    <li class="footer">Generated on Mon Dec 24 2012 11:06:23 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

@@ -1,12 +1,11 @@
 #!/bin/bash - 
-## \file
-## \brief Make map of polygon(s)
-##
-## This scrips 
-## \author Marcin Rajner
-## \date 03.11.2012
-## This scripts need GMT to be installed \cite Wessel98
-## The \c .pdf suffix will be given for output file
+# Make map of polygon(s)
+
+# This scrips 
+# \author Marcin Rajner
+# \date 03.11.2012
+# This scripts need GMT to be installed \cite Wessel98
+# The \c .pdf suffix will be given for output file
 #===============================================================================
 
 

@@ -55,8 +55,11 @@ program grat
     if (model(i)%if) call read_netCDF ( model(i) )
   enddo
 
-  refpres%name="/home/mrajner/src/grat/data/refpres/vienna_p0.grd"
-  call read_netCDF (refpres)
+  ! todo refpres in get_cmd-line
+!  if (refpres%if) then
+    refpres%name="/home/mrajner/src/grat/data/refpres/vienna_p0.grd"
+    call read_netCDF (refpres)
+!  endif
    
   allocate (results(size(sites)*max(size(dates),1)))
   iii=0

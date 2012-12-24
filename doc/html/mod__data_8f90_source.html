@@ -111,8 +111,15 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="title">mod_data.f90</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">!&gt; This modele gives routines to read, and write data</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">!! The netCDF format is widely used in geoscienses. Moreover it is</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">!! self-describing and machine independent. It also allows for reading and </span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">!! writing small subset of data therefore very efficient for large datafiles</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">!! (this case)</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">!! \cite netcdf</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno"><a class="code" href="classmod__data.html">   10</a></span>&#160;<span class="keyword">module</span> <a class="code" href="classmod__data.html">mod_data</a></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">!  use constants</span></div>
@@ -123,8 +130,11 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">contains</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">!&gt; Put netCDF COARDS compliant </span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">!! for GMT drawing</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="code" href="classmod__data.html#a9fe633e5ba8c986f402dd1670a15135f">   25</a></span>&#160;<span class="keyword">subroutine </span>put_grd (model, time , level , filename_opt )</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">type (</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> :: model</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">integer</span>  :: time , level , ncid</div>
@@ -153,8 +163,9 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  call check( nf90_close(ncid) )</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">!&gt; Read netCDF file into memory</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno"><a class="code" href="classmod__data.html#ab906151b52ab91950d903a077579cb39">   56</a></span>&#160;<span class="keyword">subroutine </span>read_netcdf (model)</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">type (</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> :: model</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">integer</span>::i</div>
@@ -175,8 +186,9 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">!&gt; \brief Get values from netCDF file for specified variables</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno"><a class="code" href="classmod__data.html#a42082a4a6af177900f481f081d8f112a">   79</a></span>&#160;<span class="keyword">subroutine </span>get_variable( model , date )</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordtype">type (</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span>, <span class="keywordtype">intent(inout)</span> :: model</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">integer</span> , <span class="keywordtype">optional</span> , <span class="keywordtype">intent(in)</span> ,<span class="keywordtype">dimension(6)</span> ::date</div>
@@ -221,8 +233,9 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  call unpack_netcdf(model)</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="comment">!&gt; \brief Change time in netcdf to dates</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00126"></a><span class="lineno"><a class="code" href="classmod__data.html#a01ced8abfa9694e609e449fac41acbc2">  126</a></span>&#160;<span class="keyword">subroutine </span>nctime2date ( model )</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordtype">type (</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> :: model</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordtype">real(dp)</span>:: mjd_start , mjd_</div>
@@ -247,8 +260,9 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="keyword">endif</span></div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment">!&gt; \brief Get dimension, allocate memory and fill with values</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00153"></a><span class="lineno"><a class="code" href="classmod__data.html#ae3589fc9e3998fa6072df2ef4b3447d3">  153</a></span>&#160;<span class="keyword">subroutine </span>get_dimension ( model , i )</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordtype">type(</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> :: model</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keywordtype">integer</span> :: dimid , varid </div>
@@ -289,8 +303,11 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment">!&gt; \brief Unpack variable </span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="comment">!! from \cite netcdf</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00198"></a><span class="lineno"><a class="code" href="classmod__data.html#adf7c4681df70e30915173cb997b48fea">  198</a></span>&#160;<span class="keyword">subroutine </span>unpack_netcdf ( model )</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="keywordtype">type(</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> :: model</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  <span class="keywordtype">integer</span> :: varid , status</div>
@@ -304,8 +321,11 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  model%data = model%data * scale_factor + add_offset</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment">!&gt; \brief Check the return code from netCDF manipulation</span></div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment">!! from \cite netcdf</span></div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00216"></a><span class="lineno"><a class="code" href="classmod__data.html#a93c7592496dc4eae192b17e8321faf78">  216</a></span>&#160;<span class="keyword">subroutine </span>check(status)</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <span class="keywordtype">integer</span>, <span class="keywordtype">intent ( in)</span> :: status</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  </div>
@@ -317,8 +337,16 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">!&gt; \brief Returns the value from model file</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">!! if it is first call it loads the model into memory</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment">!! inspired by spotl \cite Agnew97</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment">!! Get value can</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment">!! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.jpg</span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00237"></a><span class="lineno"><a class="code" href="classmod__data.html#a896c5acc3a0d4f7629b3b3e7ab5f197d">  237</a></span>&#160;<span class="keyword">subroutine </span>get_value( model,  lat , lon , val ,level, method )</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  <span class="keywordtype">type(</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> , <span class="keywordtype">intent (in)</span> :: model</div>
@@ -416,7 +444,7 @@ $(document).ready(function(){initNavTree('mod__data_8f90.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><b>mod_data.f90</b></li>
-    <li class="footer">Generated on Mon Dec 24 2012 10:31:02 for grat by
+    <li class="footer">Generated on Mon Dec 24 2012 11:06:23 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

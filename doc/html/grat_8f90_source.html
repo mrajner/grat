@@ -111,8 +111,32 @@ $(document).ready(function(){initNavTree('grat_8f90.html','');});
 <div class="title">grat.f90</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="grat_8f90.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! ==============================================================================</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">! ==============================================================================</span></div>
+<a href="grat_8f90.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! ==============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">!&gt; \file</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!! \mainpage Grat overview</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">!! \section Purpose</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">!! This program was created to make computation of atmospheric gravity</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">!! correction more easy.</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">!! \version v. 1.0</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">!! \date 2012-12-12</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">!! \author Marcin Rajner\n </span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">!! Politechnika Warszawska\n</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">!! (Warsaw University of Technology)</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">!! \line program</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">!! \warning This program is written in Fortran90 standard but uses some featerus</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">!! of 2003 specification (e.g., \c &#39;newunit=&#39;). It was also written</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">!! for &lt;tt&gt;Intel Fortran Compiler&lt;/tt&gt; hence some commands can be unavailable</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">!! for yours (e.g., \c &lt;integer_parameter&gt; for \c IO statements. This should be</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">!! easily modifiable according to your output needs.&gt;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">!! Also you need to have \c iso_fortran_env module available to guess the number</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">!! of output_unit for your compiler.</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">!! When you don&#39;t want a \c log_file and you don&#39;t switch \c verbose all </span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">!! unneceserry information whitch are normally collected goes to \c /dev/null</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">!! file. This is *nix system default trash. For other system or file system</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">!! organization, please change this value in \c get_cmd_line module.</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"></span><span class="comment">! ==============================================================================</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">program</span> grat</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">use </span>iso_fortran_env</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keyword">use </span><a class="code" href="classget__cmd__line.html">get_cmd_line</a></div>
@@ -124,8 +148,9 @@ $(document).ready(function(){initNavTree('grat_8f90.html','');});
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">implicit none</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">real(sp)</span> :: x , y , z , lat ,lon ,val(0:100) <span class="comment">!tmp variables</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordtype">integer</span> :: i , j , ii, iii</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  call cpu_time(cpu_start)</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">  !&gt; program starts here with time stamp</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment"></span>  call cpu_time(cpu_start)</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  call <a class="code" href="classget__cmd__line.html#a9d060b3fb882493decebb354df600a9f">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
@@ -195,7 +220,7 @@ $(document).ready(function(){initNavTree('grat_8f90.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="grat_8f90.html">grat.f90</a></li>
-    <li class="footer">Generated on Mon Dec 24 2012 10:31:02 for grat by
+    <li class="footer">Generated on Mon Dec 24 2012 11:06:23 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

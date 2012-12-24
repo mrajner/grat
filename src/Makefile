@@ -17,23 +17,20 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 #  fnl_ = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
-sprawdz: $(BIN)/value_check
-	$(BIN)/value_check -V -d 1 2 3 -a 4 5 6 -a8 -G84,4 -F dfkljdf -V #-F$(fnl_) -S,52,21  -I2 
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
 #   ./$@ -F/home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_*nc
 
-$(BIN)/barometric_formula: barometric_formula.f90 lib
-	$(FC) $< -o $@ -lgrat -L.
-	./$@ 
+# $(BIN)/barometric_formula: barometric_formula.f90 lib
+#   $(FC) $< -o $@ -lgrat -L.
+#   ./$@ 
 	
 
 all:\
 	$(OBJS) $(BIN)/grat $(BIN)/example_aggf $(BIN)/polygon_check \
 	$(BIN)/real_vs_standard \
-	$(BIN)/value_check example\
-	folders
+	$(BIN)/value_check example
 
 %.o: %.f90
 	$(FC) $< -c
@@ -45,6 +42,7 @@ $(BIN)/polygon_check: polygon_check.f90 $(OBJS)
 $(BIN)/grat: grat.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
+
 $(BIN)/real_vs_standard: real_vs_standard.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
@@ -52,8 +50,10 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
+	grat -h
+	grat -v
+	$(BIN)/grat -F$(SFC),,,,,$(GPT),$(H__)  -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20110102  -BI -G,,,,,  -I1 -o 
 #   $(BIN)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V
-#   $(BIN)/grat -F$(SFC),,,,,$(GPT),$(H__)  -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20110102  -BI -G,,,,,  -I1 -o tmp P$(POL),$(POL) 
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL) -otmp.dat
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
@@ -61,17 +61,6 @@ example:
 #   cd /home/mrajner/dr/data/site_vs_model/ && make -B
 
 #-------------------------------------------------------------
-$(BIN)/symuluj_dane: symuluj_dane.f90 dane.o get_cmd_line.o ispand.o
-#   $(FC) $(FLAGS) symuluj_dane.f90 dane.o get_cmd_line.o ispand.o -o $(BIN)/symuluj_dane
-#   $(BIN)/symuluj_dane
-#   $(BIN)/press2spotl  -F../dane/symulacja/dane.blv -I1. -W0.5 -Glbv -R- 
-
-mapcon_util.o: mapcon_util.f90
-#   $(FC) $(FLAGS) -c mapcon_util.f90
-
-mapa_lndsea: mapa_lndsea.f90 mapcon_util.o
-#   $(FC) $(FLAGS) mapa_lndsea.f90 mapcon_util.o -o $(BIN)/mapa_lndsea
-#   $(BIN)/mapa_lndsea
 
 green.o: green.f90
 #   $(FC) $(FLAGS) -c $< 
@@ -83,14 +72,12 @@ green.o: green.f90
 
 
 $(BIN)/example_aggf:example_aggf.f90 aggf.o  constants.o
-	$(FC) $(FLAGS) $< aggf.o constants.o -o $@
+#   $(FC) $(FLAGS) $< aggf.o constants.o -o $@
 #   $(EXMPL)/example_aggf
 
-folders: ../bin
-	mkdir -p ../bin/
 
 clean:
-	rm *.o *.mod tmp.* *.a
+	rm *.o *.mod tmp.* *.a fort??????
 
 lib:
 	make $(OBJS)

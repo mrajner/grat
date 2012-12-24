@@ -8,7 +8,6 @@ var searchData=
   ['pi',['pi',['../classconstants.html#ae6603ac4cc80bb9d44e9b34575227d9e',1,'constants']]],
   ['polygon_5fdata',['polygon_data',['../structget__cmd__line_1_1polygon__data.html',1,'get_cmd_line']]],
   ['polygon_5finfo',['polygon_info',['../structget__cmd__line_1_1polygon__info.html',1,'get_cmd_line']]],
-  ['polygon_5fmap_2esh',['polygon_map.sh',['../polygon__map_8sh.html',1,'']]],
   ['print_5fsettings',['print_settings',['../classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea',1,'get_cmd_line']]],
   ['print_5fversion',['print_version',['../classget__cmd__line.html#a2c5bdb105af43563400c135340bad598',1,'get_cmd_line']]],
   ['put_5fgrd',['put_grd',['../classmod__data.html#a9fe633e5ba8c986f402dd1670a15135f',1,'mod_data']]]

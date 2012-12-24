@@ -998,34 +998,33 @@ subroutine print_help (program_calling)
   help(1)%description(1) = "print help"
 
   help(2)%switch =      "-v" 
-!  help(2)%description = "print version"
+  allocate(help(2)%description(1))
+  help(2)%description(1) = "print version and author"
 
-  help(3)%switch = "-R"
-!  help(3)%description = "set limits for regular grid as model input"
-!  help(3)%example = "-R0/20/30/40 or -Rg (=R0/360/-90/90) same as GMT"
+  help(3)%switch = "-S"
+  allocate(help(3)%description(1))
+  help(3)%description(1) = "set site(s) coordinates"
+  help(3)%example = "-R0/20/30/40 or -Rg (=R0/360/-90/90) same as GMT"
 
   help(4)%switch = "-L"
-  allocate(help(4)%description(4))
-  help(4)%description(1) = "prints additional information"
-  help(4)%description(2) = "syntax: -L[filename]"
+!  allocate(help(4)%description(4))
+!  help(4)%description(1) = "prints additional information"
+!  help(4)%description(2) = "syntax: -L[filename]"
 !    help(4)%example = "-L[filename]"
 !  help(4)%example = "todo"//'/'//"fdf"
-
-
-
 
   write(log%unit , form_60) , 'Summary of available options for program '//program_calling
   do i = 1 , size (help)
   if(if_switch_program (program_calling , help(i)%switch )) then
-    write(log%unit , form_61) ,help(i)%switch
+    write(log%unit , form_61) ,trim(help(i)%switch)
     if(allocated(help(i)%description)) then
       do j = 1 , size(help(i)%description)
-        write (log%unit , form_62 ) help(i)%description(j)
+        write (log%unit , form_62 ) trim(help(i)%description(j))
+        if (.not.help(i)%example(1:1).eq."") then
+!          write(log%unit , form_63) , trim(help(i)%description(j)example)
+        endif
       enddo
     endif
-!    if (.not.help(i)%example(1:1).eq."") then
-!      write(log%unit , form_62) , trim(help(i)%example)
-!    endif
   endif 
   enddo
 

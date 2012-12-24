@@ -111,11 +111,18 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="title">example_aggf.f90</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="example__aggf_8f90.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">! ============================================================================</span></div>
+<a href="example__aggf_8f90.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">!&gt; \file</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!! \brief This program shows some example of using AGGF module</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">!! \author Marcin Rajner</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">!! \date 20121108</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">!! The examples are in contained subroutines</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">program</span> example_aggf</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keyword">use </span><a class="code" href="classaggf.html">aggf</a></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">  !&gt; module with subroutines for calculating Atmospheric Gravity Green Fucntions</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"></span>  <span class="keyword">use </span><a class="code" href="classaggf.html">aggf</a></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">use </span><a class="code" href="classconstants.html">constants</a></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">implicit none</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
@@ -139,8 +146,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">contains</span> </div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">!&gt; \brief Reproduces data to Fig.~3 in \cite Warburton77</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a6796e42442dce9f7384113d9d8d858ac">   39</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a6796e42442dce9f7384113d9d8d858ac">simple_atmospheric_model</a> ()</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">real(dp)</span> :: r <span class="comment">! - km</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">integer</span> :: iunit</div>
@@ -154,8 +162,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">enddo</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">end subroutine</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">!&gt; \brief Compare tabulated green functions from different authors</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a7690b47d614b42c173831c115639722d">   55</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a7690b47d614b42c173831c115639722d">compare_tabulated_green_functions</a> ()</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">integer</span> :: i , j , file_unit , ii , iii</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(:,:)</span>, <span class="keywordtype">allocatable</span> :: table , results</div>
@@ -213,8 +222,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keyword">close</span>(file_unit)</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment">!&gt; \brief Compute AGGF and derivatives</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00115"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a8e42ef616d9eb673f9bb4b31966313e9">  115</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a8e42ef616d9eb673f9bb4b31966313e9">compute_tabulated_green_functions</a> ()</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keywordtype">integer</span> :: i , file_unit</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">real(dp)</span> :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz</div>
@@ -249,8 +259,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="keyword">close</span>(file_unit)</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment">!&gt; \brief Compare different vertical temperature profiles impact on AGGF</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00152"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#abe8278341e55b421224bcb661b836b57">  152</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#abe8278341e55b421224bcb661b836b57">aggf_resp_fels_profiles</a> ()</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="keywordtype">character (len=255)</span> ,<span class="keywordtype">dimension (6)</span> :: fels_types</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordtype">real (dp)</span> :: val_aggf</div>
@@ -286,8 +297,11 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="comment">!&gt; \brief Compare different vertical temperature profiles</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">!! Using tables and formula from \cite Fels86</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00192"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a1e4330b4f3637f3a33d1356d515900d5">  192</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a1e4330b4f3637f3a33d1356d515900d5">compare_fels_profiles</a> ()</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="keywordtype">character (len=255)</span> ,<span class="keywordtype">dimension (6)</span> :: fels_types</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordtype">real (dp)</span> :: height , temperature</div>
@@ -320,8 +334,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  <span class="keyword">close</span>(file_unit)</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="comment">!&gt; \brief Computes AGGF for different site height (h)</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00227"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a89513b5880221573b0a0daea4457b49c">  227</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a89513b5880221573b0a0daea4457b49c">aggf_resp_h</a> ()</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(:,:)</span>, <span class="keywordtype">allocatable</span> :: table , results</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="keywordtype">integer</span> :: i, j, file_unit , ii</div>
@@ -366,8 +381,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="keyword">close</span> (file_unit)</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="comment">!&gt; \brief This computes AGGF for different surface temperature</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00274"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#ad7c8494024fa123a5cc6e940db51c2a2">  274</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#ad7c8494024fa123a5cc6e940db51c2a2">aggf_resp_t</a> ()</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(:,:)</span>, <span class="keywordtype">allocatable</span> :: table , results</div>
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keywordtype">integer</span> :: i, j , file_unit</div>
@@ -399,8 +415,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <span class="keyword">close</span> (file_unit)</div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="comment">!&gt; \brief This computes AGGFDT for different dT</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00308"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#afc35835de0d5dbf30dee97e999fa28b1">  308</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#afc35835de0d5dbf30dee97e999fa28b1">aggfdt_resp_dt</a> ()</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(:,:)</span>, <span class="keywordtype">allocatable</span> :: table , results</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keywordtype">integer</span> :: i, j , file_unit</div>
@@ -434,8 +451,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  <span class="keyword">close</span> (file_unit)</div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="comment">!&gt; \brief This computes AGGF for different height integration step </span></div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00344"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a2efd5c5001360cfda2567f0266c280e3">  344</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a2efd5c5001360cfda2567f0266c280e3">aggf_resp_dz</a> ()</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  <span class="keywordtype">real(dp)</span>, <span class="keywordtype">dimension(:,:)</span>, <span class="keywordtype">allocatable</span> :: table , results</div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <span class="keywordtype">integer</span> :: file_unit , i , j</div>
@@ -473,8 +491,12 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <span class="keyword">close</span>(file_unit)</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="comment">!&gt; \brief This computes standard atmosphere parameters</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="comment">!! It computes temperature, gravity, pressure, pressure (simplified formula)</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="comment">!! density for given height</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00387"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a3bb0da5687daef54cf403b8e09c7a9b6">  387</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a3bb0da5687daef54cf403b8e09c7a9b6">standard1976</a>  <span class="comment">!()</span></div>
 <div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="keywordtype">real(dp)</span> :: height , temperature , gravity , pressure , pressure2 , density</div>
 <div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  <span class="keywordtype">integer</span> :: file_unit</div>
@@ -498,8 +520,10 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  <span class="keyword">close</span>( file_unit )</div>
 <div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="comment">!&gt; \brief This computes relative values of AGGF for different atmosphere</span></div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;<span class="comment">!! height integration</span></div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00414"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a7aa497e9236e311c9af696313693ec39">  414</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a7aa497e9236e311c9af696313693ec39">aggf_resp_hmax</a> ()</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  <span class="keywordtype">real (dp)</span> , <span class="keywordtype">dimension (10)</span> :: psi</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  <span class="keywordtype">real (dp)</span> , <span class="keywordtype">dimension (:)</span>   , <span class="keywordtype">allocatable</span> :: heights </div>
@@ -525,8 +549,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(psi)</div>
 <div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;      call <a class="code" href="classaggf.html#abb68642861a8446f0c48bdff3a06cb05">compute_aggf</a>( psi(i) , val_aggf , hmax = heights(j) , dh = 0.00001 )</div>
 <div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;      results(j,i+1) = val_aggf</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;      <span class="keyword">if</span> (j.gt.0) <span class="keyword">then</span></div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;<span class="comment">      !&gt; Relative value of aggf depending on integration height</span></div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;<span class="comment"></span>      <span class="keyword">if</span> (j.gt.0) <span class="keyword">then</span></div>
 <div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        results(j,i+1) = results(j,i+1) / results(0,i+1) * 100 </div>
 <div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;      <span class="keyword">endif</span></div>
 <div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;    <span class="keyword">enddo</span></div>
@@ -541,8 +566,9 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;  <span class="keyword">close</span>(file_unit)</div>
 <div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;<span class="keyword">end subroutine</span></div>
 <div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;<span class="comment">! ============================================================================</span></div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;<span class="comment">! ============================================================================</span></div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;<span class="comment">! ============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;<span class="comment">!&gt; \brief Auxiliary subroutine -- height sampling for semilog plot</span></div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;<span class="comment"></span><span class="comment">! ============================================================================</span></div>
 <div class="line"><a name="l00459"></a><span class="lineno"><a class="code" href="example__aggf_8f90.html#a7f82ff4077671dab8e185a855cc01e6c">  459</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="example__aggf_8f90.html#a7f82ff4077671dab8e185a855cc01e6c">aux_heights</a> ( table )</div>
 <div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  <span class="keywordtype">real(dp)</span> , <span class="keywordtype">dimension (:)</span>, <span class="keywordtype">allocatable</span>, <span class="keywordtype">intent(inout)</span> :: table</div>
 <div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  <span class="keywordtype">real(dp)</span> , <span class="keywordtype">dimension (0:1000)</span> :: heights</div>
@@ -586,7 +612,7 @@ $(document).ready(function(){initNavTree('example__aggf_8f90.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="example__aggf_8f90.html">example_aggf.f90</a></li>
-    <li class="footer">Generated on Mon Dec 24 2012 10:31:02 for grat by
+    <li class="footer">Generated on Mon Dec 24 2012 11:06:23 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>
