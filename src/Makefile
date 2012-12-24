@@ -88,10 +88,14 @@ VER     = 1.0
 DATE     = `date +%Y%m%d`
 
 package: 
-	tar jcf $(PACKAGE)_$(VER)_$(DATE).tar.bz2 ../../grat/src/{*.f90,Makefile} ../../grat/dat/*.dat
+	tar jcf $(PACKAGE)_$(VER)_$(DATE).tar.bz2 ../../grat/src/{*.f90,Makefile} ../../grat/dat/*.dat ../../grat/bin/.README
 
 doc:
 	cd ../doc  &&  doxygen Doxyfile
+
+commit:
+	git commit -a -m "automatic commit from Makefile"
+	git push
 
 docpdf: 
 	make doc
