@@ -1,8 +1,7 @@
   BIN = ../bin
-  EXMPL = ../examples
   FC = ifort
   FLAGS = -r8 -O2 -CB  # -Wunused -Wall  # -g -traceback
-  NETCDFLIB = -I/usr/local/include -L/usr/local/lib/ -lnetcdff -lnetcdf 
+  NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
   SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
   TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
   LND= ../data/landsea/test.grd:z:x:y
@@ -11,7 +10,6 @@
 	POL= ../polygon/tmp.poly
 GPT= ../data/ncep_reanalysis/hgt.2011.nc:hgt
 H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
-
   SRCS  = constants.f90 get_cmd_line.f90 mod_polygon.f90 mod_data.f90 aggf.f90 mod_green.f90
   OBJS  = $(SRCS:.f90=.o)
  
@@ -19,8 +17,8 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 #  fnl_ = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
-sprawdz: $(BIN)/value_check example
-	$(BIN)/value_check -F$(fnl_) -S,52,21  -I2 -L:b
+sprawdz: $(BIN)/value_check
+	$(BIN)/value_check -V -d 1 2 3 -a 4 5 6 -a8 -G84,4 -F dfkljdf -V #-F$(fnl_) -S,52,21  -I2 
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
@@ -32,7 +30,7 @@ $(BIN)/barometric_formula: barometric_formula.f90 lib
 	
 
 all:\
-	$(OBJS) $(BIN)/grat $(EXMPL)/example_aggf $(BIN)/polygon_check \
+	$(OBJS) $(BIN)/grat $(BIN)/example_aggf $(BIN)/polygon_check \
 	$(BIN)/real_vs_standard \
 	$(BIN)/value_check example\
 	folders
@@ -54,7 +52,7 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	$(BIN)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V
+#   $(BIN)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V
 #   $(BIN)/grat -F$(SFC),,,,,$(GPT),$(H__)  -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20110102  -BI -G,,,,,  -I1 -o tmp P$(POL),$(POL) 
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL) -otmp.dat
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
@@ -84,7 +82,7 @@ green.o: green.f90
 
 
 
-$(EXMPL)/example_aggf:example_aggf.f90 aggf.o  constants.o
+$(BIN)/example_aggf:example_aggf.f90 aggf.o  constants.o
 	$(FC) $(FLAGS) $< aggf.o constants.o -o $@
 #   $(EXMPL)/example_aggf
 

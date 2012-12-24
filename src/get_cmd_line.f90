@@ -1,6 +1,8 @@
 ! =============================================================================
 !> \brief This module sets the initial values for parameters
 !! reads from command line and gives help
+!! it allows to specify commands with or without spaces therefore it is 
+!! convienient to use with auto completion of names
 ! =============================================================================
 module get_cmd_line
   use iso_fortran_env
@@ -166,7 +168,7 @@ contains
 subroutine intro (program_calling)
   implicit none
   integer :: i, j
-  character(len=255) :: dummy
+  character(len=255) :: dummy, dummy2,arg
   character(len=*) :: program_calling
   type(cmd_line) :: cmd_line_entry
 
@@ -180,7 +182,16 @@ subroutine intro (program_calling)
     write (fileunit_tmp,form_62) trim(dummy)
     do i = 1 , iargc()
       call get_command_argument(i,dummy)
-      call get_cmd_line_entry (dummy , cmd_line_entry , program_calling = program_calling)
+      ! allow specification like '-F file' and '-Ffile'
+      call get_command_argument(i+1,dummy2)
+      if (dummy(1:1).eq."-") then
+        arg = trim(dummy)
+      else
+        arg=trim(arg)//trim(dummy)
+      endif
+      if(dummy2(1:1).eq."-".or.i.eq.iargc()) then
+         call get_cmd_line_entry (arg, cmd_line_entry , program_calling = program_calling)
+      endif
     enddo
 
     call if_minimum_args ( program_calling = program_calling )
