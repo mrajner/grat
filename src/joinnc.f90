@@ -22,11 +22,13 @@ program joinnc
     
     call check ( nf90_open (dummy , nf90_nowrite , incid) )
     
-    call check ( nf90_inquire (incid , idim , ivar ,  iatt , iunlimited , iform))
+!    call check ( nf90_inquire (incid , idim , ivar ,  iatt , iunlimited , iform))
     call check( nf90_inq_dimid(incid, "lat_0" , idimid(1) ))
-    call check( nf90_inq_dimid(incid, "lon_0" , idimid(2) ))
+    call check( nf90_inq_dimid(incid, "lon_0" , idimid(2) )) 
+    call check( nf90_inq_varid(incid, "pres" , idimid(2) )) 
+    print *, sqrt(-1)
 
-    print * , idimid
+    print * , idimid, "kdf:"
   enddo
 
 

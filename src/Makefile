@@ -18,9 +18,9 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
 
-# $(BIN)/joinnc: joinnc.f90
-#   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
-#   ./$@ -F/home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_*nc
+$(BIN)/joinnc: joinnc.f90
+	$(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
+	./$@ -F/home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_*nc
 
 # $(BIN)/barometric_formula: barometric_formula.f90 lib
 #   $(FC) $< -o $@ -lgrat -L.
@@ -37,11 +37,10 @@ all:\
 
 $(BIN)/polygon_check: polygon_check.f90 $(OBJS)
 	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
-	./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
+#   ./$@  -S15/20/50/60,100,1 -V -P../polygon/tmp.poly
 
 $(BIN)/grat: grat.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
-
 
 $(BIN)/real_vs_standard: real_vs_standard.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
@@ -61,7 +60,6 @@ example:
 #   cd /home/mrajner/dr/data/site_vs_model/ && make -B
 
 #-------------------------------------------------------------
-
 green.o: green.f90
 #   $(FC) $(FLAGS) -c $< 
 
