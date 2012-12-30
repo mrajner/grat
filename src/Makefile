@@ -70,8 +70,8 @@ green.o: green.f90
 
 
 $(BIN)/example_aggf:example_aggf.f90 aggf.o  constants.o
-#   $(FC) $(FLAGS) $< aggf.o constants.o -o $@
-#   $(EXMPL)/example_aggf
+	$(FC) $(FLAGS) $< aggf.o constants.o -o $@
+	$(BIN)/example_aggf
 
 
 clean:

@@ -23,11 +23,11 @@ program example_aggf
 ! call aggf_resp_h ()
 ! call aggfdt_resp_dt ()
 ! call compare_fels_profiles ()
- call compute_tabulated_green_functions ()
+! call compute_tabulated_green_functions ()
 ! call aggf_thin_layer ()
 ! call aggf_resp_fels_profiles ()
 ! call compare_tabulated_green_functions ()
-! call simple_atmospheric_model()
+ call simple_atmospheric_model()
 
 
 
@@ -37,13 +37,12 @@ contains
 !> \brief Reproduces data to Fig.~3 in \cite Warburton77
 ! =============================================================================
 subroutine simple_atmospheric_model ()
-  real(dp) :: R ! - km
+  real(dp) :: R ! km
   integer :: iunit
 
   open (newunit=iunit,file="/home/mrajner/dr/rysunki/simple_approach.dat" ,&
     action = "write")
     do R = 0. , 25*8
-!    iunit = 6
     write ( iunit ,  * ) , R , bouger ( R_opt= R) * 1e8, & !conversion to microGal
       simple_def(R) * 1e8
   enddo
