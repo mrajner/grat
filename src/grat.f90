@@ -23,6 +23,9 @@
 !! unneceserry information whitch are normally collected goes to \c /dev/null
 !! file. This is *nix system default trash. For other system or file system
 !! organization, please change this value in \c get_cmd_line module.
+!!
+!! \section section
+!! \subpage todo
 ! ==============================================================================
 program grat
   use iso_fortran_env
