@@ -16,21 +16,29 @@ program example_aggf
 
 
 
- print * , "standard1976"
+ print *, "...standard1976 ()"
  call standard1976 ()
-
- print *, "aggf_resp_hmax"
- call aggf_resp_hmax ()
- print *, "aggf_resp_dz"
- call aggf_resp_dz ()
- call aggf_resp_t ()
- call aggf_resp_h ()
- call aggfdt_resp_dt ()
- call compare_fels_profiles ()
- call compute_tabulated_green_functions ()
- call aggf_thin_layer ()
- call aggf_resp_fels_profiles ()
- call compare_tabulated_green_functions ()
+!print *, "...aggf_resp_hmax ()"
+! call aggf_resp_hmax ()
+!print *, "...aggf_resp_dz ()"
+! call aggf_resp_dz ()
+!print *, "...aggf_resp_t ()"
+! call aggf_resp_t ()
+!print *, "...aggf_resp_h ()"
+! call aggf_resp_h ()
+!print *, "...aggfdt_resp_dt ()"
+! call aggfdt_resp_dt ()
+!print *, "...compare_fels_profiles ()"
+! call compare_fels_profiles ()
+!print *, "...compute_tabulated_green_functions ()"
+! call compute_tabulated_green_functions ()
+!print *, "...aggf_thin_layer ()"
+! call aggf_thin_layer ()
+!print *, "...aggf_resp_fels_profiles ()"
+! call aggf_resp_fels_profiles ()
+!print *, "...compare_tabulated_green_functions ()"
+! call compare_tabulated_green_functions ()
+print *, "...simple_atmospheric_model()"
  call simple_atmospheric_model()
 
 contains 
@@ -435,7 +443,7 @@ subroutine aggf_resp_hmax ()
       results ( j , 1 ) = heights(j)
 
     do i = 1 , size(psi)
-      call compute_aggf ( psi (i) , val_aggf , hmax = heights(j) , dh = 0.00001 )
+      call compute_aggf ( psi (i) , val_aggf , hmax = heights(j) )
       results(j,i+1) = val_aggf
 
       !> Relative value of aggf depending on integration height
