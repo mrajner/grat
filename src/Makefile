@@ -1,3 +1,4 @@
+.PHONY: clean
   BIN = ../bin
   FC = ifort
   FLAGS = -r8 -O2 -CB  # -Wunused -Wall  # -g -traceback
@@ -75,7 +76,7 @@ $(BIN)/example_aggf:example_aggf.f90 aggf.o  constants.o
 
 
 clean:
-	rm *.o *.mod tmp.* *.a fort??????
+	rm -f *.o *.mod tmp.* *.a fort??????
 
 lib:
 	make $(OBJS)
