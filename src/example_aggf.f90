@@ -16,17 +16,21 @@ program example_aggf
 
 
 
-! call standard1976 ()
-! call aggf_resp_hmax ()
-! call aggf_resp_dz ()
-! call aggf_resp_t ()
-! call aggf_resp_h ()
-! call aggfdt_resp_dt ()
-! call compare_fels_profiles ()
-! call compute_tabulated_green_functions ()
-! call aggf_thin_layer ()
-! call aggf_resp_fels_profiles ()
-! call compare_tabulated_green_functions ()
+ print * , "standard1976"
+ call standard1976 ()
+
+ print *, "aggf_resp_hmax"
+ call aggf_resp_hmax ()
+ print *, "aggf_resp_dz"
+ call aggf_resp_dz ()
+ call aggf_resp_t ()
+ call aggf_resp_h ()
+ call aggfdt_resp_dt ()
+ call compare_fels_profiles ()
+ call compute_tabulated_green_functions ()
+ call aggf_thin_layer ()
+ call aggf_resp_fels_profiles ()
+ call compare_tabulated_green_functions ()
  call simple_atmospheric_model()
 
 contains 
