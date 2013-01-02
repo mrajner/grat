@@ -25,7 +25,10 @@
 !! organization, please change this value in \c get_cmd_line module.
 !!
 !! \section section
-!! \subpage todo
+!! \page intro_sec External resources
+!!   - <a href="https://code.google.com/p/grat">project page</a> (git repository)
+!!   - <a href="../latex/refman.pdf">pdf</a> version of this manual
+!! \example ff
 ! ==============================================================================
 program grat
   use iso_fortran_env
