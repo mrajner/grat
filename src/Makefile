@@ -1,7 +1,7 @@
 .PHONY: clean
   BIN = ../bin
   FC = ifort
-  FLAGS = -r8 -O2 -CB  # -Wunused -Wall  # -g -traceback
+  FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
   NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
   SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
   TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
@@ -17,6 +17,9 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
  fnl = /home/mrajner/meteo/fnl/sfc_hgt/
 #  fnl_ = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+
+
+iii: $(BIN)/example_aggf
 
 
 # $(BIN)/joinnc: joinnc.f90

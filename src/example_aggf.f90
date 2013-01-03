@@ -16,8 +16,8 @@ program example_aggf
 
 
 
- print *, "...standard1976 ()"
- call standard1976 ()
+! print *, "...standard1976 ()"
+! call standard1976 ()
 !print *, "...aggf_resp_hmax ()"
 ! call aggf_resp_hmax ()
 !print *, "...aggf_resp_dz ()"
@@ -38,8 +38,8 @@ program example_aggf
 ! call aggf_resp_fels_profiles ()
 !print *, "...compare_tabulated_green_functions ()"
 ! call compare_tabulated_green_functions ()
-print *, "...simple_atmospheric_model()"
- call simple_atmospheric_model()
+!print *, "...simple_atmospheric_model()"
+! call simple_atmospheric_model()
 
 contains 
  
