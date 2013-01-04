@@ -16,7 +16,7 @@ program check_transfer
   if (i.gt.1) call standard_pressure(h(i), pressure3 , h_zero = h(i-1) ,p_zero = pressure )
   if (i.gt.1) call standard_pressure(h(i), pressure4 , h_zero = h(i-1) ,p_zero = pressure2 )
 
-  call standard_pressure(h(i), pressure,if_simplificated=.true.)
+  call standard_pressure(h(i), pressure , if_simplificated=.true.)
   call standard_pressure(h(i), pressure2)
  
 

@@ -19,16 +19,16 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
 
-iii: $(BIN)/example_aggf
+# iii: $(BIN)/example_aggf
 
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
 #   ./$@ -F/home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_*nc
 
-# $(BIN)/barometric_formula: barometric_formula.f90 lib
-#   $(FC) $< -o $@ -lgrat -L.
-#   ./$@ 
+$(BIN)/barometric_formula: barometric_formula.f90 libgrat.a
+	$(FC) $< -o $@ -lgrat -L.
+	./$@ 
 	
 
 all:\
@@ -61,7 +61,6 @@ example:
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
 
-#   cd /home/mrajner/dr/data/site_vs_model/ && make -B
 
 #-------------------------------------------------------------
 green.o: green.f90
@@ -72,7 +71,6 @@ green.o: green.f90
 #   ../green/green_aux 
 
 
-
 $(BIN)/example_aggf:example_aggf.f90 aggf.o  constants.o
 	$(FC) $(FLAGS) $< aggf.o constants.o -o $@
 	$(BIN)/example_aggf
@@ -81,7 +79,7 @@ $(BIN)/example_aggf:example_aggf.f90 aggf.o  constants.o
 clean:
 	rm -f *.o *.mod tmp.* *.a fort??????
 
-lib:
+libgrat.a: $(OBJS)
 	make $(OBJS)
 	ar rs libgrat.a *.o
 
@@ -94,10 +92,6 @@ package:
 
 doc:
 	cd ../doc  &&  doxygen Doxyfile
-
-commit:
-	git commit -a -m "automatic commit from Makefile"
-	git push
 
 docpdf: 
 	make doc

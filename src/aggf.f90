@@ -263,7 +263,7 @@ end subroutine
 ! > This will transfer pressure beetween different height using barometric
 ! formulae
 ! =============================================================================
-!> \warning OBSOLETE ROUTINE -- use standard_pressure instead with optional args
+!> \warning OBSOLETE ROUTINE -- use \c standard_pressure() instead with optional args
 subroutine transfer_pressure (height1 , height2 , pressure1 , pressure2 , &
   temperature , polish_meteo )
   real (dp) , intent (in) :: height1 , height2 , pressure1
