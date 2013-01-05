@@ -1,0 +1,43 @@
+\documentclass{beamer}
+\usepackage{tikz}
+\tikzstyle{every picture}+=[remember picture]
+\usetikzlibrary{fit}
+\usepackage{listings}
+
+\tikzset{lacznik/.style={red,ultra thick,inner sep =0.61mm,draw}}
+
+\newcommand\ph{\vphantom{jFfG[]}}
+\begin{document}
+  \tikzset{cmd/.style={baseline,anchor=base}}
+
+  \begin{frame} % [fragile]{fff} % mrajner 2013-01-05 03:33
+        \ttfamily
+%        \begin{lstlisting}
+%        \end{lstlisting}
+        \tikz[cmd]\node(grat){\ph grat};
+        \tikz[cmd]\node(F){\ph -F};
+        \tikz[cmd]\node(S){\ph -S [B,L[,H]]};
+        \tikz[cmd]\node(h){\ph -h};
+        \tikz[cmd]\node(v){\ph -v};
+        \tikz[cmd]\node(V){\ph -V};
+
+        \tikz[cmd]\node(o){\ph -o};
+        \tikz[cmd]\node(p){\ph [-P [plik\_polygon][:plik\_polygon]]};
+      \vfill
+      \begin{tikzpicture}
+        \node<1>(ograt){Nazwa programu};  
+        \node<2>(oF){Nazwa programu};  
+        \node<3>(oo){plik wynikowy};  
+        \node<4>(op){plik poligony};  
+        \node<5>(oh){plik poligony};  
+      \end{tikzpicture}
+
+      \foreach  \od/\na in {grat/1,F/2,o/3,p/4,p/5,h/6}{
+      \begin{tikzpicture}[overlay]
+        \node<\na>(objekt) [fit = (\od) ,lacznik,] {};
+        \draw<\na>[lacznik](objekt.south) -- ++(0,-1cm) -| (o\od);
+        
+      \end{tikzpicture}
+      }
+  \end{frame}
+\end{document}
