@@ -77,7 +77,7 @@ $(BIN)/example_aggf:example_aggf.f90 aggf.o  constants.o
 
 
 clean:
-	rm -f *.o *.mod tmp.* *.a fort??????
+	rm -f *.o *.mod tmp* *.a fort??????
 
 libgrat.a: $(OBJS)
 	make $(OBJS)
