@@ -1,4 +1,3 @@
-!> This program extrac data from 
 program extract_data
 use iso_fortran_env
 !implicit none
@@ -9,22 +8,19 @@ use iso_fortran_env
   year = "2010"
   month= (/ "01" , "02" , "03" , "04" , "05" , "06" , "07" , "08" , "09" , "10" , "11" , "12" /)
 
-!  call exit
-
-
-!  do i = 1 ,  12  
-    ! first decade what files to extract
-!    call system ("ls "//year//"/"//year//month(i)//"????.txt  > file_list")
+  do i = 1 ,  12  
+    ! first decide what files to extract
+    call system ("ls "//year//"/"//year//month(i)//"????.txt  > file_list")
 !    call selection ("file_list" , year//"/"//year//month(i)//".dat")
 !    call station_list (year//"/"//year//month(i)//".dat" , year//"/"//year//month(i)//".sta" )
-!  enddo
+  enddo
 
 
 !    call system ('find -name "2?????.sta"  |sort > file_list')
 !    call count_unique_stations ("file_list" , n)
 
-  call system ('find -name "2?????.dat"  |sort > file_list')
-  call make_hourly ("uniq_sites" , "file_list")
+!  call system ('find -name "2?????.dat"  |sort > file_list')
+!  call make_hourly ("uniq_sites" , "file_list")
 
 contains
 real*8 function mjd  (date)
