@@ -914,8 +914,7 @@ subroutine print_version (program_calling)
   endif
   write(log%unit,form_inheader ) , ''
   write(log%unit,form_inheader ) , 'Marcin Rajner'
-  write(log%unit,form_inheader ) , 'Politechnika Warszawska'
-  write(log%unit,form_inheader ) , '(Warsaw University of Technology)'
+  write(log%unit,form_inheader ) , 'Warsaw University of Technology'
   write(log%unit , form_header ) 
 end subroutine
 

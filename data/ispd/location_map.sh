@@ -10,6 +10,7 @@
 #===============================================================================
 
 set -o nounset                              # Treat unset variables as an error
+set -x
 
 
 PS=location_map.ps
@@ -19,3 +20,4 @@ R="g" ;  J="H0/10+"
   pscoast -Dc -R$R -B -J$J -Sgray -K  > $PS
   cat hourly/sites.sta  | awk '{print $2, $3}'  | psxy -R$R -J$J -Sc1p -W0.5p/green -O >> $PS
   ps2raster -Tf -A -P $PS
+  rm $PS

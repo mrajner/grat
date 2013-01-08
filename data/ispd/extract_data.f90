@@ -10,7 +10,7 @@ use iso_fortran_env
 
   do i = 1 ,  12  
     ! first decide what files to extract
-    call system ("ls "//year//"/"//year//month(i)//"????.txt  > file_list")
+!    call system ("ls "//year//"/"//year//month(i)//"????.txt > file_list")
 !    call selection ("file_list" , year//"/"//year//month(i)//".dat")
 !    call station_list (year//"/"//year//month(i)//".dat" , year//"/"//year//month(i)//".sta" )
   enddo
@@ -19,8 +19,9 @@ use iso_fortran_env
 !    call system ('find -name "2?????.sta"  |sort > file_list')
 !    call count_unique_stations ("file_list" , n)
 
-!  call system ('find -name "2?????.dat"  |sort > file_list')
-!  call make_hourly ("uniq_sites" , "file_list")
+call exit
+  call system ('find -name "2?????.dat"  |sort > file_list')
+  call make_hourly ("uniq_sites" , "file_list")
 
 contains
 real*8 function mjd  (date)
@@ -55,7 +56,7 @@ logical:: sta
 
   open (newunit = ioutput4 , file = "hourly/sites.sta", access="append")
 
-  do iii = 1 ,1 !todo
+  do iii = 1 ,3 !todo
   sta=.false.
   read (iunit , '(a)', iostat =io_stat) line
   if (io_stat /= 0 ) exit
