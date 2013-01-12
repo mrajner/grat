@@ -128,10 +128,10 @@ $(document).ready(function(){initNavTree('polygon__ilustration_8sh.html','');});
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;R=<span class="stringliteral">&quot;0/25/40/60&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordflow">for</span> i in 1 2 3</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordflow">for</span> i in 1  # 2 3</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keywordflow">do</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;../polygon/polygon_check -S$R,0.5,0.3 -Pmapa${i}.poly  -omapa${i}.points </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;../polygon/polygon_map.sh -R$R -f mapa${i}.poly -o mapa${i} -p mapa${i}.points</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#  polygon_check -S $R,0.5,0.3 -P mapa${i}.poly  -o mapa${i}.points </span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span>../polygon/polygon_map.sh -R$R -f mapa${i}.poly  -o mapa${i} -p mapa${i}.points</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;done</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
@@ -140,7 +140,7 @@ $(document).ready(function(){initNavTree('polygon__ilustration_8sh.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>polygon_ilustration.sh</b></li>
-    <li class="footer">Generated on Wed Jan 2 2013 00:42:11 for grat by
+    <li class="footer">Generated on Sat Jan 12 2013 14:19:46 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

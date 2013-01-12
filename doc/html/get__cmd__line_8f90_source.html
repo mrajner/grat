@@ -1028,170 +1028,169 @@ $(document).ready(function(){initNavTree('get__cmd__line_8f90.html','');});
 <div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;  <span class="keyword">endif</span></div>
 <div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;  <span class="keyword">write</span>(log%unit,form_inheader ) , <span class="stringliteral">&#39;&#39;</span></div>
 <div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;  <span class="keyword">write</span>(log%unit,form_inheader ) , <span class="stringliteral">&#39;Marcin Rajner&#39;</span></div>
-<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;  <span class="keyword">write</span>(log%unit,form_inheader ) , <span class="stringliteral">&#39;Politechnika Warszawska&#39;</span></div>
-<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;  <span class="keyword">write</span>(log%unit,form_inheader ) , <span class="stringliteral">&#39;(Warsaw University of Technology)&#39;</span></div>
-<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;  <span class="keyword">write</span>(log%unit , form_header ) </div>
-<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;<span class="keyword">end subroutine</span></div>
-<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;</div>
-<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
-<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;<span class="comment">!&gt; Print settings </span></div>
-<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l00925"></a><span class="lineno"><a class="code" href="classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea">  925</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea">print_settings</a> ( program_calling )</div>
-<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;  <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;  <span class="keywordtype">logical</span> :: exists</div>
-<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;  <span class="keywordtype">character (len=255)</span>:: dummy</div>
-<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;  <span class="keywordtype">integer</span> :: io_status , j</div>
-<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;  <span class="keywordtype">character(*)</span> :: program_calling</div>
-<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;</div>
-<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;  call <a class="code" href="classget__cmd__line.html#a2c5bdb105af43563400c135340bad598">print_version</a>( program_calling = program_calling)</div>
-<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;  call date_and_time( values = execution_date )</div>
-<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;  <span class="keyword">write</span>(log%unit,</div>
-<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;<span class="stringliteral">&#39;(&quot;Program started:&quot;,1x,i4,2(&quot;-&quot;,i2.2), &amp;    1x,i2.2,2(&quot;:&quot;,i2.2),1x,&quot;(&quot;,SP,i3.2,&quot;h UTC)&quot;)&#39;</span>),          &amp;</div>
-<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;    execution_date(1:3),execution_date(5:7),execution_date(4)/60</div>
-<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
-<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;</div>
-<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;  <span class="keyword">inquire</span>(fileunit_tmp, exist=exists)</div>
-<div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;  <span class="keyword">if</span> (exists) <span class="keyword">then</span></div>
-<div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;    <span class="keyword">write</span> (log%unit, form_60 ) <span class="stringliteral">&#39;Summary of command line arguments&#39;</span></div>
-<div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160;</div>
-<div class="line"><a name="l00943"></a><span class="lineno">  943</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
-<div class="line"><a name="l00944"></a><span class="lineno">  944</span>&#160;    <span class="comment">! Cmd line summary (from scratch file)</span></div>
-<div class="line"><a name="l00945"></a><span class="lineno">  945</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
-<div class="line"><a name="l00946"></a><span class="lineno">  946</span>&#160;    rewind(fileunit_tmp)</div>
-<div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;    <span class="keyword">do</span></div>
-<div class="line"><a name="l00948"></a><span class="lineno">  948</span>&#160;      <span class="keyword">read</span>(fileunit_tmp,<span class="stringliteral">&#39;(a80)&#39;</span>, iostat = io_status ) dummy</div>
-<div class="line"><a name="l00949"></a><span class="lineno">  949</span>&#160;      <span class="keyword">if</span> ( io_status == iostat_end)  exit </div>
-<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;      <span class="keyword">write</span> (log%unit, <span class="stringliteral">&#39;(a80)&#39;</span>) dummy</div>
-<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;    <span class="keyword">enddo</span> </div>
-<div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;</div>
-<div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
-<div class="line"><a name="l00954"></a><span class="lineno">  954</span>&#160;    <span class="comment">! Site summary</span></div>
-<div class="line"><a name="l00955"></a><span class="lineno">  955</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
-<div class="line"><a name="l00956"></a><span class="lineno">  956</span>&#160;    <span class="keyword">write</span>(log%unit, form_separator)</div>
-<div class="line"><a name="l00957"></a><span class="lineno">  957</span>&#160;    <span class="keyword">write</span>(log%unit, form_60 ) <span class="stringliteral">&quot;Processing:&quot;</span>, <span class="keyword">size</span>(sites), <span class="stringliteral">&quot;sites&quot;</span></div>
-<div class="line"><a name="l00958"></a><span class="lineno">  958</span>&#160;    <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(2x,a,t16,3a15)&#39;</span>) <span class="stringliteral">&quot;Name&quot;</span> , <span class="stringliteral">&quot;lat [deg]&quot;</span> , <span class="stringliteral">&quot;lon [deg]&quot;</span> ,<span class="stringliteral">&quot;H [m]&quot;</span></div>
-<div class="line"><a name="l00959"></a><span class="lineno">  959</span>&#160;    <span class="keyword">do</span> j = 1,<span class="keyword">size</span>(sites)</div>
-<div class="line"><a name="l00960"></a><span class="lineno">  960</span>&#160;      <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(2x,a,t16,3f15.4)&#39;</span>) &amp;</div>
-<div class="line"><a name="l00961"></a><span class="lineno">  961</span>&#160;        sites(j)%name, sites(j)%lat, sites(j)%lon , sites(j)%height</div>
-<div class="line"><a name="l00962"></a><span class="lineno">  962</span>&#160;      <span class="keyword">if</span> (j.eq.10) exit</div>
-<div class="line"><a name="l00963"></a><span class="lineno">  963</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00964"></a><span class="lineno">  964</span>&#160;    <span class="keyword">if</span> (<span class="keyword">size</span>(sites).gt.10) <span class="keyword">write</span>(log%unit , form_62 ) &amp;</div>
-<div class="line"><a name="l00965"></a><span class="lineno">  965</span>&#160;      <span class="stringliteral">&quot;and&quot;</span>, <span class="keyword">size</span>(sites)-10, <span class="stringliteral">&quot;more&quot;</span></div>
-<div class="line"><a name="l00966"></a><span class="lineno">  966</span>&#160;</div>
-<div class="line"><a name="l00967"></a><span class="lineno">  967</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
-<div class="line"><a name="l00968"></a><span class="lineno">  968</span>&#160;    <span class="comment">! Computation method summary</span></div>
-<div class="line"><a name="l00969"></a><span class="lineno">  969</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
-<div class="line"><a name="l00970"></a><span class="lineno">  970</span>&#160;    <span class="keyword">if</span> (program_calling.eq.<span class="stringliteral">&quot;grat&quot;</span> ) <span class="keyword">then</span></div>
-<div class="line"><a name="l00971"></a><span class="lineno">  971</span>&#160;      <span class="keyword">write</span>(log%unit, form_separator)</div>
-<div class="line"><a name="l00972"></a><span class="lineno">  972</span>&#160;      <span class="keyword">write</span>(log%unit, form_60 ) <span class="stringliteral">&quot;Method used:&quot;</span>, method</div>
-<div class="line"><a name="l00973"></a><span class="lineno">  973</span>&#160;    <span class="keyword">endif</span></div>
-<div class="line"><a name="l00974"></a><span class="lineno">  974</span>&#160;</div>
-<div class="line"><a name="l00975"></a><span class="lineno">  975</span>&#160;    <span class="keyword">write</span>(log%unit, form_separator)</div>
-<div class="line"><a name="l00976"></a><span class="lineno">  976</span>&#160;    <span class="keyword">write</span>(log%unit, form_60 ) <span class="stringliteral">&quot;Interpolation data:&quot;</span>, &amp; </div>
-<div class="line"><a name="l00977"></a><span class="lineno">  977</span>&#160;    interpolation_names(model%interpolation)(1:7)</div>
+<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;  <span class="keyword">write</span>(log%unit,form_inheader ) , <span class="stringliteral">&#39;Warsaw University of Technology&#39;</span></div>
+<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;  <span class="keyword">write</span>(log%unit , form_header ) </div>
+<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;<span class="keyword">end subroutine</span></div>
+<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;</div>
+<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;<span class="comment">!&gt; Print settings </span></div>
+<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00924"></a><span class="lineno"><a class="code" href="classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea">  924</a></span>&#160;<span class="keyword">subroutine </span><a class="code" href="classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea">print_settings</a> ( program_calling )</div>
+<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;  <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;  <span class="keywordtype">logical</span> :: exists</div>
+<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;  <span class="keywordtype">character (len=255)</span>:: dummy</div>
+<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;  <span class="keywordtype">integer</span> :: io_status , j</div>
+<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;  <span class="keywordtype">character(*)</span> :: program_calling</div>
+<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;</div>
+<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;  call <a class="code" href="classget__cmd__line.html#a2c5bdb105af43563400c135340bad598">print_version</a>( program_calling = program_calling)</div>
+<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;  call date_and_time( values = execution_date )</div>
+<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;  <span class="keyword">write</span>(log%unit,</div>
+<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;<span class="stringliteral">&#39;(&quot;Program started:&quot;,1x,i4,2(&quot;-&quot;,i2.2), &amp;    1x,i2.2,2(&quot;:&quot;,i2.2),1x,&quot;(&quot;,SP,i3.2,&quot;h UTC)&quot;)&#39;</span>),          &amp;</div>
+<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;    execution_date(1:3),execution_date(5:7),execution_date(4)/60</div>
+<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;</div>
+<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;  <span class="keyword">inquire</span>(fileunit_tmp, exist=exists)</div>
+<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;  <span class="keyword">if</span> (exists) <span class="keyword">then</span></div>
+<div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;    <span class="keyword">write</span> (log%unit, form_60 ) <span class="stringliteral">&#39;Summary of command line arguments&#39;</span></div>
+<div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;</div>
+<div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
+<div class="line"><a name="l00943"></a><span class="lineno">  943</span>&#160;    <span class="comment">! Cmd line summary (from scratch file)</span></div>
+<div class="line"><a name="l00944"></a><span class="lineno">  944</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
+<div class="line"><a name="l00945"></a><span class="lineno">  945</span>&#160;    rewind(fileunit_tmp)</div>
+<div class="line"><a name="l00946"></a><span class="lineno">  946</span>&#160;    <span class="keyword">do</span></div>
+<div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;      <span class="keyword">read</span>(fileunit_tmp,<span class="stringliteral">&#39;(a80)&#39;</span>, iostat = io_status ) dummy</div>
+<div class="line"><a name="l00948"></a><span class="lineno">  948</span>&#160;      <span class="keyword">if</span> ( io_status == iostat_end)  exit </div>
+<div class="line"><a name="l00949"></a><span class="lineno">  949</span>&#160;      <span class="keyword">write</span> (log%unit, <span class="stringliteral">&#39;(a80)&#39;</span>) dummy</div>
+<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;    <span class="keyword">enddo</span> </div>
+<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;</div>
+<div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
+<div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160;    <span class="comment">! Site summary</span></div>
+<div class="line"><a name="l00954"></a><span class="lineno">  954</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
+<div class="line"><a name="l00955"></a><span class="lineno">  955</span>&#160;    <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00956"></a><span class="lineno">  956</span>&#160;    <span class="keyword">write</span>(log%unit, form_60 ) <span class="stringliteral">&quot;Processing:&quot;</span>, <span class="keyword">size</span>(sites), <span class="stringliteral">&quot;sites&quot;</span></div>
+<div class="line"><a name="l00957"></a><span class="lineno">  957</span>&#160;    <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(2x,a,t16,3a15)&#39;</span>) <span class="stringliteral">&quot;Name&quot;</span> , <span class="stringliteral">&quot;lat [deg]&quot;</span> , <span class="stringliteral">&quot;lon [deg]&quot;</span> ,<span class="stringliteral">&quot;H [m]&quot;</span></div>
+<div class="line"><a name="l00958"></a><span class="lineno">  958</span>&#160;    <span class="keyword">do</span> j = 1,<span class="keyword">size</span>(sites)</div>
+<div class="line"><a name="l00959"></a><span class="lineno">  959</span>&#160;      <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(2x,a,t16,3f15.4)&#39;</span>) &amp;</div>
+<div class="line"><a name="l00960"></a><span class="lineno">  960</span>&#160;        sites(j)%name, sites(j)%lat, sites(j)%lon , sites(j)%height</div>
+<div class="line"><a name="l00961"></a><span class="lineno">  961</span>&#160;      <span class="keyword">if</span> (j.eq.10) exit</div>
+<div class="line"><a name="l00962"></a><span class="lineno">  962</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00963"></a><span class="lineno">  963</span>&#160;    <span class="keyword">if</span> (<span class="keyword">size</span>(sites).gt.10) <span class="keyword">write</span>(log%unit , form_62 ) &amp;</div>
+<div class="line"><a name="l00964"></a><span class="lineno">  964</span>&#160;      <span class="stringliteral">&quot;and&quot;</span>, <span class="keyword">size</span>(sites)-10, <span class="stringliteral">&quot;more&quot;</span></div>
+<div class="line"><a name="l00965"></a><span class="lineno">  965</span>&#160;</div>
+<div class="line"><a name="l00966"></a><span class="lineno">  966</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
+<div class="line"><a name="l00967"></a><span class="lineno">  967</span>&#160;    <span class="comment">! Computation method summary</span></div>
+<div class="line"><a name="l00968"></a><span class="lineno">  968</span>&#160;    <span class="comment">!----------------------------------------------------</span></div>
+<div class="line"><a name="l00969"></a><span class="lineno">  969</span>&#160;    <span class="keyword">if</span> (program_calling.eq.<span class="stringliteral">&quot;grat&quot;</span> ) <span class="keyword">then</span></div>
+<div class="line"><a name="l00970"></a><span class="lineno">  970</span>&#160;      <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00971"></a><span class="lineno">  971</span>&#160;      <span class="keyword">write</span>(log%unit, form_60 ) <span class="stringliteral">&quot;Method used:&quot;</span>, method</div>
+<div class="line"><a name="l00972"></a><span class="lineno">  972</span>&#160;    <span class="keyword">endif</span></div>
+<div class="line"><a name="l00973"></a><span class="lineno">  973</span>&#160;</div>
+<div class="line"><a name="l00974"></a><span class="lineno">  974</span>&#160;    <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00975"></a><span class="lineno">  975</span>&#160;    <span class="keyword">write</span>(log%unit, form_60 ) <span class="stringliteral">&quot;Interpolation data:&quot;</span>, &amp; </div>
+<div class="line"><a name="l00976"></a><span class="lineno">  976</span>&#160;    interpolation_names(model%interpolation)(1:7)</div>
+<div class="line"><a name="l00977"></a><span class="lineno">  977</span>&#160;</div>
 <div class="line"><a name="l00978"></a><span class="lineno">  978</span>&#160;</div>
 <div class="line"><a name="l00979"></a><span class="lineno">  979</span>&#160;</div>
-<div class="line"><a name="l00980"></a><span class="lineno">  980</span>&#160;</div>
-<div class="line"><a name="l00981"></a><span class="lineno">  981</span>&#160;  <span class="keyword">endif</span></div>
-<div class="line"><a name="l00982"></a><span class="lineno">  982</span>&#160;<span class="keyword">end subroutine</span></div>
-<div class="line"><a name="l00983"></a><span class="lineno">  983</span>&#160;</div>
-<div class="line"><a name="l00984"></a><span class="lineno">  984</span>&#160;<span class="keyword">subroutine </span>print_help (program_calling)</div>
-<div class="line"><a name="l00985"></a><span class="lineno">  985</span>&#160;  <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l00986"></a><span class="lineno">  986</span>&#160;  <span class="keywordtype">character(*)</span> :: program_calling</div>
-<div class="line"><a name="l00987"></a><span class="lineno">  987</span>&#160;  <span class="keyword">type</span> help_fields</div>
-<div class="line"><a name="l00988"></a><span class="lineno">  988</span>&#160;    <span class="keywordtype">character(2)</span> :: switch</div>
-<div class="line"><a name="l00989"></a><span class="lineno">  989</span>&#160;    <span class="keywordtype">character(255)</span>, <span class="keywordtype">allocatable</span>,<span class="keywordtype">dimension(:)</span> :: description </div>
-<div class="line"><a name="l00990"></a><span class="lineno">  990</span>&#160;    <span class="keywordtype">character(255)</span>:: example=<span class="stringliteral">&quot;&quot;</span></div>
-<div class="line"><a name="l00991"></a><span class="lineno">  991</span>&#160;<span class="keyword">  end type</span></div>
-<div class="line"><a name="l00992"></a><span class="lineno">  992</span>&#160;  <span class="comment">! todo change array size</span></div>
-<div class="line"><a name="l00993"></a><span class="lineno">  993</span>&#160;  <span class="keywordtype">type(</span>help_fields<span class="keywordtype">)</span> help(9)</div>
-<div class="line"><a name="l00994"></a><span class="lineno">  994</span>&#160;  <span class="keywordtype">integer</span> :: i , j</div>
-<div class="line"><a name="l00995"></a><span class="lineno">  995</span>&#160;</div>
-<div class="line"><a name="l00996"></a><span class="lineno">  996</span>&#160;  help(1)%switch =      <span class="stringliteral">&quot;-h&quot;</span></div>
-<div class="line"><a name="l00997"></a><span class="lineno">  997</span>&#160;  <span class="keyword">allocate</span>(help(1)%description(1))</div>
-<div class="line"><a name="l00998"></a><span class="lineno">  998</span>&#160;  help(1)%description(1) = <span class="stringliteral">&quot;print help&quot;</span></div>
-<div class="line"><a name="l00999"></a><span class="lineno">  999</span>&#160;</div>
-<div class="line"><a name="l01000"></a><span class="lineno"> 1000</span>&#160;  help(2)%switch =      <span class="stringliteral">&quot;-v&quot;</span> </div>
-<div class="line"><a name="l01001"></a><span class="lineno"> 1001</span>&#160;  <span class="keyword">allocate</span>(help(2)%description(1))</div>
-<div class="line"><a name="l01002"></a><span class="lineno"> 1002</span>&#160;  help(2)%description(1) = <span class="stringliteral">&quot;print version and author&quot;</span></div>
-<div class="line"><a name="l01003"></a><span class="lineno"> 1003</span>&#160;</div>
-<div class="line"><a name="l01004"></a><span class="lineno"> 1004</span>&#160;  help(3)%switch = <span class="stringliteral">&quot;-S&quot;</span></div>
-<div class="line"><a name="l01005"></a><span class="lineno"> 1005</span>&#160;  <span class="keyword">allocate</span>(help(3)%description(1))</div>
-<div class="line"><a name="l01006"></a><span class="lineno"> 1006</span>&#160;  help(3)%description(1) = <span class="stringliteral">&quot;set site(s) coordinates&quot;</span></div>
-<div class="line"><a name="l01007"></a><span class="lineno"> 1007</span>&#160;  help(3)%example = <span class="stringliteral">&quot;-R0/20/30/40 or -Rg (=R0/360/-90/90) same as GMT&quot;</span></div>
-<div class="line"><a name="l01008"></a><span class="lineno"> 1008</span>&#160;</div>
-<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160;  help(4)%switch = <span class="stringliteral">&quot;-L&quot;</span></div>
-<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160;<span class="comment">!  allocate(help(4)%description(4))</span></div>
-<div class="line"><a name="l01011"></a><span class="lineno"> 1011</span>&#160;<span class="comment">!  help(4)%description(1) = &quot;prints additional information&quot;</span></div>
-<div class="line"><a name="l01012"></a><span class="lineno"> 1012</span>&#160;<span class="comment">!  help(4)%description(2) = &quot;syntax: -L[filename]&quot;</span></div>
-<div class="line"><a name="l01013"></a><span class="lineno"> 1013</span>&#160;<span class="comment">!    help(4)%example = &quot;-L[filename]&quot;</span></div>
-<div class="line"><a name="l01014"></a><span class="lineno"> 1014</span>&#160;<span class="comment">!  help(4)%example = &quot;todo&quot;//&#39;/&#39;//&quot;fdf&quot;</span></div>
-<div class="line"><a name="l01015"></a><span class="lineno"> 1015</span>&#160;</div>
-<div class="line"><a name="l01016"></a><span class="lineno"> 1016</span>&#160;  <span class="keyword">write</span>(log%unit , form_60) , <span class="stringliteral">&#39;Summary of available options for program &#39;</span>//program_calling</div>
-<div class="line"><a name="l01017"></a><span class="lineno"> 1017</span>&#160;  <span class="keyword">do</span> i = 1 , <span class="keyword">size</span> (help)</div>
-<div class="line"><a name="l01018"></a><span class="lineno"> 1018</span>&#160;  <span class="keyword">if</span>(<a class="code" href="classget__cmd__line.html#aac7b97288587585493e12fe5ae6248ce">if_switch_program</a>(program_calling , help(i)%switch )) <span class="keyword">then</span></div>
-<div class="line"><a name="l01019"></a><span class="lineno"> 1019</span>&#160;    <span class="keyword">write</span>(log%unit , form_61) ,trim(help(i)%switch)</div>
-<div class="line"><a name="l01020"></a><span class="lineno"> 1020</span>&#160;    <span class="keyword">if</span>(<span class="keyword">allocated</span>(help(i)%description)) <span class="keyword">then</span></div>
-<div class="line"><a name="l01021"></a><span class="lineno"> 1021</span>&#160;      <span class="keyword">do</span> j = 1 , <span class="keyword">size</span>(help(i)%description)</div>
-<div class="line"><a name="l01022"></a><span class="lineno"> 1022</span>&#160;        <span class="keyword">write</span> (log%unit , form_62 ) trim(help(i)%description(j))</div>
-<div class="line"><a name="l01023"></a><span class="lineno"> 1023</span>&#160;        <span class="keyword">if</span> (.not.help(i)%example(1:1).eq.<span class="stringliteral">&quot;&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l01024"></a><span class="lineno"> 1024</span>&#160;<span class="comment">!          write(log%unit , form_63) , trim(help(i)%description(j)example)</span></div>
-<div class="line"><a name="l01025"></a><span class="lineno"> 1025</span>&#160;        <span class="keyword">endif</span></div>
-<div class="line"><a name="l01026"></a><span class="lineno"> 1026</span>&#160;      <span class="keyword">enddo</span></div>
-<div class="line"><a name="l01027"></a><span class="lineno"> 1027</span>&#160;    <span class="keyword">endif</span></div>
-<div class="line"><a name="l01028"></a><span class="lineno"> 1028</span>&#160;  <span class="keyword">endif</span> </div>
-<div class="line"><a name="l01029"></a><span class="lineno"> 1029</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l01030"></a><span class="lineno"> 1030</span>&#160;</div>
-<div class="line"><a name="l01031"></a><span class="lineno"> 1031</span>&#160;<span class="keyword">end subroutine</span></div>
-<div class="line"><a name="l01032"></a><span class="lineno"> 1032</span>&#160;</div>
-<div class="line"><a name="l01033"></a><span class="lineno"> 1033</span>&#160;<span class="keyword">subroutine </span>print_warning (  warn , unit)</div>
-<div class="line"><a name="l01034"></a><span class="lineno"> 1034</span>&#160; <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l01035"></a><span class="lineno"> 1035</span>&#160; <span class="keywordtype">character (len=*)</span>  :: warn</div>
-<div class="line"><a name="l01036"></a><span class="lineno"> 1036</span>&#160; <span class="keywordtype">integer</span> , <span class="keywordtype">optional</span> :: unit</div>
-<div class="line"><a name="l01037"></a><span class="lineno"> 1037</span>&#160; <span class="keywordtype">integer</span> :: def_unit</div>
-<div class="line"><a name="l01038"></a><span class="lineno"> 1038</span>&#160;</div>
-<div class="line"><a name="l01039"></a><span class="lineno"> 1039</span>&#160; def_unit=fileunit_tmp</div>
-<div class="line"><a name="l01040"></a><span class="lineno"> 1040</span>&#160; <span class="keyword">if</span> (present(unit) ) def_unit=unit</div>
-<div class="line"><a name="l01041"></a><span class="lineno"> 1041</span>&#160;</div>
-<div class="line"><a name="l01042"></a><span class="lineno"> 1042</span>&#160; <span class="keyword">if</span> (warn .eq. <span class="stringliteral">&quot;site_file_format&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l01043"></a><span class="lineno"> 1043</span>&#160;  <span class="keyword">write</span>(def_unit, form_63) <span class="stringliteral">&quot;Some records were rejected&quot;</span></div>
-<div class="line"><a name="l01044"></a><span class="lineno"> 1044</span>&#160;  <span class="keyword">write</span>(def_unit, form_63) <span class="stringliteral">&quot;you should specify for each line at least 3[4] parameters in free format:&quot;</span></div>
-<div class="line"><a name="l01045"></a><span class="lineno"> 1045</span>&#160;  <span class="keyword">write</span>(def_unit, form_63) <span class="stringliteral">&quot;name lat lon [H=0] (skipped)&quot;</span></div>
-<div class="line"><a name="l01046"></a><span class="lineno"> 1046</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;boundaries&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l01047"></a><span class="lineno"> 1047</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;something wrong with boundaries. IGNORED&quot;</span></div>
-<div class="line"><a name="l01048"></a><span class="lineno"> 1048</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;site&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l01049"></a><span class="lineno"> 1049</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;something wrong with -S specification. IGNORED&quot;</span></div>
-<div class="line"><a name="l01050"></a><span class="lineno"> 1050</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;repeated&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l01051"></a><span class="lineno"> 1051</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;reapeted specification. IGNORED&quot;</span></div>
-<div class="line"><a name="l01052"></a><span class="lineno"> 1052</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;dates&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l01053"></a><span class="lineno"> 1053</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;something wrong with date format -D. IGNORED&quot;</span></div>
-<div class="line"><a name="l01054"></a><span class="lineno"> 1054</span>&#160;<span class="keyword">endif</span></div>
-<div class="line"><a name="l01055"></a><span class="lineno"> 1055</span>&#160;<span class="keyword">end subroutine</span></div>
+<div class="line"><a name="l00980"></a><span class="lineno">  980</span>&#160;  <span class="keyword">endif</span></div>
+<div class="line"><a name="l00981"></a><span class="lineno">  981</span>&#160;<span class="keyword">end subroutine</span></div>
+<div class="line"><a name="l00982"></a><span class="lineno">  982</span>&#160;</div>
+<div class="line"><a name="l00983"></a><span class="lineno">  983</span>&#160;<span class="keyword">subroutine </span>print_help (program_calling)</div>
+<div class="line"><a name="l00984"></a><span class="lineno">  984</span>&#160;  <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l00985"></a><span class="lineno">  985</span>&#160;  <span class="keywordtype">character(*)</span> :: program_calling</div>
+<div class="line"><a name="l00986"></a><span class="lineno">  986</span>&#160;  <span class="keyword">type</span> help_fields</div>
+<div class="line"><a name="l00987"></a><span class="lineno">  987</span>&#160;    <span class="keywordtype">character(2)</span> :: switch</div>
+<div class="line"><a name="l00988"></a><span class="lineno">  988</span>&#160;    <span class="keywordtype">character(255)</span>, <span class="keywordtype">allocatable</span>,<span class="keywordtype">dimension(:)</span> :: description </div>
+<div class="line"><a name="l00989"></a><span class="lineno">  989</span>&#160;    <span class="keywordtype">character(255)</span>:: example=<span class="stringliteral">&quot;&quot;</span></div>
+<div class="line"><a name="l00990"></a><span class="lineno">  990</span>&#160;<span class="keyword">  end type</span></div>
+<div class="line"><a name="l00991"></a><span class="lineno">  991</span>&#160;  <span class="comment">! todo change array size</span></div>
+<div class="line"><a name="l00992"></a><span class="lineno">  992</span>&#160;  <span class="keywordtype">type(</span>help_fields<span class="keywordtype">)</span> help(9)</div>
+<div class="line"><a name="l00993"></a><span class="lineno">  993</span>&#160;  <span class="keywordtype">integer</span> :: i , j</div>
+<div class="line"><a name="l00994"></a><span class="lineno">  994</span>&#160;</div>
+<div class="line"><a name="l00995"></a><span class="lineno">  995</span>&#160;  help(1)%switch =      <span class="stringliteral">&quot;-h&quot;</span></div>
+<div class="line"><a name="l00996"></a><span class="lineno">  996</span>&#160;  <span class="keyword">allocate</span>(help(1)%description(1))</div>
+<div class="line"><a name="l00997"></a><span class="lineno">  997</span>&#160;  help(1)%description(1) = <span class="stringliteral">&quot;print help&quot;</span></div>
+<div class="line"><a name="l00998"></a><span class="lineno">  998</span>&#160;</div>
+<div class="line"><a name="l00999"></a><span class="lineno">  999</span>&#160;  help(2)%switch =      <span class="stringliteral">&quot;-v&quot;</span> </div>
+<div class="line"><a name="l01000"></a><span class="lineno"> 1000</span>&#160;  <span class="keyword">allocate</span>(help(2)%description(1))</div>
+<div class="line"><a name="l01001"></a><span class="lineno"> 1001</span>&#160;  help(2)%description(1) = <span class="stringliteral">&quot;print version and author&quot;</span></div>
+<div class="line"><a name="l01002"></a><span class="lineno"> 1002</span>&#160;</div>
+<div class="line"><a name="l01003"></a><span class="lineno"> 1003</span>&#160;  help(3)%switch = <span class="stringliteral">&quot;-S&quot;</span></div>
+<div class="line"><a name="l01004"></a><span class="lineno"> 1004</span>&#160;  <span class="keyword">allocate</span>(help(3)%description(1))</div>
+<div class="line"><a name="l01005"></a><span class="lineno"> 1005</span>&#160;  help(3)%description(1) = <span class="stringliteral">&quot;set site(s) coordinates&quot;</span></div>
+<div class="line"><a name="l01006"></a><span class="lineno"> 1006</span>&#160;  help(3)%example = <span class="stringliteral">&quot;-R0/20/30/40 or -Rg (=R0/360/-90/90) same as GMT&quot;</span></div>
+<div class="line"><a name="l01007"></a><span class="lineno"> 1007</span>&#160;</div>
+<div class="line"><a name="l01008"></a><span class="lineno"> 1008</span>&#160;  help(4)%switch = <span class="stringliteral">&quot;-L&quot;</span></div>
+<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160;<span class="comment">!  allocate(help(4)%description(4))</span></div>
+<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160;<span class="comment">!  help(4)%description(1) = &quot;prints additional information&quot;</span></div>
+<div class="line"><a name="l01011"></a><span class="lineno"> 1011</span>&#160;<span class="comment">!  help(4)%description(2) = &quot;syntax: -L[filename]&quot;</span></div>
+<div class="line"><a name="l01012"></a><span class="lineno"> 1012</span>&#160;<span class="comment">!    help(4)%example = &quot;-L[filename]&quot;</span></div>
+<div class="line"><a name="l01013"></a><span class="lineno"> 1013</span>&#160;<span class="comment">!  help(4)%example = &quot;todo&quot;//&#39;/&#39;//&quot;fdf&quot;</span></div>
+<div class="line"><a name="l01014"></a><span class="lineno"> 1014</span>&#160;</div>
+<div class="line"><a name="l01015"></a><span class="lineno"> 1015</span>&#160;  <span class="keyword">write</span>(log%unit , form_60) , <span class="stringliteral">&#39;Summary of available options for program &#39;</span>//program_calling</div>
+<div class="line"><a name="l01016"></a><span class="lineno"> 1016</span>&#160;  <span class="keyword">do</span> i = 1 , <span class="keyword">size</span> (help)</div>
+<div class="line"><a name="l01017"></a><span class="lineno"> 1017</span>&#160;  <span class="keyword">if</span>(<a class="code" href="classget__cmd__line.html#aac7b97288587585493e12fe5ae6248ce">if_switch_program</a>(program_calling , help(i)%switch )) <span class="keyword">then</span></div>
+<div class="line"><a name="l01018"></a><span class="lineno"> 1018</span>&#160;    <span class="keyword">write</span>(log%unit , form_61) ,trim(help(i)%switch)</div>
+<div class="line"><a name="l01019"></a><span class="lineno"> 1019</span>&#160;    <span class="keyword">if</span>(<span class="keyword">allocated</span>(help(i)%description)) <span class="keyword">then</span></div>
+<div class="line"><a name="l01020"></a><span class="lineno"> 1020</span>&#160;      <span class="keyword">do</span> j = 1 , <span class="keyword">size</span>(help(i)%description)</div>
+<div class="line"><a name="l01021"></a><span class="lineno"> 1021</span>&#160;        <span class="keyword">write</span> (log%unit , form_62 ) trim(help(i)%description(j))</div>
+<div class="line"><a name="l01022"></a><span class="lineno"> 1022</span>&#160;        <span class="keyword">if</span> (.not.help(i)%example(1:1).eq.<span class="stringliteral">&quot;&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l01023"></a><span class="lineno"> 1023</span>&#160;<span class="comment">!          write(log%unit , form_63) , trim(help(i)%description(j)example)</span></div>
+<div class="line"><a name="l01024"></a><span class="lineno"> 1024</span>&#160;        <span class="keyword">endif</span></div>
+<div class="line"><a name="l01025"></a><span class="lineno"> 1025</span>&#160;      <span class="keyword">enddo</span></div>
+<div class="line"><a name="l01026"></a><span class="lineno"> 1026</span>&#160;    <span class="keyword">endif</span></div>
+<div class="line"><a name="l01027"></a><span class="lineno"> 1027</span>&#160;  <span class="keyword">endif</span> </div>
+<div class="line"><a name="l01028"></a><span class="lineno"> 1028</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l01029"></a><span class="lineno"> 1029</span>&#160;</div>
+<div class="line"><a name="l01030"></a><span class="lineno"> 1030</span>&#160;<span class="keyword">end subroutine</span></div>
+<div class="line"><a name="l01031"></a><span class="lineno"> 1031</span>&#160;</div>
+<div class="line"><a name="l01032"></a><span class="lineno"> 1032</span>&#160;<span class="keyword">subroutine </span>print_warning (  warn , unit)</div>
+<div class="line"><a name="l01033"></a><span class="lineno"> 1033</span>&#160; <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l01034"></a><span class="lineno"> 1034</span>&#160; <span class="keywordtype">character (len=*)</span>  :: warn</div>
+<div class="line"><a name="l01035"></a><span class="lineno"> 1035</span>&#160; <span class="keywordtype">integer</span> , <span class="keywordtype">optional</span> :: unit</div>
+<div class="line"><a name="l01036"></a><span class="lineno"> 1036</span>&#160; <span class="keywordtype">integer</span> :: def_unit</div>
+<div class="line"><a name="l01037"></a><span class="lineno"> 1037</span>&#160;</div>
+<div class="line"><a name="l01038"></a><span class="lineno"> 1038</span>&#160; def_unit=fileunit_tmp</div>
+<div class="line"><a name="l01039"></a><span class="lineno"> 1039</span>&#160; <span class="keyword">if</span> (present(unit) ) def_unit=unit</div>
+<div class="line"><a name="l01040"></a><span class="lineno"> 1040</span>&#160;</div>
+<div class="line"><a name="l01041"></a><span class="lineno"> 1041</span>&#160; <span class="keyword">if</span> (warn .eq. <span class="stringliteral">&quot;site_file_format&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l01042"></a><span class="lineno"> 1042</span>&#160;  <span class="keyword">write</span>(def_unit, form_63) <span class="stringliteral">&quot;Some records were rejected&quot;</span></div>
+<div class="line"><a name="l01043"></a><span class="lineno"> 1043</span>&#160;  <span class="keyword">write</span>(def_unit, form_63) <span class="stringliteral">&quot;you should specify for each line at least 3[4] parameters in free format:&quot;</span></div>
+<div class="line"><a name="l01044"></a><span class="lineno"> 1044</span>&#160;  <span class="keyword">write</span>(def_unit, form_63) <span class="stringliteral">&quot;name lat lon [H=0] (skipped)&quot;</span></div>
+<div class="line"><a name="l01045"></a><span class="lineno"> 1045</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;boundaries&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l01046"></a><span class="lineno"> 1046</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;something wrong with boundaries. IGNORED&quot;</span></div>
+<div class="line"><a name="l01047"></a><span class="lineno"> 1047</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;site&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l01048"></a><span class="lineno"> 1048</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;something wrong with -S specification. IGNORED&quot;</span></div>
+<div class="line"><a name="l01049"></a><span class="lineno"> 1049</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;repeated&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l01050"></a><span class="lineno"> 1050</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;reapeted specification. IGNORED&quot;</span></div>
+<div class="line"><a name="l01051"></a><span class="lineno"> 1051</span>&#160;elseif(warn .eq. <span class="stringliteral">&quot;dates&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l01052"></a><span class="lineno"> 1052</span>&#160;  <span class="keyword">write</span>(def_unit, form_62) <span class="stringliteral">&quot;something wrong with date format -D. IGNORED&quot;</span></div>
+<div class="line"><a name="l01053"></a><span class="lineno"> 1053</span>&#160;<span class="keyword">endif</span></div>
+<div class="line"><a name="l01054"></a><span class="lineno"> 1054</span>&#160;<span class="keyword">end subroutine</span></div>
+<div class="line"><a name="l01055"></a><span class="lineno"> 1055</span>&#160;</div>
 <div class="line"><a name="l01056"></a><span class="lineno"> 1056</span>&#160;</div>
-<div class="line"><a name="l01057"></a><span class="lineno"> 1057</span>&#160;</div>
-<div class="line"><a name="l01058"></a><span class="lineno"> 1058</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
-<div class="line"><a name="l01059"></a><span class="lineno"> 1059</span>&#160;<span class="comment">!&gt; Counts number of properly specified models</span></div>
-<div class="line"><a name="l01060"></a><span class="lineno"> 1060</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
-<div class="line"><a name="l01061"></a><span class="lineno"><a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497"> 1061</a></span>&#160;<span class="keyword">integer </span><span class="keyword">function </span><a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> (model)</div>
-<div class="line"><a name="l01062"></a><span class="lineno"> 1062</span>&#160;  <span class="keywordtype">type(</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> , <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension (:)</span> :: model</div>
-<div class="line"><a name="l01063"></a><span class="lineno"> 1063</span>&#160;  <span class="keywordtype">integer</span> :: i</div>
-<div class="line"><a name="l01064"></a><span class="lineno"> 1064</span>&#160;</div>
-<div class="line"><a name="l01065"></a><span class="lineno"> 1065</span>&#160;  <a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> = 0</div>
-<div class="line"><a name="l01066"></a><span class="lineno"> 1066</span>&#160;</div>
-<div class="line"><a name="l01067"></a><span class="lineno"> 1067</span>&#160;  <span class="keyword">do</span> i = 1 , <span class="keyword">size</span> (model)</div>
-<div class="line"><a name="l01068"></a><span class="lineno"> 1068</span>&#160;    <span class="keyword">if</span> (model(i)%if) <a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> =<a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> + 1</div>
-<div class="line"><a name="l01069"></a><span class="lineno"> 1069</span>&#160;    <span class="keyword">if</span> (model(i)%if_constant_value) <a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> =<a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> + 1</div>
-<div class="line"><a name="l01070"></a><span class="lineno"> 1070</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l01071"></a><span class="lineno"> 1071</span>&#160;<span class="keyword">end function</span></div>
-<div class="line"><a name="l01072"></a><span class="lineno"> 1072</span>&#160;</div>
-<div class="line"><a name="l01073"></a><span class="lineno"> 1073</span>&#160;<span class="keyword">end module </span><a class="code" href="classget__cmd__line.html">get_cmd_line</a></div>
+<div class="line"><a name="l01057"></a><span class="lineno"> 1057</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l01058"></a><span class="lineno"> 1058</span>&#160;<span class="comment">!&gt; Counts number of properly specified models</span></div>
+<div class="line"><a name="l01059"></a><span class="lineno"> 1059</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l01060"></a><span class="lineno"><a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497"> 1060</a></span>&#160;<span class="keyword">integer </span><span class="keyword">function </span><a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> (model)</div>
+<div class="line"><a name="l01061"></a><span class="lineno"> 1061</span>&#160;  <span class="keywordtype">type(</span><a class="code" href="structget__cmd__line_1_1file.html">file</a><span class="keywordtype">)</span> , <span class="keywordtype">allocatable</span>, <span class="keywordtype">dimension (:)</span> :: model</div>
+<div class="line"><a name="l01062"></a><span class="lineno"> 1062</span>&#160;  <span class="keywordtype">integer</span> :: i</div>
+<div class="line"><a name="l01063"></a><span class="lineno"> 1063</span>&#160;</div>
+<div class="line"><a name="l01064"></a><span class="lineno"> 1064</span>&#160;  <a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> = 0</div>
+<div class="line"><a name="l01065"></a><span class="lineno"> 1065</span>&#160;</div>
+<div class="line"><a name="l01066"></a><span class="lineno"> 1066</span>&#160;  <span class="keyword">do</span> i = 1 , <span class="keyword">size</span> (model)</div>
+<div class="line"><a name="l01067"></a><span class="lineno"> 1067</span>&#160;    <span class="keyword">if</span> (model(i)%if) <a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> =<a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> + 1</div>
+<div class="line"><a name="l01068"></a><span class="lineno"> 1068</span>&#160;    <span class="keyword">if</span> (model(i)%if_constant_value) <a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> =<a class="code" href="classget__cmd__line.html#abfd9f2b2d145b8740956272a6dd2e497">nmodels</a> + 1</div>
+<div class="line"><a name="l01069"></a><span class="lineno"> 1069</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l01070"></a><span class="lineno"> 1070</span>&#160;<span class="keyword">end function</span></div>
+<div class="line"><a name="l01071"></a><span class="lineno"> 1071</span>&#160;</div>
+<div class="line"><a name="l01072"></a><span class="lineno"> 1072</span>&#160;<span class="keyword">end module </span><a class="code" href="classget__cmd__line.html">get_cmd_line</a></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="get__cmd__line_8f90.html">get_cmd_line.f90</a></li>
-    <li class="footer">Generated on Wed Jan 2 2013 00:42:11 for grat by
+    <li class="footer">Generated on Sat Jan 12 2013 14:19:46 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>
