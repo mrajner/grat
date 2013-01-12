@@ -1,7 +1,6 @@
 #!/bin/bash - 
 # Make map of polygon(s)
 
-# This scrips 
 # \author Marcin Rajner
 # \date 03.11.2012
 # This scripts need GMT to be installed \cite Wessel98

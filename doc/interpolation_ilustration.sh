@@ -17,8 +17,9 @@ do
    else
      interp=1
    fi
-  ../bin/value_check -F../data/ncep_reanalysis/pres.sfc.2012.nc:pres \
-    -S2.51/4.99/0.05/2.45,0.091,0.1 -I${interp}  -ointerp${co}1.dat -Linterpl1.dat
+  ../bin/value_check -F ../data/ncep_reanalysis/pres.sfc.2011.nc:pres \
+    -S 2.51/4.99/0.05/2.45,0.091,0.1 -I ${interp} \
+    -o interp${co}1.dat   -L interpl1.dat :b 
 done
   perl -n -i -e 'print if $. <= 4' interpl1.dat
 

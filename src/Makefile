@@ -106,4 +106,5 @@ docext:
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman
 	
 link:
-	cd ~/.local/bin && ln -s ${G}bin/* .
+	-cd ~/.local/bin && ln -s ${G}bin/* .
+	-cd ~/.local/bin && ln -s ${G}polygon/polygon_map.sh .
