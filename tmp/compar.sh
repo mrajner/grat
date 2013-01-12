@@ -1,4 +1,5 @@
 #!/bin/bash - 
+## \file
 #===============================================================================
 #          FILE: compar.sh
 #         USAGE: ./compar.sh 
@@ -29,8 +30,8 @@ set -o nounset                              # Treat unset variables as an error
 
   echo $B $L
 #../bin/grat -V -Stmp,${B},${L}  -F${SFC},${TMP},${HGT},${LND}   -Ghuang,huang,huang,huang,,1:1     -D20110218,2012  -o${numer}_${I}_5  -I1  
-../bin/grat -V -L:G -Stmp,${B},${L}  -F${SFC},${TMP},${HGT},${LND}   -G,rajner,,,,1:1    -D2011,2012  -o${numer}_${I}_3  -I1  
+  grat -V -L:G -Stmp,${B},${L}  -F${SFC},${TMP},${HGT},${LND}   -G,rajner,,,,1:1    -D2011,2012  -o${numer}_${I}_3  -I1  
 #../bin/grat -V -Stmp,${B},${L}  -F${SFC},${TMP},,${LND} -Bi  -G,,,,,1:1   -D20110101,20111231  -o${numer}_${I}_3  -I2
-../bin/value_check -V -Stmp,${B},${L}  -F${TMP}     -D20110101,20111231  -o${numer}_${I}_6  -I2 
+#../bin/value_check -V -Stmp,${B},${L}  -F${TMP}     -D20110101,20111231  -o${numer}_${I}_6  -I2 
 #../bin/grat  -Stmp,${B},${L}  -F${SFC},${TMP},,${LND} -Bi  -G,,,,,1:1  -L:G 
 #../bin/grat  -Stmp,${B},${L}  -F${SFC},${TMP},,${LND} -Bi  -Grajner,rajner,rajner,rajner,,1:1  -L:G 

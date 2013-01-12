@@ -2,7 +2,7 @@ program real_vs_standard
   use get_cmd_line
 !  use mod_polygon
   use mod_data
-  use aggf
+  use mod_aggf
 !  use mod_green
   
 

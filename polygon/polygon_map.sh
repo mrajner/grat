@@ -114,10 +114,11 @@ if [ -z $R ]; then
 fi
 
 A="-A999"
+J="M20+"
 
   gmtset FRAME_WIDTH=0.01c
 #  psbasemap $R -K -JM20+ -X0 -Y0 -B100 > $output.ps
-pscoast $R -Slightblue -Glightgray  -K -Di $A -J  > $output.ps
+pscoast $R -Slightblue -Glightgray  -K -Di $A -J${J}  > $output.ps
   last=3
   for i in $(seq 0 $((${#number_of_points[*]}-1)))
   do

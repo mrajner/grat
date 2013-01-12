@@ -141,8 +141,9 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
 <tr class="memdesc:adf7c4681df70e30915173cb997b48fea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpack variable.  <a href="#adf7c4681df70e30915173cb997b48fea"></a><br/></td></tr>
 <tr class="memitem:a93c7592496dc4eae192b17e8321faf78"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__data.html#a93c7592496dc4eae192b17e8321faf78">check</a> (status)</td></tr>
 <tr class="memdesc:a93c7592496dc4eae192b17e8321faf78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check the return code from netCDF manipulation.  <a href="#a93c7592496dc4eae192b17e8321faf78"></a><br/></td></tr>
-<tr class="memitem:a896c5acc3a0d4f7629b3b3e7ab5f197d"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__data.html#a896c5acc3a0d4f7629b3b3e7ab5f197d">get_value</a> (model, lat, lon, val, level, method)</td></tr>
-<tr class="memdesc:a896c5acc3a0d4f7629b3b3e7ab5f197d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value from model file.  <a href="#a896c5acc3a0d4f7629b3b3e7ab5f197d"></a><br/></td></tr>
+<tr class="memitem:a896c5acc3a0d4f7629b3b3e7ab5f197d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a896c5acc3a0d4f7629b3b3e7ab5f197d"></a>
+subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__data.html#a896c5acc3a0d4f7629b3b3e7ab5f197d">get_value</a> (model, lat, lon, val, level, method)</td></tr>
+<tr class="memdesc:a896c5acc3a0d4f7629b3b3e7ab5f197d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value from model file. <br/></td></tr>
 <tr class="memitem:af28328a7c7b9799bc19b36c09270fbbe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af28328a7c7b9799bc19b36c09270fbbe"></a>
 real function&#160;</td><td class="memItemRight" valign="bottom"><b>bilinear</b> (x, y, aux)</td></tr>
 <tr class="memitem:aa8a02c67fad1f37b23f4c2139b620ad5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8a02c67fad1f37b23f4c2139b620ad5"></a>
@@ -172,64 +173,6 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>invspt</b> (alp
 <p>from <a class="el" href="citelist.html#CITEREF_netcdf">[6]</a> </p>
 
 <p>Definition at line <a class="el" href="mod__data_8f90_source.html#l00216">216</a> of file <a class="el" href="mod__data_8f90_source.html">mod_data.f90</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a896c5acc3a0d4f7629b3b3e7ab5f197d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">subroutine mod_data::get_value </td>
-          <td>(</td>
-          <td class="paramtype">type(file), intent(in)&#160;</td>
-          <td class="paramname"><em>model</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>lat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>lon</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(sp), intent(out)&#160;</td>
-          <td class="paramname"><em>val</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(in), optional&#160;</td>
-          <td class="paramname"><em>level</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(in), optional&#160;</td>
-          <td class="paramname"><em>method</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the value from model file. </p>
-<p>if it is first call it loads the model into memory inspired by spotl <a class="el" href="citelist.html#CITEREF_Agnew97">[1]</a></p>
-<p>Get value can  <div class="image">
-<img src="/home/mrajner/src/grat/doc/interpolation_ilustration.jpg" alt="interpolation_ilustration.jpg"/>
-</div>
- 
-<p>Definition at line <a class="el" href="mod__data_8f90_source.html#l00237">237</a> of file <a class="el" href="mod__data_8f90_source.html">mod_data.f90</a>.</p>
 
 </div>
 </div>
@@ -306,7 +249,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>invspt</b> (alp
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classmod__data.html">mod_data</a></li>
-    <li class="footer">Generated on Sat Jan 12 2013 14:19:46 for grat by
+    <li class="footer">Generated on Sat Jan 12 2013 18:56:54 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

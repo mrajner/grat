@@ -6,7 +6,7 @@
 !! In this module there are several subroutines for computing
 !! AGGF and standard atmosphere parameters
 ! ==============================================================================
-module aggf
+module mod_aggf
 
   use constants
   implicit none

@@ -6,7 +6,7 @@ var searchData=
   ['read_5fnetcdf',['read_netcdf',['../classmod__data.html#ab906151b52ab91950d903a077579cb39',1,'mod_data']]],
   ['read_5fpolygon',['read_polygon',['../classmod__polygon.html#a3ef54cfb8bdfb337ef07a0a15b9d7f23',1,'mod_polygon']]],
   ['read_5fsite_5ffile',['read_site_file',['../classget__cmd__line.html#a02eb6ae4eed051c9a4ade6cd388e3270',1,'get_cmd_line']]],
-  ['read_5ftabulated_5fgreen',['read_tabulated_green',['../classaggf.html#ae99a136fea57f79af8d6005b014023d6',1,'aggf']]],
+  ['read_5ftabulated_5fgreen',['read_tabulated_green',['../classmod__aggf.html#a8ffc67d6f9939ac6b4a810564fcdffc5',1,'mod_aggf']]],
   ['result',['result',['../structmod__green_1_1result.html',1,'mod_green']]],
   ['rho_5fcrust',['rho_crust',['../classconstants.html#ab222a1a874711059a0239ee14c76b3f4',1,'constants']]],
   ['rho_5fearth',['rho_earth',['../classconstants.html#a02bce1b6e6b3ae31fdcfe12892853ac8',1,'constants']]]

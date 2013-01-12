@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['bouger',['bouger',['../classaggf.html#ae8d6dc64d7acd96534fe48a6080fa902',1,'aggf']]],
+  ['bouger',['bouger',['../classmod__aggf.html#aabc0bb6ce09e1b5bc8a039958319cdbd',1,'mod_aggf']]],
   ['bibliographic_20references',['Bibliographic References',['../citelist.html',1,'']]]
 ];

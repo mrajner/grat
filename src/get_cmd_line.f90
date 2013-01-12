@@ -333,6 +333,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
         call print_warning ( "repeated" , fileunit_tmp)
       endif
     case ("-I")
+      !> \todo add maximum minimum distances for integration
       write( fileunit_tmp , form_62 , advance="no" ) "interpolation method was set:"
       do i = 1 , cmd_line_entry%fields
         if (is_numeric(cmd_line_entry%field(i))) then
@@ -345,15 +346,20 @@ subroutine parse_option (cmd_line_entry , program_calling)
       enddo
       write(fileunit_tmp , *)
     case ("-L")
+      !> \todo make it mulitichoice: -Lfile:s,file2:b ...
       moreverbose%if=.true.
       moreverbose%name=cmd_line_entry%field(1)
       moreverbose%names(1) = cmd_line_entry%fieldnames(1)%names(1)
       write (fileunit_tmp , form_62) "printing additional information"
+      write (fileunit_tmp , form_62) "file: ", moreverbose%name
+      write (fileunit_tmp , form_62) "what: ", moreverbose%names(1)
       if (len(moreverbose%name).gt.0 .and. moreverbose%name.ne."") then
         open (newunit = moreverbose%unit , file = moreverbose%name , action = "write" )
       endif
     case ("-B")
       if (cmd_line_entry%field(1).eq."N" ) inverted_barometer=.false.
+    case ("-R")
+      if (cmd_line_entry%field(1).eq."+" ) refpres%if = .true.
     case ('-D')
       call parse_dates ( cmd_line_entry )
     case ('-F')
@@ -362,8 +368,10 @@ subroutine parse_option (cmd_line_entry , program_calling)
         call get_model_info (model (i) , cmd_line_entry , i )
       enddo
     case ("-G")
+      !> \todo when no given take defaults
       call parse_green(cmd_line_entry)
     case ('-M')
+      !> \todo rozbudować
       method = cmd_line_entry%field(1)
       write(fileunit_tmp, form_62), 'method was set: ' , method
     case ('-o')
@@ -390,7 +398,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
     end select
     return
 end subroutine 
- 
+
 ! =============================================================================
 !> This subroutine parse -G option i.e. reads Greens function
 ! =============================================================================
@@ -422,7 +430,6 @@ subroutine parse_green ( cmd_line_entry)
       .and. .not. cmd_line_entry%field(i).eq."rajner" )) then
         cmd_line_entry%field(i)="merriam"
       endif
-
 
       !> change the paths accordingly
       if (cmd_line_entry%field(i).eq."merriam") then

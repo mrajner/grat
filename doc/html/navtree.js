@@ -2,7 +2,6 @@ var NAVTREE =
 [
   [ "grat", "index.html", [
     [ "Grat overview", "index.html", null ],
-    [ "External resources", "intro_sec.html", null ],
     [ "Todo List", "todo.html", null ],
     [ "Bibliographic References", "citelist.html", null ],
     [ "Data Types List", null, [
@@ -15,11 +14,7 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Files", null, [
-      [ "File List", "files.html", "files" ],
-      [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
-        [ "Functions/Subroutines", "globals_func.html", null ]
-      ] ]
+      [ "File List", "files.html", "files" ]
     ] ],
     [ "Examples", "examples.html", "examples" ]
   ] ]

@@ -24,11 +24,27 @@
 !! file. This is *nix system default trash. For other system or file system
 !! organization, please change this value in \c get_cmd_line module.
 !!
-!! \section section
+!! \section usage
+!! after sucsesfull compiling make sure the executables are in your path
+!! \latexonly
+!!   \begin{figure}    
+!!    \input{/home/mrajner/src/grat/doc/interpolation_ilustration}
+!!    \caption{ddd}
+!!   \end{figure}
+!! \endlatexonly
+!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png
+!! \image html /home/mrajner/src/grat/doc/mapa1.png
+!! \image html /home/mrajner/src/grat/doc/mapa2.png
+!! \image html /home/mrajner/src/grat/doc/mapa3.png
+
 !! \page intro_sec External resources
 !!   - <a href="https://code.google.com/p/grat">project page</a> (git repository)
-!!   - <a href="../latex/refman.pdf">pdf</a> version of this manual
-!! \example ff
+!!   - <a href="../latex/refman.pdf">[pdf]</a> version of this manual
+!! \TODO give source for grant presentation
+!!   - <a href="">[pdf]</a> command line options (in Polish)
+
+!> \example example_aggf.f90
+!! \example grat_usage.sh
 ! ==============================================================================
 program grat
   use iso_fortran_env
@@ -62,11 +78,12 @@ program grat
   enddo
 
   ! todo refpres in get_cmd-line
-!  if (refpres%if) then
+  if (refpres%if) then
     refpres%name="/home/mrajner/src/grat/data/refpres/vienna_p0.grd"
     call read_netCDF (refpres)
-!  endif
+  endif
    
+
   allocate (results(size(sites)*max(size(dates),1)))
   iii=0
   do j = 1 , max(size (dates),1)
@@ -76,9 +93,6 @@ program grat
       if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
     enddo
 
-
-
-!todo
     do i = 1 , size(sites)
       write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
       iii=iii+1
@@ -87,26 +101,19 @@ program grat
     enddo
   enddo
 
-! print '(15f13.5)',  results(maxloc (results%e))%e - results(minloc (results%e))%e       ,&
-!           results(maxloc (results%n))%n - results(minloc (results%n))%n       ,&
-!           results(maxloc (results%dh))%dh - results(minloc (results%dh))%dh   ,&
-!           results(maxloc (results%dz))%dz - results(minloc (results%dz))%dz   ,&
-!           results(maxloc (results%dt))%dt - results(minloc (results%dt))%dt
+
+  if (moreverbose%if .and. moreverbose%names(1).eq."s") then
+    print '(15f13.5)', &
+      results(maxloc (results%e))%e - results(minloc (results%e))%e       ,&
+      results(maxloc (results%n))%n - results(minloc (results%n))%n       ,&
+      results(maxloc (results%dh))%dh - results(minloc (results%dh))%dh   ,&
+      results(maxloc (results%dz))%dz - results(minloc (results%dz))%dz   ,&
+      results(maxloc (results%dt))%dt - results(minloc (results%dt))%dt
+  endif
   
 
   call cpu_time(cpu_finish)
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
   write(log%unit, form_separator)
-! hellow ro
-  print * , model(6)%level
-  print *
-  lat =00
-  lon = 00
-  call get_value(model(7),lat,lon, val(0))
-  do i =1, size(model(6)%level)
-  call get_value(model(6),lat,lon, val(i), level = i, method=2)
-  enddo
-  print  '(30f10.2)', lat , lon , (val(i), i=0,size(model(6)%level))
-  print  '(30f10.2)' , lat , lon , (geop2geom(val(i)/1000)*1000., i=0,size(model(6)%level))
 
 end program 

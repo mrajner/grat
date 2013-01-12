@@ -1,7 +1,7 @@
 module mod_green
   use constants
   use get_cmd_line
-  use aggf
+  use mod_aggf
   use mod_data
   use mod_polygon
   implicit none
@@ -117,7 +117,11 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
         endif
       enddo
 
+      if (refpres%if) then
        call get_value (refpres , real(lat) , real(lon) , ref_p , method =1)
+     else
+       ref_p=0.
+     endif
 
       ! get polygons
       do i = 1 , 2
