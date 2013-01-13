@@ -15,8 +15,8 @@ module constants
     G           = 6.672e-11,  &  !< Cavendish constant \f$[m^3/kg/s^2]\f$
     R_air       = 287.05,     &  !< dry air constant  [J/kg/K]
     pi          = 4*atan(1.), &  !< pi = 3.141592... [ ]
-    rho_crust   = 2670  , &     !< mean density of crust [kg/m3]
-    rho_earth   = 5500          !< mean density of Earth [kg/m3]
+    rho_crust   = 2670.  ,    &  !< mean density of crust [kg/m3]
+    rho_earth   = 5500.          !< mean density of Earth [kg/m3]
 
 contains
 

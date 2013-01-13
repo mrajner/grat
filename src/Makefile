@@ -5,7 +5,7 @@
   NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
   SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
   TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
-  LND= ../data/landsea/test.grd:z:x:y
+	LND= ../data/landsea/landseaR0-50-0-70I0.2-0.2.grd:z:x:y
   GRN_r= ../dat/rajner_green.dat
   GRN_m= ../dat/merriam_green.dat
   EXAMPLE = ../examples
@@ -32,14 +32,15 @@ OBJS  = $(SRCS:.f90=.o)
 #   $(FC) $< -o $@ -lgrat -L.
 #   ./$@ 
 #
+v: $(BIN)/value_check example
 
 all:\
 	$(OBJS) \
 	$(BIN)/grat \
+  $(BIN)/example_aggf $(BIN)/polygon_check \
+  $(BIN)/value_check example \
+   $(BIN)/real_vs_standard \
 	example
-#   $(BIN)/example_aggf $(BIN)/polygon_check \
-#   $(BIN)/real_vs_standard \
-#   $(BIN)/value_check example
 
 
 $(BIN)/grat: grat.f90  $(OBJS)
@@ -58,9 +59,9 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	grat -F $(SFC) -S joze, 53.8912, 20.6697, 100 -R- -V -G,,,, -D20110101,20110103 -L:s # dlaczego kolumna niezerowa
-#   $(BIN)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V
-#   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -Sjoze,53.8912,20.6697,100 -Vtmp -D20110101,20111231  -BI -G,,,,,  -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL) -otmp.dat
+	value_check -F $(SFC), $(TMP), ../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -S joze,53.8912,20.6697,100    -BI -G,,,,,  -L:s -I2,2,2,2,2  -P$(POL),$(POL) -V
+#   grat -F $(SFC) -S joze, 53.8912, 20.6697, 100 -R- -V -G,,,, -D20110101,20110103 -L:s # dlaczego kolumna niezerowa
+#   real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
 

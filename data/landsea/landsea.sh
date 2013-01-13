@@ -30,7 +30,7 @@ Rp=$( echo ${R} | sed 's/\//-/g' )
 Ip=$( echo ${I} | sed 's/\//-/g' )
 
 grd=landseaR${Rp}I${Ip}.grd
-cpt=landsea.cpt
+cpt=$(grd2cpt $grd > landsea.cpt)
 ps=tmp.ps #${grd/.grd/.ps}
 
  grdlandmask -Dc -R$R -G${grd}  -I$I 

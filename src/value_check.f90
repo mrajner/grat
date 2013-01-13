@@ -22,7 +22,9 @@ program value_check
 
   do j = start , size (dates)
     do i = 1 , size(model)
-      if (model(i)%if) call get_variable ( model(i) , date = dates(j)%date)
+      if (model(i)%if) then
+        call get_variable ( model(i) , date = dates(j)%date)
+      endif
     enddo
 
     do i = 1 , size(sites)
@@ -43,11 +45,7 @@ program value_check
         endif
       enddo
 
-      write (output%unit ,   '(30f15.4, 1x)') , sites(i)%lon , sites(i)%lat , val
-
-      if (moreverbose%if.and.moreverbose%names(1).eq."c") then
-        write (moreverbose%unit ,   '(30f15.4)'), sites(i)%lon , sites(i)%lat , val
-      endif
+      write (output%unit ,   '(30f15.4, 1x)') , sites(i)%lat, sites(i)%lon, val
 
     enddo
 

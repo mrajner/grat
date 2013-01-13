@@ -26,13 +26,8 @@
 !!
 !! \section usage
 !! after sucsesfull compiling make sure the executables are in your path
-!! \latexonly
-!!   \begin{figure}    
-!!    \input{/home/mrajner/src/grat/doc/interpolation_ilustration}
-!!    \caption{ddd}
-!!   \end{figure}
-!! \endlatexonly
-!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png
+!! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf "example"
+!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png "interpolation example" width=\textwidth
 !! \image html /home/mrajner/src/grat/doc/mapa1.png
 !! \image html /home/mrajner/src/grat/doc/mapa2.png
 !! \image html /home/mrajner/src/grat/doc/mapa3.png
