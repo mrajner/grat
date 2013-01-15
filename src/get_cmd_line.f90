@@ -75,6 +75,7 @@ module get_cmd_line
 
   type(site_data) , allocatable , dimension(:) :: sites
 
+  !----------------------------------------------------
   ! various
   !----------------------------------------------------
   integer :: fileunit_tmp               !< unit of scratch file
@@ -139,7 +140,7 @@ module get_cmd_line
   character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
 
 
-  ! Verbose information and the output for \c log_file
+  ! Verbose information and the output for log_file
   logical :: if_verbose  = .false.  !< whether print all information
   logical :: inverted_barometer  = .true.  
 

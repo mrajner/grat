@@ -42,7 +42,6 @@ all:\
    $(BIN)/real_vs_standard \
 	example
 
-
 $(BIN)/grat: grat.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
@@ -65,7 +64,6 @@ example:
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
 
-
 clean:
 	rm -f *.o *.mod tmp* *.a fort??????
 
@@ -87,13 +85,11 @@ docpdf:
 	make doc
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman
 	evince ../doc/latex/refman.pdf &
-#   cd ../doc/latex/  &&  make
 
 dochtml: 
 	make doc
 	firefox ../doc/html/index.html &
 
-	
 link:
 	-cd ~/.local/bin && ln -s ${G}bin/* .
 	-cd ~/.local/bin && ln -s ${G}polygon/polygon_map.sh .
