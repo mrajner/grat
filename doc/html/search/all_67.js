@@ -11,6 +11,7 @@ var searchData=
   ['get_5fvariable',['get_variable',['../classmod__data.html#a42082a4a6af177900f481f081d8f112a',1,'mod_data']]],
   ['gn_5fthin_5flayer',['gn_thin_layer',['../classmod__aggf.html#a55c1af3982b7b074333d76a1cea87115',1,'mod_aggf']]],
   ['grat_2ef90',['grat.f90',['../grat_8f90.html',1,'']]],
+  ['grat_20command_20line_20options',['grat command line options',['../grat_8hlp.html',1,'']]],
   ['green_5ffunctions',['green_functions',['../structget__cmd__line_1_1green__functions.html',1,'get_cmd_line']]],
-  ['grat_20overview',['Grat overview',['../index.html',1,'']]]
+  ['grat_20overview',['grat overview',['../index.html',1,'']]]
 ];

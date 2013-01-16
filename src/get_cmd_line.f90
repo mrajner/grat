@@ -252,7 +252,7 @@ logical function if_switch_program (program_calling , switch )
   if (program_calling.eq."grat") then
     allocate( accepted_switch (15) )
     accepted_switch = [ "V" , "f" , "S", "B" , "L" , "G" , "P" , "p", &
-      "o" , "F" , "I" , "D" , "d" , "v" , "h"   ]
+      "o" , "F" , "I" , "D" , "L" , "v" , "h"   ]
   elseif (program_calling.eq."polygon_check") then
     allocate( accepted_switch (12) )
     accepted_switch = [ "V" , "f" , "A", "B" , "L" , "P" , "o", "S" , & 
@@ -989,51 +989,35 @@ subroutine print_settings ( program_calling )
 end subroutine
 
 subroutine print_help (program_calling)
-  implicit none
   character(*) :: program_calling
-  type help_fields
-    character(2) :: switch
-    character(255), allocatable,dimension(:) :: description 
-    character(255):: example=""
-  end type
-  ! todo change array size
-  type(help_fields) help(9)
-  integer :: i , j
+  integer :: help_unit , io_stat
+  character(500)::line
+  logical:: if_print_line = .false.
 
-  help(1)%switch =      "-h"
-  allocate(help(1)%description(1))
-  help(1)%description(1) = "print help"
-
-  help(2)%switch =      "-v" 
-  allocate(help(2)%description(1))
-  help(2)%description(1) = "print version and author"
-
-  help(3)%switch = "-S"
-  allocate(help(3)%description(1))
-  help(3)%description(1) = "set site(s) coordinates"
-  help(3)%example = "-R0/20/30/40 or -Rg (=R0/360/-90/90) same as GMT"
-
-  help(4)%switch = "-L"
-!  allocate(help(4)%description(4))
-!  help(4)%description(1) = "prints additional information"
-!  help(4)%description(2) = "syntax: -L[filename]"
-!    help(4)%example = "-L[filename]"
-!  help(4)%example = "todo"//'/'//"fdf"
+  if_print_line=.false.
 
   write(log%unit , form_60) , 'Summary of available options for program '//program_calling
-  do i = 1 , size (help)
-  if(if_switch_program (program_calling , help(i)%switch )) then
-    write(log%unit , form_61) ,trim(help(i)%switch)
-    if(allocated(help(i)%description)) then
-      do j = 1 , size(help(i)%description)
-        write (log%unit , form_62 ) trim(help(i)%description(j))
-        if (.not.help(i)%example(1:1).eq."") then
-!          write(log%unit , form_63) , trim(help(i)%description(j)example)
-        endif
-      enddo
+  open(newunit=help_unit, file="~/src/grat/src/help.hlp", action="read",status="old")
+  do 
+    read (help_unit , '(a)', iostat=io_stat) line
+    if (io_stat==iostat_end) exit
+    
+    if(line(1:1)=="-") then
+      if(if_switch_program (program_calling , line(1:2) )) then
+        if_print_line = .true.
+        write (log%unit , form_61 ) trim(line)
+      else
+        if(line(1:1)=="-") if_print_line=.false.
+      endif
+    elseif (line(1:1)==program_calling(1:1)) then
+!      if (if_print_line) then
+        write (log%unit , form_61 ) " "//trim(line(2:))
+!      endif
+    elseif (line(1:1)=="") then
+      if (if_print_line) write (log%unit , form_61 ) trim(line)
     endif
-  endif 
   enddo
+  close(help_unit)
 
 end subroutine
 

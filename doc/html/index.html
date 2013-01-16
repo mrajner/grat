@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>grat: Grat overview</title>
+<title>grat: grat overview</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -103,39 +103,30 @@ $(document).ready(function(){initNavTree('index.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Grat overview </div>  </div>
+<div class="title">grat overview </div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="Purpose"></a>
 Purpose</h1>
-<p>This program was created to make computation of atmospheric gravity correction more easy.</p>
+<p>This program was created to make computation of atmospheric gravity correction easier. Still developing. Consider visiting later...</p>
 <dl class="section version"><dt>Version:</dt><dd>v. 1.0 </dd></dl>
 <dl class="section date"><dt>Date:</dt><dd>2012-12-12 </dd></dl>
 <dl class="section author"><dt>Author:</dt><dd>Marcin Rajner<br/>
  Politechnika Warszawska<br/>
  (Warsaw University of Technology) <div class="fragment"></div><!-- fragment --></dd></dl>
-<dl class="section warning"><dt>Warning:</dt><dd>This program is written in Fortran90 standard but uses some featerus of 2003 specification (e.g., <code>'newunit='</code>). It was also written for <code>Intel Fortran Compiler</code> hence some commands can be unavailable for yours (e.g., <code></code> &lt;integer_parameter&gt; for <code>IO</code> statements. This should be easily modifiable according to your output needs.&gt; Also you need to have <code>iso_fortran_env</code> module available to guess the number of output_unit for your compiler. When you don't want a <code>log_file</code> and you don't switch <code>verbose</code> all unneceserry information whitch are normally collected goes to <code>/dev/null</code> file. This is *nix system default trash. For other system or file system organization, please change this value in <code><a class="el" href="classget__cmd__line.html">get_cmd_line</a></code> module.</dd></dl>
+<dl class="section warning"><dt>Warning:</dt><dd>This program is written in Fortran90 standard but uses some featerus of 2003 specification (e.g., <code>'newunit='</code>). It was also written for <code>Intel Fortran Compiler</code> hence some commands can be unavailable for other compilers (e.g., <code></code> &lt;integer_parameter&gt; for <code>IO</code> statements. This should be easily modifiable according to your output needs.&gt; Also you need to have <code>iso_fortran_env</code> module available to guess the number of output_unit for your compiler. When you don't want a <code>log_file</code> and you don't switch <code>verbose</code> all unneceserry information whitch are normally collected goes to <code>/dev/null</code> file. This is *nix system default trash. For other system or file system organization, please change this value in <code><a class="el" href="classget__cmd__line.html">get_cmd_line</a></code> module.</dd></dl>
+<dl class="section attention"><dt>Attention:</dt><dd>Requirements </dd></dl>
+<dl class="section user"><dt></dt><dd>It also require <code>netcdf</code> library</dd></dl>
 <h1><a class="anchor" id="usage"></a>
 usage</h1>
-<p>after sucsesfull compiling make sure the executables are in your path  <div class="image">
-<img src="/home/mrajner/src/grat/doc/interpolation_ilustration.png" alt="interpolation_ilustration.png"/>
-<div class="caption">
-interpolation example</div></div>
- <div class="image">
-<img src="/home/mrajner/src/grat/doc/mapa1.png" alt="mapa1.png"/>
-</div>
- <div class="image">
-<img src="/home/mrajner/src/grat/doc/mapa2.png" alt="mapa2.png"/>
-</div>
- <div class="image">
-<img src="/home/mrajner/src/grat/doc/mapa3.png" alt="mapa3.png"/>
-</div>
- </div></div><!-- contents -->
+<p>after sucsesfull compiling make sure the executables are in your search path</p>
+<p>There is main program <code>grat</code> and some utilities program i.e. <code>polygon_check</code> <code>value_check</code> </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Jan 14 2013 11:58:36 for grat by
+    <li class="footer">Generated on Wed Jan 16 2013 12:40:38 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

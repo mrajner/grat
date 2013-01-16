@@ -111,7 +111,7 @@ $(document).ready(function(){initNavTree('interpolation__ilustration_8sh.html','
 <div class="title">interpolation_ilustration.sh</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#!/bin/bash - </span></div>
+<a href="interpolation__ilustration_8sh.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#!/bin/bash - </span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#===============================================================================</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#          FILE: interpolation_ilustration.sh</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#         USAGE: ./interpolation_ilustration.sh </span></div>
@@ -122,27 +122,28 @@ $(document).ready(function(){initNavTree('interpolation__ilustration_8sh.html','
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#      REVISION:  ---</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#===============================================================================</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">set</span> -o nounset                              # Treat unset variables as an error</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordflow">for</span> co in n b</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordflow">do</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;   <span class="keywordflow">if</span> [ ${co} = <span class="stringliteral">&quot;b&quot;</span> ] ; then </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;     interp=2</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;   <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;     interp=1</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;   fi</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  ../bin/value_check -F ../data/ncep_reanalysis/pres.sfc.2011.nc:pres \</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    -S 2.51/4.99/0.05/2.45,0.091,0.1 -I ${interp} \</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    -o interp${co}1.dat   -L interpl1.dat :b </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;done</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  perl -n -i -e <span class="stringliteral">&#39;print if $. &lt;= 4&#39;</span> interpl1.dat</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">## \file</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span><span class="keyword">set</span> -o nounset                              # Treat unset variables as an error</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordflow">for</span> co in n b</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordflow">do</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;   <span class="keywordflow">if</span> [ ${co} = <span class="stringliteral">&quot;b&quot;</span> ] ; then </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;     interp=2</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;   <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;     interp=1</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;   fi</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  ../bin/value_check -F ../data/ncep_reanalysis/pres.sfc.2011.nc:pres \</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    -S 2.51/4.99/0.05/2.45,0.091,0.1 -I ${interp} \</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    -o interp${co}1.dat   -L interpl1.dat :b </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;done</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  perl -n -i -e <span class="stringliteral">&#39;print if $. &lt;= 4&#39;</span> interpl1.dat</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>interpolation_ilustration.sh</b></li>
-    <li class="footer">Generated on Mon Jan 14 2013 11:58:36 for grat by
+    <li class="navelem"><a class="el" href="interpolation__ilustration_8sh.html">interpolation_ilustration.sh</a></li>
+    <li class="footer">Generated on Wed Jan 16 2013 12:40:38 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

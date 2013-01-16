@@ -1,21 +1,21 @@
 ! ==============================================================================
 !> \file
-!! \mainpage Grat overview
+!! \mainpage grat overview
 !! \section Purpose
 !! This program was created to make computation of atmospheric gravity
-!! correction more easy.
+!! correction easier. Still developing. Consider visiting later...
 !!
 !! \version v. 1.0
 !! \date 2012-12-12
 !! \author Marcin Rajner\n 
 !! Politechnika Warszawska\n
 !! (Warsaw University of Technology)
-!! \line program
+!! \line mod_data.f90
 !!
 !! \warning This program is written in Fortran90 standard but uses some featerus
 !! of 2003 specification (e.g., \c 'newunit='). It was also written
 !! for <tt>Intel Fortran Compiler</tt> hence some commands can be unavailable
-!! for yours (e.g., \c <integer_parameter> for \c IO statements. This should be
+!! for other compilers (e.g., \c <integer_parameter> for \c IO statements. This should be
 !! easily modifiable according to your output needs.>
 !! Also you need to have \c iso_fortran_env module available to guess the number
 !! of output_unit for your compiler.
@@ -24,15 +24,27 @@
 !! file. This is *nix system default trash. For other system or file system
 !! organization, please change this value in \c get_cmd_line module.
 !!
+!! \attention 
+!! Requirements \par
+!! It also require \c netcdf library
+!!
 !! \section usage
-!! after sucsesfull compiling make sure the executables are in your path
+!! after sucsesfull compiling make sure the executables are in your search path
+!! 
+!! There is main program \c grat and some utilities program i.e.
+!! \c polygon_check \c value_check
+!! \page mainpage
+!! \subpage grat.hlp
+!! \page grat.hlp grat command line options
+!! \page polygon_check.hlp
 !! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf "example"
+!! 
 !! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png "interpolation example" width=\textwidth
 !! \image html /home/mrajner/src/grat/doc/mapa1.png
 !! \image html /home/mrajner/src/grat/doc/mapa2.png
 !! \image html /home/mrajner/src/grat/doc/mapa3.png
 
-!! \page intro_sec External resources
+!> \page intro_sec External resources
 !!   - <a href="https://code.google.com/p/grat">project page</a> (git repository)
 !!   - <a href="../latex/refman.pdf">[pdf]</a> version of this manual
 !! \TODO give source for grant presentation

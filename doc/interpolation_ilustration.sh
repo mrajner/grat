@@ -9,6 +9,7 @@
 #      REVISION:  ---
 #===============================================================================
 
+## \file
 set -o nounset                              # Treat unset variables as an error
 for co in n b
 do

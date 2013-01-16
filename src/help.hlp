@@ -1,0 +1,69 @@
+This file contains summary of available options for grat package
+Please make sure that grat and other related program can find it
+in order to print appropriate help info from command line
+
+in first column put the appropriate switch or program_calling
+firs letter.
+
+g grat 
+v value_check 
+p polygon_check
+
+s syntax
+
+
+
+-h  help
+s   -h
+    prints summary of available option
+    optional parameter
+    default: help=.false.
+
+-v  version
+    syntax: [-v]
+    print version and author
+    optional parameter
+    default: version=.false.
+
+-S  site coordinates
+    syntax: -S [[site_name],latitude,longitude[,height] | [sites_file] | [Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]
+    you can give information about sites you want include in computation in three different ways
+      1 -S [site_name], lat , lon , height 
+          ex:
+          -S JOZE, 52.1, 21.3 , 110 
+          or
+          -S , 52.1, 21.3 
+      2 -S file_name
+          where in the file you put space separated: name lat lon [heihght]
+          all records with bad specification will be ignored
+        
+
+    lat in decimal degrees (+ north | - south)
+    lon in decimal degrees <-180,360)
+    height in meters (orthometric)
+    obligatory parameter
+
+-V  verbose
+    syntax: -V[log_file]
+    prints settings to log_file if specified or to STDOUT
+    default: verbose=.false.
+
+
+-L  more verbose
+!    "prints out additional information depending on specification"//char(13)//char(10)//&
+!    "syntax: -L[filename]:what,[filename2]:what"//char(13)//&
+!    "help"
+    optional parameter
+
+-P  polygon(s)
+g   optional parameter
+p   obligatory parameter
+
+
+-I  interpolation
+    syntax: [-I[1|2]]
+    specify the interpolation scheme for data
+    Default: -I1
+    optional parameter
+
+
