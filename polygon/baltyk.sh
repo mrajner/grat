@@ -16,12 +16,12 @@ R="-R00/35/50/70"
 J="-JM10+"
 
 pscoast  -K  -Di -A1000  -Slightgray -Ggray $R $J -W1 > $PS
-cat baltyk.points | psxy  $R $J -W1p -L -A -K -O >> $PS
-#psclip baltyk.points  -K -O  $R $J >> $PS
-pscoast -Sgreen -O $R $J -Di -K -A1000 -W1 -Cred >> $PS
-  grdlandmask -Glandmask.grd $R -I3m
-  grd2cpt landmask.grd -Cjet > landmask.cpt
-grdimage ./landmask.grd $R $J -O -K -Clandmask.cpt >> $PS
+#cat baltyk.points | psxy  $R $J -W1p -L -A -K -O >> $PS
+psclip baltyk.points  -K -O  $R $J >> $PS
+pscoast -Slightblue -O $R $J -Di -K -A1000 -W1  >> $PS
+#  grdlandmask -Glandmask.grd $R -I3m
+#  grd2cpt landmask.grd -Cjet > landmask.cpt
+#grdimage ./landmask.grd $R $J -O -K -Clandmask.cpt >> $PS
 psclip -C -O >> $PS
 
 ps2raster -Tf $PS -P -A

@@ -18,13 +18,11 @@ s   -h
     prints summary of available option
     optional parameter
     default: help=.false.
-
 -v  version
     syntax: [-v]
     print version and author
     optional parameter
     default: version=.false.
-
 -S  site coordinates
     syntax: -S [[site_name],latitude,longitude[,height] | [sites_file] | [Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]
     you can give information about sites you want include in computation in three different ways

@@ -93,4 +93,4 @@ dochtml:
 
 link:
 	-cd ~/.local/bin && ln -s ${G}bin/* .
-	-cd ~/.local/bin && ln -s ${G}polygon/polygon_map.sh .
+	-cd ~/.local/bin && ln -s ${G}polygon/polygon_map.sh polygon_map

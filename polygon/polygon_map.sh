@@ -143,6 +143,7 @@ pscoast $R -Slightblue -Glightgray  -K -Di $A -J${J}  > $output.ps
   pscoast $R -O -Di $A -J -W -N1thin >> $output.ps
 
 ps2raster $output.ps -Tf -P -A
+rm $output.ps 
 #evince $output.ps
 
 
