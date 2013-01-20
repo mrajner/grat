@@ -3,7 +3,7 @@ Please make sure that grat and other related program can find it
 in order to print appropriate help info from command line
 
 in first column put the appropriate switch or program_calling
-firs letter.
+second letter.
 
 g grat 
 v value_check 
@@ -14,52 +14,57 @@ s syntax
 
 
 -h  help
-s   -h
-    prints summary of available option
+ s  -h
+    prints summary of available option and exit
     optional parameter
     default: help=.false.
+
 -v  version
-    syntax: [-v]
-    print version and author
+ s  -v
+    print version and author and exit
     optional parameter
     default: version=.false.
+
 -S  site coordinates
-    syntax: -S [[site_name],latitude,longitude[,height] | [sites_file] | [Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]
+ s  -S[[site_name],latitude,longitude[,height]]|[sites_file]|[Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]
     you can give information about sites you want include in computation in three different ways
       1 -S [site_name], lat , lon , height 
-          ex:
-          -S JOZE, 52.1, 21.3 , 110 
+          example:
+            -S JOZE, 52.1, 21.3 , 110 
           or
-          -S , 52.1, 21.3 
+            -S , 52.1, 21.3 
       2 -S file_name
           where in the file you put space separated: name lat lon [heihght]
           all records with bad specification will be ignored
-        
-
+      3 -S Rlonmin/lonmax/latmin/latmax[,lonresolution]
     lat in decimal degrees (+ north | - south)
     lon in decimal degrees <-180,360)
     height in meters (orthometric)
     obligatory parameter
+    default: height=0
 
 -V  verbose
-    syntax: -V[log_file]
+ s  -V[log_file]
     prints settings to log_file if specified or to STDOUT
     default: verbose=.false.
 
-
 -L  more verbose
-!    "prints out additional information depending on specification"//char(13)//char(10)//&
-!    "syntax: -L[filename]:what,[filename2]:what"//char(13)//&
-!    "help"
+ s  -L[filename]:what,[filename2]:what
+    prints out additional information depending on specification
     optional parameter
+    default: moreverbose=.false.
+    fields: n - nearest
+            b - bilinear
+            s - statistic (short)
+            G - greens function
 
 -P  polygon(s)
-g   optional parameter
-p   obligatory parameter
-
+ s  -Ppolygon_file[,polygonfi
+ g  optional parameter
+ p  obligatory parameter
 
 -I  interpolation
-    syntax: [-I[1|2]]
+ s  -I[1|2]
     specify the interpolation scheme for data
     Default: -I1
     optional parameter

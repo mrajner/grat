@@ -130,8 +130,8 @@ module get_cmd_line
   end type
 
   ! External files
-  type(file) ::  log  , output , moreverbose , refpres
-  type(file) , allocatable, dimension (:) :: model
+  type(file) ::  log  , output , refpres
+  type(file) , allocatable, dimension (:) :: model , moreverbose
 
   character (len =40) :: model_names (5) = ["pressure_surface" , &
     "temperature_surface" , "topography" , "landsea" , "pressure levels" ]
@@ -348,15 +348,16 @@ subroutine parse_option (cmd_line_entry , program_calling)
       write(fileunit_tmp , *)
     case ("-L")
       !> \todo make it mulitichoice: -Lfile:s,file2:b ...
-      moreverbose%if=.true.
-      moreverbose%name=cmd_line_entry%field(1)
-      moreverbose%names(1) = cmd_line_entry%fieldnames(1)%names(1)
       write (fileunit_tmp , form_62) "printing additional information"
-      write (fileunit_tmp , form_62) "file: ", moreverbose%name
-      write (fileunit_tmp , form_62) "what: ", moreverbose%names(1)
-      if (len(moreverbose%name).gt.0 .and. moreverbose%name.ne."") then
-        open (newunit = moreverbose%unit , file = moreverbose%name , action = "write" )
-      endif
+      allocate(moreverbose(cmd_line_entry%fields))
+      do i = 1, cmd_line_entry%fields
+        call get_model_info (moreverbose (i) , cmd_line_entry , i )
+      enddo
+!      write (fileunit_tmp , form_62) "file: ", moreverbose%name
+!      write (fileunit_tmp , form_62) "what: ", moreverbose%names(1)
+!      if (len(moreverbose%name).gt.0 .and. moreverbose%name.ne."") then
+!        open (newunit = moreverbose%unit , file = moreverbose%name , action = "write" )
+!      endif
     case ("-B")
       if (cmd_line_entry%field(1).eq."N" ) inverted_barometer=.false.
     case ("-R")
@@ -575,6 +576,9 @@ subroutine get_cmd_line_entry (dummy , cmd_line_entry , program_calling )
   call parse_option (cmd_line_entry , program_calling = program_calling)
 end subroutine
 
+! =============================================================================
+!> This subroutine fills the model info
+! =============================================================================
 subroutine get_model_info ( model , cmd_line_entry , field)
   type(cmd_line),intent(in):: cmd_line_entry
   type(file),intent(inout):: model
@@ -992,12 +996,50 @@ subroutine print_help (program_calling)
   character(*) :: program_calling
   integer :: help_unit , io_stat
   character(500)::line
-  logical:: if_print_line = .false.
+  character(255)::syntax
+  logical:: if_print_line = .false., if_optional=.true.
 
   if_print_line=.false.
 
+  open(newunit=help_unit, file="~/src/grat/dat/help.hlp", action="read",status="old")
+
+  
+
+  write (log%unit ,"(a)" , advance="no" ) program_calling
+  ! first loop - print only syntax with squre brackets if parameter is optional
+  do 
+    read (help_unit , '(a)', iostat=io_stat) line
+    if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
+      if (if_optional) write(log%unit, '(a)' , advance="no") " ["
+      if (if_optional) write(log%unit, '(a)' , advance="no") trim(syntax)
+      if (if_optional) write(log%unit, '(a)' , advance="no") "]"
+    endif
+    if (io_stat==iostat_end) then
+      write(log%unit, *) "" 
+      if_print_line = .false.
+      exit
+    endif
+    if(line(1:1)=="-") then
+      if(if_switch_program (program_calling , line(1:2) )) then
+        if_print_line = .true.
+      else
+        if(line(1:1)=="-") if_print_line=.false.
+      endif
+    endif
+
+    if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
+      if_optional=.true.
+    elseif (line(5:13) == "mandatory") then
+      if_optional=.false.
+    endif
+    if (line(2:2)=="s") then
+      syntax = trim(adjustl(line(3:)))
+    endif
+  enddo
+  rewind(help_unit)
+
   write(log%unit , form_60) , 'Summary of available options for program '//program_calling
-  open(newunit=help_unit, file="~/src/grat/src/help.hlp", action="read",status="old")
+  ! second loop - print informations
   do 
     read (help_unit , '(a)', iostat=io_stat) line
     if (io_stat==iostat_end) exit
@@ -1009,11 +1051,11 @@ subroutine print_help (program_calling)
       else
         if(line(1:1)=="-") if_print_line=.false.
       endif
-    elseif (line(1:1)==program_calling(1:1)) then
-!      if (if_print_line) then
-        write (log%unit , form_61 ) " "//trim(line(2:))
-!      endif
-    elseif (line(1:1)=="") then
+    elseif (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
+      if (if_print_line) then
+        write (log%unit , form_61 ) "  "//trim(line(3:))
+      endif
+    elseif (line(2:2)=="") then
       if (if_print_line) write (log%unit , form_61 ) trim(line)
     endif
   enddo

@@ -1,3 +1,10 @@
+!> \file
+!! \mainpage
+!! \brief ...put...
+!! \page value_check-h value_check 
+!!    \include value_check.hlp
+!!
+
 program value_check 
   use get_cmd_line
   use mod_data

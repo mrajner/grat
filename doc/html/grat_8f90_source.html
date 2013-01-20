@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>grat: /home/mrajner/src/grat/src/grat.f90 Source File</title>
+<title>grat: grat/src/grat.f90 Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -118,132 +118,134 @@ $(document).ready(function(){initNavTree('grat_8f90.html','');});
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">!! This program was created to make computation of atmospheric gravity</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">!! correction easier. Still developing. Consider visiting later...</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">!!</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">!! \version v. 1.0</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">!! \date 2012-12-12</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">!! \version TESTING!</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">!! \date 2013-01-12</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">!! \author Marcin Rajner\n </span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">!! Politechnika Warszawska\n</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">!! (Warsaw University of Technology)</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">!! \line mod_data.f90</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">!!</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">!! \warning This program is written in Fortran90 standard but uses some featerus</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">!! of 2003 specification (e.g., \c &#39;newunit=&#39;). It was also written</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">!! for &lt;tt&gt;Intel Fortran Compiler&lt;/tt&gt; hence some commands can be unavailable</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">!! for other compilers (e.g., \c &lt;integer_parameter&gt; for \c IO statements. This should be</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">!! easily modifiable according to your output needs.&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">!! Also you need to have \c iso_fortran_env module available to guess the number</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">!! of output_unit for your compiler.</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">!! When you don&#39;t want a \c log_file and you don&#39;t switch \c verbose all </span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">!! unneceserry information whitch are normally collected goes to \c /dev/null</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">!! file. This is *nix system default trash. For other system or file system</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">!! organization, please change this value in \c get_cmd_line module.</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">!!</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">!! \attention </span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">!! Requirements \par</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">!! It also require \c netcdf library</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">!!</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">!! \section usage</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">!! after sucsesfull compiling make sure the executables are in your search path</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">!! </span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">!! There is main program \c grat and some utilities program i.e.</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">!! \c polygon_check \c value_check</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">!! \page mainpage</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">!! \subpage grat.hlp</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">!! \page grat.hlp grat command line options</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">!! \page polygon_check.hlp</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">!! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf &quot;example&quot;</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">!! </span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png &quot;interpolation example&quot; width=\textwidth</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/mapa1.png</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/mapa2.png</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/mapa3.png</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment"></span><span class="comment"></span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">!&gt; \page intro_sec External resources</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">!!   - &lt;a href=&quot;https://code.google.com/p/grat&quot;&gt;project page&lt;/a&gt; (git repository)</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">!!   - &lt;a href=&quot;../latex/refman.pdf&quot;&gt;[pdf]&lt;/a&gt; version of this manual</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">!! \TODO give source for grant presentation</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">!!   - &lt;a href=&quot;&quot;&gt;[pdf]&lt;/a&gt; command line options (in Polish)</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"></span><span class="comment"></span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">!&gt; \example example_aggf.f90</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">!! \example grat_usage.sh</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"></span><span class="comment">! ==============================================================================</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">program</span> grat</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">use </span>iso_fortran_env</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">use </span><a class="code" href="classget__cmd__line.html">get_cmd_line</a></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__polygon.html">mod_polygon</a></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__green.html">mod_green</a></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordtype">real(sp)</span> :: x , y , z , lat ,lon ,val(0:100) <span class="comment">!tmp variables</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">integer</span> :: i , j , ii, iii</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">  !&gt; program starts here with time stamp</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span>  call cpu_time(cpu_start)</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  call <a class="code" href="classget__cmd__line.html#a9d060b3fb882493decebb354df600a9f">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">! print header to log: version, date and summary of command line options</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  call <a class="code" href="classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea">print_settings</a>(program_calling = <span class="stringliteral">&quot;grat&quot;</span>)</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">! read polygons</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keyword">do</span> i =1 , 2</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;   call read_polygon(polygons(i))</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">! read models into memory</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">do</span> i =1 , <span class="keyword">size</span>(model)</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf( model(i) )</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">! todo refpres in get_cmd-line</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">if</span> (refpres%if) <span class="keyword">then</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    refpres%name=<span class="stringliteral">&quot;/home/mrajner/src/grat/data/refpres/vienna_p0.grd&quot;</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    call read_netcdf(refpres)</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keyword">endif</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;   </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keyword">allocate</span> (results(<span class="keyword">size</span>(sites)*max(<span class="keyword">size</span>(dates),1)))</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  iii=0</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keyword">do</span> j = 1 , max(<span class="keyword">size</span> (dates),1)</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">if</span>(<span class="keyword">size</span>(dates).gt.0)  <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(i4,5(i2.2))&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) dates(j)%date</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">do</span> ii = 1 , min(2,<span class="keyword">size</span>(model))</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <span class="keyword">if</span> (model(ii)%if) call get_variable( model(ii) , date = dates(j)%date)</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(sites)</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(2f15.5f)&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) sites(i)%lat ,sites(i)%lon</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      iii=iii+1</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      call convolve(sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      <span class="keyword">write</span> (output%unit,<span class="stringliteral">&#39;(15f13.5)&#39;</span>) , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keyword">if</span> (moreverbose%if .and. moreverbose%names(1).eq.<span class="stringliteral">&quot;s&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    print <span class="stringliteral">&#39;(15f13.5)&#39;</span>, &amp;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      results(maxloc(results%e))%e - results(minloc(results%e))%e       ,&amp;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      results(maxloc(results%n))%n - results(minloc(results%n))%n       ,&amp;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      results(maxloc(results%dh))%dh - results(minloc(results%dh))%dh   ,&amp;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      results(maxloc(results%dz))%dz - results(minloc(results%dz))%dz   ,&amp;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      results(maxloc(results%dt))%dt - results(minloc(results%dt))%dt</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keyword">endif</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  call cpu_time(cpu_finish)</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(/,&quot;Execution time:&quot;,1x,f16.9,&quot; seconds&quot;)&#39;</span>) cpu_finish - cpu_start</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="keyword">end program </span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">!! Politechnika Warszawska | Warsaw University of Technology</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">!! \warning This program is written in Fortran90 standard but uses some featerus</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">!! of 2003 specification (e.g., \c &#39;newunit=&#39;). It was also written</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">!! for &lt;tt&gt;Intel Fortran Compiler&lt;/tt&gt; hence some commands can be unavailable</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">!! for other compilers (e.g., \c &lt;integer_parameter&gt; for \c IO statements. This should be</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">!! easily modifiable according to your output needs.</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">!! Also you need to have \c iso_fortran_env module available to guess the number</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">!! of output_unit for your compiler.</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">!! When you don&#39;t want a \c log_file and you don&#39;t switch \c verbose all </span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">!! unneceserry information whitch are normally collected goes to \c /dev/null</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">!! file. This is *nix system default trash. For other system or file system</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">!! organization, please change this value in \c get_cmd_line module.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">!! \attention </span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">!! \c grat and value_check needs a \c netCDF library \cite netcdf </span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">!! \section Usage</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">!! After sucsesfull compiling make sure the executables are in your search path</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">!! </span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">!! There is main program \c grat and some utilities program. For the options see</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">!! the appropriate help:</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">!!  - \link grat-h grat\endlink</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">!!  - \link value_check-h value_check\endlink</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">!!  - \link polygon_check-h polygon_check\endlink</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">!! \page grat-h grat</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">!!    \include grat.hlp</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment"></span><span class="comment"></span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">!&gt; \page ilustration</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">!! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf &quot;example&quot;</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">!! </span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png &quot;interpolation example&quot; width=\textwidth</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/mapa1.png</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/mapa2.png</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">!! \image html /home/mrajner/src/grat/doc/mapa3.png</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment"></span><span class="comment"></span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">!&gt; \page intro_sec External resources</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">!!   - &lt;a href=&quot;https://code.google.com/p/grat&quot;&gt;project page&lt;/a&gt; (git repository)</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">!!   - \htmlonly &lt;a href=&quot;../latex/refman.pdf&quot;&gt;[pdf]&lt;/a&gt; version of this manual\endhtmlonly</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">!!   \latexonly \href{https://grat.googlecode.com/git/doc/html/index.html}{html} version of this manual\endlatexonly</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">!! \TODO give source for grant presentation</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">!!   - &lt;a href=&quot;&quot;&gt;[pdf]&lt;/a&gt; command line options (in Polish)</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"></span><span class="comment"></span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">!&gt; \example example_aggf.f90</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">!! \example grat_usage.sh</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"></span><span class="comment">! ==============================================================================</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">program</span> grat</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">use </span>iso_fortran_env</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">use </span><a class="code" href="classget__cmd__line.html">get_cmd_line</a></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__polygon.html">mod_polygon</a></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__green.html">mod_green</a></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">real(sp)</span> :: x , y , z , lat ,lon ,val(0:100) <span class="comment">!tmp variables</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">integer</span> :: i , j , ii, iii</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">  !&gt; program starts here with time stamp</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"></span>  call cpu_time(cpu_start)</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  call <a class="code" href="classget__cmd__line.html#a9d060b3fb882493decebb354df600a9f">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">! print header to log: version, date and summary of command line options</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  call <a class="code" href="classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea">print_settings</a>(program_calling = <span class="stringliteral">&quot;grat&quot;</span>)</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">! read polygons</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">do</span> i =1 , 2</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;   call read_polygon(polygons(i))</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">! read models into memory</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keyword">do</span> i =1 , <span class="keyword">size</span>(model)</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf( model(i) )</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">! todo refpres in get_cmd-line</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">if</span> (refpres%if) <span class="keyword">then</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    refpres%name=<span class="stringliteral">&quot;/home/mrajner/src/grat/data/refpres/vienna_p0.grd&quot;</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    call read_netcdf(refpres)</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">endif</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;   </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keyword">allocate</span> (results(<span class="keyword">size</span>(sites)*max(<span class="keyword">size</span>(dates),1)))</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  iii=0</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">do</span> j = 1 , max(<span class="keyword">size</span> (dates),1)</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">if</span>(<span class="keyword">size</span>(dates).gt.0)  <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(i4,5(i2.2))&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) dates(j)%date</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">do</span> ii = 1 , min(2,<span class="keyword">size</span>(model))</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keyword">if</span> (model(ii)%if) call get_variable( model(ii) , date = dates(j)%date)</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(sites)</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(2f15.5f)&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) sites(i)%lat ,sites(i)%lon</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      iii=iii+1</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      call convolve(sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keyword">write</span> (output%unit,<span class="stringliteral">&#39;(15f13.5)&#39;</span>) , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keyword">if</span> (moreverbose%if .and. moreverbose%names(1).eq.<span class="stringliteral">&quot;s&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    print <span class="stringliteral">&#39;(15f13.5)&#39;</span>, &amp;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      results(maxloc(results%e))%e - results(minloc(results%e))%e       ,&amp;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      results(maxloc(results%n))%n - results(minloc(results%n))%n       ,&amp;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      results(maxloc(results%dh))%dh - results(minloc(results%dh))%dh   ,&amp;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      results(maxloc(results%dz))%dz - results(minloc(results%dz))%dz   ,&amp;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      results(maxloc(results%dt))%dt - results(minloc(results%dt))%dt</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keyword">endif</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  call cpu_time(cpu_finish)</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(/,&quot;Execution time:&quot;,1x,f16.9,&quot; seconds&quot;)&#39;</span>) cpu_finish - cpu_start</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="keyword">end program </span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="grat_8f90.html">grat.f90</a></li>
-    <li class="footer">Generated on Thu Jan 17 2013 20:20:14 for grat by
+    <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_5d98555a87ce6ad1e072f395e518bfeb.html">src</a></li><li class="navelem"><a class="el" href="grat_8f90.html">grat.f90</a></li>
+    <li class="footer">Generated on Sun Jan 20 2013 18:32:45 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

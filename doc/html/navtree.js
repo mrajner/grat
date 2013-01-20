@@ -2,10 +2,11 @@ var NAVTREE =
 [
   [ "grat", "index.html", [
     [ "grat overview", "index.html", null ],
-    [ "mainpage", "mainpage.html", null ],
-    [ "grat command line options", "grat_8hlp.html", null ],
-    [ "polygon_check.hlp", "polygon_check_8hlp.html", null ],
+    [ "grat", "grat-h.html", null ],
+    [ "ilustration", "ilustration.html", null ],
     [ "External resources", "intro_sec.html", null ],
+    [ "polygon_check", "polygon_check-h.html", null ],
+    [ "value_check", "value_check-h.html", null ],
     [ "Todo List", "todo.html", null ],
     [ "Bibliographic References", "citelist.html", null ],
     [ "Data Types List", null, [

@@ -39,7 +39,7 @@ all:\
 	$(BIN)/grat \
   $(BIN)/example_aggf $(BIN)/polygon_check \
   $(BIN)/value_check example \
-   $(BIN)/real_vs_standard \
+  $(BIN)/real_vs_standard \
 	example
 
 $(BIN)/grat: grat.f90  $(OBJS)
@@ -58,7 +58,7 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	value_check -h
+	value_check -F $(SFC) -S j, 52 , 21, 1 -L -V
 #   value_check -F $(SFC), $(TMP), ../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -S joze,53.8912,20.6697,100    -BI -G,,,,,  -L:s -I2,2,2,2,2  -P$(POL),$(POL) -V
 #   grat -F $(SFC) -S joze, 53.8912, 20.6697, 100 -R- -V -G,,,, -D20110101,20110103 -L:s # dlaczego kolumna niezerowa
 #   real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 

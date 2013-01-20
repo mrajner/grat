@@ -5,18 +5,16 @@
 !! This program was created to make computation of atmospheric gravity
 !! correction easier. Still developing. Consider visiting later...
 !!
-!! \version v. 1.0
-!! \date 2012-12-12
+!! \version TESTING!
+!! \date 2013-01-12
 !! \author Marcin Rajner\n 
-!! Politechnika Warszawska\n
-!! (Warsaw University of Technology)
-!! \line mod_data.f90
+!! Politechnika Warszawska | Warsaw University of Technology
 !!
 !! \warning This program is written in Fortran90 standard but uses some featerus
 !! of 2003 specification (e.g., \c 'newunit='). It was also written
 !! for <tt>Intel Fortran Compiler</tt> hence some commands can be unavailable
 !! for other compilers (e.g., \c <integer_parameter> for \c IO statements. This should be
-!! easily modifiable according to your output needs.>
+!! easily modifiable according to your output needs.
 !! Also you need to have \c iso_fortran_env module available to guess the number
 !! of output_unit for your compiler.
 !! When you don't want a \c log_file and you don't switch \c verbose all 
@@ -25,18 +23,21 @@
 !! organization, please change this value in \c get_cmd_line module.
 !!
 !! \attention 
-!! Requirements \par
-!! It also require \c netcdf library
+!! \c grat and value_check needs a \c netCDF library \cite netcdf 
 !!
-!! \section usage
-!! after sucsesfull compiling make sure the executables are in your search path
+!! \section Usage
+!! After sucsesfull compiling make sure the executables are in your search path
 !! 
-!! There is main program \c grat and some utilities program i.e.
-!! \c polygon_check \c value_check
-!! \page mainpage
-!! \subpage grat.hlp
-!! \page grat.hlp grat command line options
-!! \page polygon_check.hlp
+!! There is main program \c grat and some utilities program. For the options see
+!! the appropriate help:
+!!  - \link grat-h grat\endlink
+!!  - \link value_check-h value_check\endlink
+!!  - \link polygon_check-h polygon_check\endlink
+!!
+!! \page grat-h grat
+!!    \include grat.hlp
+
+!> \page ilustration
 !! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf "example"
 !! 
 !! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png "interpolation example" width=\textwidth
@@ -46,7 +47,8 @@
 
 !> \page intro_sec External resources
 !!   - <a href="https://code.google.com/p/grat">project page</a> (git repository)
-!!   - <a href="../latex/refman.pdf">[pdf]</a> version of this manual
+!!   - \htmlonly <a href="../latex/refman.pdf">[pdf]</a> version of this manual\endhtmlonly
+!!   \latexonly \href{https://grat.googlecode.com/git/doc/html/index.html}{html} version of this manual\endlatexonly
 !! \TODO give source for grant presentation
 !!   - <a href="">[pdf]</a> command line options (in Polish)
 

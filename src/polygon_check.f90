@@ -1,5 +1,7 @@
-! This program can be used to check the default behaviour of point selection
-! used by module grat_polygon
+!> This program can be used to check the default behaviour of point selection
+!! used by module grat_polygon
+!! \page polygon_check-h polygon_check
+!!    \include polygon_check.hlp
 
 program polygon_check
   use iso_fortran_env
