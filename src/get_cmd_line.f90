@@ -350,10 +350,11 @@ subroutine parse_option (cmd_line_entry , program_calling)
       !> \todo make it mulitichoice: -Lfile:s,file2:b ...
       write (fileunit_tmp , form_62) "printing additional information"
       allocate(moreverbose(cmd_line_entry%fields))
+      print *,size(moreverbose),"XXXX"
       do i = 1, cmd_line_entry%fields
         call get_model_info (moreverbose (i) , cmd_line_entry , i )
+        write (fileunit_tmp , form_62) "file: ", moreverbose(i)%name
       enddo
-!      write (fileunit_tmp , form_62) "file: ", moreverbose%name
 !      write (fileunit_tmp , form_62) "what: ", moreverbose%names(1)
 !      if (len(moreverbose%name).gt.0 .and. moreverbose%name.ne."") then
 !        open (newunit = moreverbose%unit , file = moreverbose%name , action = "write" )
