@@ -54,7 +54,7 @@ var classget__cmd__line =
     [ "method", "classget__cmd__line.html#aa97d2525a1b739448f1f66369e1fffa7", null ],
     [ "model", "classget__cmd__line.html#a732a4479c06b6820d59af98befe6518e", null ],
     [ "model_names", "classget__cmd__line.html#a90053cc40edb7f0b10b88104c34bee22", null ],
-    [ "moreverbose", "classget__cmd__line.html#a902fd1cb66a8d92f70f666f7cfeacd8c", null ],
+    [ "moreverbose", "classget__cmd__line.html#a2860e7fea2a262e24dfc4b1a6a317ace", null ],
     [ "output", "classget__cmd__line.html#a453b98ac9936cfdf822fc0d0ed2ce516", null ],
     [ "polygons", "classget__cmd__line.html#ad09c8c48725c2662706ea5318de5d7b9", null ],
     [ "refpres", "classget__cmd__line.html#a9c72742f915b1d4588bb2afcce47d20e", null ],
