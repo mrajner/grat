@@ -266,10 +266,11 @@ subroutine get_value( model,  lat , lon , val ,level, method )
       array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, ilevel) ]
       array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
       array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
-      if (moreverbose%if.and.moreverbose%names(1).eq."b") then
-          write(moreverbose%unit ,  '(3f15.4)') , (array_aux(i,:), i = 1 ,4)
-          write(moreverbose%unit ,  '(">")')
-      endif
+      !todo
+!      if (moreverbose%if.and.moreverbose%names(1).eq."b") then
+!          write(moreverbose%unit ,  '(3f15.4)') , (array_aux(i,:), i = 1 ,4)
+!          write(moreverbose%unit ,  '(">")')
+!      endif
         val = bilinear ( lon , lat , array_aux )
       return
     endif
@@ -280,11 +281,12 @@ subroutine get_value( model,  lat , lon , val ,level, method )
   if (ilon .eq. size (model%lon) ) then
     if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
   endif
-  if (moreverbose%if.and.moreverbose%names(1).eq."n") then
-    write(moreverbose%unit ,  '(3f15.4)') , &
-       model%lon(ilon) , model%lat(ilat) , model%data(ilon,ilat,ilevel)
-    write(moreverbose%unit ,  '(">")')
-  endif
+  !todo
+!  if (moreverbose%if.and.moreverbose%names(1).eq."n") then
+!    write(moreverbose%unit ,  '(3f15.4)') , &
+!       model%lon(ilon) , model%lat(ilat) , model%data(ilon,ilat,ilevel)
+!    write(moreverbose%unit ,  '(">")')
+!  endif
   val = model%data (ilon , ilat, ilevel)
 end subroutine 
 
