@@ -1,0 +1,59 @@
+grat [-h] [-v] [-S[[site_name],latitude,longitude[,height]]|[sites_file]|[Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]] [-V[log_file]] [-L[filename]:what,[filename2]:what] [-Ppolygon_file[,polygonfi] [-I[1|2]]
+ 
+Summary of available options for program grat
+  -h  help
+      -h
+      prints summary of available option and exit
+      optional parameter
+      default: help=.false.
+  
+  -v  version
+      -v
+      print version and author and exit
+      optional parameter
+      default: version=.false.
+  
+  -S  site coordinates
+      -S[[site_name],latitude,longitude[,height]]|[sites_file]|[Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]
+      you can give information about sites you want include in computation in three different ways
+        1 -S [site_name], lat , lon , height
+            example:
+              -S JOZE, 52.1, 21.3 , 110
+            or
+              -S , 52.1, 21.3
+        2 -S file_name
+            where in the file you put space separated: name lat lon [heihght]
+            all records with bad specification will be ignored
+        3 -S Rlonmin/lonmax/latmin/latmax[,lonresolution]
+      lat in decimal degrees (+ north | - south)
+      lon in decimal degrees <-180,360)
+      height in meters (orthometric)
+      obligatory parameter
+      default: height=0
+  
+  -V  verbose
+      -V[log_file]
+      prints settings to log_file if specified or to STDOUT
+      default: verbose=.false.
+  
+  -L  more verbose
+      -L[filename]:what,[filename2]:what
+      prints out additional information depending on specification
+      optional parameter
+      default: moreverbose=.false.
+      fields: n - nearest
+              b - bilinear
+              s - statistic (short)
+              G - greens function
+  
+  -P  polygon(s)
+      -Ppolygon_file[,polygonfi
+      optional parameter
+  
+  -I  interpolation
+      -I[1|2]
+      specify the interpolation scheme for data
+      Default: -I1
+      optional parameter
+  
+  
