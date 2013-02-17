@@ -1,5 +1,5 @@
 program joinnc
-  use get_cmd_line
+  use mod_cmdline
   use mod_data
   use netcdf
 

@@ -1,0 +1,11 @@
+This file contains the version for grat and utilities program.
+
+Rule: 
+first column blank
+g - grat
+p - polygon_check
+v - value_check
+
+ g pre-alpha
+ v beta
+ p beta

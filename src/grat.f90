@@ -20,7 +20,7 @@
 !! When you don't want a \c log_file and you don't switch \c verbose all 
 !! unneceserry information whitch are normally collected goes to \c /dev/null
 !! file. This is *nix system default trash. For other system or file system
-!! organization, please change this value in \c get_cmd_line module.
+!! organization, please change this value in \c mod_cmdline module.
 !!
 !! \attention 
 !! \c grat and value_check needs a \c netCDF library \cite netcdf 
@@ -57,7 +57,7 @@
 ! ==============================================================================
 program grat
   use iso_fortran_env
-  use get_cmd_line
+  use mod_cmdline
   use mod_polygon
   use mod_data
   use mod_green

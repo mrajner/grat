@@ -1,6 +1,6 @@
 module mod_green
-  use constants
-  use get_cmd_line
+  use mod_constants
+  use mod_cmdline
   use mod_aggf
   use mod_data
   use mod_polygon

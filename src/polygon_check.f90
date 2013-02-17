@@ -5,8 +5,8 @@
 
 program polygon_check
   use iso_fortran_env
-  use get_cmd_line
-  use constants
+  use mod_cmdline
+  use mod_constants
   use mod_data
   use mod_polygon
   

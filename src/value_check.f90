@@ -6,7 +6,7 @@
 !!
 
 program value_check 
-  use get_cmd_line
+  use mod_cmdline
   use mod_data
   use ieee_arithmetic
   implicit none

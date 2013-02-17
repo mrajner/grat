@@ -9,14 +9,14 @@ program example_aggf
 
   !> module with subroutines for calculating Atmospheric Gravity Green Fucntions
   use mod_aggf
-  use constants
+  use mod_constants
   implicit none
 
 
 
 
- print *, "...standard1976 ()"
- call standard1976 ()
+! print *, "...standard1976 ()"
+! call standard1976 ()
 !print *, "...aggf_resp_hmax ()"
 ! call aggf_resp_hmax ()
 !print *, "...aggf_resp_dz ()"

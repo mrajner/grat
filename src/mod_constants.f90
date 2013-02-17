@@ -2,7 +2,7 @@
 !> \file
 !! This module define some constant values used
 ! ==============================================================================
-module constants
+module mod_constants
 
   implicit none
   integer , parameter :: dp = 8 !< real (kind_real) => real (kind = 8 )
@@ -345,4 +345,4 @@ subroutine invmjd (mjd , date)
   endif
 end subroutine
 
-end module constants
+end module mod_constants

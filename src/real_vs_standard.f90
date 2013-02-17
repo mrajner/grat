@@ -1,5 +1,5 @@
 program real_vs_standard
-  use get_cmd_line
+  use mod_cmdline
 !  use mod_polygon
   use mod_data
   use mod_aggf

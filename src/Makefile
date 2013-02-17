@@ -16,13 +16,13 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 #  fnl_ = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
-
-SRCS  = constants.f90 get_cmd_line.f90 mod_polygon.f90 mod_data.f90 mod_aggf.f90 mod_green.f90
+SRCS  = mod_constants.f90 mod_cmdline.f90 mod_polygon.f90 mod_data.f90 mod_aggf.f90 mod_green.f90
 OBJS  = $(SRCS:.f90=.o)
 %.o: %.f90
 	$(FC) $< -c
  
 
+o: $(BIN)/value_check example
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
@@ -32,7 +32,6 @@ OBJS  = $(SRCS:.f90=.o)
 #   $(FC) $< -o $@ -lgrat -L.
 #   ./$@ 
 #
-v: $(BIN)/value_check example
 
 all:\
 	$(OBJS) \
@@ -58,7 +57,7 @@ $(BIN)/value_check: value_check.f90  $(OBJS)
 	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	value_check -F $(SFC) -S j, 52 , 21, 1 -L -V
+	value_check -v -F $(SFC) -S j, 52 , 21, 1 -L -V
 #   value_check -F $(SFC), $(TMP), ../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -S joze,53.8912,20.6697,100    -BI -G,,,,,  -L:s -I2,2,2,2,2  -P$(POL),$(POL) -V
 #   grat -F $(SFC) -S joze, 53.8912, 20.6697, 100 -R- -V -G,,,, -D20110101,20110103 -L:s # dlaczego kolumna niezerowa
 #   real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 

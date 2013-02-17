@@ -8,7 +8,7 @@
 ! ==============================================================================
 module mod_aggf
 
-  use constants
+  use mod_constants
   implicit none
 
 contains

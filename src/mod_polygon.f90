@@ -1,9 +1,10 @@
 module mod_polygon
 
-use constants
-use get_cmd_line
+use mod_constants
+use mod_cmdline
 
 contains
+
 ! ==============================================================================
 !> \brief Reads polygon data
 !!
