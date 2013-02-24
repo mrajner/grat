@@ -10,7 +10,7 @@ program joinnc
 
   print * ,"joining files in ", filename
   call intro("")
-!  
+
   call system ("ls "//trim(model(1)%name)//" > "// trim(filename) )
 
   open(newunit = iunit, file = filename, action = "read")
@@ -30,6 +30,7 @@ program joinnc
 
     print * , idimid, "kdf:"
   enddo
+
 
 
 end program
