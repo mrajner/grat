@@ -257,6 +257,14 @@ subroutine standard_pressure (height, pressure , &
   if (present(inverted).and.inverted) then
     pressure = sfc_pressure  / ( exp ( -1000. * (height-sfc_height) / lambda ) )
   endif
+
+
+  !todo incorporate this
+
+!  Zdunkowski and Bott
+!  p(z) = p0 (T0-gamm z )/T0
+
+
 end subroutine
 
 ! =============================================================================
