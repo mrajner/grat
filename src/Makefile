@@ -90,6 +90,11 @@ dochtml:
 	make doc
 	firefox ../doc/html/index.html &
 
-link:
-	-cd ~/.local/bin && ln -s ${G}bin/* .
-	-cd ~/.local/bin && ln -s ${G}polygon/polygon_map.sh polygon_map
+install: all libgrat.a
+	-cp -u ../bin/*  ~/.local/bin
+	-cp -u libgrat.a ~/.local/lib
+	-cp -u *.mod ~/.local/include
+	
+
+	# 
+	#../polygon/polygon_map.sh ../polygon/polygon_map
