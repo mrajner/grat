@@ -91,9 +91,9 @@ dochtml:
 	firefox ../doc/html/index.html &
 
 install: all libgrat.a
-	-cp -u ../bin/*  ~/.local/bin
-	-cp -u libgrat.a ~/.local/lib
-	-cp -u *.mod ~/.local/include
+	-cp -u ../bin/*  ~/.local/bin/
+	-cp -u libgrat.a ~/.local/lib/
+	-cp -u *.mod ~/.local/include/
 	
 
 	# 

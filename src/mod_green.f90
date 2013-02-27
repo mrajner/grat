@@ -12,6 +12,7 @@ module mod_green
   type (result), allocatable, dimension(:) :: results
 
 
+
 contains
 subroutine green_unification (green , green_common , denser)
   type(green_functions), allocatable , dimension(:) , intent(in) :: green
@@ -49,6 +50,7 @@ subroutine green_unification (green , green_common , denser)
   endif
 
 end subroutine
+
 ! =============================================================================
 ! =============================================================================
 subroutine spher_area (distance ,ddistance, azstp,  area )
@@ -59,6 +61,13 @@ subroutine spher_area (distance ,ddistance, azstp,  area )
   area =  abs(sin(d2r(90.-distance+ddistance/2.))-sin(d2r(90.-distance-ddistance/2.))) * d2r(dble(azstp))
 end subroutine
 
+
+! =============================================================================
+!> This soubroutine gives the latitude and longitude of the point at the 
+!! specified distance and azimuth from site latitude and longitude.
+!!
+!! Adopted from \cite Agnew97
+! =============================================================================
 subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
   real(dp) , intent(in)  :: distance 
   real(sp) , intent(in)  :: latin , lonin , azimuth

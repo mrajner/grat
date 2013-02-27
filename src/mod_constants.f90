@@ -3,7 +3,6 @@
 !! This module define some constant values used
 ! ==============================================================================
 module mod_constants
-
   implicit none
   integer , parameter :: dp = 8 !< real (kind_real) => real (kind = 8 )
   integer , parameter :: sp = 4 !< real (kind_real) => real (kind = 4 )
