@@ -22,6 +22,7 @@ OBJS  = $(SRCS:.f90=.o)
 	$(FC) $< -c
  
 
+i: install
 o: $(BIN)/value_check example
 
 # $(BIN)/joinnc: joinnc.f90
@@ -68,8 +69,8 @@ clean:
 	rm -f *.o *.mod tmp* *.a fort??????
 
 libgrat.a: $(OBJS)
-	make $(OBJS)
-	ar rs libgrat.a *.o
+	@make $(OBJS)
+	@ar rs libgrat.a *.o
 
 PACKAGE = grat-src
 VER     = 1.0
@@ -90,11 +91,13 @@ dochtml:
 	make doc
 	firefox ../doc/html/index.html &
 
-install: all libgrat.a
-	-cp -u ../bin/*  ~/.local/bin/
-	-cp -u libgrat.a ~/.local/lib/
-	-cp -u *.mod ~/.local/include/
+install: libgrat.a
+	cp -u ../bin/*  ~/.local/bin/
+	cp -u libgrat.a ~/.local/lib/
+	cp -u *.mod ~/.local/include/
+	@echo "library sucessfull installed"
 	
 
+:
 	# 
 	#../polygon/polygon_map.sh ../polygon/polygon_map

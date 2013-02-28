@@ -266,36 +266,6 @@ real function jd (year,month,day, hh,mm,ss)
   return
 end function
 
-!subroutine gdate (jd, year,month,day,hh,mm,ss)
-!  !! modyfikacja mrajner 20120922
-!  !! pobrane  http://aa.usno.navy.mil/faq/docs/jd_formula.php
-!  implicit none
-!  real, intent(in):: jd
-!  real :: aux
-!  integer,intent(out) :: year,month,day,hh,mm,ss
-!  integer :: i,j,k,l,n
-
-!  l= int((jd+68569))
-!  n= 4*l/146097
-!  l= l-(146097*n+3)/4
-!  i= 4000*(l+1)/1461001
-!  l= l-1461*i/4+31
-!  j= 80*l/2447
-!  k= l-2447*j/80
-!  l= j/11
-!  j= j+2-12*l
-!  i= 100*(n-49)+i+l
-
-!  year= i
-!  month= j
-!  day= k
-
-!  aux= jd - int(jd) + 0.0001/86400 ! ostatni argument zapewnia poprawe
-!                                   ! jeżeli ss jest integer
-!  hh= aux*24
-!  mm= aux*24*60    - hh*60
-!  ss= aux*24*60*60 - hh*60*60 - mm*60
-!end subroutine
 real(dp) function mjd  (date)
   implicit none
   integer ,intent(in) :: date (6)

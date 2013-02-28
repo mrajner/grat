@@ -67,6 +67,7 @@ end subroutine
 !! specified distance and azimuth from site latitude and longitude.
 !!
 !! Adopted from \cite Agnew97
+!! all parameters in decimal degree
 ! =============================================================================
 subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
   real(dp) , intent(in)  :: distance 
@@ -201,6 +202,35 @@ subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , 
   write(moreverbose%unit, '(2f12.6)') , lat , lon
   call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
   write(moreverbose%unit, '(2f12.6)') , lat , lon
+end subroutine
+
+! =============================================================================
+!> For given coordinates for two points on sphere calculate distance and
+!! azimuth in radians
+
+
+!> \todo MAKE IT CONSISTENT WITH OTHER ROUTINES DEGREE/RADIAN -- see spher_trig
+! =============================================================================
+subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, haversine)
+  real(dp) , intent (in) :: lat1 , lon1 , lat2 , lon2
+  real(dp) , intent (out) :: distance , azimuth
+  real(dp) :: dlat,dlon
+  logical, intent(in) , optional :: haversine
+
+  dlon = lon2 -lon1
+  dlat = lat2 -lat1
+!  if (dlon > pi ) dlon =dlon -pi
+
+  if (present(haversine)) then
+    distance = 2 * asin ( sqrt ( (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2  )   )
+    
+  else 
+    distance = acos ( sin(lat1) * sin (lat2) + cos(lat1) * cos(lat2) * cos(dlon))
+  endif
+
+  azimuth = atan2( (sin(dlon)*cos(lat2)/sin(distance)) ,  ((sin(lat2)*cos(lat1) - cos(lat2)*sin(lat1)*cos(dlon))/sin(distance))  )
+  if (azimuth.lt.0) azimuth = azimuth + 2 * pi
+
 end subroutine
 
 !subroutine wczytaj_linie_informacyjne
