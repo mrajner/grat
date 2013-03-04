@@ -91,11 +91,15 @@ dochtml:
 	make doc
 	firefox ../doc/html/index.html &
 
-install: libgrat.a
+# Change this path according to your system settings
+install:
 	cp -u ../bin/*  ~/.local/bin/
-	cp -u libgrat.a ~/.local/lib/
-	cp -u *.mod ~/.local/include/
-	@echo "library sucessfull installed"
+	@echo "program grat sucessfully installed"
+
+# Change this path according to your system settings
+# This require root privilages
+installlib:
+	su -c 'cp -u libgrat.a /usr/local/lib; cp -u *.mod /usr/local/include'
 	
 
 :
