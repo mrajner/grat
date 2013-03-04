@@ -56,26 +56,28 @@
 !! \example grat_usage.sh
 ! ==============================================================================
 program grat
-  use iso_fortran_env
-  use mod_cmdline
-  use mod_polygon
-  use mod_data
-  use mod_green
 
+  use mod_constants , only : dp
+  use mod_cmdline   , only : cpu_start , cpu_finish,  intro , print_settings , &
+    polygons , model , refpres, form_separator , log ,dates , sites, output, &
+    moreverbose, form_60 , form_61
+  use mod_green , only : results
+  use mod_polygon   , only : read_polygon
+  use mod_data      , only : read_netCDF , get_variable
 
   implicit none
-  real(sp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
+  real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
   integer :: i , j , ii, iii
 
   !> program starts here with time stamp
   call cpu_time(cpu_start)
 
-  ! gather cmd line option decide where to put output
+  !! gather cmd line option decide where to put output
   call intro ( program_calling = "grat" )
 
   ! print header to log: version, date and summary of command line options
   call print_settings (program_calling = "grat")
-  
+
   ! read polygons
   do i =1 , 2
    call read_polygon (polygons(i))
@@ -83,7 +85,7 @@ program grat
 
   ! read models into memory
   do i =1 , size(model)
-    if (model(i)%if) call read_netCDF ( model(i) )
+    if (model(i)%if) call read_netCDF (model(i))
   enddo
 
   ! todo refpres in get_cmd-line
@@ -102,6 +104,9 @@ program grat
       if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
     enddo
 
+    write(log%unit, form_separator)
+    write(log%unit, form_60) "Results:"
+    if (output%if.and.(output%name /= "")) write(log%unit, form_61) "written into file:" , trim(output%name)
     do i = 1 , size(sites)
       write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
       iii=iii+1

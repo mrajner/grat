@@ -6,14 +6,15 @@
 !! writing small subset of data therefore very efficient for large datafiles
 !! (this case)
 !! \cite netcdf
+!! \author M. Rajner
+!! \date 2013-03-04
 ! =============================================================================
 module mod_data
 
-!  use mod_constants
-  use mod_cmdline
-!  use mod_polygon
-  use netcdf
   implicit none
+  private
+
+  public :: read_netcdf , get_variable
 
 contains
 
@@ -23,6 +24,8 @@ contains
 !! for GMT drawing
 ! =============================================================================
 subroutine put_grd (model, time , level , filename_opt )
+  use netcdf
+  use mod_cmdline, only : file, form_separator, log
   type (file) :: model
   integer  :: time , level , ncid
   integer :: londimid, latdimid, dimids(2), varid, latvarid,lonvarid
@@ -54,14 +57,15 @@ end subroutine
 !> Read netCDF file into memory
 ! =============================================================================
 subroutine read_netCDF (model)
+  use netcdf
+  use mod_cmdline, only: file, form_separator, form_60, log
   type (file) :: model
-  integer::i
+  integer :: i 
 
   write (log%unit , form_separator)
 
   write (log%unit , form_60) "Opening file:" , trim(model%name)
   call check ( nf90_open ( model%name , nf90_nowrite , model%ncid ) )
-
 
   do i = 2,5
     call get_dimension ( model , i  )
@@ -72,11 +76,12 @@ subroutine read_netCDF (model)
 
 end subroutine
 
-
 ! =============================================================================
 !> \brief Get values from netCDF file for specified variables
 ! =============================================================================
 subroutine get_variable( model , date )
+  use netcdf
+  use mod_cmdline , only: file,dates, log ,form_61
   type (file), intent(inout) :: model
   integer , optional , intent(in) ,dimension(6) ::date
   integer :: varid
@@ -121,14 +126,20 @@ subroutine get_variable( model , date )
 end subroutine
 
 ! =============================================================================
-!> \brief Change time in netcdf to dates
+!> Change time in netcdf to dates
+!!
+!! \author M. Rajner
+!! \date 2013-03-04
 ! =============================================================================
-subroutine nctime2date ( model )
+subroutine nctime2date (model)
+  use netcdf
+  use mod_cmdline , only: file, log, form_61
+  use mod_constants, only : dp
+  use mod_utilities, only : mjd, invmjd
   type (file) :: model
   real(dp):: mjd_start , mjd_
   integer:: varid ,i , date (6)
   character (len=66) :: dummy
-
 
   call check ( nf90_inq_varid (model%ncid, "time" , varid ) )
   call check (nf90_get_att ( model%ncid , varid , "units" , dummy) )
@@ -151,6 +162,8 @@ end subroutine
 !> \brief Get dimension, allocate memory and fill with values
 ! =============================================================================
 subroutine get_dimension ( model , i )
+  use netcdf
+  use mod_cmdline, only: file,form_61,form_62 , log
   type(file) :: model
   integer :: dimid , varid 
   integer , intent(in) :: i
@@ -189,13 +202,15 @@ subroutine get_dimension ( model , i )
   endif
 end subroutine
 
-
 ! =============================================================================
 !> \brief Unpack variable 
 !!
 !! from \cite netcdf
 ! =============================================================================
 subroutine unpack_netcdf ( model )
+  use netcdf
+  use mod_constants, only : dp ,sp
+  use mod_cmdline, only: file
   type(file) :: model
   integer :: varid , status
   real(sp):: scale_factor , add_offset
@@ -209,12 +224,15 @@ subroutine unpack_netcdf ( model )
 end subroutine
 
 ! =============================================================================
-!> \brief Check the return code from netCDF manipulation
+!> Check the return code from netCDF manipulation
 !!
-!! from \cite netcdf
+!! \author From netcdf website \cite netcdf
+!! \date 2013-03-04
 ! =============================================================================
 subroutine check(status)
-  integer, intent ( in) :: status
+  use netcdf
+  use netcdf
+  integer, intent (in) :: status
   
   if(status /= nf90_noerr) then 
     print *, trim(nf90_strerror(status))
@@ -222,12 +240,13 @@ subroutine check(status)
   end if
 end subroutine check  
 
-
-
 ! =============================================================================
 !> \brief Returns the value from model file
 ! =============================================================================
-subroutine get_value( model,  lat , lon , val ,level, method )
+subroutine get_value( model, lat , lon , val ,level, method )
+ 
+  use mod_constants , only: dp , sp
+  use mod_cmdline , only: file
 
   type(file) , intent (in) :: model
   real(sp) , intent (in) :: lat,lon
@@ -291,32 +310,35 @@ subroutine get_value( model,  lat , lon , val ,level, method )
 end subroutine 
 
 real function bilinear (x , y , aux )
+  use mod_constants, only: dp
   real x , y , aux(4,3) 
-  real(sp) :: a , b , c
+  real(dp) :: a , b , c
   a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
   b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 
   c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
   bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
 end function
+!
 
-subroutine invspt(alp,del,b,rlong)
-  real alp, del , b ,rlong
-!      data dtr/.01745329251/
-!      ca = cos(alp*dtr)
-!      sa = sin(alp*dtr)
-!      cd = cos(del*dtr)
-!      sd = sin(del*dtr)
-!      cb = cd*ct + sd*st*ca
-!      sb = sqrt(1.-cb*cb)
-!      b = acos(cb)/dtr
-!      if(sb.le.1.e-3) then
-!   rlong = 0
-!   return
-!      endif
-!      sg = sd*sa/sb
-!      cg = (st*cd-sd*ct*ca)/sb
-!      g = atan2(sg,cg)/dtr
-!     rlong = dlugosc_stacji + g
-!     return
-end subroutine
+!! delteme
+!subroutine invspt(alp,del,b,rlong)
+!  real alp, del , b ,rlong
+!!      data dtr/.01745329251/
+!!      ca = cos(alp*dtr)
+!!      sa = sin(alp*dtr)
+!!      cd = cos(del*dtr)
+!!      sd = sin(del*dtr)
+!!      cb = cd*ct + sd*st*ca
+!!      sb = sqrt(1.-cb*cb)
+!!      b = acos(cb)/dtr
+!!      if(sb.le.1.e-3) then
+!!   rlong = 0
+!!   return
+!!      endif
+!!      sg = sd*sa/sb
+!!      cg = (st*cd-sd*ct*ca)/sb
+!!      g = atan2(sg,cg)/dtr
+!!     rlong = dlugosc_stacji + g
+!!     return
+!end subroutine
 end module

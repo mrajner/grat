@@ -1,4 +1,3 @@
-.PHONY: clean
   BIN = ../bin
   FC = ifort
   FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
@@ -16,14 +15,15 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 #  fnl_ = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
  fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
-SRCS  = mod_constants.f90 mod_cmdline.f90 mod_polygon.f90 mod_data.f90 mod_aggf.f90 mod_green.f90
+SRCS  = mod_constants.f90 mod_utilities.f90 mod_cmdline.f90 mod_polygon.f90 mod_data.f90 mod_aggf.f90 mod_green.f90
 OBJS  = $(SRCS:.f90=.o)
+
 %.o: %.f90
 	$(FC) $< -c
+	ar rsv lib$(@:.o=.a) $@
  
+L: installlib
 
-i: install
-o: $(BIN)/value_check example
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
@@ -34,74 +34,76 @@ o: $(BIN)/value_check example
 #   ./$@ 
 #
 
-all:\
+all: \
 	$(OBJS) \
 	$(BIN)/grat \
-  $(BIN)/example_aggf $(BIN)/polygon_check \
-  $(BIN)/value_check example \
-  $(BIN)/real_vs_standard \
+	$(BIN)/example_aggf $(BIN)/polygon_check \
+	$(BIN)/value_check example \
+	$(BIN)/real_vs_standard \
 	example
 
-$(BIN)/grat: grat.f90  $(OBJS)
-	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+$(BIN)/grat: grat.f90  $(OBJS) Makefile
+	$(FC) $(FLAGS) $<  -o $@   $(NETCDFLIB) mod_{cmdline,utilities,polygon,data,green}.o
 
-$(BIN)/example_aggf: $(EXAMPLE)/example_aggf.f90 $(OBJS)
-	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+# $(BIN)/example_aggf: $(EXAMPLE)/example_aggf.f90 $(OBJS)
+#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
-$(BIN)/real_vs_standard: real_vs_standard.f90  $(OBJS)
-	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+# $(BIN)/real_vs_standard: real_vs_standard.f90  $(OBJS)
+#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
-$(BIN)/polygon_check: polygon_check.f90 $(OBJS)
-	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+# $(BIN)/polygon_check: polygon_check.f90 $(OBJS)
+#   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
-$(BIN)/value_check: value_check.f90  $(OBJS)
-	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+# $(BIN)/value_check: value_check.f90  $(OBJS)
+#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
 example:
-	value_check -v -F $(SFC) -S j, 52 , 21, 1 -L -V
+	$(BIN)/grat -V -S j , 4, 3 -o tmp
 #   value_check -F $(SFC), $(TMP), ../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -S joze,53.8912,20.6697,100    -BI -G,,,,,  -L:s -I2,2,2,2,2  -P$(POL),$(POL) -V
 #   grat -F $(SFC) -S joze, 53.8912, 20.6697, 100 -R- -V -G,,,, -D20110101,20110103 -L:s # dlaczego kolumna niezerowa
 #   real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 
 #   $(BIN)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
 #   $(BIN)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
 
-clean:
-	rm -f *.o *.mod tmp* *.a fort??????
-
 libgrat.a: $(OBJS)
 	@make $(OBJS)
-	@ar rs libgrat.a *.o
+	@ar rsv libgrat.a *.o
 
 PACKAGE = grat-src
-VER     = 1.0
+VER     = pre-alpha
 DATE     = `date +%Y%m%d`
 
 package: 
 	tar jcf $(PACKAGE)_$(VER)_$(DATE).tar.bz2 ../../grat/src/{*.f90,Makefile} ../../grat/dat/*.dat ../../grat/bin/.README
 
-doc:
+doc: 
 	cd ../doc  &&  doxygen Doxyfile
 
 docpdf: 
-	make doc
+	doc
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman
 	evince ../doc/latex/refman.pdf &
 
-dochtml: 
-	make doc
+dochtml: doc
 	firefox ../doc/html/index.html &
+
+docman: doc
+	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
+
 
 # Change this path according to your system settings
 install:
-	cp -u ../bin/*  ~/.local/bin/
+	@cp -u ../bin/*  ~/.local/bin/
 	@echo "program grat sucessfully installed"
 
 # Change this path according to your system settings
 # This require root privilages
-installlib:
-	su -c 'cp -u libgrat.a /usr/local/lib; cp -u *.mod /usr/local/include'
-	
+installlib: libgrat.a
+	@cp -u libgrat.a /usr/local/lib
+	@cp -u *.mod /usr/local/include
+	@echo "library grat sucessfully installed"
 
-:
-	# 
-	#../polygon/polygon_map.sh ../polygon/polygon_map
+.phony: clean
+clean:
+	rm -f *.o *.mod tmp* *.a fort??????
+

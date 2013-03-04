@@ -6,15 +6,14 @@
 !! convienient to use with auto completion of names
 ! =============================================================================
 module mod_cmdline
-  use iso_fortran_env
-  use mod_constants 
 
+  use mod_constants, only: dp , sp
+  use iso_fortran_env
   implicit none
 
   !----------------------------------------------------
   ! Greens function
   !----------------------------------------------------
-
   type green_functions
     real(dp),allocatable,dimension(:) :: distance
     real(dp),allocatable,dimension(:) :: data
@@ -48,7 +47,7 @@ module mod_cmdline
     integer,dimension (6) :: date
   end type
 
-  real(kind=4) :: cpu_start , cpu_finish  !< for time execution of program
+  real(sp) :: cpu_start , cpu_finish  
   type(dateandmjd) , allocatable,dimension (:) :: dates
 
 
@@ -89,10 +88,9 @@ module mod_cmdline
           :: filename_site 
   integer :: fileunit_site
 
-
   type file
-    character(:), allocatable &
-          :: name 
+    character(:), allocatable :: name 
+
     ! varname , lonname,latname,levelname , timename
     character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
 
@@ -169,10 +167,9 @@ contains
 !! Depending on command line options set all initial parameters and reports it
 ! =============================================================================
 subroutine intro (program_calling)
-  implicit none
   integer :: i, j
   character(len=255) :: dummy, dummy2,arg
-  character(len=*) :: program_calling
+  character(len=*), intent(in) :: program_calling
   type(cmd_line) :: cmd_line_entry
 
   if(iargc().eq.0) then
@@ -220,8 +217,7 @@ end subroutine
 !> Check if at least all obligatory command line arguments were given
 !! if not print warning
 ! =============================================================================
-subroutine if_minimum_args ( program_calling )
-  implicit none
+subroutine if_minimum_args (program_calling)
   character (*) , intent(in) :: program_calling
 
   if (program_calling.eq."grat" ) then
@@ -240,7 +236,6 @@ end subroutine
 !! is not
 ! =============================================================================
 logical function if_switch_program (program_calling , switch )
-  implicit none
   character(len=*), intent (in) :: program_calling
   character(len=*),  intent (in) :: switch
   character, dimension(:) , allocatable :: accepted_switch  
@@ -276,6 +271,7 @@ end function
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
 subroutine parse_option (cmd_line_entry , program_calling)
+  use mod_utilities, only : file_exists, is_numeric
   type(cmd_line),intent(in):: cmd_line_entry
   character(len=*), optional :: program_calling
   integer :: i
@@ -301,7 +297,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
       ! check if format is proper for site
       ! i,e. -Sname,B,L[,H]
       if (.not. allocated(sites)) then
-        if (  is_numeric(cmd_line_entry%field(2)) &
+        if (is_numeric(cmd_line_entry%field(2)) &
         .and.is_numeric(cmd_line_entry%field(3)) &
         .and.index(cmd_line_entry%field(1), "/" ).eq.0 &
         .and.(.not.cmd_line_entry%field(1).eq. "Rg" ) &
@@ -391,7 +387,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
         if (file_exists((polygons(i)%name))) then
           write(fileunit_tmp, form_62), 'polygon file was set: ' , polygons(i)%name
           polygons(i)%if=.true.
-          ! todo
+          !> todo
 !          call read_polygon (polygons(i))
         else
           write(fileunit_tmp, form_62), 'file do not exist. Polygon file was IGNORED'
@@ -407,6 +403,7 @@ end subroutine
 !> This subroutine parse -G option i.e. reads Greens function
 ! =============================================================================
 subroutine parse_green ( cmd_line_entry)
+  use mod_utilities
   type (cmd_line)  :: cmd_line_entry
   character (60) :: filename
   integer :: i , iunit , io_status , lines ,  ii
@@ -577,11 +574,12 @@ subroutine mod_cmdline_entry (dummy , cmd_line_entry , program_calling )
   enddo
   call parse_option (cmd_line_entry , program_calling = program_calling)
 end subroutine
-
+!
 ! =============================================================================
 !> This subroutine fills the model info
 ! =============================================================================
 subroutine get_model_info ( model , cmd_line_entry , field)
+  use mod_utilities, only : file_exists, is_numeric
   type(cmd_line),intent(in):: cmd_line_entry
   type(file),intent(inout):: model
   integer :: field , i 
@@ -617,10 +615,11 @@ end subroutine
 
 
 ! =============================================================================
-!> This subroutine checks if given limits for model are proper
+!> P
 ! =============================================================================
 subroutine parse_GMT_like_boundaries ( cmd_line_entry )
-  implicit none
+  use mod_constants, only : dp ,sp 
+  use mod_utilities, only : is_numeric
   real(sp) :: limits (4) , resolution (2) =[1,1]
   real(sp) :: range_lon , range_lat , lat , lon
   character(10) :: dummy
@@ -697,6 +696,7 @@ end subroutine
 !! checks for arguments and put it into array \c sites
 ! =============================================================================
 subroutine read_site_file ( file_name )
+  use mod_utilities, only: is_numeric, ntokens
   character(len=*) , intent(in) ::  file_name
   integer :: io_status , i , good_lines = 0 , number_of_lines = 0 , nloop
   character(len=255) ,dimension(4)  :: dummy
@@ -783,6 +783,7 @@ end subroutine
 !! \warning decimal seconds are not allowed
 ! =============================================================================
 subroutine parse_dates (cmd_line_entry ) 
+  use mod_utilities, only: is_numeric,mjd,invmjd
   type(cmd_line) cmd_line_entry
   integer , dimension(6) :: start , stop 
   real (sp) :: step =6. ! step in hours
@@ -809,6 +810,7 @@ subroutine parse_dates (cmd_line_entry )
 end subroutine
 
 subroutine string2date ( string , date )
+  use mod_utilities, only: is_numeric
   integer , dimension(6) ,intent(out):: date 
   character (*) , intent(in) :: string
   integer :: start_char , end_char , j
@@ -832,77 +834,25 @@ subroutine string2date ( string , date )
 end subroutine
 
 
-!subroutine sprawdzdate(mjd)
-!  real:: mjd
-!    if (mjd.gt.jd(data_uruchomienia(1),data_uruchomienia(2),data_uruchomienia(3),data_uruchomienia(4),data_uruchomienia(5),data_uruchomienia(6))) then
-!      write (*,'(4x,a)') "Data późniejsza niż dzisiaj. KOŃCZĘ!"
-!      call exit
-!    elseif (mjd.lt.jd(1980,1,1,0,0,0)) then
-!      write (*,'(4x,a)') "Data wcześniejsza niż 1980-01-01. KOŃCZĘ!"
-!      call exit
-!    endif
-!    if (.not.log_E) then
-!      data_koniec=data_poczatek
-!      mjd_koniec=mjd_poczatek
-!    endif
-!    if (mjd_koniec.lt.mjd_poczatek) then
-!      write (*,*) "Data końcowa większa od początkowej. KOŃCZĘ!"
-!      write (*,form_64) "Data końcowa większa od początkowej. KOŃCZĘ!"
-!    endif
-!end subroutine
-
-! =============================================================================
-!> Auxiliary function
-!!
-!! check if argument given as string is valid number
-!! Taken from www
-!! \todo Add source name
-! =============================================================================
-function is_numeric(string)
-  implicit none
-  character(len=*), intent(in) :: string
-  logical :: is_numeric
-  real :: x
-  integer :: e
-  read(string,*,iostat=e) x
-  is_numeric = e == 0
-end function 
-
-
-! =============================================================================
-!> Check if file exists , return logical
-! =============================================================================
-logical function file_exists(string)
-  implicit none
-  character(len=*), intent(in) :: string
-  logical :: exists
-  real :: x
-  integer :: e
-  if (string =="") then
-    file_exists=.false.
-    return
-  endif
-  inquire(file=string, exist=exists)
-  file_exists=exists
-end function 
-
-
-! =============================================================================
-!> degree -> radian
-! =============================================================================
-real(dp) function d2r (degree)
-  real(dp) , intent (in) :: degree
-  d2r= pi / 180.0 * degree
-end function
-
-! =============================================================================
-!> radian -> degree
-! =============================================================================
-real(dp) function r2d ( radian )
-  real(dp), intent (in) :: radian
-  r2d= 180. / pi * radian
-end function
-
+!!subroutine sprawdzdate(mjd)
+!!  real:: mjd
+!!    if (mjd.gt.jd(data_uruchomienia(1),data_uruchomienia(2),data_uruchomienia(3),data_uruchomienia(4),data_uruchomienia(5),data_uruchomienia(6))) then
+!!      write (*,'(4x,a)') "Data późniejsza niż dzisiaj. KOŃCZĘ!"
+!!      call exit
+!!    elseif (mjd.lt.jd(1980,1,1,0,0,0)) then
+!!      write (*,'(4x,a)') "Data wcześniejsza niż 1980-01-01. KOŃCZĘ!"
+!!      call exit
+!!    endif
+!!    if (.not.log_E) then
+!!      data_koniec=data_poczatek
+!!      mjd_koniec=mjd_poczatek
+!!    endif
+!!    if (mjd_koniec.lt.mjd_poczatek) then
+!!      write (*,*) "Data końcowa większa od początkowej. KOŃCZĘ!"
+!!      write (*,form_64) "Data końcowa większa od początkowej. KOŃCZĘ!"
+!!    endif
+!!end subroutine
+!
 ! =============================================================================
 !> Print version of program depending on program calling
 ! =============================================================================
@@ -930,12 +880,11 @@ end subroutine
 ! =============================================================================
 !> Print settings 
 ! =============================================================================
-subroutine print_settings ( program_calling )
-  implicit none
+subroutine print_settings (program_calling)
   logical :: exists
   character (len=255):: dummy
   integer :: io_status , j
-  character(*) :: program_calling
+  character(*), intent(in), optional :: program_calling
 
   call print_version ( program_calling = program_calling)
   call date_and_time ( values = execution_date )
@@ -982,7 +931,7 @@ subroutine print_settings ( program_calling )
 
     write(log%unit, form_separator)
     write(log%unit, form_60 ) "Interpolation data:", & 
-    interpolation_names(model%interpolation)(1:7)
+      interpolation_names(model%interpolation)(1:7)
   endif
 end subroutine
 
@@ -1058,27 +1007,26 @@ subroutine print_help (program_calling)
 end subroutine
 
 subroutine print_warning (  warn , unit)
- implicit none
- character (len=*)  :: warn
- integer , optional :: unit
- integer :: def_unit
+  character (len=*)  :: warn
+  integer , optional :: unit
+  integer :: def_unit
 
- def_unit=fileunit_tmp
- if (present (unit) ) def_unit=unit
+  def_unit=fileunit_tmp
+  if (present (unit) ) def_unit=unit
 
- if (warn .eq. "site_file_format") then
-  write(def_unit, form_63) "Some records were rejected"
-  write(def_unit, form_63) "you should specify for each line at least 3[4] parameters in free format:"
-  write(def_unit, form_63) "name lat lon [H=0] (skipped)"
-elseif (warn .eq. "boundaries") then
-  write(def_unit, form_62) "something wrong with boundaries. IGNORED"
-elseif (warn .eq. "site") then
-  write(def_unit, form_62) "something wrong with -S specification. IGNORED"
-elseif (warn .eq. "repeated") then
-  write(def_unit, form_62) "reapeted specification. IGNORED"
-elseif (warn .eq. "dates") then
-  write(def_unit, form_62) "something wrong with date format -D. IGNORED"
-endif
+  if (warn .eq. "site_file_format") then
+    write(def_unit, form_63) "Some records were rejected"
+    write(def_unit, form_63) "you should specify for each line at least 3[4] parameters in free format:"
+    write(def_unit, form_63) "name lat lon [H=0] (skipped)"
+  elseif (warn .eq. "boundaries") then
+    write(def_unit, form_62) "something wrong with boundaries. IGNORED"
+  elseif (warn .eq. "site") then
+    write(def_unit, form_62) "something wrong with -S specification. IGNORED"
+  elseif (warn .eq. "repeated") then
+    write(def_unit, form_62) "reapeted specification. IGNORED"
+  elseif (warn .eq. "dates") then
+    write(def_unit, form_62) "something wrong with date format -D. IGNORED"
+  endif
 end subroutine
 
 

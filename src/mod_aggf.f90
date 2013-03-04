@@ -10,6 +10,7 @@ module mod_aggf
 
   use mod_constants
   implicit none
+  private
 
 contains
 
@@ -49,9 +50,6 @@ subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
     aggfdt = aggfdt - aux
     aggfdt = aggfdt / ( 2. * deltat)
   endif
-    
-
-    
 end subroutine
 
 ! ==============================================================================

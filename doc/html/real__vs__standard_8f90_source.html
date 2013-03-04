@@ -112,7 +112,7 @@ $(document).ready(function(){initNavTree('real__vs__standard_8f90.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">program</span> real_vs_standard</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;  <span class="keyword">use </span><a class="code" href="classget__cmd__line.html">get_cmd_line</a></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!  use mod_polygon</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__aggf.html">mod_aggf</a></div>
@@ -129,10 +129,10 @@ $(document).ready(function(){initNavTree('real__vs__standard_8f90.html','');});
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="comment">! todo specific for current program</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  call <a class="code" href="classget__cmd__line.html#a9d060b3fb882493decebb354df600a9f">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  call <a class="code" href="classmod__cmdline.html#ac19a3689017f1397bc81f27411806b5e">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">!  ! print header to log: version, date and summary of command line options</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  call <a class="code" href="classget__cmd__line.html#a497eb966a4f9724a5243201c838cd8ea">print_settings</a>(program_calling = <span class="stringliteral">&quot;grat&quot;</span>)</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  call print_settings(program_calling = <span class="stringliteral">&quot;grat&quot;</span>)</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">!  </span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="comment">! read models into memory</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">do</span> i =1 , <span class="keyword">size</span>(model)</div>
@@ -184,7 +184,7 @@ $(document).ready(function(){initNavTree('real__vs__standard_8f90.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_5d98555a87ce6ad1e072f395e518bfeb.html">src</a></li><li class="navelem"><b>real_vs_standard.f90</b></li>
-    <li class="footer">Generated on Fri Feb 15 2013 16:13:58 for grat by
+    <li class="footer">Generated on Mon Mar 4 2013 17:45:17 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

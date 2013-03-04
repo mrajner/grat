@@ -1,17 +1,20 @@
 module mod_polygon
 
-use mod_constants
-use mod_cmdline
+  implicit none
+  private
+
+  public :: read_polygon
 
 contains
 
 ! ==============================================================================
-!> \brief Reads polygon data
+!> Reads polygon data
 !!
 !! inspired by spotl \cite Agnew97
 ! ==============================================================================
-subroutine read_polygon ( polygon  )
-  implicit none
+subroutine read_polygon (polygon)
+  use mod_cmdline
+  use mod_utilities, only: skip_header
   type(polygon_info):: polygon
   integer :: i , j , number_of_polygons , nvertex
   character(80) :: dummy
@@ -66,22 +69,26 @@ end subroutine
 
 
 ! ==============================================================================
-!> \brief check if point is in closed polygon
+!> Check if point is in closed polygon
 !!
-!! if it is first call it loads the model into memory
+!! If it is first call it loads the model into memory
 !! inspired by spotl \cite Agnew97
 !! adopted to grat and Fortran90 syntax
 !! From original description
-!  returns iok=0 if
-!     1. there is any polygon (of all those read in) in which the
-!        coordinate should not fall, and it does
-!             or
-!     2. the coordinate should fall in at least one polygon
-!        (of those read in) and it does not
-!    otherwise returns iok=1
+!!  returns iok=0 if
+!!     1. there is any polygon (of all those read in) in which the
+!!        coordinate should not fall, and it does
+!!             or
+!!     2. the coordinate should fall in at least one polygon
+!!        (of those read in) and it does not
+!!    otherwise returns iok=1
+!! \author D.C. Agnew \cite Agnew96
+!! \author adopted by Marcin Rajner
+!! \date 2013-03-04
 ! ==============================================================================
 subroutine chkgon (rlong , rlat , polygon , iok)
-  implicit none
+  use mod_constants, only: sp , dp
+  use mod_cmdline
   real(sp),intent (in) :: rlong, rlat
   integer :: i ,ii , ianyok
   integer , intent (out) :: iok
@@ -120,8 +127,8 @@ subroutine chkgon (rlong , rlat , polygon , iok)
       endif
     endif
   enddo
-!!! not inside any polygon%polygons; set iok to 0 if there are any we should have
-!!! been in
+  ! not inside any polygon%polygons; set iok to 0 if there are any we should have
+  ! been in
     iok = 1
     if(ianyok.gt.0) iok = 0
 
@@ -130,14 +137,14 @@ end subroutine
 
 ! ==============================================================================
 !! taken from spotl \cite Agnew97
-!! oryginal comment
+!! \par oryginal comment:
 !!  Rewritten by D. Agnew from the version by Godkin and Pulli,
 !!  in BSSA, Vol 74, pp 1847-1848 (1984)
 !! adopted and slightly modified M. Rajner
 !! cords is x, y (lon, lat) 2 dimensional array
 ! ==============================================================================
 integer function if_inpoly(x,y,coords) 
-  implicit none
+  use mod_constants, only: dp, sp
   real(sp) ,allocatable , dimension (:,:) , intent (in) :: coords  
   real(sp) , intent (in) :: x , y
   integer :: i , isc  
@@ -195,7 +202,8 @@ end function
 !! slightly modified
 ! ==============================================================================
 integer function ncross(x1,y1,x2,y2)
-  implicit none
+  use mod_constants, only: dp, sp
+  use mod_cmdline
   real(sp) , intent(in) :: x1 , y1, x2 , y2 
   real(sp) :: c12 , c21
 
