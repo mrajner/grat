@@ -29,7 +29,7 @@ subroutine spline_interpolation(x,y, x_interpolated, y_interpolated)
   call spline ( x , y, b , c, d, size(x))
   
   do i=1, size(x_interpolated)
-!     y_interpolated(i) = ispline (x_interpolated(i) , x , y , b , c , d , size (x) )
+     y_interpolated(i) = ispline (x_interpolated(i) , x , y , b , c , d , size (x) )
   enddo
 
 end subroutine
@@ -368,9 +368,10 @@ end function
 !! \author Marcin Rajner
 !! \date 2013-03-04
 ! =============================================================================
-real(dp) function d2r (degree)
+function d2r (degree)
   use mod_constants, only: pi, dp
   real(dp) , intent (in) :: degree
+  real(dp) :: d2r
   d2r= pi / 180.0 * degree
 end function
 
@@ -381,8 +382,9 @@ end function
 !! \author Marcin Rajner
 !! \date 2013-03-04
 ! =============================================================================
-real(dp) function r2d ( radian )
+function r2d ( radian )
   use mod_constants, only: pi, dp
+  real(dp) :: r2d 
   real(dp), intent (in) :: radian
   r2d= 180. / pi * radian
 end function
@@ -391,6 +393,7 @@ end function
 !> For given coordinates for two points on sphere calculate distance and
 !! azimuth in radians
 !!
+!! Input coordinates ub
 !! \author M. Rajner
 !! \date 2013-03-04
 !> \todo MAKE IT CONSISTENT WITH OTHER ROUTINES DEGREE/RADIAN -- see spher_trig
@@ -405,11 +408,12 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
   dlon = lon2 -lon1
   dlat = lat2 -lat1
 
+  
   if (dlon > pi ) dlon =dlon -pi
+
 
   if (present(haversine)) then
     distance = 2 * asin ( sqrt ( (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2  )   )
-    
   else 
     distance = acos ( sin(lat1) * sin (lat2) + cos(lat1) * cos(lat2) * cos(dlon))
   endif

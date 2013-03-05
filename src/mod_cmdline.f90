@@ -151,7 +151,7 @@ module mod_cmdline
   !----------------------------------------------------
   character(len=255), parameter ::  &
     form_header    = '(60("#"))' , &
-    form_separator = '(60("-"))' , &
+    form_separator = '("#",59("-"))' , &
     form_inheader  = '(("#"),1x,a56,1x,("#"))' , &
     form_60        = "(a,100(1x,g0))",          &
     form_61        = "(2x,a,100(1x,g0))",    &

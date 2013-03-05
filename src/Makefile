@@ -67,7 +67,6 @@ example:
 
 libgrat.a: $(OBJS)
 	@make $(OBJS)
-	@ar rsv libgrat.a *.o
 
 PACKAGE = grat-src
 VER     = pre-alpha
@@ -99,8 +98,8 @@ install:
 # Change this path according to your system settings
 # This require root privilages
 installlib: libgrat.a
-	@cp -u libgrat.a /usr/local/lib
-	@cp -u *.mod /usr/local/include
+	sudo cp -u libgrat.a /usr/local/lib
+	sudo cp -u *.mod /usr/local/include
 	@echo "library grat sucessfully installed"
 
 .phony: clean
