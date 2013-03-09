@@ -8,7 +8,7 @@ program real_vs_standard
 
 
   implicit none
-  real(sp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
+  real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
   integer :: i 
 
 !  !> program starts here with time stamp

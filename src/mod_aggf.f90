@@ -12,6 +12,8 @@ module mod_aggf
   implicit none
   private
 
+  public:: size_ntimes_denser
+
 contains
 
 ! ==============================================================================
@@ -316,8 +318,8 @@ end subroutine
 ! =============================================================================
 !> \brief Compute geometric height from geopotential heights
 ! =============================================================================
-real(sp) function geop2geom (geopotential_height)
-  real (sp) :: geopotential_height
+real(dp) function geop2geom (geopotential_height)
+  real (dp) :: geopotential_height
 
   geop2geom = geopotential_height * (R0 / ( R0 + geopotential_height ) )
 end function
@@ -333,7 +335,7 @@ subroutine surface_temperature (height , temperature1 , &
   real(dp) , intent(out) :: temperature2  
   real(dp) :: temp(3) , temp_ (3) , tolerance_ = 0.1
   character (len=*) , intent(in), optional  :: fels_type 
-  real(sp) , intent(in), optional  :: tolerance
+  real(dp) , intent(in), optional  :: tolerance
   integer :: i 
 
   if (present(tolerance)) tolerance_ = tolerance

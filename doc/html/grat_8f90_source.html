@@ -169,83 +169,88 @@ $(document).ready(function(){initNavTree('grat_8f90.html','');});
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">!! \example grat_usage.sh</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"></span><span class="comment">! ==============================================================================</span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">program</span> grat</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">use </span>iso_fortran_env</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__polygon.html">mod_polygon</a></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__green.html">mod_green</a></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">real(sp)</span> :: x , y , z , lat ,lon ,val(0:100) <span class="comment">!tmp variables</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">integer</span> :: i , j , ii, iii</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">  !&gt; program starts here with time stamp</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"></span>  call cpu_time(cpu_start)</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  call <a class="code" href="classmod__cmdline.html#ac19a3689017f1397bc81f27411806b5e">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">! print header to log: version, date and summary of command line options</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  call print_settings(program_calling = <span class="stringliteral">&quot;grat&quot;</span>)</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">! read polygons</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">do</span> i =1 , 2</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;   call read_polygon(polygons(i))</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">! read models into memory</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keyword">do</span> i =1 , <span class="keyword">size</span>(model)</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf( model(i) )</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">! todo refpres in get_cmd-line</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">if</span> (refpres%if) <span class="keyword">then</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    refpres%name=<span class="stringliteral">&quot;/home/mrajner/src/grat/data/refpres/vienna_p0.grd&quot;</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    call read_netcdf(refpres)</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">endif</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;   </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keyword">allocate</span> (results(<span class="keyword">size</span>(sites)*max(<span class="keyword">size</span>(dates),1)))</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  iii=0</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">do</span> j = 1 , max(<span class="keyword">size</span> (dates),1)</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">if</span>(<span class="keyword">size</span>(dates).gt.0)  <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(i4,5(i2.2))&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) dates(j)%date</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">do</span> ii = 1 , min(2,<span class="keyword">size</span>(model))</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keyword">if</span> (model(ii)%if) call get_variable( model(ii) , date = dates(j)%date)</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(sites)</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(2f15.5f)&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) sites(i)%lat ,sites(i)%lon</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      iii=iii+1</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      call convolve(sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keyword">write</span> (output%unit,<span class="stringliteral">&#39;(15f13.5)&#39;</span>) , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keyword">if</span> (moreverbose%if .and. moreverbose%names(1).eq.<span class="stringliteral">&quot;s&quot;</span>) <span class="keyword">then</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    print <span class="stringliteral">&#39;(15f13.5)&#39;</span>, &amp;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      results(maxloc(results%e))%e - results(minloc(results%e))%e       ,&amp;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      results(maxloc(results%n))%n - results(minloc(results%n))%n       ,&amp;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      results(maxloc(results%dh))%dh - results(minloc(results%dh))%dh   ,&amp;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      results(maxloc(results%dz))%dz - results(minloc(results%dz))%dz   ,&amp;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      results(maxloc(results%dt))%dt - results(minloc(results%dt))%dt</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keyword">endif</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  call cpu_time(cpu_finish)</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(/,&quot;Execution time:&quot;,1x,f16.9,&quot; seconds&quot;)&#39;</span>) cpu_finish - cpu_start</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="keyword">end program </span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__constants.html">mod_constants</a> , only : dp</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a>   , only : cpu_start , cpu_finish,  intro , print_settings , &amp;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    polygons , model , refpres, form_separator , log ,dates , sites, output, &amp;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    moreverbose, form_60 , form_61</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__green.html">mod_green</a> , only : results</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__polygon.html">mod_polygon</a>   , only : read_polygon</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a>      , only : read_netCDF , get_variable</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordtype">real(dp)</span> :: x , y , z , lat ,lon ,val(0:100) <span class="comment">!tmp variables</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">integer</span> :: i , j , ii, iii</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">  !&gt; program starts here with time stamp</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment"></span>  call cpu_time(cpu_start)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">!! gather cmd line option decide where to put output</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  call <a class="code" href="classmod__cmdline.html#ac19a3689017f1397bc81f27411806b5e">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">! print header to log: version, date and summary of command line options</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  call <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a>(program_calling = <span class="stringliteral">&quot;grat&quot;</span>)</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">! read polygons</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">do</span> i =1 , 2</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;   call read_polygon(polygons(i))</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">! read models into memory</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">do</span> i =1 , <span class="keyword">size</span>(model)</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf(model(i))</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">! todo refpres in get_cmd-line</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keyword">if</span> (refpres%if) <span class="keyword">then</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    refpres%name=<span class="stringliteral">&quot;/home/mrajner/src/grat/data/refpres/vienna_p0.grd&quot;</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    call read_netcdf(refpres)</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">endif</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;   </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">allocate</span> (results(<span class="keyword">size</span>(sites)*max(<span class="keyword">size</span>(dates),1)))</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  iii=0</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keyword">do</span> j = 1 , max(<span class="keyword">size</span> (dates),1)</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">if</span>(<span class="keyword">size</span>(dates).gt.0)  <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(i4,5(i2.2))&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) dates(j)%date</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">do</span> ii = 1 , min(2,<span class="keyword">size</span>(model))</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keyword">if</span> (model(ii)%if) call get_variable( model(ii) , date = dates(j)%date)</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keyword">write</span>(log%unit, form_60) <span class="stringliteral">&quot;Results:&quot;</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">if</span> (output%if.and.(output%name /= <span class="stringliteral">&quot;&quot;</span>)) <span class="keyword">write</span>(log%unit, form_61) <span class="stringliteral">&quot;written into file:&quot;</span> , trim(output%name)</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(sites)</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(2f15.5f)&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) sites(i)%lat ,sites(i)%lon</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      iii=iii+1</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      call <a class="code" href="classmod__green.html#acf02f881d2b2ac6a8bb67dca3c7dcb42">convolve</a>(sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      <span class="keyword">write</span> (output%unit,<span class="stringliteral">&#39;(15f13.5)&#39;</span>) , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keyword">if</span> (moreverbose%if .and. moreverbose%names(1).eq.<span class="stringliteral">&quot;s&quot;</span>) <span class="keyword">then</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    print <span class="stringliteral">&#39;(15f13.5)&#39;</span>, &amp;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      results(maxloc(results%e))%e - results(minloc(results%e))%e       ,&amp;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      results(maxloc(results%n))%n - results(minloc(results%n))%n       ,&amp;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      results(maxloc(results%dh))%dh - results(minloc(results%dh))%dh   ,&amp;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      results(maxloc(results%dz))%dz - results(minloc(results%dz))%dz   ,&amp;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      results(maxloc(results%dt))%dt - results(minloc(results%dt))%dt</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keyword">endif</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  call cpu_time(cpu_finish)</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(/,&quot;Execution time:&quot;,1x,f16.9,&quot; seconds&quot;)&#39;</span>) cpu_finish - cpu_start</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="keyword">end program </span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_5d98555a87ce6ad1e072f395e518bfeb.html">src</a></li><li class="navelem"><a class="el" href="grat_8f90.html">grat.f90</a></li>
-    <li class="footer">Generated on Mon Mar 4 2013 17:45:17 for grat by
+    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

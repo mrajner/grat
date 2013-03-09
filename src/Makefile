@@ -20,10 +20,9 @@ OBJS  = $(SRCS:.f90=.o)
 
 %.o: %.f90
 	$(FC) $< -c
-	ar rsv lib$(@:.o=.a) $@
  
-L: installlib
 
+grat: $(BIN)/grat
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
@@ -67,6 +66,7 @@ example:
 
 libgrat.a: $(OBJS)
 	@make $(OBJS)
+	ar rsv libgrat.a $(OBJS)
 
 PACKAGE = grat-src
 VER     = pre-alpha

@@ -14,7 +14,7 @@ module mod_data
   implicit none
   private
 
-  public :: read_netcdf , get_variable
+  public :: read_netcdf , get_variable , get_value
 
 contains
 
@@ -213,7 +213,7 @@ subroutine unpack_netcdf ( model )
   use mod_cmdline, only: file
   type(file) :: model
   integer :: varid , status
-  real(sp):: scale_factor , add_offset
+  real(dp):: scale_factor , add_offset
   
   call check(nf90_inq_varid(model%ncid, model%names(1) , varid))
   status = nf90_get_att ( model%ncid , varid , "scale_factor" , scale_factor) 
@@ -245,17 +245,17 @@ end subroutine check
 ! =============================================================================
 subroutine get_value( model, lat , lon , val ,level, method )
  
-  use mod_constants , only: dp , sp
+  use mod_constants , only: dp 
   use mod_cmdline , only: file
 
   type(file) , intent (in) :: model
-  real(sp) , intent (in) :: lat,lon
-  real(sp) , intent(out) ::  val 
+  real(dp) , intent (in) :: lat,lon
+  real(dp) , intent(out) ::  val 
   integer , optional , intent(in) :: method
   integer , optional , intent(in) :: level
   integer :: i , ilevel =1 
   integer  :: ilon, ilat , ilon2 , ilat2
-  real(sp), dimension(4,3) :: array_aux 
+  real(dp), dimension(4,3) :: array_aux 
 
   if (present(level)) ilevel=level
   ! check if inside model range
@@ -309,9 +309,10 @@ subroutine get_value( model, lat , lon , val ,level, method )
   val = model%data (ilon , ilat, ilevel)
 end subroutine 
 
-real function bilinear (x , y , aux )
+function bilinear (x , y , aux )
   use mod_constants, only: dp
-  real x , y , aux(4,3) 
+  real(dp) :: bilinear
+  real(dp) :: x , y , aux(4,3) 
   real(dp) :: a , b , c
   a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
   b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 

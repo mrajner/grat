@@ -136,16 +136,12 @@ Data Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9111ec58739efeaaef9914c99ecf85ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9111ec58739efeaaef9914c99ecf85ec"></a>
-subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>green_unification</b> (green, green_common, denser)</td></tr>
-<tr class="memitem:af48f5ce5c6784aa913010905671a1fc9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af48f5ce5c6784aa913010905671a1fc9"></a>
-subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>spher_area</b> (distance, ddistance, azstp, area)</td></tr>
-<tr class="memitem:ab7935665d3b9da745e71ff9c09ce4fed"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#ab7935665d3b9da745e71ff9c09ce4fed">spher_trig</a> (latin, lonin, distance, azimuth, latout, lonout)</td></tr>
-<tr class="memdesc:ab7935665d3b9da745e71ff9c09ce4fed"><td class="mdescLeft">&#160;</td><td class="mdescRight">This soubroutine gives the latitude and longitude of the point at the specified distance and azimuth from site latitude and longitude.  <a href="#ab7935665d3b9da745e71ff9c09ce4fed"></a><br/></td></tr>
-<tr class="memitem:acf02f881d2b2ac6a8bb67dca3c7dcb42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf02f881d2b2ac6a8bb67dca3c7dcb42"></a>
-subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>convolve</b> (site, green, results, denserdist, denseraz)</td></tr>
-<tr class="memitem:abfbacceaf15dc6b4d9338f3e4cc05459"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#abfbacceaf15dc6b4d9338f3e4cc05459">convolve_moreverbose</a> (latin, lonin, azimuth, azstep, distance, distancestep)</td></tr>
-<tr class="memitem:aa61183c49c652553b51ff738bc2e3b47"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#aa61183c49c652553b51ff738bc2e3b47">spher_trig_inverse</a> (lat1, lon1, lat2, lon2, distance, azimuth, haversine)</td></tr>
-<tr class="memdesc:aa61183c49c652553b51ff738bc2e3b47"><td class="mdescLeft">&#160;</td><td class="mdescRight">For given coordinates for two points on sphere calculate distance and azimuth in radians.  <a href="#aa61183c49c652553b51ff738bc2e3b47"></a><br/></td></tr>
+subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#a9111ec58739efeaaef9914c99ecf85ec">green_unification</a> (green, green_common, denser)</td></tr>
+<tr class="memdesc:a9111ec58739efeaaef9914c99ecf85ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unification: <br/></td></tr>
+<tr class="memitem:af48f5ce5c6784aa913010905671a1fc9"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#af48f5ce5c6784aa913010905671a1fc9">spher_area</a> (distance, ddistance, azstp, area)</td></tr>
+<tr class="memdesc:af48f5ce5c6784aa913010905671a1fc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate area of spherical segment.  <a href="#af48f5ce5c6784aa913010905671a1fc9"></a><br/></td></tr>
+<tr class="memitem:acf02f881d2b2ac6a8bb67dca3c7dcb42"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#acf02f881d2b2ac6a8bb67dca3c7dcb42">convolve</a> (site, green, results, denserdist, denseraz)</td></tr>
+<tr class="memdesc:acf02f881d2b2ac6a8bb67dca3c7dcb42"><td class="mdescLeft">&#160;</td><td class="mdescRight">This soubroutine gives the latitude and longitude of the point at the specified distance and azimuth from site latitude and longitude.  <a href="#acf02f881d2b2ac6a8bb67dca3c7dcb42"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -158,100 +154,41 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00001">1</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
+<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00003">3</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
 </div><hr/><h2>Member Function/Subroutine Documentation</h2>
-<a class="anchor" id="abfbacceaf15dc6b4d9338f3e4cc05459"></a>
+<a class="anchor" id="acf02f881d2b2ac6a8bb67dca3c7dcb42"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">subroutine mod_green::convolve_moreverbose </td>
+          <td class="memname">subroutine mod_green::convolve </td>
           <td>(</td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>latin</em>, </td>
+          <td class="paramtype">type(site_data), intent(in)&#160;</td>
+          <td class="paramname"><em>site</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>lonin</em>, </td>
+          <td class="paramtype">type(green_functions), dimension(:), allocatable&#160;</td>
+          <td class="paramname"><em>green</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>azimuth</em>, </td>
+          <td class="paramtype">type (<a class="el" href="structmod__green_1_1result.html">result</a>), intent(out)&#160;</td>
+          <td class="paramname"><em>results</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>azstep</em>, </td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>denserdist</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp)&#160;</td>
-          <td class="paramname"><em>distance</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp)&#160;</td>
-          <td class="paramname"><em>distancestep</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>site height from model </dd></dl>
-
-<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00193">193</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ab7935665d3b9da745e71ff9c09ce4fed"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">subroutine mod_green::spher_trig </td>
-          <td>(</td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>latin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>lonin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp), intent(in)&#160;</td>
-          <td class="paramname"><em>distance</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
-          <td class="paramname"><em>azimuth</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp), intent(out)&#160;</td>
-          <td class="paramname"><em>latout</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp), intent(out)&#160;</td>
-          <td class="paramname"><em>lonout</em>&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>denseraz</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -262,57 +199,43 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
 </div><div class="memdoc">
 
 <p>This soubroutine gives the latitude and longitude of the point at the specified distance and azimuth from site latitude and longitude. </p>
-<p>Adopted from <a class="el" href="citelist.html#CITEREF_Agnew97">[2]</a> all parameters in decimal degree </p>
+<p>all parameters in decimal degree </p>
+<dl class="section author"><dt>Author:</dt><dd>D.C. Agnew <a class="el" href="citelist.html#CITEREF_Agnew96">[1]</a> </dd></dl>
+<dl class="section date"><dt>Date:</dt><dd>2012 </dd></dl>
+<dl class="section author"><dt>Author:</dt><dd>M. Rajner - modification </dd></dl>
+<dl class="section date"><dt>Date:</dt><dd>2013-03-06 </dd></dl>
 
-<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00072">72</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
+<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00113">113</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aa61183c49c652553b51ff738bc2e3b47"></a>
+<a class="anchor" id="af48f5ce5c6784aa913010905671a1fc9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">subroutine mod_green::spher_trig_inverse </td>
+          <td class="memname">subroutine mod_green::spher_area </td>
           <td>(</td>
           <td class="paramtype">real(dp), intent(in)&#160;</td>
-          <td class="paramname"><em>lat1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp), intent(in)&#160;</td>
-          <td class="paramname"><em>lon1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp), intent(in)&#160;</td>
-          <td class="paramname"><em>lat2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp), intent(in)&#160;</td>
-          <td class="paramname"><em>lon2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real(dp), intent(out)&#160;</td>
           <td class="paramname"><em>distance</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(dp), intent(out)&#160;</td>
-          <td class="paramname"><em>azimuth</em>, </td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
+          <td class="paramname"><em>ddistance</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical, intent(in), optional&#160;</td>
-          <td class="paramname"><em>haversine</em>&#160;</td>
+          <td class="paramtype">real(sp)&#160;</td>
+          <td class="paramname"><em>azstp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real(dp), intent(out)&#160;</td>
+          <td class="paramname"><em>area</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -322,10 +245,13 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
       </table>
 </div><div class="memdoc">
 
-<p>For given coordinates for two points on sphere calculate distance and azimuth in radians. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>MAKE IT CONSISTENT WITH OTHER ROUTINES DEGREE/RADIAN &ndash; see spher_trig </dd></dl>
+<p>Calculate area of spherical segment. </p>
+<p class="formulaDsp">
+\begin{equation*}P = \sin a \end{equation*}
+</p>
+ <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Transform into function </dd></dl>
 
-<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00214">214</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
+<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00071">71</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
 
 </div>
 </div>
@@ -338,7 +264,7 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classmod__green.html">mod_green</a></li>
-    <li class="footer">Generated on Mon Mar 4 2013 17:45:17 for grat by
+    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

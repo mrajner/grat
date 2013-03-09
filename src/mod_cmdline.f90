@@ -7,7 +7,7 @@
 ! =============================================================================
 module mod_cmdline
 
-  use mod_constants, only: dp , sp
+  use mod_constants, only: dp , dp
   use iso_fortran_env
   implicit none
 
@@ -27,7 +27,7 @@ module mod_cmdline
   !----------------------------------------------------
   type polygon_data
     logical :: use
-    real(sp), allocatable , dimension (:,:) :: coords
+    real(dp), allocatable , dimension (:,:) :: coords
   end type
 
   type polygon_info
@@ -47,7 +47,7 @@ module mod_cmdline
     integer,dimension (6) :: date
   end type
 
-  real(sp) :: cpu_start , cpu_finish  
+  real(dp) :: cpu_start , cpu_finish  
   type(dateandmjd) , allocatable,dimension (:) :: dates
 
 
@@ -69,7 +69,7 @@ module mod_cmdline
   !---------------------------------------------------
   type site_data 
    character(:), allocatable :: name
-   real(sp)                  :: lat,lon,height
+   real(dp)                  :: lat,lon,height
   end type 
 
   type(site_data) , allocatable , dimension(:) :: sites
@@ -103,24 +103,24 @@ module mod_cmdline
     logical :: first_call =.true.
 
     ! boundary of model e , w ,s ,n
-    real(sp):: limits(4)
+    real(dp):: limits(4)
 
 !     resolution of model in lon lat
-!    real(sp):: resolution(2)
+!    real(dp):: resolution(2)
 
-    real(sp) , allocatable ,dimension(:) :: lat , lon , time ,level
+    real(dp) , allocatable ,dimension(:) :: lat , lon , time ,level
     integer , allocatable , dimension(:,: ) :: date
     
-    real (sp), dimension(2) :: latrange , lonrange
+    real (dp), dimension(2) :: latrange , lonrange
 
     ! todo
     logical :: if_constant_value
-    real(sp):: constant_value
+    real(dp):: constant_value
 
     ! data 
     !> 4 dimension - lat , lon , level , mjd
     ! todo
-    real(sp) , allocatable , dimension (:,:,:) :: data
+    real(dp) , allocatable , dimension (:,:,:) :: data
 
     ! netcdf identifiers
     integer :: ncid
@@ -400,7 +400,12 @@ subroutine parse_option (cmd_line_entry , program_calling)
 end subroutine 
 
 ! =============================================================================
-!> This subroutine parse -G option i.e. reads Greens function
+!> This subroutine parse -G option -- Greens function.
+!!
+!! This subroutines takes the -G argument specified as follows:
+!!
+!! \author M. Rajner
+!! \date 2013-03-06
 ! =============================================================================
 subroutine parse_green ( cmd_line_entry)
   use mod_utilities
@@ -408,7 +413,7 @@ subroutine parse_green ( cmd_line_entry)
   character (60) :: filename
   integer :: i , iunit , io_status , lines ,  ii
   integer :: fields(2)= [1,2]
-  real (sp) , allocatable , dimension(:) :: tmp
+  real (dp) , allocatable , dimension(:) :: tmp
 
     write(fileunit_tmp , form_62) "Green function file was set:"
     allocate (green (cmd_line_entry%fields))
@@ -618,10 +623,10 @@ end subroutine
 !> P
 ! =============================================================================
 subroutine parse_GMT_like_boundaries ( cmd_line_entry )
-  use mod_constants, only : dp ,sp 
+  use mod_constants, only : dp ,dp 
   use mod_utilities, only : is_numeric
-  real(sp) :: limits (4) , resolution (2) =[1,1]
-  real(sp) :: range_lon , range_lat , lat , lon
+  real(dp) :: limits (4) , resolution (2) =[1,1]
+  real(dp) :: range_lon , range_lat , lat , lon
   character(10) :: dummy
   integer :: i , ii
   type (cmd_line) , intent (in) :: cmd_line_entry
@@ -786,7 +791,7 @@ subroutine parse_dates (cmd_line_entry )
   use mod_utilities, only: is_numeric,mjd,invmjd
   type(cmd_line) cmd_line_entry
   integer , dimension(6) :: start , stop 
-  real (sp) :: step =6. ! step in hours
+  real (dp) :: step =6. ! step in hours
   integer :: i
 
   call string2date(cmd_line_entry%field(1), start)
@@ -809,6 +814,14 @@ subroutine parse_dates (cmd_line_entry )
   enddo
 end subroutine
 
+
+! =============================================================================
+!> Convert dates given as string to integer (6 elements)
+!! 
+!! 20110612060302 --> [2011 , 6 , 12 , 6 , 3 , 2
+!! you can omit
+!! \warning decimal seconds are not allowed
+! =============================================================================
 subroutine string2date ( string , date )
   use mod_utilities, only: is_numeric
   integer , dimension(6) ,intent(out):: date 
@@ -834,33 +847,37 @@ subroutine string2date ( string , date )
 end subroutine
 
 
-!!subroutine sprawdzdate(mjd)
-!!  real:: mjd
-!!    if (mjd.gt.jd(data_uruchomienia(1),data_uruchomienia(2),data_uruchomienia(3),data_uruchomienia(4),data_uruchomienia(5),data_uruchomienia(6))) then
-!!      write (*,'(4x,a)') "Data późniejsza niż dzisiaj. KOŃCZĘ!"
-!!      call exit
-!!    elseif (mjd.lt.jd(1980,1,1,0,0,0)) then
-!!      write (*,'(4x,a)') "Data wcześniejsza niż 1980-01-01. KOŃCZĘ!"
-!!      call exit
-!!    endif
-!!    if (.not.log_E) then
-!!      data_koniec=data_poczatek
-!!      mjd_koniec=mjd_poczatek
-!!    endif
-!!    if (mjd_koniec.lt.mjd_poczatek) then
-!!      write (*,*) "Data końcowa większa od początkowej. KOŃCZĘ!"
-!!      write (*,form_64) "Data końcowa większa od początkowej. KOŃCZĘ!"
-!!    endif
-!!end subroutine
-!
+!subroutine sprawdzdate(mjd)
+!  real:: mjd
+!    if (mjd.gt.jd(data_uruchomienia(1),data_uruchomienia(2),data_uruchomienia(3),data_uruchomienia(4),data_uruchomienia(5),data_uruchomienia(6))) then
+!      write (*,'(4x,a)') "Data późniejsza niż dzisiaj. KOŃCZĘ!"
+!      call exit
+!    elseif (mjd.lt.jd(1980,1,1,0,0,0)) then
+!      write (*,'(4x,a)') "Data wcześniejsza niż 1980-01-01. KOŃCZĘ!"
+!      call exit
+!    endif
+!    if (.not.log_E) then
+!      data_koniec=data_poczatek
+!      mjd_koniec=mjd_poczatek
+!    endif
+!    if (mjd_koniec.lt.mjd_poczatek) then
+!      write (*,*) "Data końcowa większa od początkowej. KOŃCZĘ!"
+!      write (*,form_64) "Data końcowa większa od początkowej. KOŃCZĘ!"
+!    endif
+!end subroutine
+
 ! =============================================================================
 !> Print version of program depending on program calling
+!! 
+!! \author M. Rajner
+!! \date 2013-03-06
 ! =============================================================================
 subroutine print_version (program_calling)
   character(*) :: program_calling 
   integer :: version_unit , io_stat
   character(40) :: version
 
+  ! from the file storing version number
   open(newunit=version_unit, file = '/home/mrajner/src/grat/dat/version.txt', &
     action = 'read' , status = 'old')
   do 
@@ -889,7 +906,7 @@ subroutine print_settings (program_calling)
   call print_version ( program_calling = program_calling)
   call date_and_time ( values = execution_date )
   write(log%unit,'("Program started:",1x,i4,2("-",i2.2), &
-    1x,i2.2,2(":",i2.2),1x,"(",SP,i3.2,"h UTC)")'),          &
+    1x,i2.2,2(":",i2.2),1x,"(",dp,i3.2,"h UTC)")'),          &
     execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form_separator)
 

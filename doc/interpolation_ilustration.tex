@@ -1,5 +1,6 @@
 \documentclass{standalone}
 \usepackage{pgfplots}
+\pgfplotsset{compat=newest}
 \usetikzlibrary{pgfplots.groupplots}
 \begin{document}
   \begin{tikzpicture}
@@ -20,14 +21,14 @@
       scatter,
       scatter src=explicit,]
       \addplot table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpb1.dat};
-      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
-      \nextgroupplot
-      [only marks, 
-      scatter,
-      colorbar,
-      scatter src=explicit,]
-      \addplot table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpn1.dat};
-      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
+%      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
+%      \nextgroupplot
+%      [only marks, 
+%      scatter,
+%      colorbar,
+%      scatter src=explicit,]
+%      \addplot table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpn1.dat};
+%      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
     \end{groupplot}
   \end{tikzpicture}
 \end{document}

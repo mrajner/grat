@@ -11,7 +11,7 @@ program value_check
   use ieee_arithmetic
   implicit none
 
-  real (sp) , allocatable , dimension(:) :: val
+  real (dp) , allocatable , dimension(:) :: val
   integer :: i,ii ,j ,start , imodel
 
   call intro (program_calling = "value_check" )

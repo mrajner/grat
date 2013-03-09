@@ -9,6 +9,6 @@ var searchData=
   ['polygon_5fcheck',['polygon_check',['../polygon_check-h.html',1,'']]],
   ['polygon_5fdata',['polygon_data',['../structmod__cmdline_1_1polygon__data.html',1,'mod_cmdline']]],
   ['polygon_5finfo',['polygon_info',['../structmod__cmdline_1_1polygon__info.html',1,'mod_cmdline']]],
-  ['print_5fhelp',['print_help',['../classmod__cmdline.html#a21d9b32eec954249be0da42ba9795e75',1,'mod_cmdline']]],
+  ['print_5fsettings',['print_settings',['../classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866',1,'mod_cmdline']]],
   ['print_5fversion',['print_version',['../classmod__cmdline.html#aecc707e2d49d8de142886d84cab1c61e',1,'mod_cmdline']]]
 ];

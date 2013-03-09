@@ -87,12 +87,12 @@ end subroutine
 !! \date 2013-03-04
 ! ==============================================================================
 subroutine chkgon (rlong , rlat , polygon , iok)
-  use mod_constants, only: sp , dp
+  use mod_constants, only: dp , dp
   use mod_cmdline
-  real(sp),intent (in) :: rlong, rlat
+  real(dp),intent (in) :: rlong, rlat
   integer :: i ,ii , ianyok
   integer , intent (out) :: iok
-  real(sp) :: rlong2
+  real(dp) :: rlong2
   type( polygon_info ) , intent (in) :: polygon
   
   ! Check first if we need to use this soubroutine
@@ -144,9 +144,9 @@ end subroutine
 !! cords is x, y (lon, lat) 2 dimensional array
 ! ==============================================================================
 integer function if_inpoly(x,y,coords) 
-  use mod_constants, only: dp, sp
-  real(sp) ,allocatable , dimension (:,:) , intent (in) :: coords  
-  real(sp) , intent (in) :: x , y
+  use mod_constants, only: dp, dp
+  real(dp) ,allocatable , dimension (:,:) , intent (in) :: coords  
+  real(dp) , intent (in) :: x , y
   integer :: i , isc  
   ! Returns 1 if point at (x,y) is inside polygon whose nv vertices
   ! Returns 0 if point is outside
@@ -202,10 +202,10 @@ end function
 !! slightly modified
 ! ==============================================================================
 integer function ncross(x1,y1,x2,y2)
-  use mod_constants, only: dp, sp
+  use mod_constants, only: dp, dp
   use mod_cmdline
-  real(sp) , intent(in) :: x1 , y1, x2 , y2 
-  real(sp) :: c12 , c21
+  real(dp) , intent(in) :: x1 , y1, x2 , y2 
+  real(dp) :: c12 , c21
 
   ! all above (or below) axis
   if(y1*y2.gt.0) then
