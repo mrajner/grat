@@ -4,7 +4,8 @@ module mod_utilities
   private
 
   public:: ntokens, jd , mjd , invmjd, spline_interpolation , spline, ispline, &
-    file_exists, skip_header, d2r, r2d, is_numeric , spher_trig_inverse
+    file_exists, skip_header, d2r, r2d, is_numeric , spher_trig_inverse, &
+    count_records_to_read
 
 
 contains
@@ -13,13 +14,15 @@ contains
 !> For given vectors x1, y1 and x2, y2 it gives x2interpolated for x1
 !!
 !! uses \c ispline and \c spline subroutines
+!! \todo method optional
 ! ==============================================================================
-subroutine spline_interpolation(x,y, x_interpolated, y_interpolated)
+subroutine spline_interpolation(x,y, x_interpolated, y_interpolated, method)
   use mod_constants, only:dp
   real(dp) , allocatable , dimension (:) ,intent(in) :: x, y, x_interpolated
   real(dp) , allocatable , dimension (:) , intent(out) :: y_interpolated
   real(dp) , dimension (:) , allocatable :: b, c, d
   integer :: i
+  integer, intent(in), optional :: method
 
   allocate (b (size(x)))
   allocate (c (size(x)))
@@ -244,11 +247,12 @@ end subroutine
 !! \todo mjd!
 !! \date 2013-03-04
 ! ==============================================================================
-real(dp) function jd (year,month,day, hh,mm,ss)
+function jd (year,month,day, hh,mm,ss)
   use mod_constants, only: dp
   integer, intent(in) ::  year,month,day
   integer, intent(in) :: hh,mm, ss
   integer :: i , j , k
+  real(dp) :: jd 
 
   i= year
   j= month
@@ -258,7 +262,6 @@ real(dp) function jd (year,month,day, hh,mm,ss)
   return
 end function
 
-
 ! ==============================================================================
 !> MJD from date.
 !! 
@@ -266,12 +269,12 @@ end function
 !! !integers. Seconds also as integers!
 !! \date 2013-03-04
 ! ==============================================================================
-real(dp) function mjd  (date)
+function mjd  (date)
   use mod_constants, only: dp
   integer ,intent(in) :: date (6)
   integer :: aux (6)
   integer :: i , k
-  real(dp) :: dayfrac
+  real(dp) :: dayfrac , mjd
 
   aux=date
   if ( aux(2) .le.  2) then
@@ -408,9 +411,7 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
   dlon = lon2 -lon1
   dlat = lat2 -lat1
 
-  
-  if (dlon > pi ) dlon =dlon -pi
-
+  if (dlon > pi ) dlon =dlon -pi  !\todo check if this is necessary
 
   if (present(haversine)) then
     distance = 2 * asin ( sqrt ( (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2  )   )
@@ -420,6 +421,40 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
 
   azimuth = atan2( (sin(dlon)*cos(lat2)/sin(distance)) ,  ((sin(lat2)*cos(lat1) - cos(lat2)*sin(lat1)*cos(dlon))/sin(distance))  )
   if (azimuth.lt.0) azimuth = azimuth + 2 * pi
+end subroutine
+
+
+! =============================================================================
+!> Count rows and (or) columns of file.
+!!
+!! You can also specify the comment sign to ignore in data file.
+!! The number of columns is set to maximum of number of columns in consecutive
+!! rows.
+!! \date 2013-03-10
+!! \author M. Rajner
+! =============================================================================
+subroutine count_records_to_read (file_name, rows , columns , comment_char )
+  use iso_fortran_env
+  integer , optional , intent (out) :: rows, columns
+  character(*) :: file_name
+  character(255) :: line
+  integer :: file_unit, n_rows , n_columns , io_stat
+  character(len=1), optional, intent(in):: comment_char
+
+  n_rows    = 0
+  n_columns = 0
+
+  open (newunit = file_unit,  file=file_name, status = "old" , action ="read")
+  do 
+    call skip_header (file_unit, '#')
+    read (file_unit, '(a)' , iostat=io_stat) line
+    if (io_stat == iostat_end) exit
+    n_columns = max (n_columns, ntokens(line))
+    n_rows = n_rows + 1
+  enddo
+
+  if (present(rows))    rows    = n_rows
+  if (present(columns)) columns = n_columns
 end subroutine
 
 end module

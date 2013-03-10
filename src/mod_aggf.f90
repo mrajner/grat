@@ -64,37 +64,32 @@ end subroutine
 !! in \c grat see the more general routine \c parse_green()
 ! ==============================================================================
 subroutine read_tabulated_green ( table , author )
-  use mod_utilities, only: skip_header , file_exists
+  use mod_utilities, only: skip_header , count_records_to_read
   real(dp), intent (inout),dimension(:,:), allocatable :: table
-  character ( len = * ) , intent (in) , optional       :: author
+  character ( len = * ) , intent (in)                  :: author
   integer                                              :: i , j
   integer                                              :: rows , columns , file_unit 
   character (len=255)                                  :: file_name
 
-!  rows      = 85
-!  columns   = 6
-  file_name = '../dat/merriam_green.dat'
-
-  if ( present(author) ) then
-    if ( author .eq. "huang" ) then
-!      rows    = 80
-!      columns = 5
-      file_name = '../dat/huang_green.dat'
-    elseif ( author .eq. "rajner" ) then
-!      rows    = 85
-!      columns = 5
-      file_name = '../dat/rajner_green.dat'
-    elseif ( author .eq. "merriam" ) then
-    elseif ( author .ne. "" ) then
-      file_name=author
-
-      call exit
-    else
-      write ( * , * ) 'cannot find specified tables, using merriam instead'
-    endif
+  if ( author .eq. "huang" ) then
+    rows    = 80
+    columns = 5
+    file_name = '../dat/huang_green.dat'
+  elseif ( author .eq. "rajner" ) then
+    rows    = 85
+    columns = 5
+    file_name = '../dat/rajner_green.dat'
+  elseif ( author .eq. "merriam" ) then
+    rows      = 85
+    columns   = 6
+    file_name = '../dat/merriam_green.dat'
+  elseif ( author .eq. "farrell" ) then
+    file_name = '/home/mrajner/src/gotic2/data/grn1.data'
+    call count_records_to_read(file_name, rows = rows, columns = columns)
+  else
+    write ( * , * ) 'cannot find specified tables, using merriam instead'
   endif
-  if (.not.file_exists(file_name)) call exit
-  
+
   if (allocated (table) ) deallocate (table)
   allocate ( table ( rows , columns ) )
 

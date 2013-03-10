@@ -22,6 +22,9 @@ OBJS  = $(SRCS:.f90=.o)
 	$(FC) $< -c
  
 
+
+xmp: installlib
+
 grat: $(BIN)/grat
 
 # $(BIN)/joinnc: joinnc.f90

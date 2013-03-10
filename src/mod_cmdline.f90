@@ -408,7 +408,7 @@ end subroutine
 !! \date 2013-03-06
 ! =============================================================================
 subroutine parse_green ( cmd_line_entry)
-  use mod_utilities
+  use mod_utilities,only: file_exists, is_numeric
   type (cmd_line)  :: cmd_line_entry
   character (60) :: filename
   integer :: i , iunit , io_status , lines ,  ii
@@ -493,6 +493,8 @@ subroutine parse_green ( cmd_line_entry)
       enddo
       deallocate(tmp)
       close(iunit)
+
+      ! file specific 
       if (cmd_line_entry%field(i).eq."merriam" .and. i.eq.4) then
         green(i)%data = green(i)%data * (-1.)
       endif
