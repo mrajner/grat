@@ -14,7 +14,6 @@ contains
 !> For given vectors x1, y1 and x2, y2 it gives x2interpolated for x1
 !!
 !! uses \c ispline and \c spline subroutines
-!! \todo method optional
 ! ==============================================================================
 subroutine spline_interpolation(x,y, x_interpolated, y_interpolated, method)
   use mod_constants, only:dp
@@ -22,7 +21,7 @@ subroutine spline_interpolation(x,y, x_interpolated, y_interpolated, method)
   real(dp) , allocatable , dimension (:) , intent(out) :: y_interpolated
   real(dp) , dimension (:) , allocatable :: b, c, d
   integer :: i
-  integer, intent(in), optional :: method
+  character(*), optional :: method
 
   allocate (b (size(x)))
   allocate (c (size(x)))
@@ -32,7 +31,7 @@ subroutine spline_interpolation(x,y, x_interpolated, y_interpolated, method)
   call spline ( x , y, b , c, d, size(x))
   
   do i=1, size(x_interpolated)
-     y_interpolated(i) = ispline (x_interpolated(i) , x , y , b , c , d , size (x) )
+     y_interpolated(i) = ispline (x_interpolated(i) , x , y , b , c , d , size (x) , method = method )
   enddo
 
 end subroutine
@@ -145,13 +144,18 @@ end subroutine spline
 !! n       = the number of data points
 !! output:
 !! ispline = interpolated value at point u
+!!
+!! \date 2013-03-10
+!! \author M. Rajner
+!! added optional parameter method
 !!=======================================================================
-real (dp) function ispline(u, x, y, b, c, d, n)
+real (dp) function ispline(u, x, y, b, c, d, n, method)
   use mod_constants, only : dp
   integer n
   real(dp)::  u, x(n), y(n), b(n), c(n), d(n)
   integer ::  i, j, k
   real(dp) :: dx
+  character(*) , optional :: method
 
 ! if u is ouside the x() interval take a boundary value (left or right)
 if(u <= x(1)) then
@@ -180,6 +184,21 @@ end do
 !  evaluate spline interpolation
 !*
 dx = u - x(i)
+
+if (present (method)) then
+  if (method == "nearest") then 
+    if ((x(i+1)-u) < dx) then
+      ispline = y(i+1) 
+      return
+    else
+      ispline = y(i) 
+      return
+    endif
+  elseif (method == "linear") then 
+    ispline = y(i) + (y(i+1)-y(i))/(x(i+1)-x(i)) * dx
+    return
+  endif
+endif
 ispline = y(i) + dx*(b(i) + dx*(c(i) + dx*d(i)))
 end function ispline
 
