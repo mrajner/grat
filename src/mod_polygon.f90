@@ -3,7 +3,7 @@ module mod_polygon
   implicit none
   private
 
-  public :: read_polygon
+  public :: read_polygon ,chkgon
 
 contains
 
@@ -57,7 +57,7 @@ subroutine read_polygon (polygon)
 
     ! print summary to log file
     write (log%unit, form_separator) 
-    write (log%unit, form_60) "Summary of polygon file", polygon%name
+    write (log%unit, form_60) "Summary of polygon file", trim(polygon%name)
     write (log%unit, form_61) "number of polygons:" , size (polygon%polygons)
     do i = 1 , size (polygon%polygons)
       write (log%unit, form_62) "[true/false] number of coords :" , &

@@ -353,7 +353,8 @@ end subroutine
 !! Taken from www
 !! \todo Add source name
 ! =============================================================================
-logical function is_numeric(string)
+function is_numeric(string)
+  logical :: is_numeric
   character(len=*), intent(in) :: string
   real :: x
   integer :: e
@@ -366,7 +367,7 @@ end function
 !> Check if file exists.
 !!
 !! Logical function checking if given file exists.
-!! \author Marcin Rajner (based on www)
+!! \author M. Rajner (based on www)
 !! \date 2013-03-04
 ! =============================================================================
 logical function file_exists(string)
@@ -387,7 +388,7 @@ end function
 !> degree -> radian
 !!
 !! This function convert values given in decimal degrees to radians.
-!! \author Marcin Rajner
+!! \author M. Rajner
 !! \date 2013-03-04
 ! =============================================================================
 function d2r (degree)

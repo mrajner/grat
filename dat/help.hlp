@@ -71,4 +71,9 @@ s syntax
 
 -F  todo
 
+-G  green functions
+ s  -G todo
+
+    optional parameter
+    default: green function from Merriam 1992 !todo
 

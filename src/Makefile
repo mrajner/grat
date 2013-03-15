@@ -23,9 +23,7 @@ OBJS  = $(SRCS:.f90=.o)
  
 
 
-xmp: installlib
-
-grat: $(BIN)/grat
+xmp: ../bin/polygon_check
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 
@@ -40,12 +38,12 @@ all: \
 	$(OBJS) \
 	$(BIN)/grat \
 	$(BIN)/example_aggf $(BIN)/polygon_check \
-	$(BIN)/value_check example \
+	$(BIN)/value_check \
 	$(BIN)/real_vs_standard \
 	example
 
 $(BIN)/grat: grat.f90  $(OBJS) Makefile
-	$(FC) $(FLAGS) $<  -o $@   $(NETCDFLIB) mod_{cmdline,utilities,polygon,data,green}.o
+	$(FC) $(FLAGS) $<  -o $@   $(NETCDFLIB) mod_{cmdline,utilities,polygon,data,green,aggf}.o
 
 # $(BIN)/example_aggf: $(EXAMPLE)/example_aggf.f90 $(OBJS)
 #   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
@@ -53,14 +51,14 @@ $(BIN)/grat: grat.f90  $(OBJS) Makefile
 # $(BIN)/real_vs_standard: real_vs_standard.f90  $(OBJS)
 #   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
-# $(BIN)/polygon_check: polygon_check.f90 $(OBJS)
-#   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+$(BIN)/polygon_check: polygon_check.f90 $(OBJS)
+	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
-# $(BIN)/value_check: value_check.f90  $(OBJS)
-#   $(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
+$(BIN)/value_check: value_check.f90  $(OBJS)
+	$(FC) $(FLAGS) $<  -o $@ $(OBJS) $(NETCDFLIB)
 
-example:
-	$(BIN)/grat -V -S j , 4, 3 -o tmp
+example: 
+	$(BIN)/grat -V -F /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air -SR10.2/12/11/11,2,2 -o 
 #   value_check -F $(SFC), $(TMP), ../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -S joze,53.8912,20.6697,100    -BI -G,,,,,  -L:s -I2,2,2,2,2  -P$(POL),$(POL) -V
 #   grat -F $(SFC) -S joze, 53.8912, 20.6697, 100 -R- -V -G,,,, -D20110101,20110103 -L:s # dlaczego kolumna niezerowa
 #   real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 
@@ -94,8 +92,8 @@ docman: doc
 
 
 # Change this path according to your system settings
-install:
-	@cp -u ../bin/*  ~/.local/bin/
+install: 
+	@cp -u -v ../bin/*  ~/.local/bin/
 	@echo "program grat sucessfully installed"
 
 # Change this path according to your system settings

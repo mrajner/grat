@@ -476,7 +476,8 @@ end function
 !!
 !! i.e. * * * *  -->  * . . * . . * . . * (3 times denser)
 ! ==============================================================================
-integer function size_ntimes_denser (size_original, ndenser)
+function size_ntimes_denser (size_original, ndenser)
+  integer :: size_ntimes_denser 
   integer, intent(in) :: size_original , ndenser
   size_ntimes_denser= (size_original - 1 ) * (ndenser +1 ) + 1
 end function

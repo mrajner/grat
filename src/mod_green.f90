@@ -4,6 +4,8 @@ module mod_green
 
   use mod_constants, only: dp
   implicit none
+!  private
+!  public :: results
 
 
   real(dp), allocatable , dimension(:,:)  :: green_common
@@ -23,6 +25,7 @@ subroutine green_unification (green , green_common , denser)
   use mod_constants , only : dp 
   use mod_cmdline, only: moreverbose, method ,  green_functions
   use mod_aggf, only: size_ntimes_denser
+  use mod_utilities, only:spline_interpolation
 
   type(green_functions), allocatable , dimension(:) , intent(in) :: green
   integer, optional :: denser
@@ -30,8 +33,10 @@ subroutine green_unification (green , green_common , denser)
   real(dp), allocatable , dimension(:) :: x , y , dist
   real(dp), allocatable , dimension(:,:) , intent(out) :: green_common
 
+
   ndenser=0
   if (present(denser)) ndenser = denser
+
   allocate (x (size_ntimes_denser(size(green(1)%distance),ndenser)-1))
   allocate(dist(size(x)))
   ii=0
@@ -42,7 +47,7 @@ subroutine green_unification (green , green_common , denser)
       dist(ii) = (green(1)%distance (i+1) -green(1)%distance (i) ) / ( ndenser + 1 )
     enddo
   enddo
-!  x(size(x)) = green(1)%distance(size(green(1)%distance))
+  ! x(size(x)) = green(1)%distance(size(green(1)%distance))
   allocate(green_common (size(x) , 7))
   green_common(:,1) = x
   green_common(:,2) = dist
@@ -57,7 +62,6 @@ subroutine green_unification (green , green_common , denser)
   if (moreverbose%if.and. moreverbose%names(1).eq."G") then
     write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
   endif
-
 end subroutine
 
 ! =============================================================================
@@ -88,24 +92,25 @@ end subroutine
 !! \author M. Rajner - modification
 !! \date 2013-03-06
 ! =============================================================================
-!subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
-!  real(dp) , intent(in)  :: distance 
-!  real(sp) , intent(in)  :: latin , lonin , azimuth
-!  real(dp) , intent(out) :: latout, lonout 
-!  real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
-!
-!  ct  = cos (d2r(90.-dble(latin)))
-!  st  = sin (d2r(90.-dble(latin)))
-!  cd  = cos (d2r(distance))
-!  sd  = sin (d2r(distance))
-!  saz = sin (d2r(dble(azimuth)))
-!  caz = cos (d2r(dble(azimuth)))
-!  cb = cd*ct + sd*st*caz
-!  !todo !if(abs(cb).gt.1) cb = cb/abs(cb)
-!  sb = sqrt(1.-cb**2)
-!  latout = 90 - r2d(acos(cb))
-!  lonout = lonin + r2d(atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb))
-!end subroutine
+subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
+  use mod_utilities , only : d2r,r2d
+  real(dp) , intent(in)  :: distance 
+  real(dp) , intent(in)  :: latin , lonin , azimuth
+  real(dp) , intent(out) :: latout, lonout 
+  real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
+
+  ct  = cos (d2r(90.-latin))
+  st  = sin (d2r(90.-latin))
+  cd  = cos (d2r(distance))
+  sd  = sin (d2r(distance))
+  saz = sin (d2r(azimuth))
+  caz = cos (d2r(azimuth))
+  cb = cd*ct + sd*st*caz
+!  todo !if(abs(cb).gt.1) cb = cb/abs(cb)
+  sb = sqrt(1.-cb**2)
+  latout = 90 - r2d(acos(cb))
+  lonout = lonin + r2d(atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb))
+end subroutine
 
 ! =============================================================================
 ! =============================================================================
@@ -115,6 +120,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
     inverted_barometer , model , polygons , refpres , method 
   use mod_utilities, only: d2r 
   use mod_data, only: get_value
+  use mod_polygon, only: chkgon
 
   type(site_data) , intent(in) :: site
   type(green_functions), allocatable , dimension(:) :: green
@@ -127,6 +133,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
   integer :: i , iok(2) , npoints
   real(dp) :: normalize 
   type (result) ,intent(out)  :: results
+
 
   if (.not.allocated(green_common))  then
     call green_unification (green , green_common , denser = denserdist-1)
@@ -161,7 +168,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
       ! get polygons
       do i = 1 , 2
         if (polygons(i)%if) then
-          call chkgon ( real(lon), real(lat) , polygons(i) , iok(i) )
+          call chkgon ( lon, lat , polygons(i) , iok(i) )
         else
           iok(i)=1
         endif
@@ -203,7 +210,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
        endif
       endif
       if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-        call convolve_moreverbose (site%lat,site%lon , azimuth , 360./ nazimuth , green_common(igreen,1), green_common(igreen,1))
+        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
         write (moreverbose%unit, '(">")')
       endif
     enddo
@@ -216,19 +223,21 @@ end subroutine
 !!> \todo site height from model 
 !
 !
-!subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
-!  real(dp), intent(in) :: azimuth ,azstep, latin, lonin
-!  real(dp) :: distance, lat , lon , distancestep
-!
-!  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth - azstep/2. , lat , lon)
-!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth + azstep/2. , lat , lon)
-!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth + azstep/2. , lat , lon)
-!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
-!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!end subroutine
+subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
+  use mod_cmdline , only : moreverbose
+ 
+  real(dp), intent(in) :: azimuth ,azstep, latin, lonin
+  real(dp) :: distance, lat , lon , distancestep
+
+  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth - azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth + azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth + azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
+  write(moreverbose%unit, '(2f12.6)') , lat , lon
+end subroutine
 !
 !
 !!subroutine wczytaj_linie_informacyjne

@@ -215,16 +215,33 @@ end subroutine
 
 ! =============================================================================
 !> Check if at least all obligatory command line arguments were given
-!! if not print warning
+!! if not print error and exit
+!!
+!! \date 2013-03-15
+!! \author M. Rajner
+!! \todo Make it compact (if errror ....)
 ! =============================================================================
 subroutine if_minimum_args (program_calling)
   character (*) , intent(in) :: program_calling
+  type(cmd_line) :: cmd_line_entry
+  character(len=100) :: dummy
+
+  ! all programs
+  if (size(sites) .eq. 0) then
+    write(error_unit, * ) "ERROR:", program_calling, " -- no sites!"
+    call exit
+  endif
 
   if (program_calling.eq."grat" ) then
-    
-    if (size(sites) .eq. 0) then
-      write(error_unit, * ) "ERROR:", program_calling
-      write(error_unit, * ) "ERROR:", "no sites!"
+    ! for grat set default for Green functions if not given in command line
+    ! options
+    if (.not.allocated(green)) then
+      dummy="-G,,,"
+      call mod_cmdline_entry(dummy,cmd_line_entry,program_calling="grat")
+    endif
+
+    if (size(model) .eq. 0) then
+      write(error_unit, * ) "ERROR:", program_calling, " -- model file not specified!"
       call exit
     endif
   elseif (program_calling.eq."polygon_check" ) then
@@ -313,7 +330,8 @@ subroutine parse_option (cmd_line_entry , program_calling)
               read ( cmd_line_entry%field(4) , * ) sites(1)%height
             endif
             write(fileunit_tmp, form_62) 'the site was set (BLH):' , &
-              sites(1)%name, sites(1)%lat , sites(1)%lon , sites(1)%height 
+              sites(1)%name, real(sites(1)%lat) , &
+              real(sites(1)%lon) , real(sites(1)%height) 
         else
           ! or read sites from file
           if (file_exists (cmd_line_entry%field(1) ) ) then
@@ -403,12 +421,13 @@ end subroutine
 !> This subroutine parse -G option -- Greens function.
 !!
 !! This subroutines takes the -G argument specified as follows:
+!!   -G 
 !!
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
 subroutine parse_green ( cmd_line_entry)
-  use mod_utilities,only: file_exists, is_numeric
+  use mod_utilities, only: file_exists, is_numeric, skip_header
   type (cmd_line)  :: cmd_line_entry
   character (60) :: filename
   integer :: i , iunit , io_status , lines ,  ii
@@ -546,7 +565,6 @@ subroutine mod_cmdline_entry (dummy , cmd_line_entry , program_calling )
     write ( fileunit_tmp , form_62 ) "this switch is IGNORED by program "//program_calling
     return
   endif
-
 
   dummy=dummy(3:)
 
@@ -930,15 +948,15 @@ subroutine print_settings (program_calling)
     ! Site summary
     !----------------------------------------------------
     write(log%unit, form_separator)
-    write(log%unit, form_60 ) "Processing:", size(sites), "sites"
-    write(log%unit, '(2x,a,t16,3a15)') "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
-    do j = 1,size(sites)
-      write(log%unit, '(2x,a,t16,3f15.4)') &
-        sites(j)%name, sites(j)%lat, sites(j)%lon , sites(j)%height
-      if (j.eq.10) exit
-    enddo
-    if (size(sites).gt.10) write(log%unit , form_62 ) &
-      "and", size(sites)-10, "more"
+    write(log%unit, form_60 ) "Processing:", size(sites), "site(s)"
+
+    if (size(sites).le.15) then
+      write(log%unit, '(2x,a,t16,3a15)') "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
+      do j = 1,size(sites)
+        write(log%unit, '(2x,a,t16,3f15.4)') &
+          sites(j)%name, sites(j)%lat, sites(j)%lon , sites(j)%height
+      enddo
+    endif
 
     !----------------------------------------------------
     ! Computation method summary
@@ -977,7 +995,7 @@ subroutine print_help (program_calling)
       if (if_optional) write(log%unit, '(a)' , advance="no") "]"
     endif
     if (io_stat==iostat_end) then
-      write(log%unit, *) "" 
+      write(log%unit, *) " " 
       if_print_line = .false.
       exit
     endif
