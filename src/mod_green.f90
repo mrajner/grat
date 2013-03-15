@@ -113,6 +113,10 @@ subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
 end subroutine
 
 ! =============================================================================
+!> Perform convolution
+!!
+!! \date 2013-03-15
+!! \author M. Rajner
 ! =============================================================================
 subroutine convolve (site ,  green , results, denserdist , denseraz  )
   use mod_constants, only: pi , dp, t0
@@ -150,7 +154,6 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
       call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
 
       ! get values of model
-      
       do i = 1 , size(model)
         if(model(i)%if) then 
           call get_value (model(i) , lat , lon , val(i) , level=1, method =model(i)%interpolation)
@@ -238,20 +241,19 @@ subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , 
   call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
   write(moreverbose%unit, '(2f12.6)') , lat , lon
 end subroutine
-!
-!
-!!subroutine wczytaj_linie_informacyjne
+
+
+subroutine wczytaj_linie_informacyjne
 !!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
 !!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
 !!      linie_informacyjne%deltal = (/ 0.0011, 0.0205, 0.0550, 1.0500, 10.2500, 90.5000  /)
 !!      linie_informacyjne%deltah = (/ 0.0199, 0.0495, 0.9950, 9.9500, 89.7500, 179.5000 /)
 !!      linie_informacyjne%delta  = (/ 0.0002, 0.0010, 0.0100, 0.1000, 0.5000 , 1.0000   /)
 !!      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
-!!end subroutine
-!
-!!subroutine plot2green(green_file)
-!!  implicit none
-!!  character(len=*),intent (in) :: green_file
+end subroutine
+
+subroutine plot2green(green_file)
+  character(len=*),intent (in) :: green_file
 !!  integer                          :: ile_linii_komentarza , i, j , jj ,  ile_rekordow , io
 !!  logical                          :: czy_komentarz=.true.
 !!  character(len=1)                 :: fine
@@ -298,7 +300,7 @@ end subroutine
 !!  enddo
 !!  do i=1, ile_rekordow
 !!    read (1,*) (values(i,j), j=1,4)
-!!  enddo
+!  enddo
 !
 !
 !!  write(2,'(a)'), '# program '
@@ -321,11 +323,10 @@ end subroutine
 !!  close(1)
 !!  close(2)
 !!  deallocate(values,b,c,d)
-!!end subroutine
-!
-!!subroutine green2plot(green_file)
-!!implicit none
-!!  character(len=*),intent (in) :: green_file
+end subroutine
+
+subroutine green2plot(green_file)
+  character(len=*),intent (in) :: green_file
 !!  character(len=1) :: fine
 !!  integer :: ngr, j, M, Nj, i, ii, iii, i_plik
 !!  real :: deltal, deltah, delta,dist
@@ -364,21 +365,29 @@ end subroutine
 !!    enddo
 !!  enddo
 !
-!!end subroutine green2plot
-!
-!!subroutine integrated2pointmass(G_integrated,dist, delta, K, G_t)
-!!  ! rozdział 4.1 spotlman
-!!  implicit none
-!!  real, intent (in) :: G_integrated, dist,delta
-!!  integer , intent(in) :: K
-!!  real, intent(out) :: G_t
-!!  real :: G_prim_t
-!
-!!  G_prim_t = G_integrated  / ( 4 *  cos( d2r(dist) / 2. ) * sin( d2r(delta) /4. ) )
-!!  G_t = G_prim_t * ( ( 10.**K * a ) / ( a**2 * ( 2 *  sin (d2r(dist) /2  )/ d2r(dist)  ) ) )  
-!!  !/ ( 10.**K * a * d2r(dist) )
-!!end subroutine
-!!subroutine pointmass2integrated(G_t,dist, delta, K, G_integrated)
+end subroutine
+
+
+! =============================================================================
+!> 
+!! chapter 4.1 of spotl manual \cite Agnew12
+!! 
+!! \date 2013-03-15
+!! \author M. Rajner
+! =============================================================================
+!subroutine integrated2pointmass(G_integrated,dist, delta, K, G_t)
+!  use mod_utilities, only: d2r 
+!  real(dp), intent (in) :: G_integrated, dist,delta
+!  integer , intent(in) :: K
+!  real(dp), intent(out) :: G_t
+!  real :: G_prim_t
+
+!  G_prim_t = G_integrated  / ( 4 *  cos( d2r(dist) / 2. ) * sin( d2r(delta) /4. ) )
+!  G_t = G_prim_t * ( ( 10.**K * a ) / ( a**2 * ( 2 *  sin (d2r(dist) /2  )/ d2r(dist)  ) ) )  
+  !/ ( 10.**K * a * d2r(dist) )
+!end subroutine
+
+!subroutine pointmass2integrated(G_t,dist, delta, K, G_integrated)
 !!  ! rozdział 4.1 spotlman
 !!  implicit none
 !!  real, intent (in) :: G_t, dist,delta
@@ -390,16 +399,16 @@ end subroutine
 !!  G_integrated = G_prim_t  * ( 4 *  cos( d2r(dist) / 2. ) * sin( d2r(delta) /4. ) )
 !!end subroutine
 !
-!!subroutine ignewt_(del,stp,grav_new)
-!!!c width stp (ie, the interval [del-stp/2,del+stp/2],
-!!!c del and stp both being in radians
-!!!c  the height correction is included in the green functions,
-!!!c the station height in meters being passed as ht in the common block
-!!!c stloc
-!!!c
-!!!c  $$$$$$calls only system routines
-!!!c
-!!implicit none
+!subroutine ignewt_(del,stp,grav_new)
+! width stp (ie, the interval [del-stp/2,del+stp/2],
+! del and stp both being in radians
+!  the height correction is included in the green functions,
+! the station height in meters being passed as ht in the common block
+! stloc
+!
+!!  $$$$$$calls only system routines
+!
+!implicit none
 !!      real ::  eps,eps1,eps2,s,gt,c1
 !!      real :: del,stp,g,g2,em ,plc
 !!      real , intent(out) :: grav_new
@@ -427,30 +436,26 @@ end subroutine
 !
 !
 !
-!!subroutine getgrf(num,ntot,ngr,fingrd)
-!!      character*80 grname
-!!      character*1 fingrd
-!!      save newf,llu
-!!      data newf/0/
-!!      if(newf.eq.0) then
-!!          newf = 1
-!!         llu =  71
-!!!         open(unit=llu,file='~/src/spotl/green/gr.gbaver.wef.p01.ce',status='old',access='sequential',form="formatted")
-!!         open(unit=llu,file='~/src/spotl/working/tmpgr',status='old',access='sequential',form="formatted")
-!!!         open(unit=llu,file='~/dr/merriam/green.dat_zmienione_kolumny.mrp02.dat',status='old',access='sequential',form="formatted")
-!!   read(llu,'(a)') grname
-!!      endif
-!!      read(llu,102) ngreen,num,ntot,ngr,beg,end,spc,fingrd
-!!      fingrd='L' ! IB , tmp
-!! 102  format(i1,i3,2i4,3f10.4,5x,a)
-!!      read(llu,104) ((grfn(ii,j),j=1,7),ii=1,ngr)
-!! 104  format(7e13.6)
-!!      rin(num) = beg
-!!      rout(num) = end
-!!      rsz(num) = spc
-!!     statgr(num) = fingrd
-!!      nring=ntot
-!!      return
-!!end subroutine
-!
+subroutine getgrf(num,ntot,ngr,fingrd)
+      character*80 grname
+      character*1 fingrd
+      integer llu,ngr,ntot,num
+         llu =  71
+         open(unit=llu,file='~/src/spotl/green/gr.gbaver.wef.p01.ce',status='old',action='read')
+!         open(unit=llu,file='~/src/spotl/working/tmpgr',status='old',access='sequential',form="formatted")
+!         open(unit=llu,file='~/dr/merriam/green.dat_zmienione_kolumny.mrp02.dat',status='old',access='sequential',form="formatted")
+!   read(llu,'(a)') grname
+!      endif
+!      read(llu,102) ngreen,num,ntot,ngr,beg,end,spc,fingrd
+!      fingrd='L' ! IB , tmp
+! 102  format(i1,i3,2i4,3f10.4,5x,a)
+!      read(llu,104) ((grfn(ii,j),j=1,7),ii=1,ngr)
+! 104  format(7e13.6)
+!      rin(num) = beg
+!      rout(num) = end
+!      rsz(num) = spc
+!     statgr(num) = fingrd
+!      nring=ntot
+end subroutine
+
 end module

@@ -6,10 +6,10 @@
 !!
 
 program value_check 
-  use mod_cmdline
-  use mod_data
-  use ieee_arithmetic
-  implicit none
+  use mod_cmdline,only: output , sites , model , dates , print_settings , intro,nmodels
+  use mod_data, only: get_variable,get_value,read_netCDF
+  use mod_constants,only:dp
+!  use ieee_arithmetic
 
   real (dp) , allocatable , dimension(:) :: val
   integer :: i,ii ,j ,start , imodel

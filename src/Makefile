@@ -23,7 +23,7 @@ OBJS  = $(SRCS:.f90=.o)
  
 
 
-xmp: ../bin/polygon_check
+xmp: ../bin/grat
 
 # $(BIN)/joinnc: joinnc.f90
 #   $(FC) $< -o $@ $(OBJS) $(NETCDFLIB) 

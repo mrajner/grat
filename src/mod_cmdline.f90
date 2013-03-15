@@ -9,6 +9,9 @@ module mod_cmdline
 
   use mod_constants, only: dp , dp
   use iso_fortran_env
+  
+
+
   implicit none
 
   !----------------------------------------------------
@@ -159,6 +162,9 @@ module mod_cmdline
     form_63        = "(6x,100(x,g0))",       &
     form_64        = "(4x,4x,a,4x,a)"
 
+
+!  private
+!  public :: nmodels
 
 contains
 ! =============================================================================
@@ -1069,13 +1075,15 @@ end subroutine
 
 ! =============================================================================
 !> Counts number of properly specified models
+!!
+!! \date 2013-03-15
+!! \author M. Rajner
 ! =============================================================================
 integer function nmodels (model)
   type(file) , allocatable, dimension (:) :: model
   integer :: i
 
   nmodels = 0
-
   do i = 1 , size (model)
     if (model(i)%if) nmodels =nmodels + 1
     if (model(i)%if_constant_value) nmodels =nmodels + 1
