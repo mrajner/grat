@@ -3,3 +3,4 @@
 
 all: 
 	make ../examples/example_aggf -C ../src
+	./example_aggf

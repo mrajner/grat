@@ -13,7 +13,8 @@ module mod_aggf
   private
 
   public:: size_ntimes_denser , read_tabulated_green, standard_pressure, &
-    standard_temperature , bouger , simple_def
+    standard_temperature , bouger , simple_def , standard_density , &
+    standard_gravity , compute_aggf
 
 contains
 
@@ -192,15 +193,15 @@ end subroutine
 !> Compute air density for given altitude for standard atmosphere
 !!
 !! using formulae 12 in \cite Huang05
+!! \date 2013-03-18
+!! \author M. Rajner
 ! ==============================================================================
 subroutine standard_density ( height , rho , t_zero ,fels_type )
-
-  implicit none
   real(dp) , intent(in)  ::  height !< height [km]
   real(dp) , intent(in), optional  :: t_zero !< if this parameter is given 
   character(len = 22) , optional :: fels_type
-  !! surface temperature is set to this value, 
-  !! otherwise the T0 for standard atmosphere is used
+  ! surface temperature is set to this value, 
+  ! otherwise the T0 for standard atmosphere is used
   real(dp) , intent(out) :: rho 
   real(dp)  :: p ,t
 
