@@ -57,8 +57,6 @@ $(PROGS_DIR)/%:%.f90 $(OBJS)
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
 	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
-a: $(addprefix $(PROGS_DIR)/,grat)
-
 all: \
 	$(OBJS)\
 	$(PROGS)\
