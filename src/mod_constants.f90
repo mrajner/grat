@@ -22,7 +22,7 @@ module mod_constants
     rho_earth   = 5500.          !< mean density of Earth [kg/m3]
 
   real(dp) :: &
-    Earth_mass = 5.97219e24, &   ! mass of the Earth
-    geocentric_constant = 398600.4419 ! GM_Earth
+    Earth_mass =               5.97219e24, &   ! mass of the Earth
+    geocentric_constant = 398600.4419          ! GM_Earth
 
 end module mod_constants

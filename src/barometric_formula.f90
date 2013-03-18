@@ -1,8 +1,9 @@
 program check_transfer
-  use aggf
+  use mod_aggf, only:standard_pressure, standard_temperature
+  use mod_constants, only:dp
 
-  real*8 :: pressure ,x , x2 , pressure2 , temperature , pressure3, pressure4
-  real*8 :: h(23)
+  real(dp) :: pressure ,x , x2 , pressure2 , temperature , pressure3, pressure4
+  real(dp) :: h(23)
 
   i=0
   do x =0,11,0.5
@@ -26,16 +27,16 @@ program check_transfer
   call standard_temperature(dble(25.) , temperature)
   print *, temperature
 
-!  x=1.
-!  call standard_pressure(x, pressure)
-!  print * ,x , pressure 
+  x=1.
+  call standard_pressure(x, pressure)
+  print * ,x , pressure 
 
-!  call standard_pressure(x+x2, pressure2)
-!  print * ,x+x2 , pressure2 
+  call standard_pressure(x+x2, pressure2)
+  print * ,x+x2 , pressure2 
 
-!  call standard_temperature(x, temperature)
-!  call standard_pressure(x2, pressure2, p_zero = pressure, t_zero= temperature, if_simplificated=.true.)
-!  print * ,x+x2 , pressure2 , temperature
+  call standard_temperature(x, temperature)
+  call standard_pressure(x2, pressure2, p_zero = pressure, t_zero= temperature, if_simplificated=.true.)
+  print * ,x+x2 , pressure2 , temperature
 
 !  call transfer_pressure ( x , x+x2, pressure , pressure2)
 !  print * ,x+x2 , pressure2 , temperature

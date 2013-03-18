@@ -7,45 +7,47 @@
 ! ============================================================================
 program example_aggf
 
-  !> module with subroutines for calculating Atmospheric Gravity Green Fucntions
-  use mod_aggf
-  use mod_constants
   implicit none
 
+  print *, "...standard1976 ()"
+  ! call standard1976 ()
 
-
-
-! print *, "...standard1976 ()"
-! call standard1976 ()
-!print *, "...aggf_resp_hmax ()"
-! call aggf_resp_hmax ()
-!print *, "...aggf_resp_dz ()"
-! call aggf_resp_dz ()
-!print *, "...aggf_resp_t ()"
-! call aggf_resp_t ()
-!print *, "...aggf_resp_h ()"
-! call aggf_resp_h ()
-!print *, "...aggfdt_resp_dt ()"
-! call aggfdt_resp_dt ()
-!print *, "...compare_fels_profiles ()"
-! call compare_fels_profiles ()
-!print *, "...compute_tabulated_green_functions ()"
-! call compute_tabulated_green_functions ()
-!print *, "...aggf_thin_layer ()"
-! call aggf_thin_layer ()
-!print *, "...aggf_resp_fels_profiles ()"
-! call aggf_resp_fels_profiles ()
-!print *, "...compare_tabulated_green_functions ()"
-! call compare_tabulated_green_functions ()
-!print *, "...simple_atmospheric_model()"
-! call simple_atmospheric_model()
+  print *, "...aggf_resp_hmax ()"
+  ! call aggf_resp_hmax ()
+  print *, "...aggf_resp_dz ()"
+  ! call aggf_resp_dz ()
+  print *, "...aggf_resp_t ()"
+  ! call aggf_resp_t ()
+  print *, "...aggf_resp_h ()"
+  ! call aggf_resp_h ()
+  print *, "...aggfdt_resp_dt ()"
+  ! call aggfdt_resp_dt ()
+  print *, "...compare_fels_profiles ()"
+  ! call compare_fels_profiles ()
+  print *, "...compute_tabulated_green_functions ()"
+  ! call compute_tabulated_green_functions ()
+  print *, "...aggf_thin_layer ()"
+  ! call aggf_thin_layer ()
+  print *, "...aggf_resp_fels_profiles ()"
+  ! call aggf_resp_fels_profiles ()
+  print *, "...compare_tabulated_green_functions ()"
+  call compare_tabulated_green_functions ()
+  print *, "...simple_atmospheric_model()"
+  call simple_atmospheric_model()
 
 contains 
  
 ! =============================================================================
-!> \brief Reproduces data to Fig.~3 in \cite Warburton77
+!> Reproduces data to Fig.~3 in \cite Warburton77
+!!
+!! \date 2013-03-18
+!! \author M. Rajner
+!!
 ! =============================================================================
 subroutine simple_atmospheric_model ()
+  use mod_constants, only:dp
+  use mod_aggf, only:simple_def, bouger
+
   real(dp) :: R ! km
   integer :: iunit
 
@@ -57,10 +59,18 @@ subroutine simple_atmospheric_model ()
   enddo
 
 end subroutine
+
 ! =============================================================================
-!> \brief Compare tabulated green functions from different authors
+!> Compare tabulated green functions from different authors
+!!
+!! \date 2013-03-18
+!! \author M. Rajner
 ! =============================================================================
 subroutine compare_tabulated_green_functions ()
+  use mod_constants, only : dp
+  use mod_aggf, only:size_ntimes_denser,read_tabulated_green
+  use mod_utilities, only : spline_interpolation
+
   integer :: i , j , file_unit , ii , iii
   real(dp), dimension(:,:), allocatable :: table , results
   real(dp), dimension(:,:), allocatable :: parameters
@@ -118,15 +128,19 @@ subroutine compare_tabulated_green_functions ()
 end subroutine
 
 ! ============================================================================
-!> \brief Compute AGGF and derivatives
+!> Compute AGGF and derivatives
+!!
+!! \author M. Rajner
+!! \date 2013-03-18
 ! ============================================================================
 subroutine compute_tabulated_green_functions ()
+  use mod_constants, only:dp
   integer :: i , file_unit
   real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
   real(dp), dimension(:,:), allocatable :: table , results 
 
   ! Get the spherical distances from Merriam92
-  call read_tabulated_green ( table , author = "merriam")
+!  call read_tabulated_green ( table , author = "merriam")
 
   open  ( newunit = file_unit, &
           file    = '../dat/rajner_green.dat', &
@@ -143,361 +157,361 @@ subroutine compute_tabulated_green_functions ()
     'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' , &
     'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
 
-  do i= 1, size(table(:,1))
-    call compute_aggf   ( table(i,1) , val_aggf   )
-    call compute_aggfdt ( table(i,1) , val_aggfdt )
-    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
-    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
-    write ( file_unit, '(10(e23.5))' ) &
-      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-  enddo
+!  do i= 1, size(table(:,1))
+!    call compute_aggf   ( table(i,1) , val_aggf   )
+!    call compute_aggfdt ( table(i,1) , val_aggfdt )
+!    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
+!    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
+!    write ( file_unit, '(10(e23.5))' ) &
+!      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
+!  enddo
   close(file_unit)
 end subroutine
 
-! ============================================================================
-!> \brief Compare different vertical temperature profiles impact on AGGF
-! ============================================================================
-subroutine aggf_resp_fels_profiles ()
-  character (len=255) ,dimension (6) :: fels_types
-  real (dp) :: val_aggf
-  integer :: i , j, file_unit
-  real(dp), dimension(:,:), allocatable :: table  
+!! ============================================================================
+!!> \brief Compare different vertical temperature profiles impact on AGGF
+!! ============================================================================
+!subroutine aggf_resp_fels_profiles ()
+!  character (len=255) ,dimension (6) :: fels_types
+!  real (dp) :: val_aggf
+!  integer :: i , j, file_unit
+!  real(dp), dimension(:,:), allocatable :: table  
 
-  ! All possible optional arguments for standard_temperature
-  fels_types = (/ "US1976"             , "tropical",   &
-                  "subtropical_summer" , "subtropical_winter" , &
-                  "subarctic_summer"   , "subarctic_winter"    /)
+!  ! All possible optional arguments for standard_temperature
+!  fels_types = (/ "US1976"             , "tropical",   &
+!                  "subtropical_summer" , "subtropical_winter" , &
+!                  "subarctic_summer"   , "subarctic_winter"    /)
 
-  open  ( newunit = file_unit, &
-          file    = '../examples/aggf_resp_fels_profiles.dat' , &
-          action  = 'write' &
-        )
+!  open  ( newunit = file_unit, &
+!          file    = '../examples/aggf_resp_fels_profiles.dat' , &
+!          action  = 'write' &
+!        )
 
-  call read_tabulated_green (table)
+!  call read_tabulated_green (table)
 
-  ! print header
-  write ( file_unit , '(100(a20))' ) &
-    'psi', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
+!  ! print header
+!  write ( file_unit , '(100(a20))' ) &
+!    'psi', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
 
-  ! print results
-  do i = 1 , size (table(:,1))
-    write (file_unit, '(f20.6$)') table(i,1)
-    do j = 1 , size(fels_types)
-      call compute_aggf(table (i,1), val_aggf ,fels_type=fels_types(j))
-      write (file_unit, '(f20.6$)') val_aggf
-    enddo
-    write(file_unit, *)
-  enddo
-  close(file_unit)
-end subroutine
+!  ! print results
+!  do i = 1 , size (table(:,1))
+!    write (file_unit, '(f20.6$)') table(i,1)
+!    do j = 1 , size(fels_types)
+!      call compute_aggf(table (i,1), val_aggf ,fels_type=fels_types(j))
+!      write (file_unit, '(f20.6$)') val_aggf
+!    enddo
+!    write(file_unit, *)
+!  enddo
+!  close(file_unit)
+!end subroutine
 
 
-! ============================================================================
-!> \brief Compare different vertical temperature profiles
-!!
-!! Using tables and formula from \cite Fels86
-! ============================================================================
-subroutine compare_fels_profiles ()
-  character (len=255) ,dimension (6) :: fels_types
-  real (dp) :: height , temperature
-  integer :: i , file_unit
+!! ============================================================================
+!!> \brief Compare different vertical temperature profiles
+!!!
+!!! Using tables and formula from \cite Fels86
+!! ============================================================================
+!subroutine compare_fels_profiles ()
+!  character (len=255) ,dimension (6) :: fels_types
+!  real (dp) :: height , temperature
+!  integer :: i , file_unit
 
-  ! All possible optional arguments for standard_temperature
-  fels_types = (/ "US1976"             , "tropical",   &
-                  "subtropical_summer" , "subtropical_winter" , &
-                  "subarctic_summer"   , "subarctic_winter"    /)
+!  ! All possible optional arguments for standard_temperature
+!  fels_types = (/ "US1976"             , "tropical",   &
+!                  "subtropical_summer" , "subtropical_winter" , &
+!                  "subarctic_summer"   , "subarctic_winter"    /)
 
-  open  ( newunit = file_unit, &
-          file    = '../examples/compare_fels_profiles.dat' , &
-          action  = 'write' &
-        )
+!  open  ( newunit = file_unit, &
+!          file    = '../examples/compare_fels_profiles.dat' , &
+!          action  = 'write' &
+!        )
 
-  ! Print header
-  write ( file_unit , '(100(a20))' ) &
-    'height', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
+!  ! Print header
+!  write ( file_unit , '(100(a20))' ) &
+!    'height', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
 
-  ! Print results
-  do height = 0. , 70. , 1.
-    write ( file_unit , '(f20.3$)' ) , height
-    do i = 1 , size (fels_types)
-      call standard_temperature &
-        ( height , temperature , fels_type = fels_types(i) )
-      write ( file_unit , '(f20.3$)' ),  temperature 
-    enddo
-    write ( file_unit , * )
-  enddo
-  close(file_unit)
-end subroutine
+!  ! Print results
+!  do height = 0. , 70. , 1.
+!    write ( file_unit , '(f20.3$)' ) , height
+!    do i = 1 , size (fels_types)
+!      call standard_temperature &
+!        ( height , temperature , fels_type = fels_types(i) )
+!      write ( file_unit , '(f20.3$)' ),  temperature 
+!    enddo
+!    write ( file_unit , * )
+!  enddo
+!  close(file_unit)
+!end subroutine
 
-! ============================================================================
-!> \brief Computes AGGF for different site height (h)
-! ============================================================================
-subroutine aggf_resp_h ()
-  real(dp), dimension(:,:), allocatable :: table , results
-  integer :: i, j, file_unit , ii
-  real(dp) :: val_aggf
+!! ============================================================================
+!!> \brief Computes AGGF for different site height (h)
+!! ============================================================================
+!subroutine aggf_resp_h ()
+!  real(dp), dimension(:,:), allocatable :: table , results
+!  integer :: i, j, file_unit , ii
+!  real(dp) :: val_aggf
 
-  ! Get the spherical distances from Merriam92
-  call read_tabulated_green ( table , author = "merriam")
+!  ! Get the spherical distances from Merriam92
+!  call read_tabulated_green ( table , author = "merriam")
 
-  ! Specify the output table and put station height in first row
-  allocate ( results ( 0 : size (table(:,1)) , 7 ) )
-  results(0,1) = 1./0     ! Infinity in first header
-  results(0,3) = 0.0      !   0 m
-  results(0,3) = 0.001    !   1 m
-  results(0,4) = 0.01     !  10 m
-  results(0,5) = 0.1      ! 100 m 
-  results(0,6) = 1.       !   1 km
-  results(0,7) = 10.      !  10 km
+!  ! Specify the output table and put station height in first row
+!  allocate ( results ( 0 : size (table(:,1)) , 7 ) )
+!  results(0,1) = 1./0     ! Infinity in first header
+!  results(0,3) = 0.0      !   0 m
+!  results(0,3) = 0.001    !   1 m
+!  results(0,4) = 0.01     !  10 m
+!  results(0,5) = 0.1      ! 100 m 
+!  results(0,6) = 1.       !   1 km
+!  results(0,7) = 10.      !  10 km
 
-  ! write results to file
-  open ( &
-    newunit = file_unit, &
-    file    = '../examples/aggf_resp_h.dat', &
-    action  = 'write' &
-    )
+!  ! write results to file
+!  open ( &
+!    newunit = file_unit, &
+!    file    = '../examples/aggf_resp_h.dat', &
+!    action  = 'write' &
+!    )
 
-  write (file_unit, '(8(F20.8))' ) results (0, :) 
-  do i =1 , size (table(:,1))
-    ! denser sampling 
-    do ii = 0,8 
-      results ( i , 1 )  = table(i,1) + ii * (table (i+1,1) - table (i,1)) / 9. 
-      ! only compute for small spherical distances
-      if (results (i, 1) .gt. 0.2 ) exit
-      write (file_unit, '(F20.7,$)') , results (i,1)
-      do j =  2 , size(results(1,: ) )
-        call compute_aggf(results(i,1) , val_aggf, dh=0.0001, h =results(0,j))
-        results (i,j) = val_aggf
-        write (file_unit,'(f20.7,1x,$)') results(i,j)
-      enddo
-      write (file_unit,*)
-    enddo
-  enddo
-  close (file_unit)
-end subroutine
+!  write (file_unit, '(8(F20.8))' ) results (0, :) 
+!  do i =1 , size (table(:,1))
+!    ! denser sampling 
+!    do ii = 0,8 
+!      results ( i , 1 )  = table(i,1) + ii * (table (i+1,1) - table (i,1)) / 9. 
+!      ! only compute for small spherical distances
+!      if (results (i, 1) .gt. 0.2 ) exit
+!      write (file_unit, '(F20.7,$)') , results (i,1)
+!      do j =  2 , size(results(1,: ) )
+!        call compute_aggf(results(i,1) , val_aggf, dh=0.0001, h =results(0,j))
+!        results (i,j) = val_aggf
+!        write (file_unit,'(f20.7,1x,$)') results(i,j)
+!      enddo
+!      write (file_unit,*)
+!    enddo
+!  enddo
+!  close (file_unit)
+!end subroutine
 
-! ============================================================================
-!> \brief This computes AGGF for different surface temperature
-! ============================================================================
-subroutine aggf_resp_t ()
-  real(dp), dimension(:,:), allocatable :: table , results
-  integer :: i, j , file_unit
-  real(dp) :: val_aggf
+!! ============================================================================
+!!> \brief This computes AGGF for different surface temperature
+!! ============================================================================
+!subroutine aggf_resp_t ()
+!  real(dp), dimension(:,:), allocatable :: table , results
+!  integer :: i, j , file_unit
+!  real(dp) :: val_aggf
 
-  ! read spherical distances from Merriam
-  call read_tabulated_green ( table )
+!  ! read spherical distances from Merriam
+!  call read_tabulated_green ( table )
 
-  ! Header in first row with surface temperature [K]
-  allocate ( results (0 : size (table(:,1)) , 4 ) )
-  results(0,1) = 1./0
-  results(0,2) = T0 +   0. 
-  results(0,3) = T0 +  15.0 
-  results(0,4) = T0 + -45.0 
-  do i =1 , size (table(:,1))
-    results ( i , 1 )  = table(i,1)
-    do j =  2 , 4
-    call compute_aggf ( results (i , 1 ) , val_aggf, dh = 0.00001, t_zero = results(0, j) )
-    results (i,j) = val_aggf
-    enddo
-  enddo
+!  ! Header in first row with surface temperature [K]
+!  allocate ( results (0 : size (table(:,1)) , 4 ) )
+!  results(0,1) = 1./0
+!  results(0,2) = T0 +   0. 
+!  results(0,3) = T0 +  15.0 
+!  results(0,4) = T0 + -45.0 
+!  do i =1 , size (table(:,1))
+!    results ( i , 1 )  = table(i,1)
+!    do j =  2 , 4
+!    call compute_aggf ( results (i , 1 ) , val_aggf, dh = 0.00001, t_zero = results(0, j) )
+!    results (i,j) = val_aggf
+!    enddo
+!  enddo
 
-  ! Print results to file
-  open ( newunit = file_unit , &
-         file    = '../examples/aggf_resp_t.dat' , &
-         action  = 'write')
-  write (file_unit , '(4F20.5)' ) &
-    ( (results (i,j) , j=1,4) , i = 0, size ( table (:,1) ) )
-  close (file_unit)
-end subroutine
+!  ! Print results to file
+!  open ( newunit = file_unit , &
+!         file    = '../examples/aggf_resp_t.dat' , &
+!         action  = 'write')
+!  write (file_unit , '(4F20.5)' ) &
+!    ( (results (i,j) , j=1,4) , i = 0, size ( table (:,1) ) )
+!  close (file_unit)
+!end subroutine
 
-! ============================================================================
-!> \brief This computes AGGFDT for different dT
-! ============================================================================
-subroutine aggfdt_resp_dt ()
-  real(dp), dimension(:,:), allocatable :: table , results
-  integer :: i, j , file_unit
-  real(dp) :: val_aggf
+!! ============================================================================
+!!> \brief This computes AGGFDT for different dT
+!! ============================================================================
+!subroutine aggfdt_resp_dt ()
+!  real(dp), dimension(:,:), allocatable :: table , results
+!  integer :: i, j , file_unit
+!  real(dp) :: val_aggf
 
-  ! read spherical distances from Merriam
-  call read_tabulated_green ( table )
+!  ! read spherical distances from Merriam
+!  call read_tabulated_green ( table )
 
-  ! Header in first row with surface temperature [K]
-  allocate ( results (0 : size (table(:,1)) , 6 ) )
-  results(0,1) = 1./0
-  results(0,2) = 1.
-  results(0,3) = 5. 
-  results(0,4) = 10. 
-  results(0,5) = 20. 
-  results(0,6) = 50. 
-  do i =1 , size (table(:,1))
-    results ( i , 1 )  = table(i,1)
-    do j =  2 , 6
-    call compute_aggfdt ( results (i , 1 ) , val_aggf, results(0, j) )
-    results (i,j) = val_aggf
-    enddo
-  enddo
+!  ! Header in first row with surface temperature [K]
+!  allocate ( results (0 : size (table(:,1)) , 6 ) )
+!  results(0,1) = 1./0
+!  results(0,2) = 1.
+!  results(0,3) = 5. 
+!  results(0,4) = 10. 
+!  results(0,5) = 20. 
+!  results(0,6) = 50. 
+!  do i =1 , size (table(:,1))
+!    results ( i , 1 )  = table(i,1)
+!    do j =  2 , 6
+!    call compute_aggfdt ( results (i , 1 ) , val_aggf, results(0, j) )
+!    results (i,j) = val_aggf
+!    enddo
+!  enddo
 
-  ! Print results to file
-  open ( newunit = file_unit , &
-         file    = '../examples/aggfdt_resp_dt.dat' , &
-         action  = 'write')
-  write (file_unit , '(6F20.5)' ) &
-    ( (results (i,j) , j=1,6) , i = 0, size ( table (:,1) ) )
-  close (file_unit)
-end subroutine
+!  ! Print results to file
+!  open ( newunit = file_unit , &
+!         file    = '../examples/aggfdt_resp_dt.dat' , &
+!         action  = 'write')
+!  write (file_unit , '(6F20.5)' ) &
+!    ( (results (i,j) , j=1,6) , i = 0, size ( table (:,1) ) )
+!  close (file_unit)
+!end subroutine
 
-! ============================================================================
-!> \brief This computes AGGF for different height integration step 
-! ============================================================================
-subroutine aggf_resp_dz ()
-  real(dp), dimension(:,:), allocatable :: table , results
-  integer :: file_unit , i , j
-  real(dp) :: val_aggf
+!! ============================================================================
+!!> \brief This computes AGGF for different height integration step 
+!! ============================================================================
+!subroutine aggf_resp_dz ()
+!  real(dp), dimension(:,:), allocatable :: table , results
+!  integer :: file_unit , i , j
+!  real(dp) :: val_aggf
 
-  open ( newunit = file_unit, &
-         file    = '../examples/aggf_resp_dz.dat', & 
-         action='write')
+!  open ( newunit = file_unit, &
+!         file    = '../examples/aggf_resp_dz.dat', & 
+!         action='write')
 
-  ! read spherical distances from Merriam
-  call read_tabulated_green ( table )
+!  ! read spherical distances from Merriam
+!  call read_tabulated_green ( table )
 
-  ! Differences in AGGF(dz) only for small spherical distances
-  allocate ( results ( 0 : 29 , 0: 5 ) )
-  results = 0.
+!  ! Differences in AGGF(dz) only for small spherical distances
+!  allocate ( results ( 0 : 29 , 0: 5 ) )
+!  results = 0.
 
-  ! Header in first row [ infty and selected dz follow on ]
-  results(0,0) = 1./0 
-  results(0,1:5)=(/ 0.0001, 0.001, 0.01, 0.1, 1./)
+!  ! Header in first row [ infty and selected dz follow on ]
+!  results(0,0) = 1./0 
+!  results(0,1:5)=(/ 0.0001, 0.001, 0.01, 0.1, 1./)
 
-  do i = 1 , size ( results (:,1) ) - 1
-    results (i,0) = table (i , 1 )
-    do j = 1 , size (results(1,:) ) - 1
-    call compute_aggf ( results (i,0) , val_aggf , dh = results(0,j) )
-    results (i, j) =  val_aggf
-    enddo
+!  do i = 1 , size ( results (:,1) ) - 1
+!    results (i,0) = table (i , 1 )
+!    do j = 1 , size (results(1,:) ) - 1
+!    call compute_aggf ( results (i,0) , val_aggf , dh = results(0,j) )
+!    results (i, j) =  val_aggf
+!    enddo
 
-    ! compute relative errors from column 2 for all dz with respect to column 1
-    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1) * 100 )
-  enddo
+!    ! compute relative errors from column 2 for all dz with respect to column 1
+!    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1) * 100 )
+!  enddo
 
-  ! write result to file
-  write ( file_unit , '(<size(results(1,:))>f14.6)' ) &
-    ((results (i,j), j=0,size(results (1,:)) - 1), i=0,size(results(:,1)) - 1)
-  close(file_unit)
-end subroutine
+!  ! write result to file
+!  write ( file_unit , '(<size(results(1,:))>f14.6)' ) &
+!    ((results (i,j), j=0,size(results (1,:)) - 1), i=0,size(results(:,1)) - 1)
+!  close(file_unit)
+!end subroutine
 
-! ============================================================================
-!> \brief This computes standard atmosphere parameters
-!!
-!! It computes temperature, gravity, pressure, pressure (simplified formula)
-!! density for given height
-! ============================================================================
-subroutine standard1976  !()
-  real(dp) :: height , temperature , gravity , pressure , pressure2 , density
-  integer :: file_unit
+!! ============================================================================
+!!> \brief This computes standard atmosphere parameters
+!!!
+!!! It computes temperature, gravity, pressure, pressure (simplified formula)
+!!! density for given height
+!! ============================================================================
+!subroutine standard1976  !()
+!  real(dp) :: height , temperature , gravity , pressure , pressure2 , density
+!  integer :: file_unit
 
-  open ( newunit = file_unit , &
-         file    = '../examples/standard1976.dat', &
-         action  = 'write' )
-  ! print header
-  write ( file_unit , '(6(a12))' ) &
-    'height[km]', 'T[K]' , 'g[m/s2]' , 'p[hPa]', 'p_simp[hPa]' , 'rho[kg/m3]'
-  do height=0.,98.
-    call standard_temperature ( height , temperature )
-    call standard_gravity     ( height , gravity )
-    call standard_pressure    ( height , pressure )
-    call standard_pressure    ( height , pressure2 , if_simplificated = .true. )
-    call standard_density     ( height , density )
-    ! print results to file
-    write( file_unit,'(5f12.5, e12.3)'), &
-    height,temperature , gravity , pressure , pressure2 , density 
-  enddo
-  close( file_unit )
-end subroutine
+!  open ( newunit = file_unit , &
+!         file    = '../examples/standard1976.dat', &
+!         action  = 'write' )
+!  ! print header
+!  write ( file_unit , '(6(a12))' ) &
+!    'height[km]', 'T[K]' , 'g[m/s2]' , 'p[hPa]', 'p_simp[hPa]' , 'rho[kg/m3]'
+!  do height=0.,98.
+!    call standard_temperature ( height , temperature )
+!    call standard_gravity     ( height , gravity )
+!    call standard_pressure    ( height , pressure )
+!    call standard_pressure    ( height , pressure2 , if_simplificated = .true. )
+!    call standard_density     ( height , density )
+!    ! print results to file
+!    write( file_unit,'(5f12.5, e12.3)'), &
+!    height,temperature , gravity , pressure , pressure2 , density 
+!  enddo
+!  close( file_unit )
+!end subroutine
 
-! ============================================================================
-!> \brief This computes relative values of AGGF for different atmosphere
-!! height integration
-! ============================================================================
-subroutine aggf_resp_hmax ()
-  real (dp) , dimension (10) :: psi
-  real (dp) , dimension (:)   , allocatable :: heights 
-  real (dp) , dimension (:,:) , allocatable :: results
-  integer :: file_unit , i , j
-  real(dp) :: val_aggf
+!! ============================================================================
+!!> \brief This computes relative values of AGGF for different atmosphere
+!!! height integration
+!! ============================================================================
+!subroutine aggf_resp_hmax ()
+!  real (dp) , dimension (10) :: psi
+!  real (dp) , dimension (:)   , allocatable :: heights 
+!  real (dp) , dimension (:,:) , allocatable :: results
+!  integer :: file_unit , i , j
+!  real(dp) :: val_aggf
 
-  ! selected spherical distances
-  psi=(/0.000001, 0.000005,0.00001, 1,  2, 3 , 5, 10 , 90 ,  180 /)
+!  ! selected spherical distances
+!  psi=(/0.000001, 0.000005,0.00001, 1,  2, 3 , 5, 10 , 90 ,  180 /)
 
-  ! get heights (for nice graph) - call auxiliary subroutine
-  call aux_heights ( heights )
+!  ! get heights (for nice graph) - call auxiliary subroutine
+!  call aux_heights ( heights )
 
-  open ( newunit = file_unit , &
-         file    = '../examples/aggf_resp_hmax.dat', & 
-         action  = 'write')
+!  open ( newunit = file_unit , &
+!         file    = '../examples/aggf_resp_hmax.dat', & 
+!         action  = 'write')
 
-  allocate ( results ( 0:size(heights)-1 , 1+size(psi) ) ) 
+!  allocate ( results ( 0:size(heights)-1 , 1+size(psi) ) ) 
 
-  do j=0 , size (results (:,1))
-      results ( j , 1 ) = heights(j)
+!  do j=0 , size (results (:,1))
+!      results ( j , 1 ) = heights(j)
 
-    do i = 1 , size(psi)
-      call compute_aggf ( psi (i) , val_aggf , hmax = heights(j) )
-      results(j,i+1) = val_aggf
+!    do i = 1 , size(psi)
+!      call compute_aggf ( psi (i) , val_aggf , hmax = heights(j) )
+!      results(j,i+1) = val_aggf
 
-      !> Relative value of aggf depending on integration height
-      if (j.gt.0) then
-        results(j,i+1) = results (j,i+1) / results (0,i+1) * 100 
-      endif
-    enddo
-  enddo
-    
-  ! print header
-  write(file_unit , '(a14,SP,100f14.5)' ),"#wys\psi", (psi(j) , j= 1,size(psi))
-  ! print results
-  do i=1, size (results (:,1))-1
-    write(file_unit, '(100f14.3)' ) (results(i,j), j = 1, size(psi)+1 )
-  enddo
-  close(file_unit)
-end subroutine
+!      !> Relative value of aggf depending on integration height
+!      if (j.gt.0) then
+!        results(j,i+1) = results (j,i+1) / results (0,i+1) * 100 
+!      endif
+!    enddo
+!  enddo
+!    
+!  ! print header
+!  write(file_unit , '(a14,SP,100f14.5)' ),"#wys\psi", (psi(j) , j= 1,size(psi))
+!  ! print results
+!  do i=1, size (results (:,1))-1
+!    write(file_unit, '(100f14.3)' ) (results(i,j), j = 1, size(psi)+1 )
+!  enddo
+!  close(file_unit)
+!end subroutine
 
-! ============================================================================
-!> \brief Auxiliary subroutine -- height sampling for semilog plot
-! ============================================================================
-subroutine aux_heights ( table )
-  real(dp) , dimension (:), allocatable, intent(inout) :: table
-  real(dp) , dimension (0:1000) :: heights
-  real(dp) :: height
-  integer :: i , count_heights
+!! ============================================================================
+!!> \brief Auxiliary subroutine -- height sampling for semilog plot
+!! ============================================================================
+!subroutine aux_heights ( table )
+!  real(dp) , dimension (:), allocatable, intent(inout) :: table
+!  real(dp) , dimension (0:1000) :: heights
+!  real(dp) :: height
+!  integer :: i , count_heights
 
-  heights(0) =60
-  i=0
-  height=-0.001
-  do while (height.lt.60)
-    i=i+1
-    if (height.lt.0.10) then
-      height=height+2./1000
-    elseif (height.lt.1) then
-      height=height+50./1000
-    else
-      height=height+1
-    endif
-    heights(i)= height
-    count_heights=i
-  enddo
-  allocate ( table ( 0 : count_heights ) )
-  table (0 : count_heights ) = heights ( 0 : count_heights )
-end subroutine
+!  heights(0) =60
+!  i=0
+!  height=-0.001
+!  do while (height.lt.60)
+!    i=i+1
+!    if (height.lt.0.10) then
+!      height=height+2./1000
+!    elseif (height.lt.1) then
+!      height=height+50./1000
+!    else
+!      height=height+1
+!    endif
+!    heights(i)= height
+!    count_heights=i
+!  enddo
+!  allocate ( table ( 0 : count_heights ) )
+!  table (0 : count_heights ) = heights ( 0 : count_heights )
+!end subroutine
 
-subroutine aggf_thin_layer ()
-  integer :: file_unit , i
-  real(dp) , dimension (:,:), allocatable :: table
+!subroutine aggf_thin_layer ()
+!  integer :: file_unit , i
+!  real(dp) , dimension (:,:), allocatable :: table
 
-  ! read spherical distances from Merriam
-  call read_tabulated_green (table)
-  do i = 1 , size (table (:,1))
-    write(*,*) table(i,1:2) , GN_thin_layer (table (i,1))
-  enddo
+!  ! read spherical distances from Merriam
+!  call read_tabulated_green (table)
+!  do i = 1 , size (table (:,1))
+!    write(*,*) table(i,1:2) , GN_thin_layer (table (i,1))
+!  enddo
 
-end subroutine
+!end subroutine
 end program 

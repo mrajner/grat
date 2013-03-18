@@ -17,7 +17,6 @@ program value_check
   call intro (program_calling = "value_check" )
   call print_settings (program_calling = "value_check")
 
-
   do i = 1 , size(model)
     if (model(i)%if) call read_netCDF(model(i))
   enddo

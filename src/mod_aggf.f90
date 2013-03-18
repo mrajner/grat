@@ -12,7 +12,8 @@ module mod_aggf
   implicit none
   private
 
-  public:: size_ntimes_denser , read_tabulated_green
+  public:: size_ntimes_denser , read_tabulated_green, standard_pressure, &
+    standard_temperature , bouger , simple_def
 
 contains
 
@@ -269,39 +270,6 @@ subroutine standard_pressure (height, pressure , &
 end subroutine
 
 ! =============================================================================
-! > This will transfer pressure beetween different height using barometric
-! formulae
-! =============================================================================
-!> \warning OBSOLETE ROUTINE -- use \c standard_pressure() instead with optional args
-subroutine transfer_pressure (height1 , height2 , pressure1 , pressure2 , &
-  temperature , polish_meteo )
-  real (dp) , intent (in) :: height1 , height2 , pressure1
-  real (dp) , intent (in), optional :: temperature
-  real (dp) :: sfc_temp , sfc_pres
-  logical , intent (in), optional :: polish_meteo
-  real(dp) , intent(out) :: pressure2
-  
-  sfc_temp = t0
-
-  ! formulae used to reduce press to sfc in polish meteo service
-  if (present(polish_meteo) .and. polish_meteo) then
-    sfc_pres = exp (log (pressure1) + 2.30259 * height1*1000. &
-      /(18400.*(1+0.00366*((temperature-273.15) + 0.0025*height1*1000.)))  )
-  else
-  ! different approach
-    if(present(temperature) ) then
-      call surface_temperature( height1 , temperature , sfc_temp )
-    endif
-    call standard_pressure (height1 , sfc_pres , t_zero=sfc_temp , &
-      inverted=.true. , p_zero = pressure1 )
-  endif
-
-  ! move from sfc to height2
-  call standard_pressure (height2 , pressure2 , t_zero=sfc_temp , &
-    p_zero = sfc_pres )
-end subroutine
-
-! =============================================================================
 !> \brief Compute gravity acceleration of the Earth
 !! for the specific height using formula
 !! 
@@ -374,25 +342,24 @@ end subroutine
 !! A set of predifined temperature profiles ca be set using
 !! optional argument \argument fels_type 
 !! \cite Fels86
+!! \li US standard atmosphere (default)
+!! \li tropical 
+!! \li subtropical_summer
+!! \li subtropical_winter
+!! \li subarctic_summer
+!! \li subarctic_winter
 ! ==============================================================================
 subroutine standard_temperature ( height , temperature , t_zero , fels_type )
   real(dp) , intent(in)  :: height
   real(dp) , intent(out) :: temperature
   real(dp) , intent(in), optional  :: t_zero
   character (len=*) , intent(in), optional  :: fels_type 
-    !< \li US standard atmosphere (default)
-    !! \li tropical 
-    !! \li subtropical_summer
-    !! \li subtropical_winter
-    !! \li subarctic_summer
-    !! \li subarctic_winter
   real(dp) :: aux , cn , t
   integer :: i,indeks
   real , dimension (10) :: z,c,d
 
-  !< Read into memory the parameters of temparature height profiles
-  !! for standard atmosphere 
-  !! From \cite Fels86
+  ! Read into memory the parameters of temparature height profiles
+  ! for standard atmosphere 
   z = (/11.0 , 20.1 , 32.1 , 47.4 , 51.4 , 71.7 , 85.7, 100.0, 200.0, 300.0/)
   c = (/-6.5,   0.0,   1.0,   2.75,  0.0,  -2.75, -1.97,  0.0,   0.0,   0.0/)
   d = (/ 0.3,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0/)
@@ -486,7 +453,7 @@ end function
 !> \brief Bouger plate computation
 !!
 ! ==============================================================================
-real(dp) function bouger ( R_opt )
+  real(dp) function bouger ( R_opt )
   real(dp), optional :: R_opt !< height of point above the cylinder
   real(dp) :: aux
   real(dp) :: R
@@ -505,18 +472,19 @@ real(dp) function bouger ( R_opt )
   endif
 end function
 ! ==============================================================================
-!> \brief Bouger plate computation
+!> Bouger plate computation
+!!
 !! see eq. page 288 \cite Warburton77
+!! \date 2013-03-18
+!! \author M. Rajner 
 ! ==============================================================================
-real(dp) function simple_def (R)
+function simple_def (R)
   real(dp) :: R ,delta
+  real(dp) :: simple_def
 
   delta = 0.22e-11 * R 
-  
   simple_def = g0 / R0 * delta * ( 2. - 3./2. * rho_crust / rho_earth &
     -3./4. * rho_crust / rho_earth * sqrt (2* (1. )) ) * 1000
 end function
-
-!polish_meteo
 
 end module
