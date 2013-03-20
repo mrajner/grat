@@ -12,14 +12,15 @@ module mod_aggf
   implicit none
   private
 
-  public:: size_ntimes_denser , read_tabulated_green, standard_pressure, &
-    standard_temperature , bouger , simple_def , standard_density , &
-    standard_gravity , compute_aggf
+  public:: size_ntimes_denser, read_tabulated_green, standard_pressure, &
+         standard_temperature,               bouger,        simple_def, &
+             standard_density,     standard_gravity,      compute_aggf, &
+               compute_aggfdt,        GN_thin_layer,         geop2geom 
 
 contains
 
 ! ==============================================================================
-!> \brief Compute first derivative of AGGF with respect to temperature
+!> Compute first derivative of AGGF with respect to temperature
 !! for specific angular distance (psi)
 !!
 !! optional argument define (-dt;-dt) range
@@ -28,9 +29,10 @@ contains
 !! is set to \c .true. 
 !! \warning Please do not use \c aggf=.true. this option was added only
 !! for testing some numerical routines
+!! \author M. Rajner
+!! \date 2013-03-19
 ! ==============================================================================
 subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
-  implicit none
   real(dp) , intent (in) :: psi
   real(dp) , intent (in) , optional :: delta_
   logical , intent (in) , optional :: aggf
@@ -286,7 +288,10 @@ end subroutine
 
 
 ! =============================================================================
-!> \brief Compute geometric height from geopotential heights
+!> Compute geometric height from geopotential heights
+!!
+!! \author M. Rajner
+!! \date 2013-03-19
 ! =============================================================================
 real(dp) function geop2geom (geopotential_height)
   real (dp) :: geopotential_height
@@ -357,7 +362,7 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
   character (len=*) , intent(in), optional  :: fels_type 
   real(dp) :: aux , cn , t
   integer :: i,indeks
-  real , dimension (10) :: z,c,d
+  real(dp) , dimension (10) :: z,c,d
 
   ! Read into memory the parameters of temparature height profiles
   ! for standard atmosphere 
@@ -417,24 +422,26 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
     else
       cn = c(i+1)
     endif
-      aux = aux + d(i) * ( cn - c(i) )  * log ( cosh ( (height - z(i)) / d(i) ) / cosh (z(i)/d(i)) ) 
+      aux = aux + d(i) * ( cn - c(i) )  * dlog ( dcosh ( (height - z(i)) / d(i) ) / dcosh (z(i)/d(i)) ) 
   enddo
   temperature = t + c(1) * height/2. + aux/2.
 end subroutine
 
 ! ==============================================================================
-!> \brief Compute AGGF GN for thin layer
+!> Compute AGGF GN for thin layer
 !!
 !! Simple function added to provide complete module
 !! but this should not be used for atmosphere layer
 !! See eq p. 491 in \cite Merriam92
+!! \author M. Rajner
+!! \date 2013-03-19
 ! ==============================================================================
 real function GN_thin_layer (psi)
-  implicit none
+  use mod_utilities, only : d2r
   real(dp) , intent(in) :: psi
   real(dp) :: psir
 
-  psir = psi * pi / 180.
+  psir = d2r(psi)
   GN_thin_layer = 1.627 * psir / sin ( psir / 2. )
 end function
 

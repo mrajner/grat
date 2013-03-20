@@ -9,17 +9,19 @@
   NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
 
 	# data for computation
-  SFC= ../data/ncep_reanalysis/pres.sfc.2011.nc:pres:lon:lat:level:time
-  TMP= ../data/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
-	LND= ../data/landsea/landseaR0-50-0-70I0.2-0.2.grd:z:x:y
-  GRN_r= ../dat/rajner_green.dat
-  GRN_m= ../dat/merriam_green.dat
-	POL= ../polygon/tmp.poly
-GPT= ../data/ncep_reanalysis/hgt.2011.nc:hgt
-H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
- fnl = /home/mrajner/meteo/fnl/sfc_hgt/
-#  fnl_ = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
- fnl_ = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+  DAT_DIR  = /home/mrajner/dat
+  NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
+  SFC      = $(NCEP_DIR)/pres.sfc.2011.nc:pres
+  TMP      = /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
+  LND      = ../data/landsea/landseaR0-50-0-70I0.2-0.2.grd:z:x:y:-
+  GRN_r    = ../dat/rajner_green.dat
+  GRN_m    = ../dat/merriam_green.dat
+  POL      = ../polygon/baltyk.poly
+  GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
+  H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
+  fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
+  # fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
+  fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
   SRCS  = mod_constants.f90\
 					mod_utilities.f90\
@@ -32,7 +34,8 @@ H__= ../data/ncep_reanalysis/hgt.sfc.nc:hgt
   PROGSSRCS =\
 					grat.f90\
 					value_check.f90\
-					polygon_check.f90
+					polygon_check.f90\
+					real_vs_standard.f90
 
   EXAMPLESSRC = \
 					example_aggf.f90
@@ -57,19 +60,25 @@ $(PROGS_DIR)/%:%.f90 $(OBJS)
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
 	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
+e: ../bin/value_check example
+r: ../bin/real_vs_standard example
+
 all: \
 	$(OBJS)\
 	$(PROGS)\
-	$(EXAMPLES)
+	$(EXAMPLES)\
+	example
 
 
 example: 
-	$(PROGS_DIR)/grat -V -F /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air -SR10.2/12/11/11,2,2 -o 
-#   value_check -F $(SFC), $(TMP), ../data/ncep_reanalysis/hgt.sfc.nc:hgt,$(LND)   -S joze,53.8912,20.6697,100    -BI -G,,,,,  -L:s -I2,2,2,2,2  -P$(POL),$(POL) -V
-#   grat -F $(SFC) -S joze, 53.8912, 20.6697, 100 -R- -V -G,,,, -D20110101,20110103 -L:s # dlaczego kolumna niezerowa
-#   real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 
-#   $(PROGS_DIR)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
-#   $(PROGS_DIR)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
+	# $(PROGS_DIR)/value_check -F $(SFC):::: , $(LND)   -S joze,50.8912,20.6697,100  -P$(POL) -r20110104,20110105 V
+	$(PROGS_DIR)/value_check -F $(SFC) -T P../polygon/baltyk.poly -R,54,22 -D20110104,20110105 -V
+#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+
+eeee:
+	# @$(PROGS_DIR)/grat -V -F /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air -SR10.2/12/11/11,2,2 -o 
+	# $(PROGS_DIR)/grat -F$(SFC),$(TMP),../data/ncep_reanalysis/hgt.sfc.nc:hgt   -Sjoze,52:zeby,21,500 -Vtmp -D20090801,20090806  -BN -Grajner,rajner,rajner,rajner, -P -L: -I2,2,2,2,2 -o tmp P$(POL),$(POL)
+	# $(PROGS_DIR)/value_check -S,22,45.4 -F$(SFC),$(SFC),5,$(LND) -I2,,2,1   -o -D2009,2009010112,4 -Ltmpii:c
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
