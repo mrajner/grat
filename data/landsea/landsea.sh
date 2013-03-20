@@ -10,6 +10,8 @@
 #===============================================================================
 
 set -o nounset                              # Treat unset variables as an error
+set -x
+set -v
 #gmtset ELLIPSOID Sphere
 #gmtset ELLIPSOID WGS84
 
@@ -38,7 +40,8 @@ ps=tmp.ps #${grd/.grd/.ps}
   grd2xyz $grd |minmax -C
 
 
-#  grd2cpt  $grd > landsea.cpt
+  grd2cpt  $grd > landsea.cpt
   grdimage $grd  -R$R  -C$cpt -J$J -K -Sn > $ps
+  exit
   pscoast -Dc -R$R -J$J -O -W2p/green -N12p >> $ps
   ps2raster -Tf $ps -A -P

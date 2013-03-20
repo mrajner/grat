@@ -72,7 +72,7 @@ all: \
 
 example: 
 	# $(PROGS_DIR)/value_check -F $(SFC):::: , $(LND)   -S joze,50.8912,20.6697,100  -P$(POL) -r20110104,20110105 V
-	$(PROGS_DIR)/value_check -F $(SFC) -T P../polygon/baltyk.poly -R,54,22 -D20110104,20110105 -V
+	$(PROGS_DIR)/value_check -F $(SFC),$(LND) -P../polygon/baltyk.poly:- -R,54,22 -D20110104,20110105 -V
 #   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 eeee:
