@@ -438,12 +438,17 @@ subroutine parse_option (cmd_line_entry , program_calling)
       endif
     case ('-P')
       do i = 1, cmd_line_entry%fields
+        ! prevent from multiple -P
+        if (polygons(i)%if) then
+          call print_warning ("repeated", fileunit_tmp)
+          return
+        endif
         polygons(i)%name=cmd_line_entry%field(i)
         if (file_exists((polygons(i)%name))) then
           write(fileunit_tmp, form_62), 'polygon file was set: ' , polygons(i)%name
           polygons(i)%if=.true.
           if (allocated(cmd_line_entry%fieldnames)) then
-            polygons(i)%pm = trim(cmd_line_entry%fieldnames(1)%names(1))
+            polygons(i)%pm = trim(cmd_line_entry%fieldnames(i)%names(1))
           endif
         else
           write(fileunit_tmp, form_62), 'file do not exist. Polygon file was IGNORED'

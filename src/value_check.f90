@@ -11,7 +11,8 @@
 ! =============================================================================
 
 program value_check 
-  use mod_cmdline  , only: output      , sites , model , dates , print_settings , intro,nmodels , polygons
+  use mod_cmdline  , only: output      , sites , model , dates , & 
+    print_settings , intro,nmodels , polygons, form_separator , log
   use mod_data     , only: get_variable, get_value,read_netCDF
   use mod_constants, only: dp
   use mod_polygon  , only: read_polygon, chkgon
@@ -32,6 +33,7 @@ program value_check
   ! for every site
   call read_polygon (polygons(1))
 
+  write(log%unit, form_separator) 
   allocate (val (nmodels(model)))
 
   start =0 
@@ -40,7 +42,12 @@ program value_check
   do j = start , size (dates)
     do i = 1 , size(model)
       if (model(i)%if) then
-        call get_variable ( model(i) , date = dates(j)%date)
+        ! only read from multidate files for specific date
+        ! for 'static' data files get_variable was performed
+        ! during read_netCDF
+        if (size(model(i)%date).gt.1) then
+          call get_variable ( model(i) , date = dates(j)%date)
+        endif
       endif
     enddo
 
@@ -65,7 +72,7 @@ program value_check
           imodel = imodel + 1
           if (model(ii)%if) then 
             if (iok.eq.1) then
-              call get_value ( model(ii) , sites(i)%lat , sites(i)%lon , val(imodel) , method = model(ii)%interpolation )
+              call get_value (model(ii), sites(i)%lat, sites(i)%lon, val(imodel), method=model(ii)%interpolation)
             else
               val (imodel) = 0
             endif

@@ -1,14 +1,14 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-	# compiler
+  # compiler
   FC = ifort
-	# FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
+  # FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
 
-	# libraries 
+  # libraries 
   NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
 
-	# data for computation
+  # data for computation
   DAT_DIR  = /home/mrajner/dat
   NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
   SFC      = $(NCEP_DIR)/pres.sfc.2011.nc:pres
@@ -23,22 +23,22 @@
   # fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
   fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 
-  SRCS  = mod_constants.f90\
-					mod_utilities.f90\
-					mod_cmdline.f90\
-					mod_polygon.f90\
-					mod_data.f90\
-					mod_aggf.f90\
-					mod_green.f90
+  SRCS  = mod_constants.f90    \
+          mod_utilities.f90    \
+          mod_cmdline.f90      \
+          mod_polygon.f90      \
+          mod_data.f90         \
+          mod_aggf.f90         \
+          mod_green.f90
 
-  PROGSSRCS =\
-					grat.f90\
-					value_check.f90\
-					polygon_check.f90\
-					real_vs_standard.f90
+  PROGSSRCS =                  \
+          grat.f90             \
+          value_check.f90      \
+          polygon_check.f90    \
+          real_vs_standard.f90
 
-  EXAMPLESSRC = \
-					example_aggf.f90
+  EXAMPLESSRC =                \
+          example_aggf.f90
 
   OBJS = $(SRCS:.f90=.o)
 
@@ -63,16 +63,16 @@ $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
 e: ../bin/value_check example
 r: ../bin/real_vs_standard example
 
-all: \
-	$(OBJS)\
-	$(PROGS)\
-	$(EXAMPLES)\
+all:          \
+	$(OBJS)     \
+	$(PROGS)    \
+	$(EXAMPLES) \
 	example
 
 
 example: 
 	# $(PROGS_DIR)/value_check -F $(SFC):::: , $(LND)   -S joze,50.8912,20.6697,100  -P$(POL) -r20110104,20110105 V
-	$(PROGS_DIR)/value_check -F $(SFC),$(LND) -P../polygon/baltyk.poly:- -R,54,22 -D20110104,20110105 -V
+	$(PROGS_DIR)/value_check -F $(LND),$(SFC) -P../polygon/baltyk.poly:+ -R15/15/51/56 -R20110102,20110105 -V
 #   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 eeee:

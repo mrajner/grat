@@ -71,7 +71,8 @@ subroutine read_netCDF (model)
     call get_dimension ( model , i  )
   enddo
 
-  if (size (model%time).gt.1)  call nctime2date ( model)
+  if (size (model%time).gt.1)  call nctime2date (model)
+
   call get_variable (model)
 
 end subroutine
@@ -133,12 +134,12 @@ end subroutine
 ! =============================================================================
 subroutine nctime2date (model)
   use netcdf
-  use mod_cmdline , only: file, log, form_61
-  use mod_constants, only : dp
-  use mod_utilities, only : mjd, invmjd
-  type (file) :: model
-  real(dp):: mjd_start , mjd_
-  integer:: varid ,i , date (6)
+  use mod_cmdline ,  only: file, log, form_61
+  use mod_constants, only: dp
+  use mod_utilities, only: mjd, invmjd
+  type (file)        :: model
+  real(dp)           :: mjd_start , mjd_
+  integer            :: varid ,i , date (6)
   character (len=66) :: dummy
 
   call check ( nf90_inq_varid (model%ncid, "time" , varid ) )
@@ -150,8 +151,8 @@ subroutine nctime2date (model)
     mjd_start =  mjd([1,1,1,0,0,0])
     do i = 1 , size(model%time)
       mjd_= model%time(i) / 24 + mjd_start  - 2
-      call  invmjd(mjd_, date )
-      model%date(i,:)= date
+      call invmjd(mjd_,date)
+      model%date(i,:) = date
     enddo
   else
     write (log%unit , form_61 ) "unknown time begining"
