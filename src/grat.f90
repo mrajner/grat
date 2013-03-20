@@ -118,16 +118,15 @@ program grat
 
   if (moreverbose%if .and. moreverbose%names(1).eq."s") then
     print '(15f13.5)', &
-      results(maxloc (results%e))%e - results(minloc (results%e))%e       ,&
-      results(maxloc (results%n))%n - results(minloc (results%n))%n       ,&
-      results(maxloc (results%dh))%dh - results(minloc (results%dh))%dh   ,&
-      results(maxloc (results%dz))%dz - results(minloc (results%dz))%dz   ,&
-      results(maxloc (results%dt))%dt - results(minloc (results%dt))%dt
+      results ( maxloc ( results%e  )  ) %e - results  ( minloc ( results%e  )  ) %e  ,  & 
+      results ( maxloc ( results%n  )  ) %n - results  ( minloc ( results%n  )  ) %n  ,  & 
+      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh )  ) %dh ,  & 
+      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz )  ) %dz ,  & 
+      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt )  ) %dt
   endif
   
 
   call cpu_time(cpu_finish)
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
   write(log%unit, form_separator)
-
 end program 
