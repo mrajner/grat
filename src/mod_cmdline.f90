@@ -7,10 +7,8 @@
 ! =============================================================================
 module mod_cmdline
 
-  use mod_constants, only: dp , dp
+  use mod_constants, only: dp 
   use iso_fortran_env
-  
-
 
   implicit none
 
@@ -38,6 +36,8 @@ module mod_cmdline
     character(:), allocatable  :: name
     type(polygon_data) , dimension (:) , allocatable :: polygons
     logical :: if
+    ! global setting (+|-) which override this in polygon file
+    character(1):: pm
   end type
 
   type(polygon_info) , dimension (2) :: polygons
@@ -171,6 +171,11 @@ contains
 !> This subroutine counts the command line arguments
 !!
 !! Depending on command line options set all initial parameters and reports it
+!! \date 2012-12-20
+!! \author M. Rajner
+!! \date 2013-03-19 parsing negative numbers after space fixed 
+!!    (-S -11... was previously treated as two cmmand line entries, now only -? 
+!!    non-numeric terminates input argument)
 ! =============================================================================
 subroutine intro (program_calling)
   integer :: i, j
@@ -188,14 +193,16 @@ subroutine intro (program_calling)
     write (fileunit_tmp,form_62) trim(dummy)
     do i = 1 , iargc()
       call get_command_argument(i,dummy)
-      ! allow specification like '-F file' and '-Ffile'
+      ! allows specification like '-F file' and '-Ffile'
+      ! but  if -[0,9] it is treated as number belonging to switch (-S -2)
+      ! but  if -[\s,:] do not start next command line option
       call get_command_argument(i+1,dummy2)
-      if (dummy(1:1).eq."-") then
+      if (check_if_switch_or_minus(dummy)) then
         arg = trim(dummy)
       else
         arg=trim(arg)//trim(dummy)
       endif
-      if(dummy2(1:1).eq."-".or.i.eq.iargc()) then
+      if(check_if_switch_or_minus(dummy2).or.i.eq.iargc()) then
          call mod_cmdline_entry (arg, cmd_line_entry , program_calling = program_calling)
       endif
     enddo
@@ -218,6 +225,30 @@ subroutine intro (program_calling)
     endif
   endif
 end subroutine
+
+! ==============================================================================
+!> Check if - starts new option in command line or is just a minus in command
+!! line entry
+!!
+!! if after '-' is space or number or ',' or ':' (field separators) do not start
+!! next option for command line
+!! If switch return .true. otherwise return .false
+!!
+!! \author M. Rajner
+!! \date 2013-03-19
+! ==============================================================================
+function check_if_switch_or_minus(dummy)
+  use mod_utilities, only: is_numeric
+  logical:: check_if_switch_or_minus
+  character(*) :: dummy
+  
+  check_if_switch_or_minus = .false.
+  if (dummy(1:1).eq."-") check_if_switch_or_minus = .true.
+  if (dummy(2:2).eq." ") check_if_switch_or_minus = .false.
+  if (dummy(2:2).eq.",") check_if_switch_or_minus = .false.
+  if (dummy(2:2).eq.":") check_if_switch_or_minus = .false.
+  if (is_numeric(dummy(2:2))) check_if_switch_or_minus = .false.
+end function
 
 ! =============================================================================
 !> Check if at least all obligatory command line arguments were given
@@ -259,9 +290,9 @@ end subroutine
 !! is not
 ! =============================================================================
 logical function if_switch_program (program_calling , switch )
-  character(len=*), intent (in) :: program_calling
-  character(len=*),  intent (in) :: switch
-  character, dimension(:) , allocatable :: accepted_switch  
+  character(len= *), intent (in) :: program_calling
+  character(len= *), intent (in) :: switch
+  character, dimension(:) , allocatable :: accepted_switch
   integer :: i
 
   ! default
@@ -269,16 +300,16 @@ logical function if_switch_program (program_calling , switch )
 
   ! depending on program calling decide if switch is permitted
   if (program_calling.eq."grat") then
-    allocate( accepted_switch (15) )
+    allocate( accepted_switch (16) )
     accepted_switch = [ "V" , "f" , "S", "B" , "L" , "G" , "P" , "p", &
-      "o" , "F" , "I" , "D" , "L" , "v" , "h"   ]
+      "o" , "F" , "I" , "D" , "L" , "v" , "h" , "R"  ]
   elseif (program_calling.eq."polygon_check") then
-    allocate( accepted_switch (12) )
+    allocate( accepted_switch (13) )
     accepted_switch = [ "V" , "f" , "A", "B" , "L" , "P" , "o", "S" , & 
-      "h" , "v" , "I" , "i"]
+      "h" , "v" , "I" , "i" , "R" ]
   elseif (program_calling.eq."value_check") then
-    allocate( accepted_switch (9) )
-    accepted_switch = [ "V" , "F" , "o", "S" , "h" , "v" , "I" , "D" , "L"]
+    allocate( accepted_switch (11) )
+    accepted_switch = [ "V" , "F" , "o", "S" , "h" , "v" , "I" , "D" , "L" , "P" , "R" ]
   else
     if_switch_program=.true.
     return
@@ -316,7 +347,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
         log%name = trim(cmd_line_entry%field(1))
         write(fileunit_tmp, form_62) 'the log file was set:' ,log%name
       endif
-    case ('-S')
+    case ('-S','-R')
       ! check if format is proper for site
       ! i,e. -Sname,B,L[,H]
       if (.not. allocated(sites)) then
@@ -382,7 +413,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
 !      endif
     case ("-B")
       if (cmd_line_entry%field(1).eq."N" ) inverted_barometer=.false.
-    case ("-R")
+    case ("-Q")
       if (cmd_line_entry%field(1).eq."+" ) refpres%if = .true.
     case ('-D')
       call parse_dates ( cmd_line_entry )
@@ -406,13 +437,14 @@ subroutine parse_option (cmd_line_entry , program_calling)
         open (newunit = output%unit , file = output%name , action = "write" )
       endif
     case ('-P')
-      do i = 1 , 2 !size(cmd_line_entry%field) 
+      do i = 1, cmd_line_entry%fields
         polygons(i)%name=cmd_line_entry%field(i)
         if (file_exists((polygons(i)%name))) then
           write(fileunit_tmp, form_62), 'polygon file was set: ' , polygons(i)%name
           polygons(i)%if=.true.
-          !> todo
-!          call read_polygon (polygons(i))
+          if (allocated(cmd_line_entry%fieldnames)) then
+            polygons(i)%pm = trim(cmd_line_entry%fieldnames(1)%names(1))
+          endif
         else
           write(fileunit_tmp, form_62), 'file do not exist. Polygon file was IGNORED'
         endif
@@ -573,7 +605,6 @@ subroutine mod_cmdline_entry (dummy , cmd_line_entry , program_calling )
   endif
 
   dummy=dummy(3:)
-
   cmd_line_entry%fields = count_separator (dummy) + 1
   allocate(cmd_line_entry%field (cmd_line_entry%fields) )
 
@@ -667,6 +698,7 @@ subroutine parse_GMT_like_boundaries ( cmd_line_entry )
     else
       if (text.eq."Rg" ) then
         limits=[0. , 360. , -90 , 90. ]
+        exit
       endif
     endif
     text=text(index(text,"/")+1:)
@@ -816,7 +848,7 @@ end subroutine
 subroutine parse_dates (cmd_line_entry ) 
   use mod_utilities, only: is_numeric,mjd,invmjd
   type(cmd_line) cmd_line_entry
-  integer , dimension(6) :: start , stop 
+  integer , dimension(6) :: start , stop , swap 
   real (dp) :: step =6. ! step in hours
   integer :: i
 
@@ -831,6 +863,16 @@ subroutine parse_dates (cmd_line_entry )
   if (is_numeric (cmd_line_entry%field(3)).and.cmd_line_entry%fields.ge.3) then
     read(cmd_line_entry%field(3),*) step
     write (fileunit_tmp , form_62) "interval [h]:" , step
+  endif
+  
+  ! allow that stop is previous than start and list in reverse order
+  ! chage the sign of step in dates if necessery
+  if(mjd(stop).lt.mjd(start).and. step.gt.0) step = -step
+  ! or if step is negative
+  if(mjd(stop).gt.mjd(start).and. step.lt.0) then
+    swap=start
+    start=stop
+    stop=swap
   endif
 
   allocate (dates ( int( ( mjd(stop) - mjd(start) ) / step * 24. + 1 ) ))
@@ -873,10 +915,13 @@ subroutine string2date ( string , date )
 end subroutine
 
 
-!subroutine sprawdzdate(mjd)
-!  real:: mjd
+! =============================================================================
+! =============================================================================
+subroutine sprawdzdate(mjd)
+  use mod_utilities 
+  real(dp):: mjd
 !    if (mjd.gt.jd(data_uruchomienia(1),data_uruchomienia(2),data_uruchomienia(3),data_uruchomienia(4),data_uruchomienia(5),data_uruchomienia(6))) then
-!      write (*,'(4x,a)') "Data późniejsza niż dzisiaj. KOŃCZĘ!"
+      write (*,'(4x,a)') "Data późniejsza niż dzisiaj. KOŃCZĘ!"
 !      call exit
 !    elseif (mjd.lt.jd(1980,1,1,0,0,0)) then
 !      write (*,'(4x,a)') "Data wcześniejsza niż 1980-01-01. KOŃCZĘ!"
@@ -890,7 +935,7 @@ end subroutine
 !      write (*,*) "Data końcowa większa od początkowej. KOŃCZĘ!"
 !      write (*,form_64) "Data końcowa większa od początkowej. KOŃCZĘ!"
 !    endif
-!end subroutine
+end subroutine
 
 ! =============================================================================
 !> Print version of program depending on program calling
@@ -978,6 +1023,8 @@ subroutine print_settings (program_calling)
   endif
 end subroutine
 
+! =============================================================================
+! =============================================================================
 subroutine print_help (program_calling)
   character(*) :: program_calling
   integer :: help_unit , io_stat
@@ -987,9 +1034,8 @@ subroutine print_help (program_calling)
 
   if_print_line=.false.
 
+  ! change this path according to your settings
   open(newunit=help_unit, file="~/src/grat/dat/help.hlp", action="read",status="old")
-
-  
 
   write (log%unit ,"(a)" , advance="no" ) program_calling
   ! first loop - print only syntax with squre brackets if parameter is optional
@@ -1064,7 +1110,7 @@ subroutine print_warning (  warn , unit)
   elseif (warn .eq. "boundaries") then
     write(def_unit, form_62) "something wrong with boundaries. IGNORED"
   elseif (warn .eq. "site") then
-    write(def_unit, form_62) "something wrong with -S specification. IGNORED"
+    write(def_unit, form_62) "something wrong with -S|-R specification. IGNORED"
   elseif (warn .eq. "repeated") then
     write(def_unit, form_62) "reapeted specification. IGNORED"
   elseif (warn .eq. "dates") then

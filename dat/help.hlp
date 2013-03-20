@@ -59,7 +59,9 @@ s syntax
             G - greens function
 
 -P  polygon(s)
- s  -Ppolygon_file[,polygonfi
+ s  -Ppolygon_file[:+-][,polygon_file[:+-]]
+      you can overrid settings in polygon file
+      -P polygon_file : +
  g  optional parameter
  p  obligatory parameter
 
@@ -77,3 +79,23 @@ s syntax
     optional parameter
     default: green function from Merriam 1992 !todo
 
+-D  specify dates 
+ s  -D[yyyy[mm[dd[hh[mm[ss]]]]][,yyy[,interval]]]
+    specify date 
+      -D 20110304050600
+    or dates range and interval [hours]
+      -D 20110304050600 , 201105 , 6
+    If you ommit part of date specification the programm assumes as follow
+      month=01; day=01 hour=00; minute=00; second=00;
+      therfore
+      -D 201204 , 2013
+      is equal to
+      -D 201204000000, 20130101000000, 6
+    you can select reverse order
+      -D 20110304050600   , 201105           , -6
+      -D  201105          , 20110304050600   ,  6
+    Default: first time field in data , for interval 6 hours
+    optional parameter
+
+-Q  use reference pressure
+ s  -Q[+-]

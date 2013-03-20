@@ -1,3 +1,11 @@
+! ==============================================================================
+!> Some routines to deal with inclusion or exclusion of polygons
+!!
+!! \author M.Rajner
+!! \date 2012-12-20
+!! \date 2013-03-19 
+!!    added overriding of poly use bt command line like in \cite spotl
+! ==============================================================================
 module mod_polygon
 
   implicit none
@@ -20,6 +28,7 @@ subroutine read_polygon (polygon)
   character(80) :: dummy
   character (1)  :: pm
 
+
   if (polygon%if) then
     ! polygon file
     open (newunit = polygon%unit , action="read", file=polygon%name )
@@ -38,6 +47,9 @@ subroutine read_polygon (polygon)
         read (polygon%unit, * ) pm
           if (pm.eq."+") polygon%polygons(i)%use=.true.
           if (pm.eq."-") polygon%polygons(i)%use=.false.
+          ! override file +|- with global given with command line
+          if (polygon%pm.eq."+") polygon%polygons(i)%use=.true.
+          if (polygon%pm.eq."-") polygon%polygons(i)%use=.false.
         do j = 1 , nvertex
           call skip_header(polygon%unit)
           ! lon lat , checks while reading
@@ -57,11 +69,16 @@ subroutine read_polygon (polygon)
 
     ! print summary to log file
     write (log%unit, form_separator) 
-    write (log%unit, form_60) "Summary of polygon file", trim(polygon%name)
+    write (log%unit, form_60) "Summary of polygon file"
+    write (log%unit, form_61) "name:", trim(polygon%name)
     write (log%unit, form_61) "number of polygons:" , size (polygon%polygons)
     do i = 1 , size (polygon%polygons)
-      write (log%unit, form_62) "[true/false] number of coords :" , &
-        polygon%polygons(i)%use , size (polygon%polygons(i)%coords(:,1)) 
+      if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_62) &
+        "Usage overwritten with command line option", polygon%pm
+      write (log%unit, form_62) "use [true/false]:" , &
+        polygon%polygons(i)%use 
+      write (log%unit, form_62) "number of coords:" , &
+        size (polygon%polygons(i)%coords(:,1)) 
     enddo
   endif
 
@@ -71,8 +88,7 @@ end subroutine
 ! ==============================================================================
 !> Check if point is in closed polygon
 !!
-!! If it is first call it loads the model into memory
-!! inspired by spotl \cite Agnew97
+!! From spotl \cite Agnew97
 !! adopted to grat and Fortran90 syntax
 !! From original description
 !!  returns iok=0 if

@@ -3,3 +3,4 @@
 *.mod
 doc/latex
 doc/html
+bin/*

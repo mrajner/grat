@@ -350,8 +350,8 @@ end subroutine
 ! =============================================================================
 !> Check if argument is numeric
 !!
-!! Taken from www
-!! \todo Add source name
+!! \author Taken from www
+!! \date 2013-03-19
 ! =============================================================================
 function is_numeric(string)
   logical :: is_numeric

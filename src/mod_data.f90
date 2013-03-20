@@ -169,7 +169,7 @@ subroutine get_dimension ( model , i )
   integer , intent(in) :: i
   integer :: length , status
 
-  write (log%unit , form_61) "Getting "//trim(model%names(i))//" dim..." 
+  write (log%unit , form_61) "Getting dim: "//trim(model%names(i))
 
   status = nf90_inq_dimid(model%ncid,model%names(i) , dimid )
   if(status /= nf90_noerr) then 
