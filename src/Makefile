@@ -74,7 +74,7 @@ all:          \
 example: 
 	# $(PROGS_DIR)/value_check -F $(SFC):::: , $(LND)   -S joze,50.8912,20.6697,100  -P$(POL) -r20110104,20110105 V
 	$(PROGS_DIR)/value_check -F  4@SP,$(LND),$(SFC),$(TMP) -I1,1,1,2,2 -P,../polygon/baltyk.poly:+ -R15/15.1/51/56,0.32 -D20110102,20110105 -V
-	$(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 eeee:
 	# @$(PROGS_DIR)/grat -V -F /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air -SR10.2/12/11/11,2,2 -o 
