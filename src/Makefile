@@ -7,12 +7,13 @@
 
   # libraries 
   NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
+  FOULLIB = /home/mrajner/src/foul/foul.o -I/home/mrajner/src/foul
 
   # data for computation
   DAT_DIR  = /home/mrajner/dat
   NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
   SFC      = $(NCEP_DIR)/pres.sfc.2011.nc:pres
-  TMP      = /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc:air:lon:lat:level:time
+  TMP      = $(NCEP_DIR)/air.sig995.2011.nc:air:lon:lat:level:time
   LND      = ../data/landsea/landseaR0-50-0-70I0.2-0.2.grd:z:x:y:-
   GRN_r    = ../dat/rajner_green.dat
   GRN_m    = ../dat/merriam_green.dat
@@ -72,7 +73,7 @@ all:          \
 
 example: 
 	# $(PROGS_DIR)/value_check -F $(SFC):::: , $(LND)   -S joze,50.8912,20.6697,100  -P$(POL) -r20110104,20110105 V
-	$(PROGS_DIR)/value_check -F $(LND),$(SFC) -P../polygon/baltyk.poly:+ -R15/15/51/56 -R20110102,20110105 -V
+	$(PROGS_DIR)/value_check -F $(LND),$(SFC),$(TMP) -I1,1,1,2,2 -P,../polygon/baltyk.poly:+ -R15/15.1/51/56,0.32 -R20110102,20110105 -V
 #   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 eeee:
