@@ -12,9 +12,9 @@
   # data for computation
   DAT_DIR  = /home/mrajner/dat
   NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
-  SFC      = $(NCEP_DIR)/pres.sfc.2011.nc:pres
-  TMP      = $(NCEP_DIR)/air.sig995.2011.nc:air:lon:lat:level:time
-  LND      = ../data/landsea/landseaR0-50-0-70I0.2-0.2.grd:z:x:y:-
+  SFC      = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
+  TMP      = $(NCEP_DIR)/air.sig995.2011.nc@@:air:lon:lat:level:time
+  LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y:
   GRN_r    = ../dat/rajner_green.dat
   GRN_m    = ../dat/merriam_green.dat
   POL      = ../polygon/baltyk.poly
@@ -73,8 +73,8 @@ all:          \
 
 example: 
 	# $(PROGS_DIR)/value_check -F $(SFC):::: , $(LND)   -S joze,50.8912,20.6697,100  -P$(POL) -r20110104,20110105 V
-	$(PROGS_DIR)/value_check -F $(LND),$(SFC),$(TMP) -I1,1,1,2,2 -P,../polygon/baltyk.poly:+ -R15/15.1/51/56,0.32 -R20110102,20110105 -V
-#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+	$(PROGS_DIR)/value_check -F  4@SP,$(LND),$(SFC),$(TMP) -I1,1,1,2,2 -P,../polygon/baltyk.poly:+ -R15/15.1/51/56,0.32 -D20110102,20110105 -V
+	$(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 eeee:
 	# @$(PROGS_DIR)/grat -V -F /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air -SR10.2/12/11/11,2,2 -o 

@@ -97,6 +97,9 @@ module mod_cmdline
     ! varname , lonname,latname,levelname , timename
     character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
 
+    !choose with -F filename@XX:pres...
+    character(len=40) :: dataname
+
     integer :: unit = output_unit
 
     ! if file was determined
@@ -131,9 +134,8 @@ module mod_cmdline
   end type
 
   ! External files
-  type(file) ::  log  , output , refpres
+  type(file) ::  log  , output , refpres , moreverbose
   type(file) , allocatable, dimension (:) :: model 
-  type(file) :: moreverbose
 
   character (len =40) :: model_names (5) = ["pressure_surface" , &
     "temperature_surface" , "topography" , "landsea" , "pressure levels" ]
@@ -141,9 +143,7 @@ module mod_cmdline
 
   character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
 
-
-  ! Verbose information and the output for log_file
-  logical :: if_verbose  = .false.  !< whether print all information
+  logical :: if_verbose  = .false.  
   logical :: inverted_barometer  = .true.  
 
   character (50) :: interpolation_names (2) &
@@ -412,7 +412,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
 !        open (newunit = moreverbose%unit , file = moreverbose%name , action = "write" )
 !      endif
     case ("-B")
-      if (cmd_line_entry%field(1).eq."N" ) inverted_barometer=.false.
+      if (cmd_line_entry%field(1).eq."N" ) inverted_barometer = .false.
     case ("-Q")
       if (cmd_line_entry%field(1).eq."+" ) refpres%if = .true.
     case ('-D')
@@ -645,18 +645,24 @@ end subroutine
 ! =============================================================================
 !> This subroutine fills the model info
 ! =============================================================================
-subroutine get_model_info ( model , cmd_line_entry , field)
+subroutine get_model_info (model , cmd_line_entry , field)
   use mod_utilities, only : file_exists, is_numeric
   type(cmd_line),intent(in):: cmd_line_entry
   type(file),intent(inout):: model
-  integer :: field , i 
+  integer :: field , i , indeks
 
+  ! split name and dataname (separated by @ - optional)
   model%name = trim(cmd_line_entry%field(field))
+!  model%dataname = " "
+  indeks = index(cmd_line_entry%field(field),'@')
+  if (indeks.gt.0) then
+    model%name = trim(cmd_line_entry%field(field)(1:indeks-1))
+    model%dataname = trim(cmd_line_entry%field(field)(indeks+1:))
+  endif
   if (model%name.eq."") return
+  write (fileunit_tmp , form_62) , trim (dataname(model%dataname)), &
+    "("//trim(model%dataname)//")"
   if ( file_exists (model%name) ) then
-    write (fileunit_tmp , form_62) , trim (model_names(field) )
-    write(fileunit_tmp, form_63), trim(model%name)
-
     do i =1 , size (model%names)
       if (size(cmd_line_entry%fieldnames).gt.0) then
         if (i.le.size (cmd_line_entry%fieldnames(field)%names) &
@@ -665,14 +671,13 @@ subroutine get_model_info ( model , cmd_line_entry , field)
           model%names(i) = cmd_line_entry%fieldnames(field)%names(i)
         endif
       endif
-      write(fileunit_tmp, form_63, advance="no") , trim( model%names(i))
+      write(fileunit_tmp, form_63, advance="no") , trim(model%names(i))
     enddo
     model%if=.true.
     write(fileunit_tmp, form_63)
   elseif(is_numeric(model%name)) then
     model%if_constant_value=.true.
     read (model%name , * ) model%constant_value
-    write (fileunit_tmp , form_62) , trim (model_names(field) )
     write(fileunit_tmp, form_63), 'constant value was set: ' , model%constant_value
     model%if_constant_value=.true.
   else
@@ -1139,6 +1144,21 @@ integer function nmodels (model)
     if (model(i)%if) nmodels =nmodels + 1
     if (model(i)%if_constant_value) nmodels =nmodels + 1
   enddo
+end function
+
+! =============================================================================
+!> Attach full dataname by abbreviation
+!!
+!! \date 2013-03-21
+!! \author M. Rajner
+! =============================================================================
+function dataname(abbreviation)
+  character(len=40) :: dataname
+  character(len=2) :: abbreviation
+
+  dataname="unknown"
+  if (abbreviation.eq."LS") dataname = "Land-sea mask"
+  if (abbreviation.eq."SP") dataname = "Surface pressure"
 end function
 
 end module mod_cmdline

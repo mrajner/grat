@@ -72,6 +72,10 @@ s syntax
     optional parameter
 
 -F  todo
+    @dataname
+      SP surface  pressure
+      VP vertical pressure
+      LS landsea  mask
 
 -G  green functions
  s  -G todo
