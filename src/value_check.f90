@@ -22,7 +22,7 @@ program value_check
   real (dp) , allocatable , dimension(:) :: val
   integer :: i,ii ,j ,start , imodel, iok
 
-  call intro (program_calling = "value_check" )
+  call intro          (program_calling = "value_check")
   call print_settings (program_calling = "value_check")
 
   do i = 1 , size(model)
@@ -37,7 +37,18 @@ program value_check
   allocate (val (nmodels(model)))
 
   start =0 
-  if (size(dates).gt.0) start=1
+  if (size(dates).gt.0) then
+    start=1
+    ! print header
+    write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
+  endif
+
+  ! print header
+  write (output%unit , '(30a15)', advance ="no"  ) "lat" , "lon"
+  do i = 1 ,size(model)
+  if (model(i)%if .or. model(i)%if_constant_value ) write (output%unit , '(a15)',advance='no'  ) , trim ( model(i)%dataname )
+  enddo
+  write (output%unit , *)
 
   do j = start , size (dates)
     do i = 1 , size(model)
@@ -82,7 +93,7 @@ program value_check
         endif
       enddo
 
-      write (output%unit ,   '(30f15.4, 1x)') , sites(i)%lat, sites(i)%lon, val
+      write (output%unit ,   '(30f15.4)') , sites(i)%lat, sites(i)%lon, val
 
     enddo
 

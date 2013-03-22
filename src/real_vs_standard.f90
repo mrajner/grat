@@ -5,12 +5,12 @@
 !! \todo put description
 ! ==============================================================================
 program real_vs_standard
-  use mod_constants, only:dp
-  use mod_cmdline, only:intro,cpu_start, cpu_finish, print_settings, model , &
+  use mod_constants, only :dp
+  use mod_cmdline,   only :intro,cpu_start, cpu_finish, print_settings, model , &
     dates , sites , output , log , form_separator, green , denser
-  use mod_green, only : results, convolve
-  use mod_data, only : read_netCDF , get_variable , get_value
-  use mod_aggf, only : geop2geom
+  use mod_green,     only : results, convolve
+  use mod_data,      only : read_netCDF , get_variable , get_value
+  use mod_aggf,      only : geop2geom
   
   implicit none
   real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
@@ -21,10 +21,10 @@ program real_vs_standard
 
   ! gather cmd line option decide where to put output
   ! todo specific for current program
-  call intro ("grat")
+  call intro ("rat")
 
   ! print header to log: version, date and summary of command line options
-  call print_settings ("grat")
+  call print_settings ("rat")
   
    !read models into memory
   do i =1 , size(model)
@@ -47,7 +47,7 @@ program real_vs_standard
     do i = 1 , size(sites)
       write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
       iii=iii+1
-      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))
+!      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))
       write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
     enddo
   enddo
