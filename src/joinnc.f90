@@ -30,5 +30,4 @@ program joinnc
 
     print * , idimid, "kdf:"
   enddo
-
 end program
