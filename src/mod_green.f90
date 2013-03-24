@@ -82,35 +82,6 @@ subroutine spher_area (distance ,ddistance, azstp,  area )
 end subroutine
 
 
-! =============================================================================
-!> This soubroutine gives the latitude and longitude of the point at the 
-!! specified distance and azimuth from site latitude and longitude.
-!!
-!! all parameters in decimal degree
-!! \author D.C. Agnew \cite Agnew96
-!! \date 2012
-!! \author M. Rajner - modification
-!! \date 2013-03-06
-! =============================================================================
-subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
-  use mod_utilities , only : d2r,r2d
-  real(dp) , intent(in)  :: distance 
-  real(dp) , intent(in)  :: latin , lonin , azimuth
-  real(dp) , intent(out) :: latout, lonout 
-  real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
-
-  ct  = cos (d2r(90.-latin))
-  st  = sin (d2r(90.-latin))
-  cd  = cos (d2r(distance))
-  sd  = sin (d2r(distance))
-  saz = sin (d2r(azimuth))
-  caz = cos (d2r(azimuth))
-  cb = cd*ct + sd*st*caz
-!  todo !if(abs(cb).gt.1) cb = cb/abs(cb)
-  sb = sqrt(1.-cb**2)
-  latout = 90 - r2d(acos(cb))
-  lonout = lonin + r2d(atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb))
-end subroutine
 
 ! =============================================================================
 !> Perform convolution
@@ -122,7 +93,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
   use mod_constants, only: pi , dp, t0
   use mod_cmdline , only: site_data, green_functions , moreverbose , &
     inverted_barometer , model , polygons , refpres , method 
-  use mod_utilities, only: d2r 
+  use mod_utilities, only: d2r , spher_trig
   use mod_data, only: get_value
   use mod_polygon, only: chkgon
 
@@ -228,6 +199,7 @@ end subroutine
 !
 subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
   use mod_cmdline , only : moreverbose
+  use mod_utilities, only: spher_trig
  
   real(dp), intent(in) :: azimuth ,azstep, latin, lonin
   real(dp) :: distance, lat , lon , distancestep

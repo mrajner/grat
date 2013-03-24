@@ -5,7 +5,7 @@ module mod_utilities
 
   public:: ntokens, jd , mjd , invmjd, spline_interpolation , spline, ispline, &
     file_exists, skip_header, d2r, r2d, is_numeric , spher_trig_inverse, &
-    count_records_to_read
+    count_records_to_read , spher_trig
 
 
 contains
@@ -411,6 +411,36 @@ function r2d ( radian )
   real(dp), intent (in) :: radian
   r2d= 180. / pi * radian
 end function
+
+! =============================================================================
+!> This soubroutine gives the latitude and longitude of the point at the 
+!! specified distance and azimuth from site latitude and longitude.
+!!
+!! all parameters in decimal degree
+!! \author D.C. Agnew \cite Agnew96
+!! \date 2012
+!! \author M. Rajner - modification
+!! \date 2013-03-06
+! =============================================================================
+subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
+  use mod_constants, only : dp 
+  real(dp) , intent(in)  :: distance 
+  real(dp) , intent(in)  :: latin , lonin , azimuth
+  real(dp) , intent(out) :: latout, lonout 
+  real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
+
+  ct  = cos (d2r(90.-latin))
+  st  = sin (d2r(90.-latin))
+  cd  = cos (d2r(distance))
+  sd  = sin (d2r(distance))
+  saz = sin (d2r(azimuth))
+  caz = cos (d2r(azimuth))
+  cb = cd*ct + sd*st*caz
+!  todo !if(abs(cb).gt.1) cb = cb/abs(cb)
+  sb = sqrt(1.-cb**2)
+  latout = 90 - r2d(acos(cb))
+  lonout = lonin + r2d(atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb))
+end subroutine
 
 ! =============================================================================
 !> For given coordinates for two points on sphere calculate distance and
