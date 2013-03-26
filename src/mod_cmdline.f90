@@ -300,9 +300,11 @@ logical function if_switch_program (program_calling , switch )
 
   ! depending on program calling decide if switch is permitted
   if (program_calling.eq."grat") then
-    allocate( accepted_switch (16) )
-    accepted_switch = [ "V" , "f" , "S", "B" , "L" , "G" , "P" , "p", &
-      "o" , "F" , "I" , "D" , "L" , "v" , "h" , "R"  ]
+    allocate( accepted_switch (17) )
+    accepted_switch = [ &
+      "V", "f", "S", "B", "L", "G", "P", "p", &
+      "o", "F", "I", "D", "L", "v", "h", "R", "Q" &
+    ]
   elseif (program_calling.eq."polygon_check") then
     allocate( accepted_switch (13) )
     accepted_switch = [ "V" , "f" , "A", "B" , "L" , "P" , "o", "S" , & 
@@ -415,6 +417,7 @@ subroutine parse_option (cmd_line_entry , program_calling)
       if (cmd_line_entry%field(1).eq."N" ) inverted_barometer = .false.
     case ("-Q")
       if (cmd_line_entry%field(1).eq."+" ) refpres%if = .true.
+      write (fileunit_tmp , form_62) "Reference pressure was set."
     case ('-D')
       call parse_dates ( cmd_line_entry )
     case ('-F')
@@ -457,7 +460,6 @@ subroutine parse_option (cmd_line_entry , program_calling)
     case default
       write(fileunit_tmp,form_62), "unknown argument: IGNORING"
     end select
-    return
 end subroutine 
 
 ! =============================================================================

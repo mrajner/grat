@@ -61,6 +61,7 @@ $(PROGS_DIR)/%:%.f90 $(OBJS)
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
 	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
+t: ../bin/grat example
 r: ../bin/real_vs_standard example
 
 all:          \
@@ -71,7 +72,8 @@ all:          \
 
 
 example: 
-	$(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+	@$(PROGS_DIR)/grat -V -F /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air -SR10.2/12/11/11,9,9 -Q -Ls
+	# $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 ddd:
 	# $(PROGS_DIR)/value_check -F $(SFC):::: , $(LND)   -S joze,50.8912,20.6697,100  -P$(POL) -r20110104,20110105 V
