@@ -3,9 +3,12 @@ module mod_utilities
   implicit none
   private
 
-  public:: ntokens, jd , mjd , invmjd, spline_interpolation , spline, ispline, &
-    file_exists, skip_header, d2r, r2d, is_numeric , spher_trig_inverse, &
-    count_records_to_read , spher_trig
+  public:: &
+    ntokens           , jd                   , mjd        , &
+    invmjd            , spline_interpolation , spline     , &
+    ispline           , file_exists          , skip_header, &
+    d2r               , r2d                  , is_numeric , &
+    spher_trig_inverse, count_records_to_read, spher_trig
 
 
 contains
@@ -37,8 +40,9 @@ subroutine spline_interpolation(x,y, x_interpolated, y_interpolated, method)
 end subroutine
 
 ! ==============================================================================
-!> Copute coefficients for spline interpolation.
+!> Compute coefficients for spline interpolation.
 !!
+!! From web sources \todo find url
 !! Original description below:
 !! ==============================================================================
 !!  Calculate the coefficients b(i), c(i), and d(i), i=1,2,...,n
@@ -456,7 +460,8 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
 
   real(dp) , intent (in)         :: lat1 , lon1 , lat2 , lon2
   real(dp) , intent (out)        :: distance , azimuth
-  real(dp)                       :: dlat , dlon ,rlat1,rlon1,rlat2, rlon2
+  real(dp)                       :: dlat , dlon , &
+    rlat1,rlon1,rlat2, rlon2 , distancetmp , a
   logical, intent(in) , optional :: haversine
   
   rlat1=d2r(lat1)
@@ -465,15 +470,18 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
   rlat2=d2r(lat2)
   rlon2=d2r(lon2)
 
-  dlon = rlon2 -rlon1
-  dlat = rlat2 -rlat1
+  dlon = rlon2 - rlon1
+  dlat = rlat2 - rlat1
 
-  if (dlon > pi ) dlon =dlon -pi  !\todo check if this is necessary
+  if (dlon > pi) dlon =dlon-pi  !\todo check if this is necessary
 
   if (present(haversine).and.haversine.eq..true.) then
-    distance = 2 * asin ( sqrt ( (sin(dlat/2))**2 + cos(rlat1) * cos(rlat2) * (sin(dlon/2))**2  )   )
+    ! the formula below from Robert Chamberlain
+    ! http://www.usenet-replayer.com/faq/comp.infosystems.gis.html
+    a = (sin(dlat/2))**2 + cos(rlat1) * cos(rlat2) * (sin(dlon/2))**2
+    distance = 2 * atan2( sqrt(a), sqrt(1-a) )
   else 
-    distance = acos ( sin(rlat1) * sin (rlat2) + cos(rlat1) * cos(rlat2) * cos(dlon))
+    distance = acos ( sin(rlat1) * sin(rlat2) + cos(rlat1) * cos(rlat2) * cos(dlon))
   endif
 
   azimuth = atan2( (sin(dlon)*cos(rlat2)/sin(distance)) ,  ((sin(rlat2)*cos(rlat1) - cos(rlat2)*sin(rlat1)*cos(dlon))/sin(distance))  )
@@ -483,7 +491,6 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
   azimuth  = r2d(azimuth)
   distance = r2d(distance)
 end subroutine
-
 
 ! =============================================================================
 !> Count rows and (or) columns of file.
@@ -517,5 +524,7 @@ subroutine count_records_to_read (file_name, rows , columns , comment_char )
   if (present(rows))    rows    = n_rows
   if (present(columns)) columns = n_columns
 end subroutine
+
+
 
 end module

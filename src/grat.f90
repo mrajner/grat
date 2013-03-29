@@ -69,11 +69,11 @@ program grat
   real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
   integer :: i , j , ii, iii
 
-  !> program starts here with time stamp
+  ! program starts here with time stamp
   call cpu_time(cpu_start)
 
-  !! gather cmd line option decide where to put output
-  call intro ( program_calling = "grat" )
+  ! gather cmd line option decide where to put output
+  call intro (program_calling = "grat")
 
   ! print header to log: version, date and summary of command line options
   call print_settings (program_calling = "grat")
@@ -118,11 +118,11 @@ program grat
 
   if (moreverbose%if .and. moreverbose%names(1).eq."s") then
     print '(15f13.5)', &
-      results ( maxloc ( results%e  )  ) %e - results  ( minloc ( results%e  )  ) %e  ,  & 
-      results ( maxloc ( results%n  )  ) %n - results  ( minloc ( results%n  )  ) %n  ,  & 
-      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh )  ) %dh ,  & 
-      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz )  ) %dz ,  & 
-      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt )  ) %dt
+      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
+      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
+      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
+      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
+      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
   endif
   
 
