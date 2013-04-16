@@ -264,10 +264,10 @@ subroutine if_minimum_args (program_calling)
   character(len=100) :: dummy
 
   ! all programs
-  if (size(sites) .eq. 0) then
-    write(error_unit, * ) "ERROR:", program_calling, " -- no sites!"
-    call exit
-  endif
+!  if (size(sites) .eq. 0) then
+!    write(error_unit, * ) "ERROR:", program_calling, " -- no sites!"
+!    call exit
+!  endif
 
   if (program_calling.eq."grat" ) then
     ! for grat set default for Green functions if not given in command line
