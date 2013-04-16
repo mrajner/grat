@@ -70,6 +70,7 @@ end subroutine
 !! 
 !! \f{equation*}{P = \sin a  \f}
 !! \todo Transform into function
+!!TODO
 ! =============================================================================
 subroutine spher_area (distance ,ddistance, azstp,  area )
   use mod_constants, only: dp, sp
@@ -80,8 +81,6 @@ subroutine spher_area (distance ,ddistance, azstp,  area )
 !  area = sin ( d2r(distance) ) * d2r(ddistance) * d2r(dble(azstp))
   area =  abs(sin(d2r(90.-distance+ddistance/2.))-sin(d2r(90.-distance-ddistance/2.))) * d2r(dble(azstp))
 end subroutine
-
-
 
 ! =============================================================================
 !> Perform convolution
