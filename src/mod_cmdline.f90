@@ -177,11 +177,12 @@ contains
 !!    (-S -11... was previously treated as two cmmand line entries, now only -? 
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro (program_calling)
+subroutine intro (program_calling, accepted_switch )
   integer :: i, j
   character(len=255) :: dummy, dummy2,arg
   character(len=*), intent(in) :: program_calling
   type(cmd_line) :: cmd_line_entry
+  character(len=*) , intent (in), optional :: accepted_switch
 
   if(iargc().eq.0) then
     write(output_unit , '(a)' ) , 'Short description: ./'//program_calling//' -h' 

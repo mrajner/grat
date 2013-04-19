@@ -61,14 +61,13 @@ $(PROGS_DIR)/%:%.f90 $(OBJS)
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
 	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
-t: ../bin/grat example
+t: all
 r: ../bin/real_vs_standard example
 
 all:          \
 	$(OBJS)     \
 	$(PROGS)    \
-	$(EXAMPLES) \
-	example
+	$(EXAMPLES) 
 
 
 example: 
