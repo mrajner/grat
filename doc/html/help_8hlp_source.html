@@ -172,24 +172,57 @@ $(document).ready(function(){initNavTree('help_8hlp.html','');});
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            G - greens function</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;-P  polygon(s)</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; s  -Ppolygon_file[,polygonfi</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; g  optional parameter</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; p  obligatory parameter</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;-I  interpolation</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; s  -I[1|2]</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    specify the interpolation scheme for data</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    Default: -I1</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    optional parameter</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; s  -Ppolygon_file[:+-][,polygon_file[:+-]]</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      you can overrid settings in polygon file</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      -P polygon_file : +</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; g  optional parameter</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; p  obligatory parameter</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;-I  interpolation</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; s  -I[1|2]</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    specify the interpolation scheme for data</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    Default: -I1</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    optional parameter</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;-F  todo</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    @dataname</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      SP surface  pressure</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      VP vertical pressure</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      LS landsea  mask</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;-G  green functions</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; s  -G todo</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    optional parameter</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    default: green function from Merriam 1992 !todo</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;-D  specify dates </div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; s  -D[yyyy[mm[dd[hh[mm[ss]]]]][,yyy[,interval]]]</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    specify date </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      -D 20110304050600</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    or dates range and interval [hours]</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      -D 20110304050600 , 201105 , 6</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    If you ommit part of date specification the programm assumes as follow</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      month=01; day=01 hour=00; minute=00; second=00;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      therfore</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      -D 201204 , 2013</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;      is equal to</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      -D 201204000000, 20130101000000, 6</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    you can select reverse order</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      -D 20110304050600   , 201105           , -6</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      -D  201105          , 20110304050600   ,  6</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    Default: first time field in data , <span class="keywordflow">for</span> interval 6 hours</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    optional parameter</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;-Q  use reference pressure</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; s  -Q[+-]</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_1a225d242627f816390da7b02ca4470d.html">dat</a></li><li class="navelem"><b>help.hlp</b></li>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

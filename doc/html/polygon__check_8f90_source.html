@@ -117,44 +117,41 @@ $(document).ready(function(){initNavTree('polygon__check_8f90.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">!!    \include polygon_check.hlp</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">program</span> polygon_check</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;  <span class="keyword">use </span>iso_fortran_env</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__constants.html">mod_constants</a></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__polygon.html">mod_polygon</a></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordtype">integer</span> i , j</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keywordtype">real</span> x , y , z</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keywordtype">integer</span> iok </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  call <a class="code" href="classmod__cmdline.html#ac19a3689017f1397bc81f27411806b5e">intro</a>(program_calling = <span class="stringliteral">&quot;polygon_check&quot;</span> )</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="comment">! print header to log: version, date and summary of command line options</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  call <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a>(<span class="stringliteral">&quot;polygon_check&quot;</span>)</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  call read_polygon( polygons(1) )</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keyword">if</span> (<span class="keyword">size</span> (polygons(1)%polygons).eq.0 ) <span class="keyword">then</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">do</span> i=1 , <span class="keyword">size</span> (sites)</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(2f10.5)&#39;</span> ) sites(i)%lon, sites(i)%lat   </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keyword">else</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">do</span> i=1 , <span class="keyword">size</span> (sites)</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      call chkgon( sites(i)%lon, sites(i)%lat , polygons(1) , iok )</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(2f10.5,i4)&#39;</span> ) sites(i)%lon, sites(i)%lat   , iok</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">endif</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">end program</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a>, only: polygons , sites , output , intro , print_settings</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__polygon.html">mod_polygon</a>, only: read_polygon,chkgon</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keywordtype">integer</span> i , j</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keywordtype">integer</span> iok </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  call <a class="code" href="classmod__cmdline.html#a72c3493011c338336b89ef5d53dfd1c1">intro</a>( program_calling = <span class="stringliteral">&quot;polygon_check&quot;</span> )</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="comment">! print header to log: version, date and summary of command line options</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  call <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a>(<span class="stringliteral">&quot;polygon_check&quot;</span>)</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="comment">! read polygon - only first one</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  call read_polygon(polygons(1))</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">if</span> (<span class="keyword">size</span> (polygons(1)%polygons).eq.0) <span class="keyword">then</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">do</span> i=1 , <span class="keyword">size</span> (sites)</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(2f10.5)&#39;</span> ) sites(i)%lon, sites(i)%lat   </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">else</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">do</span> i=1 , <span class="keyword">size</span> (sites)</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      call chkgon( sites(i)%lon, sites(i)%lat , polygons(1) , iok )</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(2f10.5,i4)&#39;</span> ) sites(i)%lon, sites(i)%lat   , iok</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">endif</span> </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">end program</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_5d98555a87ce6ad1e072f395e518bfeb.html">src</a></li><li class="navelem"><b>polygon_check.f90</b></li>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

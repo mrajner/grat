@@ -116,37 +116,45 @@ $(document).ready(function(){initNavTree('classmod__polygon.html','');});
 </div><!--header-->
 <div class="contents">
 
+<p>Some routines to deal with inclusion or exclusion of polygons.  
+ <a href="classmod__polygon.html#details">More...</a></p>
+
 <p><a href="modulemod__polygon-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:adac5323eb318bb80b650e003df1c4b37"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__polygon.html#adac5323eb318bb80b650e003df1c4b37">read_polygon</a> (polygon)</td></tr>
 <tr class="memdesc:adac5323eb318bb80b650e003df1c4b37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads polygon data.  <a href="#adac5323eb318bb80b650e003df1c4b37"></a><br/></td></tr>
-<tr class="memitem:a1862f932e1777d8e65630f97eb91450f"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__polygon.html#a1862f932e1777d8e65630f97eb91450f">chkgon</a> (rlong, rlat, polygon, iok)</td></tr>
-<tr class="memdesc:a1862f932e1777d8e65630f97eb91450f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if point is in closed polygon.  <a href="#a1862f932e1777d8e65630f97eb91450f"></a><br/></td></tr>
+<tr class="memitem:aab9cd384c65810a920b162ca6626535b"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__polygon.html#aab9cd384c65810a920b162ca6626535b">chkgon</a> (rlong, rlat, polygon, iok)</td></tr>
+<tr class="memdesc:aab9cd384c65810a920b162ca6626535b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if point is in closed polygon.  <a href="#aab9cd384c65810a920b162ca6626535b"></a><br/></td></tr>
 <tr class="memitem:a9cce6931933900eb54cace100127f2e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9cce6931933900eb54cace100127f2e8"></a>
 integer function&#160;</td><td class="memItemRight" valign="bottom"><b>if_inpoly</b> (x, y, coords)</td></tr>
 <tr class="memitem:a76970268e279b676424f43224f894aa0"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__polygon.html#a76970268e279b676424f43224f894aa0">ncross</a> (x1, y1, x2, y2)</td></tr>
 <tr class="memdesc:a76970268e279b676424f43224f894aa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">finds whether the segment from point 1 to point 2 crosses the negative x-axis or goes through the origin (this is the signed crossing number)  <a href="#a76970268e279b676424f43224f894aa0"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00001">1</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
+<div class="textblock"><p>Some routines to deal with inclusion or exclusion of polygons. </p>
+<dl class="section author"><dt>Author:</dt><dd>M.Rajner </dd></dl>
+<dl class="section date"><dt>Date:</dt><dd>2012-12-20 </dd>
+<dd>
+2013-03-19 added overriding of poly use bt command line like in <a class="el" href="citelist.html#CITEREF_spotl">spotl</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00009">9</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
 </div><hr/><h2>Member Function/Subroutine Documentation</h2>
-<a class="anchor" id="a1862f932e1777d8e65630f97eb91450f"></a>
+<a class="anchor" id="aab9cd384c65810a920b162ca6626535b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">subroutine mod_polygon::chkgon </td>
+          <td class="memname">subroutine, public mod_polygon::chkgon </td>
           <td>(</td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
           <td class="paramname"><em>rlong</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
           <td class="paramname"><em>rlat</em>, </td>
         </tr>
         <tr>
@@ -170,7 +178,7 @@ integer function&#160;</td><td class="memItemRight" valign="bottom"><b>if_inpoly
 </div><div class="memdoc">
 
 <p>Check if point is in closed polygon. </p>
-<p>If it is first call it loads the model into memory inspired by spotl <a class="el" href="citelist.html#CITEREF_Agnew97">[2]</a> adopted to grat and Fortran90 syntax From original description returns iok=0 if</p>
+<p>From spotl <a class="el" href="citelist.html#CITEREF_Agnew97">[2]</a> adopted to grat and Fortran90 syntax From original description returns iok=0 if</p>
 <ol type="1">
 <li>there is any polygon (of all those read in) in which the coordinate should not fall, and it does or</li>
 <li>the coordinate should fall in at least one polygon (of those read in) and it does not otherwise returns iok=1 <dl class="section author"><dt>Author:</dt><dd>D.C. Agnew <a class="el" href="citelist.html#CITEREF_Agnew96">[1]</a> </dd>
@@ -180,7 +188,7 @@ adopted by Marcin Rajner </dd></dl>
 </li>
 </ol>
 
-<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00089">89</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
+<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00105">105</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
 
 </div>
 </div>
@@ -191,25 +199,25 @@ adopted by Marcin Rajner </dd></dl>
         <tr>
           <td class="memname">integer function mod_polygon::ncross </td>
           <td>(</td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
           <td class="paramname"><em>x1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
           <td class="paramname"><em>y1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
           <td class="paramname"><em>x2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp), intent(in)&#160;</td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
           <td class="paramname"><em>y2</em>&#160;</td>
         </tr>
         <tr>
@@ -232,7 +240,7 @@ adopted by Marcin Rajner </dd></dl>
    -2               segment crosses from above
 </pre><p>taken from spotl <a class="el" href="citelist.html#CITEREF_Agnew97">[2]</a> slightly modified </p>
 
-<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00204">204</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
+<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00220">220</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
 
 </div>
 </div>
@@ -253,7 +261,7 @@ adopted by Marcin Rajner </dd></dl>
 <p>Reads polygon data. </p>
 <p>inspired by spotl <a class="el" href="citelist.html#CITEREF_Agnew97">[2]</a> </p>
 
-<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00015">15</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
+<p>Definition at line <a class="el" href="mod__polygon_8f90_source.html#l00023">23</a> of file <a class="el" href="mod__polygon_8f90_source.html">mod_polygon.f90</a>.</p>
 
 </div>
 </div>
@@ -266,7 +274,7 @@ adopted by Marcin Rajner </dd></dl>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classmod__polygon.html">mod_polygon</a></li>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

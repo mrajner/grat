@@ -39,6 +39,9 @@
 
 !> \page ilustration
 !! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf "example"
+!! \image latex /home/mrajner/src/grat/doc/mapa1
+!! \image latex /home/mrajner/src/grat/doc/mapa2
+!! \image latex /home/mrajner/src/grat/doc/mapa3
 !! 
 !! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png "interpolation example" width=\textwidth
 !! \image html /home/mrajner/src/grat/doc/mapa1.png

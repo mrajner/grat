@@ -111,80 +111,85 @@ $(document).ready(function(){initNavTree('real__vs__standard_8f90.html','');});
 <div class="title">real_vs_standard.f90</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">program</span> real_vs_standard</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!  use mod_polygon</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__aggf.html">mod_aggf</a></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">!  use mod_green</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;  </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keywordtype">real(sp)</span> :: x , y , z , lat ,lon ,val(0:100) <span class="comment">!tmp variables</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keywordtype">integer</span> :: i </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">!  !&gt; program starts here with time stamp</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  call cpu_time(cpu_start)</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="comment">! todo specific for current program</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  call <a class="code" href="classmod__cmdline.html#ac19a3689017f1397bc81f27411806b5e">intro</a>( program_calling = <span class="stringliteral">&quot;grat&quot;</span> )</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">!  ! print header to log: version, date and summary of command line options</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  call <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a>(program_calling = <span class="stringliteral">&quot;grat&quot;</span>)</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">!  </span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="comment">! read models into memory</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">do</span> i =1 , <span class="keyword">size</span>(model)</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf( model(i) )</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">!   </span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">!  allocate (results(size(sites)*max(size(dates),1)))</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">!  iii=0</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">!  do j = 1 , max(size (dates),1)</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">!    if(size(dates).gt.0)  write(output%unit, &#39;(i4,5(i2.2))&#39;, advance =&quot;no&quot;) dates(j)%date</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">!  </span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">!    do ii = 1 , min(2,size(model))</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">!      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">!    enddo</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">!!todo</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">!    do i = 1 , size(sites)</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">!      write(output%unit, &#39;(2f15.5f)&#39;, advance =&quot;no&quot;) sites(i)%lat ,sites(i)%lon</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">!      iii=iii+1</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">!      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">!      write (output%unit,&#39;(15f13.5)&#39;) , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">!    enddo</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">!  enddo</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  call cpu_time(cpu_finish)</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(/,&quot;Execution time:&quot;,1x,f16.9,&quot; seconds&quot;)&#39;</span>) cpu_finish - cpu_start</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
+<a href="real__vs__standard_8f90.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! ==============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">!&gt; \file</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!! This program</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">!! \todo put description</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"></span><span class="comment">! ==============================================================================</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">program</span> real_vs_standard</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__constants.html">mod_constants</a>, only :dp</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a>,   only :intro,cpu_start, cpu_finish, print_settings, model , &amp;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    dates , sites , output , log , form_separator, green , denser</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__green.html">mod_green</a>,     only : results, convolve</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a>,      only : read_netCDF , get_variable , get_value</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__aggf.html">mod_aggf</a>,      only : geop2geom</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keywordtype">real(dp)</span> :: x , y , z , lat ,lon ,val(0:100) <span class="comment">!tmp variables</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keywordtype">integer</span> :: i , j, ii, iii</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">  !&gt; program starts here with time stamp</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"></span>  call cpu_time(cpu_start)</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="comment">! gather cmd line option decide where to put output</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="comment">! todo specific for current program</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  call <a class="code" href="classmod__cmdline.html#a72c3493011c338336b89ef5d53dfd1c1">intro</a>(<span class="stringliteral">&quot;rat&quot;</span>)</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="comment">! print header to log: version, date and summary of command line options</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  call <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a>(<span class="stringliteral">&quot;rat&quot;</span>)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;   <span class="comment">!read models into memory</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keyword">do</span> i =1 , <span class="keyword">size</span>(model)</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf( model(i) )</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;   </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">allocate</span> (results(<span class="keyword">size</span>(sites)*max(<span class="keyword">size</span>(dates),1)))</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  iii=0</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">do</span> j = 1 , max(<span class="keyword">size</span> (dates),1)</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">if</span>(<span class="keyword">size</span>(dates).gt.0)  <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(i4,5(i2.2))&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) dates(j)%date</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">do</span> ii = 1 , min(2,<span class="keyword">size</span>(model))</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      <span class="keyword">if</span> (model(ii)%if) call get_variable( model(ii) , date = dates(j)%date)</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">!\todo</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(sites)</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keyword">write</span>(output%unit, <span class="stringliteral">&#39;(2f15.5f)&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>) sites(i)%lat ,sites(i)%lon</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      iii=iii+1</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">!      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keyword">write</span> (output%unit,<span class="stringliteral">&#39;(15f13.5)&#39;</span>) , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">enddo</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  print * , model(1)%level</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  print *</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  lat =00</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  lon = 00</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  call get_value(model(1),lat,lon, val(0))</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">do</span> i =1, <span class="keyword">size</span>(model(2)%level)</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    call get_value(model(2),lat,lon, val(i), level = i, method=1)</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  print  <span class="stringliteral">&#39;(2f10.2)&#39;</span>, lat , lon , (val(i),geop2geom(val(i)/1000)*1000., i=0,<span class="keyword">size</span>(model(2)%level))</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  call cpu_time(cpu_finish)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">write</span>(log%unit, <span class="stringliteral">&#39;(/,&quot;Execution time:&quot;,1x,f16.9,&quot; seconds&quot;)&#39;</span>) cpu_finish - cpu_start</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator)</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  print * , model(1)%level</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  print *</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  lat =00</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  lon = 00</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  call get_value(model(1),lat,lon, val(0))</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keyword">end program</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">do</span> i =1, <span class="keyword">size</span>(model(2)%level)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    call get_value(model(2),lat,lon, val(i), level = i, method=1)</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  print  <span class="stringliteral">&#39;(2f10.2)&#39;</span>, lat , lon , (val(i),<a class="code" href="classmod__aggf.html#a6ca23d8801f9c0b2c2b95e02079389ae">geop2geom</a>(val(i)/1000)*1000., i=0,<span class="keyword">size</span>(model(2)%level))</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">end program</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_5d98555a87ce6ad1e072f395e518bfeb.html">src</a></li><li class="navelem"><b>real_vs_standard.f90</b></li>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_5d98555a87ce6ad1e072f395e518bfeb.html">src</a></li><li class="navelem"><a class="el" href="real__vs__standard_8f90.html">real_vs_standard.f90</a></li>
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

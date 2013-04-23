@@ -67,19 +67,24 @@ end subroutine
 ! =============================================================================
 !> Calculate area of spherical segment
 !!
-!! 
-!! \f{equation*}{P = \sin a  \f}
-!! \todo Transform into function
-!!TODO
+!! Computes spherical area on unit (default) sphere given by 
+!! distance from station and azimuth angle 
+!! xxx
+!! \image latex /home/mrajner/src/grat/doc/rysunki/spher_area.pdf
+!! \image html /home/mrajner/src/grat/doc/rysunki/spher_area.svg
 ! =============================================================================
-subroutine spher_area (distance ,ddistance, azstp,  area )
+subroutine spher_area (distance ,ddistance, azstp,  area, method )
   use mod_constants, only: dp, sp
   use mod_utilities, only: d2r, r2d
   real(dp), intent(out) :: area
   real(dp), intent(in)  :: distance,ddistance 
-  real(dp):: azstp
-!  area = sin ( d2r(distance) ) * d2r(ddistance) * d2r(dble(azstp))
-  area =  abs(sin(d2r(90.-distance+ddistance/2.))-sin(d2r(90.-distance-ddistance/2.))) * d2r(dble(azstp))
+  real(dp), intent(in)  :: azstp
+  integer , intent(in), optional :: method
+
+
+  area =  (-cos (d2r(distance+ddistance/2.)) &
+           + cos (d2r(distance-ddistance/2.)))*d2r(azstp)
+
 end subroutine
 
 ! =============================================================================

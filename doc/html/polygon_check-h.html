@@ -107,8 +107,8 @@ $(document).ready(function(){initNavTree('polygon_check-h.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>This program can be used to check the default behaviour of point selection used by module grat_polygon</p>
-<div class="fragment"><div class="line">polygon_check [-h] [-v] [-S[[site_name],latitude,longitude[,height]]|[sites_file]|[Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]] [-V[log_file]] [-L[filename]:what,[filename2]:what] [-Ppolygon_file[,polygonfi] [-I[1|2]]</div>
-<div class="line"> </div>
+<div class="fragment"><div class="line">polygon_check [-h] [-v] [-S[[site_name],latitude,longitude[,height]]|[sites_file]|[Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]] [-V[log_file]] [-L[filename]:what,[filename2]:what] [-Ppolygon_file[:+-][,polygon_file[:+-]]] [-I[1|2]]</div>
+<div class="line">  </div>
 <div class="line">Summary of available options <span class="keywordflow">for</span> program polygon_check</div>
 <div class="line">  -h  help</div>
 <div class="line">      -h</div>
@@ -156,7 +156,9 @@ $(document).ready(function(){initNavTree('polygon_check-h.html','');});
 <div class="line">              G - greens function</div>
 <div class="line">  </div>
 <div class="line">  -P  polygon(s)</div>
-<div class="line">      -Ppolygon_file[,polygonfi</div>
+<div class="line">      -Ppolygon_file[:+-][,polygon_file[:+-]]</div>
+<div class="line">        you can overrid settings in polygon file</div>
+<div class="line">        -P polygon_file : +</div>
 <div class="line">      obligatory parameter</div>
 <div class="line">  </div>
 <div class="line">  -I  interpolation</div>
@@ -165,13 +167,12 @@ $(document).ready(function(){initNavTree('polygon_check-h.html','');});
 <div class="line">      Default: -I1</div>
 <div class="line">      optional parameter</div>
 <div class="line">  </div>
-<div class="line">  </div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

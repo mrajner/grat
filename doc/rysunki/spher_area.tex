@@ -1,0 +1,21 @@
+\documentclass{standalone}
+\usepackage{tikz}
+
+\begin{document}
+  \begin{tikzpicture}
+    \def\radius{3}
+    \def\dist{30}
+    \def\distt{60}
+    \coordinate (O) at (0,0);
+%    \draw (0,0) rectangle (4,4);
+    \draw circle (\radius);
+    \draw [red,thick] (O) -- (0:4);
+    \draw (O) -- (\dist:\radius) ;
+    \draw (O) -- (\distt:\radius) ;
+    \pgfmathsetmacro{\h}{\radius - \radius * cos (\dist)}
+    \pgfmathsetmacro{\hh}{\radius - \radius * cos (\distt)}
+    \draw[green , ultra thick] (\radius,0) -- + (180:\h ) ;
+    \draw[blue ,  thick] (\radius,0) -- + (180:\hh ) ;
+    
+  \end{tikzpicture}
+\end{document}

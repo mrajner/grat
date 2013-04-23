@@ -111,74 +111,115 @@ $(document).ready(function(){initNavTree('value__check_8f90.html','');});
 <div class="title">value_check.f90</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="value__check_8f90.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">!&gt; \file</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">!! \mainpage</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!! \brief ...put...</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">!! \page value_check-h value_check </span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">!!    \include value_check.hlp</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">!!</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">program</span> value_check </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keyword">use </span>ieee_arithmetic</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keyword">implicit none</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordtype">real (sp)</span> , <span class="keywordtype">allocatable</span> , <span class="keywordtype">dimension(:)</span> :: val</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keywordtype">integer</span> :: i,ii ,j ,start , imodel</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  call <a class="code" href="classmod__cmdline.html#ac19a3689017f1397bc81f27411806b5e">intro</a>(program_calling = <span class="stringliteral">&quot;value_check&quot;</span> )</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  call <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a>(program_calling = <span class="stringliteral">&quot;value_check&quot;</span>)</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<a href="value__check_8f90.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">! =============================================================================</span><span class="comment"></span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">!&gt;  \file</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">!! \mainpage</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">!! \brief ...put...</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">!! \page value_check-h value_check </span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">!!    \include value_check.hlp</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">!! \date 2013-01-09</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">!! \author M. Rajner</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">!!</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">!! \date 2013-03-19 added -P (if point is excluded all values are zero)</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"></span><span class="comment">! =============================================================================</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">program</span> value_check </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__cmdline.html">mod_cmdline</a>  , only: output      , sites , model , dates , &amp; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a> , <a class="code" href="classmod__cmdline.html#a72c3493011c338336b89ef5d53dfd1c1">intro</a>,<a class="code" href="classmod__cmdline.html#aa9f092cda47cafb4c894d66ac2af0493">nmodels</a> , polygons, form_separator , log</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__data.html">mod_data</a>     , only: get_variable, get_value,read_netCDF</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__constants.html">mod_constants</a>, only: dp</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">use </span><a class="code" href="classmod__polygon.html">mod_polygon</a>  , only: read_polygon, chkgon</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">!  use ieee_arithmetic</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(model)</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf(model(i))</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">implicit none</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordtype">real (dp)</span> , <span class="keywordtype">allocatable</span> , <span class="keywordtype">dimension(:)</span> :: val</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordtype">integer</span> :: i,ii ,j ,start , imodel, iok</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">allocate</span> (val(<a class="code" href="classmod__cmdline.html#aa9f092cda47cafb4c894d66ac2af0493">nmodels</a>(model)))</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  start =0 </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">if</span> (<span class="keyword">size</span>(dates).gt.0) start=1</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keyword">do</span> j = start , <span class="keyword">size</span> (dates)</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(model)</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      <span class="keyword">if</span> (model(i)%if) <span class="keyword">then</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        call get_variable( model(i) , date = dates(j)%date)</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <span class="keyword">endif</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(sites)</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="comment">! add time stamp if -D option was specified</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="keyword">if</span> (j.gt.0) <span class="keyword">then</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(f15.3,x,i4.4,5(i2.2))&#39;</span> , advance = <span class="stringliteral">&quot;no&quot;</span> ) dates(j)%mjd , dates(j)%date</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      <span class="keyword">endif</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      imodel = 0</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keyword">do</span> ii = 1 , <span class="keyword">size</span> (model)</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keyword">if</span> (model(ii)%if .or. model(ii)%if_constant_value) <span class="keyword">then</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          imodel = imodel + 1</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;          <span class="keyword">if</span> (model(ii)%if) <span class="keyword">then</span> </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            call get_value( model(ii) , sites(i)%lat , sites(i)%lon , val(imodel) , method = model(ii)%interpolation )</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          elseif(model(ii)%if_constant_value) <span class="keyword">then</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            val(imodel) = model(ii)%constant_value</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          <span class="keyword">endif</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keyword">endif</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keyword">write</span> (output%unit ,   <span class="stringliteral">&#39;(30f15.4, 1x)&#39;</span>) , sites(i)%lat, sites(i)%lon, val</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">enddo</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">end program</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  call <a class="code" href="classmod__cmdline.html#a72c3493011c338336b89ef5d53dfd1c1">intro</a>(program_calling = <span class="stringliteral">&quot;value_check&quot;</span>)</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  call <a class="code" href="classmod__cmdline.html#a96f6c7d3a7236fd5d4452c41760b4866">print_settings</a>(program_calling = <span class="stringliteral">&quot;value_check&quot;</span>)</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(model)</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">if</span> (model(i)%if) call read_netcdf(model(i))</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="comment">! check of exclusion or inclusion in polygon file</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="comment">! for every site</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  call read_polygon(polygons(1))</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">write</span>(log%unit, form_separator) </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">allocate</span> (val(<a class="code" href="classmod__cmdline.html#aa9f092cda47cafb4c894d66ac2af0493">nmodels</a>(model)))</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  start =0 </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">if</span> (<span class="keyword">size</span>(dates).gt.0) <span class="keyword">then</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    start=1</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">! print header</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(a15,x,a14)&#39;</span> , advance = <span class="stringliteral">&quot;no&quot;</span> ) <span class="stringliteral">&quot;#mjd&quot;</span> , <span class="stringliteral">&quot;date&quot;</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">endif</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">! print header</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(30a15)&#39;</span>, advance =<span class="stringliteral">&quot;no&quot;</span>  ) <span class="stringliteral">&quot;lat&quot;</span> , <span class="stringliteral">&quot;lon&quot;</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">do</span> i = 1 ,<span class="keyword">size</span>(model)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">if</span> (model(i)%if .or. model(i)%if_constant_value ) <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(a15)&#39;</span>,advance=<span class="stringliteral">&#39;no&#39;</span>  ) , trim( model(i)%dataname )</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">write</span> (output%unit , *)</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">do</span> j = start , <span class="keyword">size</span> (dates)</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(model)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keyword">if</span> (model(i)%if) <span class="keyword">then</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="comment">! only read from multidate files for specific date</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="comment">! for &#39;static&#39; data files get_variable was performed</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="comment">! during read_netCDF</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keyword">if</span> (<span class="keyword">size</span>(model(i)%date).gt.1) <span class="keyword">then</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;          call get_variable( model(i) , date = dates(j)%date)</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keyword">endif</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      <span class="keyword">endif</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">do</span> i = 1 , <span class="keyword">size</span>(sites)</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      <span class="comment">! add time stamp if -D option was specified</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keyword">if</span> (j.gt.0) <span class="keyword">then</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keyword">write</span> (output%unit , <span class="stringliteral">&#39;(f15.3,x,i4.4,5(i2.2))&#39;</span> , advance = <span class="stringliteral">&quot;no&quot;</span> ) dates(j)%mjd , dates(j)%date</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="keyword">endif</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="comment">! if this point should not be used (polygon) leave as zero</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="comment">! get polygons</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      <span class="keyword">if</span> (polygons(1)%if) <span class="keyword">then</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        call chkgon( sites(i)%lon , sites(i)%lat , polygons(1) , iok)</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keyword">else</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        iok=1</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keyword">endif</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;      imodel = 0</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;      <span class="keyword">do</span> ii = 1 , <span class="keyword">size</span> (model)</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keyword">if</span> (model(ii)%if .or. model(ii)%if_constant_value) <span class="keyword">then</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;          imodel = imodel + 1</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;          <span class="keyword">if</span> (model(ii)%if) <span class="keyword">then</span> </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <span class="keyword">if</span> (iok.eq.1) <span class="keyword">then</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;              call get_value(model(ii), sites(i)%lat, sites(i)%lon, val(imodel), method=model(ii)%interpolation)</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            <span class="keyword">else</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;              val(imodel) = 0</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            <span class="keyword">endif</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;          elseif(model(ii)%if_constant_value) <span class="keyword">then</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            val(imodel) = model(ii)%constant_value</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;          <span class="keyword">endif</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keyword">endif</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;      <span class="keyword">write</span> (output%unit ,   <span class="stringliteral">&#39;(30f15.4)&#39;</span>) , sites(i)%lat, sites(i)%lon, val</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keyword">enddo</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">end program</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_01f81dc89839b69b499b525ab8d51194.html">grat</a></li><li class="navelem"><a class="el" href="dir_5d98555a87ce6ad1e072f395e518bfeb.html">src</a></li><li class="navelem"><a class="el" href="value__check_8f90.html">value_check.f90</a></li>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

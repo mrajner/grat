@@ -106,8 +106,8 @@ $(document).ready(function(){initNavTree('value_check-h.html','');});
 <div class="title">value_check </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><div class="fragment"><div class="line">value_check [-h] [-v] [-S[[site_name],latitude,longitude[,height]]|[sites_file]|[Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]] [-V[log_file]] [-L[filename]:what,[filename2]:what] [-I[1|2]]</div>
-<div class="line"> </div>
+<div class="textblock"><div class="fragment"><div class="line">value_check [-h] [-v] [-S[[site_name],latitude,longitude[,height]]|[sites_file]|[Rlonmin/lonmax/latmin/latmax[,lonresolution[,latresolution]]]] [-V[log_file]] [-L[filename]:what,[filename2]:what] [-Ppolygon_file[:+-][,polygon_file[:+-]]] [-I[1|2]] [-I[1|2]] [-D[yyyy[mm[dd[hh[mm[ss]]]]][,yyy[,interval]]]]</div>
+<div class="line">  </div>
 <div class="line">Summary of available options <span class="keywordflow">for</span> program value_check</div>
 <div class="line">  -h  help</div>
 <div class="line">      -h</div>
@@ -154,19 +154,50 @@ $(document).ready(function(){initNavTree('value_check-h.html','');});
 <div class="line">              s - statistic (<span class="keywordtype">short</span>)</div>
 <div class="line">              G - greens function</div>
 <div class="line">  </div>
+<div class="line">  -P  polygon(s)</div>
+<div class="line">      -Ppolygon_file[:+-][,polygon_file[:+-]]</div>
+<div class="line">        you can overrid settings in polygon file</div>
+<div class="line">        -P polygon_file : +</div>
+<div class="line">  </div>
 <div class="line">  -I  interpolation</div>
 <div class="line">      -I[1|2]</div>
 <div class="line">      specify the interpolation scheme for data</div>
 <div class="line">      Default: -I1</div>
 <div class="line">      optional parameter</div>
 <div class="line">  </div>
+<div class="line">  -F  todo</div>
+<div class="line">      @dataname</div>
+<div class="line">        SP surface  pressure</div>
+<div class="line">        VP vertical pressure</div>
+<div class="line">        LS landsea  mask</div>
 <div class="line">  </div>
-</div><!-- fragment --> </div></div><!-- contents -->
+<div class="line">  -D  specify dates</div>
+<div class="line">      -D[yyyy[mm[dd[hh[mm[ss]]]]][,yyy[,interval]]]</div>
+<div class="line">      specify date</div>
+<div class="line">        -D 20110304050600</div>
+<div class="line">      or dates range and interval [hours]</div>
+<div class="line">        -D 20110304050600 , 201105 , 6</div>
+<div class="line">      If you ommit part of date specification the programm assumes as follow</div>
+<div class="line">        month=01; day=01 hour=00; minute=00; second=00;</div>
+<div class="line">        therfore</div>
+<div class="line">        -D 201204 , 2013</div>
+<div class="line">        is equal to</div>
+<div class="line">        -D 201204000000, 20130101000000, 6</div>
+<div class="line">      you can select reverse order</div>
+<div class="line">        -D 20110304050600   , 201105           , -6</div>
+<div class="line">        -D  201105          , 20110304050600   ,  6</div>
+<div class="line">      Default: first time field in data , for interval 6 hours</div>
+<div class="line">      optional parameter</div>
+<div class="line">  </div>
+</div><!-- fragment --> <dl class="section date"><dt>Date:</dt><dd>2013-01-09 </dd></dl>
+<dl class="section author"><dt>Author:</dt><dd>M. Rajner</dd></dl>
+<dl class="section date"><dt>Date:</dt><dd>2013-03-19 added -P (if point is excluded all values are zero) </dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

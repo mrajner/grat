@@ -659,7 +659,7 @@ subroutine get_model_info (model , cmd_line_entry , field)
 
   ! split name and dataname (separated by @ - optional)
   model%name = trim(cmd_line_entry%field(field))
-!  model%dataname = " "
+  model%dataname = "NN"
   indeks = index(cmd_line_entry%field(field),'@')
   if (indeks.gt.0) then
     model%name = trim(cmd_line_entry%field(field)(1:indeks-1))

@@ -138,10 +138,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9111ec58739efeaaef9914c99ecf85ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9111ec58739efeaaef9914c99ecf85ec"></a>
 subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#a9111ec58739efeaaef9914c99ecf85ec">green_unification</a> (green, green_common, denser)</td></tr>
 <tr class="memdesc:a9111ec58739efeaaef9914c99ecf85ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unification: <br/></td></tr>
-<tr class="memitem:af48f5ce5c6784aa913010905671a1fc9"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#af48f5ce5c6784aa913010905671a1fc9">spher_area</a> (distance, ddistance, azstp, area)</td></tr>
-<tr class="memdesc:af48f5ce5c6784aa913010905671a1fc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate area of spherical segment.  <a href="#af48f5ce5c6784aa913010905671a1fc9"></a><br/></td></tr>
+<tr class="memitem:af0264b8ed77b9f7b37bd878d05bcbf75"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#af0264b8ed77b9f7b37bd878d05bcbf75">spher_area</a> (distance, ddistance, azstp, area, method)</td></tr>
+<tr class="memdesc:af0264b8ed77b9f7b37bd878d05bcbf75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate area of spherical segment.  <a href="#af0264b8ed77b9f7b37bd878d05bcbf75"></a><br/></td></tr>
 <tr class="memitem:acf02f881d2b2ac6a8bb67dca3c7dcb42"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#acf02f881d2b2ac6a8bb67dca3c7dcb42">convolve</a> (site, green, results, denserdist, denseraz)</td></tr>
-<tr class="memdesc:acf02f881d2b2ac6a8bb67dca3c7dcb42"><td class="mdescLeft">&#160;</td><td class="mdescRight">This soubroutine gives the latitude and longitude of the point at the specified distance and azimuth from site latitude and longitude.  <a href="#acf02f881d2b2ac6a8bb67dca3c7dcb42"></a><br/></td></tr>
+<tr class="memdesc:acf02f881d2b2ac6a8bb67dca3c7dcb42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform convolution.  <a href="#acf02f881d2b2ac6a8bb67dca3c7dcb42"></a><br/></td></tr>
+<tr class="memitem:abfbacceaf15dc6b4d9338f3e4cc05459"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abfbacceaf15dc6b4d9338f3e4cc05459"></a>
+subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>convolve_moreverbose</b> (latin, lonin, azimuth, azstep, distance, distancestep)</td></tr>
+<tr class="memitem:a63fbc3a6f9600d51f73c2c5fc6cdb6e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a63fbc3a6f9600d51f73c2c5fc6cdb6e6"></a>
+subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>wczytaj_linie_informacyjne</b></td></tr>
+<tr class="memitem:a0cd071eeadf31e6403ef21c06bbcc980"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0cd071eeadf31e6403ef21c06bbcc980"></a>
+subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>plot2green</b> (green_file)</td></tr>
+<tr class="memitem:a096eed74fa405e05d52a78d53af90abb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a096eed74fa405e05d52a78d53af90abb"></a>
+subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>green2plot</b> (green_file)</td></tr>
+<tr class="memitem:a6b6d61cab2e8e8efe17154b505559d23"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmod__green.html#a6b6d61cab2e8e8efe17154b505559d23">getgrf</a> (num, ntot, ngr, fingrd)</td></tr>
+<tr class="memdesc:a6b6d61cab2e8e8efe17154b505559d23"><td class="mdescLeft">&#160;</td><td class="mdescRight">chapter 4.1 of spotl manual  <a href="#a6b6d61cab2e8e8efe17154b505559d23"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -169,7 +179,7 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">type(green_functions), dimension(:), allocatable&#160;</td>
+          <td class="paramtype">type(<a class="el" href="structmod__cmdline_1_1green__functions.html">green_functions</a>), dimension(:), allocatable&#160;</td>
           <td class="paramname"><em>green</em>, </td>
         </tr>
         <tr>
@@ -198,18 +208,60 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
       </table>
 </div><div class="memdoc">
 
-<p>This soubroutine gives the latitude and longitude of the point at the specified distance and azimuth from site latitude and longitude. </p>
-<p>all parameters in decimal degree </p>
-<dl class="section author"><dt>Author:</dt><dd>D.C. Agnew <a class="el" href="citelist.html#CITEREF_Agnew96">[1]</a> </dd></dl>
-<dl class="section date"><dt>Date:</dt><dd>2012 </dd></dl>
-<dl class="section author"><dt>Author:</dt><dd>M. Rajner - modification </dd></dl>
-<dl class="section date"><dt>Date:</dt><dd>2013-03-06 </dd></dl>
+<p>Perform convolution. </p>
+<dl class="section date"><dt>Date:</dt><dd>2013-03-15 </dd></dl>
+<dl class="section author"><dt>Author:</dt><dd>M. Rajner </dd></dl>
 
-<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00113">113</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
+<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00096">96</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="af48f5ce5c6784aa913010905671a1fc9"></a>
+<a class="anchor" id="a6b6d61cab2e8e8efe17154b505559d23"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">subroutine mod_green::getgrf </td>
+          <td>(</td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>ntot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>ngr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">character*1&#160;</td>
+          <td class="paramname"><em>fingrd</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>chapter 4.1 of spotl manual </p>
+<p><a class="el" href="citelist.html#CITEREF_Agnew12">Agnew12</a></p>
+<dl class="section date"><dt>Date:</dt><dd>2013-03-15 </dd></dl>
+<dl class="section author"><dt>Author:</dt><dd>M. Rajner </dd></dl>
+
+<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00415">415</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af0264b8ed77b9f7b37bd878d05bcbf75"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -228,14 +280,20 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real(sp)&#160;</td>
+          <td class="paramtype">real(dp), intent(in)&#160;</td>
           <td class="paramname"><em>azstp</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real(dp), intent(out)&#160;</td>
-          <td class="paramname"><em>area</em>&#160;</td>
+          <td class="paramname"><em>area</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in), optional&#160;</td>
+          <td class="paramname"><em>method</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -246,12 +304,11 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
 </div><div class="memdoc">
 
 <p>Calculate area of spherical segment. </p>
-<p class="formulaDsp">
-\begin{equation*}P = \sin a \end{equation*}
-</p>
- <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Transform into function </dd></dl>
-
-<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00071">71</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
+<p>Computes spherical area on unit (default) sphere given by distance from station and azimuth angle xxx  <div class="image">
+<img src="/home/mrajner/src/grat/doc/rysunki/spher_area.svg" alt="spher_area.svg"/>
+</div>
+ 
+<p>Definition at line <a class="el" href="mod__green_8f90_source.html#l00076">76</a> of file <a class="el" href="mod__green_8f90_source.html">mod_green.f90</a>.</p>
 
 </div>
 </div>
@@ -264,7 +321,7 @@ allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>results</b></t
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classmod__green.html">mod_green</a></li>
-    <li class="footer">Generated on Wed Mar 6 2013 08:23:17 for grat by
+    <li class="footer">Generated on Tue Apr 23 2013 10:05:19 for grat by
     <a href="http://www.doxygen.org/index.html">
 <!--    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>--> <!--  -->
     doxygen</a> 1.8.1.1 </li>

@@ -36,7 +36,8 @@
           grat.f90             \
           value_check.f90      \
           polygon_check.f90    \
-          real_vs_standard.f90
+          real_vs_standard.f90 \
+					barometric_formula.f90
 
   EXAMPLESSRC =                \
           example_aggf.f90
@@ -61,7 +62,8 @@ $(PROGS_DIR)/%:%.f90 $(OBJS)
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
 	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
-t: all
+t: ../bin/barometric_formula
+	./$<
 r: ../bin/real_vs_standard example
 
 all:          \
@@ -97,8 +99,7 @@ package:
 doc: 
 	cd ../doc  &&  doxygen Doxyfile
 
-docpdf: 
-	doc
+docpdf: doc
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman
 	evince ../doc/latex/refman.pdf &
 
