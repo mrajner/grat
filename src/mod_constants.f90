@@ -25,4 +25,13 @@ module mod_constants
     Earth_mass =               5.97219e24, &   ! mass of the Earth
     geocentric_constant = 398600.4419          ! GM_Earth
 
+  type celestial_object_data
+    real(dp)      :: mass
+    real(dp)      :: distance
+  end type
+
+  type(celestial_object_data) :: moon
+!  moon%distance=2.
+  
+
 end module mod_constants

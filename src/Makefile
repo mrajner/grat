@@ -1,6 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+mod_constants.o:
+
   # compiler
   FC = ifort
   # FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
