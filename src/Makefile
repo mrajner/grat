@@ -120,7 +120,9 @@ install: $(PROGS)
 
 # Change this path according to your system settings
 # This require root privilages for my settings
-installlib: libgrat.a
+installlib: /usr/local/lib/libgrat.a
+
+/usr/local/lib/libgrat.a: libgrat.a
 	@sudo cp -uv libgrat.a /usr/local/lib
 	@sudo cp -uv *.mod /usr/local/include
 	@echo "library grat sucessfully installed"

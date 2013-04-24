@@ -28,10 +28,24 @@ module mod_constants
   type celestial_object_data
     real(dp)      :: mass
     real(dp)      :: distance
+    real(dp)      :: radius
   end type
 
-  type(celestial_object_data) :: moon
-!  moon%distance=2.
-  
+  type(celestial_object_data), parameter :: & 
+    earth = celestial_object_data ( &
+    distance = 0 , &
+    mass =  5.97219e24, &   ! kg
+    radius = 6371000 & !m 
+    ) , &
+    moon = celestial_object_data (            & 
+    distance = 384000000,                     & !m
+    mass     = 7.35e22,                       & !kg
+    radius = 0 &
+    ),                                        & 
+    sun = celestial_object_data (             & 
+    distance = 149600000000 ,                 & !m
+    mass     = 1.99e30,                        & !kg
+    radius = 0 &
+    )
 
-end module mod_constants
+  end module mod_constants
