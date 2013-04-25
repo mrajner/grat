@@ -21,31 +21,43 @@ module mod_constants
     rho_crust   = 2670.  ,    &  !< mean density of crust [kg/m3]
     rho_earth   = 5500.          !< mean density of Earth [kg/m3]
 
-  real(dp) :: &
-    Earth_mass =               5.97219e24, &   ! mass of the Earth
-    geocentric_constant = 398600.4419          ! GM_Earth
 
+  type gravity_description
+    real(dp) :: constant
+  end type
+  type(gravity_description) , parameter :: & 
+    gravity  = gravity_description(          & 
+    constant = 6.672e-11                     & ! m3 kg-1 s-2 TODO find new value ~6.674e-11?
+    )
+
+  !---------------------------------------
+  ! celestial bodies
+  !---------------------------------------
   type celestial_object_data
     real(dp)      :: mass
     real(dp)      :: distance
     real(dp)      :: radius
+    real(dp)      :: gm 
   end type
 
   type(celestial_object_data), parameter :: & 
-    earth = celestial_object_data ( &
-    distance = 0 , &
-    mass =  5.97219e24, &   ! kg
-    radius = 6371000 & !m 
-    ) , &
-    moon = celestial_object_data (            & 
-    distance = 384000000,                     & !m
-    mass     = 7.35e22,                       & !kg
-    radius = 0 &
+    earth    = celestial_object_data (        & 
+    distance = 0 ,                            & 
+    mass     = 5.97219e24,                    & ! kg
+    gm       = 398600.4419 ,                  & ! m3 s-2
+    radius   = 6371000                        & ! m
+    ) ,                                       & 
+    moon     = celestial_object_data (        & 
+    distance = 384000000,                     & ! m
+    mass     = 7.35e22,                       & ! kg
+    gm       = 0 ,                            & ! m3 s-2
+    radius   = 0                              & 
     ),                                        & 
-    sun = celestial_object_data (             & 
-    distance = 149600000000 ,                 & !m
-    mass     = 1.99e30,                        & !kg
-    radius = 0 &
+    sun      = celestial_object_data (        & 
+    distance = 149600000000 ,                 & ! m
+    mass     = 1.99e30,                       & ! kg
+    gm       = 0,                             & ! m3 s-2
+    radius   = 0                              & 
     )
 
-  end module mod_constants
+end module mod_constants

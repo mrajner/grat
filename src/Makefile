@@ -1,6 +1,6 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
-
+# all:
 mod_constants.o:
 
   # compiler
