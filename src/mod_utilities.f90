@@ -8,7 +8,8 @@ module mod_utilities
     invmjd            , spline_interpolation , spline     , &
     ispline           , file_exists          , skip_header, &
     d2r               , r2d                  , is_numeric , &
-    spher_trig_inverse, count_records_to_read, spher_trig
+    spher_trig_inverse, count_records_to_read, spher_trig , &
+    spher_area
 
 
 contains
@@ -417,6 +418,32 @@ function r2d ( radian )
 end function
 
 ! =============================================================================
+!> Calculate area of spherical segment 
+!!
+!! Computes spherical area on unit (default if optional argument \c radius is
+!! not given) sphere given by:
+!!   method 1
+!!    distance from station and azimuth angle 
+!!
+!! all input angles in radians
+!! 
+!! The ilustration below explain method
+!! \image latex /home/mrajner/src/grat/doc/rysunki/spher_area.pdf
+!! \image html /home/mrajner/src/grat/doc/rysunki/spher_area.svg
+! =============================================================================
+subroutine spher_area (distance ,ddistance, azstp,  area, method )
+  use mod_constants, only: dp, sp
+  real(dp), intent(out) :: area
+  real(dp), intent(in)  :: distance,ddistance 
+  real(dp), intent(in)  :: azstp
+  integer , intent(in), optional :: method
+
+  area =  (-cos (d2r(distance+ddistance/2.)) &
+           + cos (d2r(distance-ddistance/2.)))*d2r(azstp)
+
+end subroutine
+
+! =============================================================================
 !> This soubroutine gives the latitude and longitude of the point at the 
 !! specified distance and azimuth from site latitude and longitude.
 !!
@@ -440,7 +467,7 @@ subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
   saz = sin (d2r(azimuth))
   caz = cos (d2r(azimuth))
   cb = cd*ct + sd*st*caz
-!  todo !if(abs(cb).gt.1) cb = cb/abs(cb)
+  !  todo !if(abs(cb).gt.1) cb = cb/abs(cb)
   sb = sqrt(1.-cb**2)
   latout = 90 - r2d(acos(cb))
   lonout = lonin + r2d(atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb))
@@ -463,7 +490,7 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
   real(dp)                       :: dlat , dlon , &
     rlat1,rlon1,rlat2, rlon2 , distancetmp , a
   logical, intent(in) , optional :: haversine
-  
+
   rlat1=d2r(lat1)
   rlon1=d2r(lon1)
 

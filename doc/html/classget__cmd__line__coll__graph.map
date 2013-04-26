@@ -1,8 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node2" href="$structget__cmd__line_1_1site__data.html" title="get_cmd_line::site_data" alt="" coords="307,5,467,32"/>
-<area shape="rect" id="node4" href="$structget__cmd__line_1_1polygon__info.html" title="get_cmd_line::polygon_info" alt="" coords="297,56,477,83"/>
-<area shape="rect" id="node6" href="$structget__cmd__line_1_1polygon__data.html" title="get_cmd_line::polygon_data" alt="" coords="5,56,189,83"/>
-<area shape="rect" id="node8" href="$structget__cmd__line_1_1file.html" title="get_cmd_line::file" alt="" coords="325,151,449,177"/>
-<area shape="rect" id="node10" href="$structget__cmd__line_1_1green__functions.html" title="get_cmd_line::green\l_functions" alt="" coords="317,202,456,243"/>
-<area shape="rect" id="node12" href="$structget__cmd__line_1_1dateandmjd.html" title="get_cmd_line::dateandmjd" alt="" coords="299,268,474,295"/>
-</map>
