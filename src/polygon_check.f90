@@ -12,10 +12,7 @@ program polygon_check
   integer iok 
 
   ! gather cmd line option decide where to put output
-  call intro ( program_calling = "polygon_check" )
-
-  ! print header to log: version, date and summary of command line options
-  call print_settings ("polygon_check")
+  call intro ( program_calling = "polygon_check" , accepted_switches = "VfABLPoShvIiR" , cmdlineargs=.true.)
 
   ! read polygon - only first one
   call read_polygon (polygons(1))

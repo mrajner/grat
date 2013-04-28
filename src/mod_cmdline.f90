@@ -80,7 +80,8 @@ module mod_cmdline
   !----------------------------------------------------
   ! various
   !----------------------------------------------------
-  integer :: fileunit_tmp               !< unit of scratch file
+  ! unit of scratch file
+  integer :: fileunit_tmp
   integer,dimension(8):: execution_date !< To give time stamp of execution
   character (len = 2) :: method = "2D"  !< computation method
 
@@ -171,60 +172,70 @@ contains
 !> This subroutine counts the command line arguments
 !!
 !! Depending on command line options set all initial parameters and reports it
+!!
+!! optional cmdlineargs:
+!!  if .false. [default] run program anyway.
+!!  if .true. stop program if no cmdline argumenst was given.
+!!
 !! \date 2012-12-20
 !! \author M. Rajner
 !! \date 2013-03-19 parsing negative numbers after space fixed 
 !!    (-S -11... was previously treated as two cmmand line entries, now only -? 
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro (program_calling, accepted_switch )
+subroutine intro (program_calling, accepted_switches , cmdlineargs )
   integer :: i, j
   character(len=255) :: dummy, dummy2,arg
   character(len=*), intent(in) :: program_calling
   type(cmd_line) :: cmd_line_entry
-  character(len=*) , intent (in), optional :: accepted_switch
+  character(len=*) , intent (in), optional :: accepted_switches
+  logical , intent (in), optional :: cmdlineargs
 
-  if(iargc().eq.0) then
-    write(output_unit , '(a)' ) , 'Short description: ./'//program_calling//' -h' 
+  if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
+    write(output_unit , '(a)' ) , &
+      'No cmd line args! Try: ./'//program_calling//' -h' 
     call exit
-  else
-    open(newunit=fileunit_tmp,status='scratch')
-    write (fileunit_tmp,form_61) "command invoked"
-    call get_command(dummy)
-    write (fileunit_tmp,form_62) trim(dummy)
-    do i = 1 , iargc()
-      call get_command_argument(i,dummy)
-      ! allows specification like '-F file' and '-Ffile'
-      ! but  if -[0,9] it is treated as number belonging to switch (-S -2)
-      ! but  if -[\s,:] do not start next command line option
-      call get_command_argument(i+1,dummy2)
-      if (check_if_switch_or_minus(dummy)) then
-        arg = trim(dummy)
-      else
-        arg=trim(arg)//trim(dummy)
-      endif
-      if(check_if_switch_or_minus(dummy2).or.i.eq.iargc()) then
-         call mod_cmdline_entry (arg, cmd_line_entry , program_calling = program_calling)
-      endif
-    enddo
+  endif
 
-    call if_minimum_args ( program_calling = program_calling )
+  ! tmp file to write in before all cmdline argument will be parsed
+  open(newunit=fileunit_tmp,status='scratch')
+  call get_command(dummy)
+  write (fileunit_tmp,form_61) "command invoked"
+  write (fileunit_tmp,form_62) trim(dummy)
 
-    ! Where and if to log the additional information
-    if (log%if) then 
-      ! if file name was given then automaticall switch verbose mode
-      if_verbose = .true.
-      open (newunit = log%unit, file = log%name , action = "write" )
+  do i = 1 , iargc()
+    call get_command_argument(i,dummy)
+
+    ! allows specification like '-F file' and '-Ffile'
+    ! but  if -[0,9] it is treated as number belonging to switch (-S -2)
+    ! but  if -[\s,:] do not start next command line option
+    call get_command_argument(i+1,dummy2)
+    if (check_if_switch_or_minus(dummy)) then
+      arg = trim(dummy)
     else
-      ! if you don't specify log file, or not switch on verbose mode
-      ! all additional information will go to trash
-      ! Change  /dev/null accordingly if your file system does not
-      ! support this name
-      if (.not.if_verbose) then
-        open (newunit=log%unit, file = "/dev/null", action = "write" )
-      endif
+      arg=trim(arg)//trim(dummy)
+    endif
+    if(check_if_switch_or_minus(dummy2).or.i.eq.iargc()) then
+      call mod_cmdline_entry (arg, cmd_line_entry , &
+        program_calling = program_calling , accepted_switches= accepted_switches)
+    endif
+  enddo
+
+  ! Where and if to log the additional information
+  if (log%if) then 
+    ! if file name was given then automaticall switch verbose mode
+    if_verbose = .true.
+    open (newunit = log%unit, file = log%name , action = "write" )
+  else
+    ! if you don't specify log file, or not switch on verbose mode
+    ! all additional information will go to trash
+    ! Change  /dev/null accordingly if your file system does not
+    ! support this name
+    if (.not.if_verbose) then
+      open (newunit=log%unit, file = "/dev/null", action = "write" )
     endif
   endif
+  call print_settings(program_calling)
 end subroutine
 
 ! ==============================================================================
@@ -252,92 +263,35 @@ function check_if_switch_or_minus(dummy)
 end function
 
 ! =============================================================================
-!> Check if at least all obligatory command line arguments were given
-!! if not print error and exit
-!!
-!! \date 2013-03-15
-!! \author M. Rajner
-!! \todo Make it compact (if errror ....)
-! =============================================================================
-subroutine if_minimum_args (program_calling)
-  character (*) , intent(in) :: program_calling
-  type(cmd_line) :: cmd_line_entry
-  character(len=100) :: dummy
-
-  ! all programs
-!  if (size(sites) .eq. 0) then
-!    write(error_unit, * ) "ERROR:", program_calling, " -- no sites!"
-!    call exit
-!  endif
-
-  if (program_calling.eq."grat" ) then
-    ! for grat set default for Green functions if not given in command line
-    ! options
-    if (.not.allocated(green)) then
-      dummy="-G,,,"
-      call mod_cmdline_entry(dummy,cmd_line_entry,program_calling="grat")
-    endif
-
-    if (size(model) .eq. 0) then
-      write(error_unit, * ) "ERROR:", program_calling, " -- model file not specified!"
-      call exit
-    endif
-  elseif (program_calling.eq."polygon_check" ) then
-  endif
-end subroutine
-
-! =============================================================================
 !> This function is true if switch is used by calling program or false if it
 !! is not
 ! =============================================================================
-logical function if_switch_program (program_calling , switch )
-  character(len= *), intent (in) :: program_calling
-  character(len= *), intent (in) :: switch
-  character, dimension(:) , allocatable :: accepted_switch
+logical function if_accepted_switch (switch , accepted_switches)
+  character(len= *), intent (in) :: switch ,accepted_switches
   integer :: i
 
   ! default
-  if_switch_program=.false.
-
-  ! depending on program calling decide if switch is permitted
-  if (program_calling.eq."grat") then
-    allocate( accepted_switch (17) )
-    accepted_switch = [ &
-      "V", "f", "S", "B", "L", "G", "P", "p", &
-      "o", "F", "I", "D", "L", "v", "h", "R", "Q" &
-    ]
-  elseif (program_calling.eq."polygon_check") then
-    allocate( accepted_switch (13) )
-    accepted_switch = [ "V" , "f" , "A", "B" , "L" , "P" , "o", "S" , & 
-      "h" , "v" , "I" , "i" , "R" ]
-  elseif (program_calling.eq."value_check") then
-    allocate( accepted_switch (11) )
-    accepted_switch = [ "V" , "F" , "o", "S" , "h" , "v" , "I" , "D" , "L" , "P" , "R" ]
-  else
-    if_switch_program=.true.
-    return
-  endif
-
+  if_accepted_switch=.false.
   ! loop trough accepted switches
-  do i =1, size (accepted_switch)
-    if (switch(2:2).eq.accepted_switch(i)) if_switch_program=.true.
+  do i =1, len(accepted_switches)
+    if (switch(2:2).eq.accepted_switches(i:i)) if_accepted_switch=.true.
   enddo
 end function
 
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry , program_calling)
+subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   use mod_utilities, only : file_exists, is_numeric
   type(cmd_line),intent(in):: cmd_line_entry
-  character(len=*), optional :: program_calling
+  character(len=*), optional :: program_calling,accepted_switches
   integer :: i
 
   ! all the command line option are stored in tmp file and later its decide
   ! if it is written to STDOUT , log_file or nowwhere
     select case (cmd_line_entry%switch)
     case ('-h')
-      call print_help (program_calling)
+      call print_help (program_calling ,accepted_switches)
       call exit
     case ('-v')
       call print_version (program_calling)
@@ -600,17 +554,25 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-21
 ! =============================================================================
-subroutine mod_cmdline_entry (dummy , cmd_line_entry , program_calling )
+subroutine mod_cmdline_entry (dummy , cmd_line_entry , program_calling , &
+  accepted_switches)
   character(*) :: dummy 
   character(:), allocatable :: dummy2
   type (cmd_line),intent(out) :: cmd_line_entry
   character(1) :: separator=","
-  character(len=*) , intent(in) , optional :: program_calling
+  character(len=*) , intent(in) , optional :: program_calling, accepted_switches
   integer :: i , j , ii , jj 
+  logical :: opened
+ 
+
+  ! prevent to printing  messages if fileunit_tmp was not opened 
+  ! previously with subroutine intro
+  if (fileunit_tmp.eq.0) fileunit_tmp=1
 
   cmd_line_entry%switch = dummy(1:2)
   write(fileunit_tmp, form_61) , dummy
-  if (.not.if_switch_program(program_calling, cmd_line_entry%switch)) then
+  if (present(accepted_switches).and. &
+    (.not.if_accepted_switch(cmd_line_entry%switch,accepted_switches))) then
     write ( fileunit_tmp , form_62 ) "this switch is IGNORED by program "//program_calling
     return
   endif
@@ -645,7 +607,8 @@ subroutine mod_cmdline_entry (dummy , cmd_line_entry , program_calling )
       enddo
     endif
   enddo
-  call parse_option (cmd_line_entry , program_calling = program_calling)
+  call parse_option (cmd_line_entry , program_calling = program_calling , &
+    accepted_switches=accepted_switches)
 end subroutine
 !
 ! =============================================================================
@@ -1014,15 +977,18 @@ subroutine print_settings (program_calling)
     !----------------------------------------------------
     ! Site summary
     !----------------------------------------------------
-    write(log%unit, form_separator)
-    write(log%unit, form_60 ) "Processing:", size(sites), "site(s)"
+    if (size(sites).ge.1) then
+      write(log%unit, form_separator)
+      write(log%unit, form_60 ) "Processing:", size(sites), "site(s)"
 
-    if (size(sites).le.15) then
-      write(log%unit, '(2x,a,t16,3a15)') "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
-      do j = 1,size(sites)
-        write(log%unit, '(2x,a,t16,3f15.4)') &
-          sites(j)%name, sites(j)%lat, sites(j)%lon , sites(j)%height
-      enddo
+      if (size(sites).le.15) then
+        write(log%unit, '(2x,a,t16,3a15)') &
+          "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
+        do j = 1,size(sites)
+          write(log%unit, '(2x,a,t16,3f15.4)') &
+            sites(j)%name, sites(j)%lat, sites(j)%lon , sites(j)%height
+        enddo
+      endif
     endif
 
     !----------------------------------------------------
@@ -1041,8 +1007,9 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine print_help (program_calling)
-  character(*) :: program_calling
+subroutine print_help (program_calling, accepted_switches)
+  character(*) , intent(in) :: program_calling
+  character(*) , intent(in),optional :: accepted_switches
   integer :: help_unit , io_stat
   character(500)::line
   character(255)::syntax
@@ -1068,7 +1035,7 @@ subroutine print_help (program_calling)
       exit
     endif
     if(line(1:1)=="-") then
-      if(if_switch_program (program_calling , line(1:2) )) then
+      if(if_accepted_switch (line(1:2),accepted_switches )) then
         if_print_line = .true.
       else
         if(line(1:1)=="-") if_print_line=.false.
@@ -1093,7 +1060,8 @@ subroutine print_help (program_calling)
     if (io_stat==iostat_end) exit
     
     if(line(1:1)=="-") then
-      if(if_switch_program (program_calling , line(1:2) )) then
+      !todo
+      if(if_accepted_switch (line(1:2),accepted_switches )) then
         if_print_line = .true.
         write (log%unit , form_61 ) trim(line)
       else

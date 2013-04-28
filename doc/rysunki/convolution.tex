@@ -11,46 +11,66 @@
 }
 
 \begin{document}
-  \newcounter{komorka}\setcounter{komorka}{0}
+ \centering
+    \newcounter{komorka}\setcounter{komorka}{0}
   \begin{standaloneframe}
-    \only<1>{\def\cell{13}}
-    \only<2>{\setcounter{komorka}{0}\def\cell{23}}
-  \begin{tikzpicture}[scale=0.3]
-    \draw[gray,step=5] (-12.4,-20) grid (17,15);
-
-    \coordinate(start) at (2,-0.5);
-    \foreach \startradius/\endradius/\ileaz in {
-      0/1/4,
-      1/4/6,
-      4/8/10,
-      8/14/12
-    }{
-      \draw(start) circle (\endradius);
-      \pgfmathsetmacro{\da}{360/\ileaz}
-      \foreach \az in {
-        1,...,\ileaz
-      }{
-        \pgfmathsetmacro{\a}{\da/2+\az*\da}
-        \draw (start)++(\a:\startradius) -- ++(\a:\endradius-\startradius);
-
-        \addtocounter{komorka}{1}
-        \ifnum\thekomorka=\cell
-        \draw[fill=green!\thekomorka] (start)++(\a:\startradius)
-        --+ (\a:\endradius-\startradius)
-        arc (\a:\a+\da:\endradius)
-        --+ (\a+\da:\startradius-\endradius)
-        arc (\a+\da:\a:\startradius);
-
-        \path (start) ++(\a+\da/2:\startradius)
-        --+(\a+\da/2:\endradius/2-\startradius/2)
-        node[small dot]{} 
-        node(centroid-\thekomorka){\thekomorka}
-        ;
-        \fi
-
+      \only<1>{\def\cell{10}}
+      \only<2->{\setcounter{komorka}{0}\def\cell{13}}
+    
+\begin{tikzpicture}
+    \node<1-2>[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=8cm]{podklad}};
+    \node<3>[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=8cm]{podklad2}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+      \fill<1>[fill=white,even odd rule,opacity=1] (0,0) rectangle (1,1)
+      \foreach \x in {
+        1,2,3
       }
-    }
-  \end{tikzpicture}%
+      {
+        \foreach \y in {1,2,3}
+        {
+          ({\x/3-1/6},\y/3-1/6)circle (2mm)
+      } 
+    };
+%      \draw[blue,step=0.333] (0,0) grid (1,1);
+      
+      \coordinate(start) at (0.6,0.4);
+      \foreach \startradius/\endradius/\ileaz in {
+        0/.1/4,
+        0.1/0.3/6,
+        0.3/0.6/10
+%        8/14/12
+      }{
+        \draw(start) circle (\endradius);
+        \pgfmathsetmacro{\da}{360/\ileaz}
+        \foreach \az in {
+          1,...,\ileaz
+        }{
+          \pgfmathsetmacro{\a}{\da/2+\az*\da}
+          \draw (start)++(\a:\startradius) -- ++(\a:\endradius-\startradius);
+
+          \addtocounter{komorka}{1}
+          \ifnum\thekomorka=\cell
+          \draw[even odd rule,fill=green] (start)++(\a:\startradius)
+          --+ (\a:\endradius-\startradius)
+          arc (\a:\a+\da:\endradius)
+          --+ (\a+\da:\startradius-\endradius)
+          node [midway]{$\rm d \psi$}
+          arc (\a+\da:\a:\startradius)
+  %        \path
+          (start) ++(\a+\da/2:\startradius)
+          ++(\a+\da/2:\endradius/2-\startradius/2)
+          circle (2mm)
+          node(centroid-\thekomorka){\thekomorka}
+          ;
+          
+          ;
+
+          \fi
+
+        }
+      }
+    \end{scope}
+    \end{tikzpicture}%
 \end{standaloneframe}
 
 \end{document}

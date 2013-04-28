@@ -22,7 +22,7 @@ program value_check
   real (dp) , allocatable , dimension(:) :: val
   integer :: i,ii ,j ,start , imodel, iok
 
-  call intro          (program_calling = "value_check")
+  call intro          (program_calling = "value_check", accepted_switches="VFoShvIDLPR" , cmdlineargs=.true.)
   call print_settings (program_calling = "value_check")
 
   do i = 1 , size(model)

@@ -481,42 +481,33 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-04
 !! for small spherical distances you should always use havesine=.true.
+!!
+!! All arguments in radians
 ! =============================================================================
 subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, haversine)
   use mod_constants, only : dp , pi
 
   real(dp) , intent (in)         :: lat1 , lon1 , lat2 , lon2
   real(dp) , intent (out)        :: distance , azimuth
-  real(dp)                       :: dlat , dlon , &
-    rlat1,rlon1,rlat2, rlon2 , distancetmp , a
+  real(dp)                       :: dlat , dlon ,  distancetmp , a
   logical, intent(in) , optional :: haversine
 
-  rlat1=d2r(lat1)
-  rlon1=d2r(lon1)
+  dlon = lon2 - lon1
+  dlat = lat2 - lat1
 
-  rlat2=d2r(lat2)
-  rlon2=d2r(lon2)
-
-  dlon = rlon2 - rlon1
-  dlat = rlat2 - rlat1
-
-  if (dlon > pi) dlon =dlon-pi  !\todo check if this is necessary
+  if (dlon > pi) dlon=dlon-pi  !todo check if this is necessary
 
   if (present(haversine).and.haversine.eq..true.) then
     ! the formula below from Robert Chamberlain
     ! http://www.usenet-replayer.com/faq/comp.infosystems.gis.html
-    a = (sin(dlat/2))**2 + cos(rlat1) * cos(rlat2) * (sin(dlon/2))**2
+    a = (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2
     distance = 2 * atan2( sqrt(a), sqrt(1-a) )
   else 
-    distance = acos ( sin(rlat1) * sin(rlat2) + cos(rlat1) * cos(rlat2) * cos(dlon))
+    distance = acos ( sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
   endif
 
-  azimuth = atan2( (sin(dlon)*cos(rlat2)/sin(distance)) ,  ((sin(rlat2)*cos(rlat1) - cos(rlat2)*sin(rlat1)*cos(dlon))/sin(distance))  )
+  azimuth = atan2( (sin(dlon)*cos(lat2)/sin(distance)) ,  ((sin(lat2)*cos(lat1) - cos(lat2)*sin(lat1)*cos(dlon))/sin(distance))  )
   if (azimuth.lt.0) azimuth = azimuth + 2 * pi
-
-  ! convert to degrees
-  azimuth  = r2d(azimuth)
-  distance = r2d(distance)
 end subroutine
 
 ! =============================================================================

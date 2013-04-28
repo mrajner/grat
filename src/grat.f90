@@ -76,14 +76,24 @@ program grat
   call cpu_time(cpu_start)
 
   ! gather cmd line option decide where to put output
-  call intro (program_calling = "grat")
+  call intro (program_calling = "grat" , accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
 
-  ! print header to log: version, date and summary of command line options
-  call print_settings (program_calling = "grat")
+  ! for grat set default for Green functions if not given in command line
+  ! options
+!  if (.not.allocated(green)) then
+!    dummy="-G,,,"
+!    call mod_cmdline_entry(dummy,cmd_line_entry,program_calling="grat")
+!  endif
+
+!  if (size(model) .eq. 0) then
+!    write(error_unit, * ) "ERROR:", program_calling, " -- model file not specified!"
+!    call exit
+!  endif
+
 
   ! read polygons
   do i =1 , 2
-   call read_polygon (polygons(i))
+    call read_polygon (polygons(i))
   enddo
 
   ! read models into memory
@@ -96,13 +106,13 @@ program grat
     refpres%name="/home/mrajner/src/grat/data/refpres/vienna_p0.grd"
     call read_netCDF (refpres)
   endif
-   
+
 
   allocate (results(size(sites)*max(size(dates),1)))
   iii=0
   do j = 1 , max(size (dates),1)
     if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date
-  
+
     do ii = 1 , min(2,size(model))
       if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
     enddo
@@ -127,7 +137,7 @@ program grat
       results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
       results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
   endif
-  
+
 
   call cpu_time(cpu_finish)
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
