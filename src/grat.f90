@@ -63,7 +63,7 @@ program grat
   use mod_constants , only : dp
   use mod_cmdline   , only : cpu_start , cpu_finish,  intro , print_settings , &
     polygons , model , refpres, form_separator , log ,dates , sites, output, &
-    moreverbose, form_60 , form_61, green ,denser
+    moreverbose, form_60 , form_61, green ,denser ,mod_cmdline_entry
   use mod_green     , only : results ,convolve
   use mod_polygon   , only : read_polygon
   use mod_data      , only : read_netCDF , get_variable
@@ -71,25 +71,14 @@ program grat
   implicit none
   real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
   integer :: i , j , ii, iii
+  
 
   ! program starts here with time stamp
   call cpu_time(cpu_start)
 
   ! gather cmd line option decide where to put output
-  call intro (program_calling = "grat" , accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
-
-  ! for grat set default for Green functions if not given in command line
-  ! options
-!  if (.not.allocated(green)) then
-!    dummy="-G,,,"
-!    call mod_cmdline_entry(dummy,cmd_line_entry,program_calling="grat")
-!  endif
-
-!  if (size(model) .eq. 0) then
-!    write(error_unit, * ) "ERROR:", program_calling, " -- model file not specified!"
-!    call exit
-!  endif
-
+  call intro (program_calling = "grat" , &
+    accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
 
   ! read polygons
   do i =1 , 2
