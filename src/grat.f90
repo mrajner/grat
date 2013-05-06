@@ -62,8 +62,8 @@ program grat
 
   use mod_constants , only : dp
   use mod_cmdline   , only : cpu_start , cpu_finish,  intro , print_settings , &
-    polygons , model ,  form_separator , log ,dates , sites, output, &
-    moreverbose, form_60 , form_61, green ,denser
+    polygons , model , refpres, form_separator , log ,dates , sites, output, &
+    moreverbose, form_60 , form_61, green ,denser ,mod_cmdline_entry
   use mod_green     , only : results ,convolve
   use mod_polygon   , only : read_polygon
   use mod_data      , only : read_netCDF , get_variable
@@ -71,12 +71,14 @@ program grat
   implicit none
   real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
   integer :: i , j , ii, iii
+  
 
   ! program starts here with time stamp
   call cpu_time(cpu_start)
 
   ! gather cmd line option decide where to put output
-  call intro (program_calling = "grat" , accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
+  call intro (program_calling = "grat" , &
+    accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
 
   ! read polygons
   do i =1 , 2

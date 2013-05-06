@@ -15,14 +15,36 @@ module mod_utilities
 contains
 
 ! ==============================================================================
-!> For given vectors x1, y1 and x2, y2 it gives x2interpolated for x1
+!> For given vectors x1, y1 and x2, y2 it gives x2 interpolated for x1
 !!
 !! uses \c ispline and \c spline subroutines
 ! ==============================================================================
-subroutine spline_interpolation(x,y, x_interpolated, y_interpolated, method)
+subroutine spline_interpolation(x,y,n, x_interpolated, y_interpolated, n2, method)
   use mod_constants, only:dp
-  real(dp) , allocatable , dimension (:) ,intent(in) :: x, y, x_interpolated
-  real(dp) , allocatable , dimension (:) , intent(out) :: y_interpolated
+  integer,intent(in) :: n, n2
+  real(dp) , intent(in) :: x(n), y(n) , x_interpolated(n2)
+  real(dp) , intent(out) :: y_interpolated(n2)
+  real(dp) , dimension (:) , allocatable :: b, c, d
+  integer :: i
+  character(*), optional :: method
+
+  allocate (b (size(x)))
+  allocate (c (size(x)))
+  allocate (d (size(x)))
+
+  call spline ( x , y, b , c, d, size(x))
+  
+  do i=1, size(x_interpolated)
+     y_interpolated(i) = ispline (x_interpolated(i) , x , y , b , c , d , size (x) , method = method )
+  enddo
+
+end subroutine
+
+!the procedure below will be soon removed (just for backward compability)
+subroutine spline_interpolation2 (x, y, x_interpolated, y_interpolated, method)
+  use mod_constants, only:dp
+  real(dp) , allocatable , dimension (:), intent(in)  :: x, y, x_interpolated
+  real(dp) , allocatable , dimension (:), intent(out) :: y_interpolated
   real(dp) , dimension (:) , allocatable :: b, c, d
   integer :: i
   character(*), optional :: method

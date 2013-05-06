@@ -1,7 +1,6 @@
 !> \file
 !! module
 module mod_green
-
   use mod_constants, only: dp
   use mod_utilities, only: spher_area
   implicit none
@@ -9,15 +8,12 @@ module mod_green
 !  private
 !  public :: results
 
-
   real(dp), allocatable , dimension(:,:)  :: green_common
   type result
     real(dp) :: N=0. , dt=0. ,E=0. , dh=0.,dz=0.
   end type
   type (result), allocatable, dimension(:) :: results
-!
-!
-!
+ 
 contains
 
 ! =============================================================================
@@ -55,7 +51,8 @@ subroutine green_unification (green , green_common , denser)
   green_common(:,2) = dist
   do i = 1 , 5
     if (size(green).ge.i .and. allocated(green(i)%distance)) then
-      call spline_interpolation (green(i)%distance , green(i)%data, x , y)
+      call spline_interpolation (green(i)%distance , green(i)%data, &
+        size(green(i)%data), x , y , size(x)) 
       green_common(:,i+2) = y
     else 
       green_common(:,i+2) = 0
@@ -420,5 +417,45 @@ subroutine getgrf(num,ntot,ngr,fingrd)
 !     statgr(num) = fingrd
 !      nring=ntot
 end subroutine
+
+!program denormalizacja
+!real :: psi, gn , dgndt , dgndz, d2gndz2, ge
+!character(len=255)::  dummy
+
+
+!print *, 'sta'
+!open( unit=11, file='./green.dat'               , action='read'  )
+!open( unit=12, file='./green_denormalizacja.dat', action='write' )
+
+!read (11,*) dummy
+
+!do 
+!  read (11,*, iostat=io) , psi, gn , dgndt , dgndz, d2gndz2, ge
+!  if (.not.io.eq.0)  exit
+
+!  call denormfactor(psi, ge)
+!  
+!  write( 12 , '(2f15.5,3e20.10,e15.7)' ), psi, gn, dgndt, dgndz, d2gndz2, ge
+!  write( * , '(2f15.5,3e20.10,e15.7)' ), psi, gn, dgndt, dgndz, d2gndz2, ge
+!enddo
+!print*, cos(d2r(1.))
+!  
+
+!end program denormalizacja
+
+!subroutine denormfactor(psi, val)
+!  implicit none
+!  real , intent(in) :: psi
+!  real,intent(inout) :: val
+!  real :: pi
+!  real :: d2r
+!  real , parameter :: a =6378137.0
+
+!pi = 4. * atan (1.0)
+
+!val = val / ( 2. * pi * ( 1. - cos ( d2r(1.) ) ) * d2r(psi)  *  a**2 * 1e5 * 1e8 * 1e2 )
+!val = val * 1e18 * ( a * d2r(psi) )
+
+!end subroutine
 
 end module
