@@ -138,8 +138,8 @@ module mod_cmdline
   type(file) ::  log  , output , moreverbose
   type(file) , allocatable, dimension (:) :: model 
 
-!  character (len =40) :: model_names (5) = ["pressure_surface" , &
-!    "temperature_surface" , "topography" , "landsea" , "pressure levels" ]
+  !  character (len =40) :: model_names (5) = ["pressure_surface" , &
+  !    "temperature_surface" , "topography" , "landsea" , "pressure levels" ]
 
   ! todo --- make @ like for models
   character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
@@ -771,7 +771,8 @@ subroutine read_site_file ( file_name )
   if(    is_numeric(trim(dummy(2)))   &
     .and.is_numeric(trim(dummy(3)))   &
     .and.is_numeric(trim(dummy(4)))   &
-    .and.ntokens(line_of_file).ge.3 ) then
+    .and.ntokens(line_of_file).ge.3 ) &
+    then
 
   aux%name= trim(dummy(1))
   read( dummy(2),*) aux%lat
@@ -936,6 +937,9 @@ endif
       write(log%unit,form_inheader ) , 'Marcin Rajner'
       write(log%unit,form_inheader ) , 'Warsaw University of Technology'
       write(log%unit , form_header ) 
+      write(log%unit,form_inheader ) , 'Copyright 2013 by Marcin Rajner'
+      write(log%unit,form_inheader ) , 'GPL v'
+      write(log%unit , form_header ) 
     end subroutine
 
     ! =============================================================================
@@ -1036,13 +1040,6 @@ endif
           endif
         endif
 
-<<<<<<< HEAD
-  dataname="unknown"
-  if (abbreviation.eq."LS") dataname = "Land-sea mask"
-  if (abbreviation.eq."SP") dataname = "Surface pressure"
-  if (abbreviation.eq."RS") dataname = "Reference surface pressure"
-end function
-=======
         if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
           if_optional=.true.
           elseif (line(5:13) == "mandatory") then
@@ -1053,7 +1050,6 @@ end function
         endif
       enddo
       rewind(help_unit)
->>>>>>> 9882c11dc80903ae2200ae7f5b1f68cf37faba42
 
       write(log%unit , form_60) , 'Summary of available options for program '//program_calling
       ! second loop - print informations
@@ -1135,6 +1131,10 @@ end function
       dataname="unknown"
       if (abbreviation.eq."LS") dataname = "Land-sea mask"
       if (abbreviation.eq."SP") dataname = "Surface pressure"
+      dataname="unknown"
+      if (abbreviation.eq."LS") dataname = "Land-sea mask"
+      if (abbreviation.eq."SP") dataname = "Surface pressure"
+      if (abbreviation.eq."RS") dataname = "Reference surface pressure"
     end function
 
   end module mod_cmdline

@@ -491,8 +491,8 @@ function simple_def (R)
   real(dp) :: simple_def
 
   delta = 0.22e-11 * R 
-  simple_def = earth%gravity%mean / R0 * delta * ( 2. - 3./2. * rho_crust / rho_earth &
-    -3./4. * rho_crust / rho_earth * sqrt (2* (1. )) ) * 1000
+  simple_def = earth%gravity%mean / R0 * delta * ( 2. - 3./2. * earth%density%crust / earth%density%mean &
+    -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) ) * 1000
 end function
 
 end module
