@@ -1,31 +1,12 @@
 ! ==============================================================================
-! Copyright 2013 by Marcin Rajner
-! This program is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-
-! This program is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ! ==============================================================================
-
-    <program>  Copyright (C) <year>  <name of author>
-    This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
-    This is free software, and you are welcome to redistribute it
-    under certain conditions; type `show c' for details.
-
 !> \file
 !! \mainpage grat overview
 !! \section Purpose
 !! This program was created to make computation of atmospheric gravity
 !! correction easier. Still developing. Consider visiting later...
 !!
-!! \version TESTING!
+!! \version pre-alpha
 !! \date 2013-01-12
 !! \author Marcin Rajner\n 
 !! Politechnika Warszawska | Warsaw University of Technology
@@ -44,10 +25,23 @@
 !!
 !! \attention 
 !! \c grat and value_check needs a \c netCDF library \cite netcdf 
-!! \page ilustrati
-!!    \include gpl.txt
-!! xxxx 
-!!
+!> \copyright
+!! Copyright 2013 by Marcin Rajner\n
+!! This program is free software: you can redistribute it and/or modify
+!! it under the terms of the GNU General Public License as published by
+!! the Free Software Foundation, either version 3 of the License, or
+!! (at your option) any later version.
+!! \n\n 
+!! This program is distributed in the hope that it will be useful,
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!! GNU General Public License for more details.
+!! \n\n 
+!! You should have received a copy of the GNU General Public License
+!! along with this program (LICENSE.txt). grat.f90
+!! If not, see <http://www.gnu.org/licenses/>. tmp.sh
+!! \include LICENSE.txt
+!! 
 !! \section Usage
 !! After sucsesfull compiling make sure the executables are in your search path
 !! 
@@ -85,14 +79,14 @@ program grat
 
   use mod_constants , only : dp
   use mod_cmdline   , only : cpu_start , cpu_finish,  intro , print_settings , &
-    polygons , model , refpres, form_separator , log ,dates , sites, output, &
+    polygons , model , form_separator , log ,dates , sites, output, &
     moreverbose, form_60 , form_61, green ,denser ,mod_cmdline_entry
   use mod_green     , only : results ,convolve
   use mod_polygon   , only : read_polygon
   use mod_data      , only : read_netCDF , get_variable
 
   implicit none
-  real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
+  real(dp) :: x , y , z , lat ,lon 
   integer :: i , j , ii, iii
   
 
@@ -147,6 +141,7 @@ program grat
   endif
 
 
+  ! execution time-stamp
   call cpu_time(cpu_finish)
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
   write(log%unit, form_separator)

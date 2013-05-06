@@ -72,7 +72,7 @@ end subroutine
 ! =============================================================================
 subroutine convolve (site ,  green , results, denserdist , denseraz  )
   use, intrinsic :: iso_fortran_env, only : error_unit
-  use mod_constants, only: pi , dp, t0
+  use mod_constants, only: pi , dp,  atmosphere
   use mod_cmdline , only: site_data, green_functions , moreverbose , &
     inverted_barometer , model , polygons ,  method ,log
   use mod_utilities, only: d2r , spher_trig
@@ -161,7 +161,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
 
          if (model(2)%if.and.size(model).ge.2) then
             results%dt = results%dt + (val(1)/ 100.-ref_p) * &
-              (green_common(igreen,4)*(val(2)-t0) ) * area * normalize
+              (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
           endif
 
          results%dh = results%dh + (val(1)/ 100.-ref_p) * &

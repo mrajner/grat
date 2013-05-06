@@ -50,9 +50,9 @@ subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
     aggfdt = aggfdt - aux
     aggfdt = aggfdt / ( 2. * h_ )
   else
-    call compute_aggf ( psi , aux , t_zero = T0 + deltat )
+    call compute_aggf ( psi , aux , t_zero = atmosphere%temperature%standard + deltat )
     aggfdt = aux
-    call compute_aggf ( psi , aux , t_zero = T0 - deltat )
+    call compute_aggf ( psi , aux , t_zero = atmosphere%temperature%standard - deltat )
     aggfdt = aggfdt - aux
     aggfdt = aggfdt / ( 2. * deltat)
   endif
@@ -186,7 +186,7 @@ subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
   !! this block will be skipped
   !! by default the normalization is applied according to \cite Merriam92
   if ( (.not.present(if_normalization)) .or. (if_normalization)) then
-    aggf_val= psir * aggf_val * 1e5  / p0
+    aggf_val= psir * aggf_val * 1e5  / atmosphere%pressure%standard
   endif
 
 end subroutine 
@@ -200,7 +200,7 @@ end subroutine
 ! ==============================================================================
 subroutine standard_density ( height , rho , t_zero ,fels_type )
   real(dp) , intent(in)  ::  height !< height [km]
-  real(dp) , intent(in), optional  :: t_zero !< if this parameter is given 
+  real(dp) , intent(in), optional  :: t_zero 
   character(len = 22) , optional :: fels_type
   ! surface temperature is set to this value, 
   ! otherwise the T0 for standard atmosphere is used
@@ -232,8 +232,8 @@ subroutine standard_pressure (height, pressure , &
   real(dp), intent(out) :: pressure
   real(dp) ::  lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
 
-  sfc_temperature = T0
-  sfc_pressure = p0
+  sfc_temperature = atmosphere%temperature%standard
+  sfc_pressure = atmosphere%pressure%standard
   sfc_height = 0.
   sfc_gravity = earth%gravity%mean
 
@@ -300,46 +300,48 @@ real(dp) function geop2geom (geopotential_height)
 end function
 
 
-! =============================================================================
-!> Iterative computation of surface temp. from given height using bisection
-!! method
-! =============================================================================
-subroutine surface_temperature (height , temperature1 , &
-  temperature2, fels_type , tolerance)
-  real(dp) , intent(in)  :: height , temperature1
-  real(dp) , intent(out) :: temperature2  
-  real(dp) :: temp(3) , temp_ (3) , tolerance_ = 0.1
-  character (len=*) , intent(in), optional  :: fels_type 
-  real(dp) , intent(in), optional  :: tolerance
-  integer :: i 
+!! =============================================================================
+!!> Iterative computation of surface temp. from given height using bisection
+!!! method
+!!! obsolete? todo check if obsolete
+!! =============================================================================
+!subroutine surface_temperature (height , temperature1 , &
+!  temperature2, fels_type , tolerance)
+!  real(dp) , intent(in)  :: height , temperature1
+!  real(dp) , intent(out) :: temperature2  
+!  real(dp) :: temp(3) , temp_ (3) , tolerance_ = 0.1
+!  character (len=*) , intent(in), optional  :: fels_type 
+!  real(dp) , intent(in), optional  :: tolerance
+!  integer :: i 
 
-  if (present(tolerance)) tolerance_ = tolerance
+!  if (present(tolerance)) tolerance_ = tolerance
 
-  ! searching limits
-  temp(1)=t0-150
-  temp(3)=t0+ 50
+!  ! searching limits
+!  temp(1)=atmosphere%temperature%standard-150
+!  temp(3)=atmosphere%temperature%standard+ 50
 
-  do 
-    temp(2)= ( temp(1) + temp(3) ) /2.
-  
-    do i = 1,3
-      call standard_temperature (height , temp_(i) , t_zero=temp(i) , fels_type = fels_type ) 
-    enddo
+!  do 
+!    temp(2)= ( temp(1) + temp(3) ) /2.
+!  
+!    do i = 1,3
+!      call standard_temperature (height , temp_(i) , t_zero=temp(i) , fels_type = fels_type ) 
+!    enddo
 
-    if (abs(temperature1 - temp_(2) ) .lt. tolerance_ ) then
-      temperature2 = temp(2)
-      return
-    endif
+!    if (abs(temperature1 - temp_(2) ) .lt. tolerance_ ) then
+!      temperature2 = temp(2)
+!      return
+!    endif
 
-    if ( (temperature1 - temp_(1) ) * (temperature1 - temp_(2) ) .lt.0 ) then
-      temp(3) = temp (2)
-    elseif ( (temperature1 - temp_(3) ) * (temperature1 - temp_(2) ) .lt.0 ) then
-      temp(1) = temp (2)
-    else
-      stop "surface_temp"
-    endif
-  enddo
-end subroutine
+!    if ( (temperature1 - temp_(1) ) * (temperature1 - temp_(2) ) .lt.0 ) then
+!      temp(3) = temp (2)
+!    elseif ( (temperature1 - temp_(3) ) * (temperature1 - temp_(2) ) .lt.0 ) then
+!      temp(1) = temp (2)
+!    else
+!      stop "surface_temp"
+!    endif
+!  enddo
+!end subroutine
+
 ! =============================================================================
 !> \brief Compute standard temperature [K] for specific height [km]
 !!
@@ -369,7 +371,7 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
   z = (/11.0 , 20.1 , 32.1 , 47.4 , 51.4 , 71.7 , 85.7, 100.0, 200.0, 300.0/)
   c = (/-6.5,   0.0,   1.0,   2.75,  0.0,  -2.75, -1.97,  0.0,   0.0,   0.0/)
   d = (/ 0.3,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0/)
-  t = T0
+  t = atmosphere%temperature%standard
 
   if ( present (fels_type)) then
     if (fels_type .eq. "US1976" ) then

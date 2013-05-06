@@ -938,7 +938,7 @@ endif
       write(log%unit,form_inheader ) , 'Warsaw University of Technology'
       write(log%unit , form_header ) 
       write(log%unit,form_inheader ) , 'Copyright 2013 by Marcin Rajner'
-      write(log%unit,form_inheader ) , 'GPL v'
+      write(log%unit,form_inheader ) , 'License: GPL v3 or later'
       write(log%unit , form_header ) 
     end subroutine
 

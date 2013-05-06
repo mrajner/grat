@@ -3,4 +3,6 @@
 
 all: 
 	make ../examples/example_aggf -C ../src
-	time ./example_aggf
+
+example:
+	./example_aggf

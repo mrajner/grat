@@ -21,7 +21,7 @@ s syntax
 
 -v  version
  s  -v
-    print version and author and exit
+    print version, author and license
     optional parameter
     default: version=.false.
 

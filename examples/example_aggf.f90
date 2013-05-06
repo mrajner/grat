@@ -122,7 +122,7 @@ subroutine compare_tabulated_green_functions ()
     allocate(y ( size (table (:,2))))
     x = table (:,1)
     y = table (:, columns(i))
-    call spline_interpolation ( x , y , x_interpolated, y_interpolated ) 
+    call spline_interpolation ( x , y , size(x), x_interpolated, y_interpolated , size(x_interpolated) ) 
     if (i.gt.1) then
       y_interpolated = ( y_interpolated - results(:,1) ) / results(:,1)  * 100.
     endif
@@ -314,7 +314,7 @@ end subroutine
 !! \date 2013-03-18
 ! ============================================================================
 subroutine aggf_resp_t ()
-  use mod_constants, only : dp , T0
+  use mod_constants, only : dp , atmosphere
   use mod_aggf, only : read_tabulated_green , compute_aggf
   real(dp), dimension(:,:), allocatable :: table , results
   integer :: i, j , file_unit
@@ -326,9 +326,9 @@ subroutine aggf_resp_t ()
   ! Header in first row with surface temperature [K]
   allocate ( results (0 : size (table(:,1)) , 4 ) )
   results(0,1) = 1./0
-  results(0,2) = T0 +   0. 
-  results(0,3) = T0 +  15.0 
-  results(0,4) = T0 + -45.0 
+  results(0,2) = atmosphere%temperature%standard +   0. 
+  results(0,3) = atmosphere%temperature%standard +  15.0 
+  results(0,4) = atmosphere%temperature%standard + -45.0 
   do i =1 , size (table(:,1))
     results ( i , 1 )  = table(i,1)
     do j =  2 , 4
