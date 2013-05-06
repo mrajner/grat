@@ -74,9 +74,10 @@ end subroutine
 !! \author M. Rajner
 ! =============================================================================
 subroutine convolve (site ,  green , results, denserdist , denseraz  )
+  use, intrinsic :: iso_fortran_env, only : error_unit
   use mod_constants, only: pi , dp, t0
   use mod_cmdline , only: site_data, green_functions , moreverbose , &
-    inverted_barometer , model , polygons , refpres , method 
+    inverted_barometer , model , polygons ,  method ,log
   use mod_utilities, only: d2r , spher_trig
   use mod_data, only: get_value
   use mod_polygon, only: chkgon
@@ -93,6 +94,10 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
   real(dp) :: normalize 
   type (result) ,intent(out)  :: results
 
+  ! check if greens functions were specified
+  if( size (green).eq.0) then
+    stop "No green functions!"
+  endif
 
   if (.not.allocated(green_common))  then
     call green_unification (green , green_common , denser = denserdist-1)
@@ -117,11 +122,12 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
         endif
       enddo
 
-      if (refpres%if) then
-       call get_value (refpres , lat , lon , ref_p , method =1)
-     else
+      !todo
+!      if (refpres%if) then
+!       call get_value (refpres , lat , lon , ref_p , method =1)
+!     else
        ref_p=0.
-     endif
+!     endif
 
       ! get polygons
       do i = 1 , 2
@@ -134,6 +140,7 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
 
       ! calculate area using spherical formulae
       if (val(1).ne.0) then
+        ! todo !!!!! spher area was changed to work with RADIANS
         call spher_area(green_common(igreen,1) , green_common(igreen,2), dble(360./nazimuth) , area) 
 
         ! force topography to zero over oceans

@@ -62,7 +62,7 @@ program grat
 
   use mod_constants , only : dp
   use mod_cmdline   , only : cpu_start , cpu_finish,  intro , print_settings , &
-    polygons , model , refpres, form_separator , log ,dates , sites, output, &
+    polygons , model ,  form_separator , log ,dates , sites, output, &
     moreverbose, form_60 , form_61, green ,denser
   use mod_green     , only : results ,convolve
   use mod_polygon   , only : read_polygon
@@ -78,19 +78,6 @@ program grat
   ! gather cmd line option decide where to put output
   call intro (program_calling = "grat" , accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
 
-  ! for grat set default for Green functions if not given in command line
-  ! options
-!  if (.not.allocated(green)) then
-!    dummy="-G,,,"
-!    call mod_cmdline_entry(dummy,cmd_line_entry,program_calling="grat")
-!  endif
-
-!  if (size(model) .eq. 0) then
-!    write(error_unit, * ) "ERROR:", program_calling, " -- model file not specified!"
-!    call exit
-!  endif
-
-
   ! read polygons
   do i =1 , 2
     call read_polygon (polygons(i))
@@ -99,16 +86,12 @@ program grat
   ! read models into memory
   do i =1 , size(model)
     if (model(i)%if) call read_netCDF (model(i))
+    print *, i, model(i)%name , model(i)%if_constant_value
   enddo
-
-  ! todo refpres in get_cmd-line
-  if (refpres%if) then
-    refpres%name="/home/mrajner/src/grat/data/refpres/vienna_p0.grd"
-    call read_netCDF (refpres)
-  endif
 
 
   allocate (results(size(sites)*max(size(dates),1)))
+
   iii=0
   do j = 1 , max(size (dates),1)
     if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date

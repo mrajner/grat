@@ -240,7 +240,7 @@ end function ntokens
 !! from opened files (unit) to read
 ! ==============================================================================
 subroutine skip_header ( unit , comment_char_optional )
-  use iso_fortran_env, only: iostat_end
+  use, intrinsic :: iso_fortran_env, only: iostat_end
   integer , intent (in) :: unit 
   character (len = 1) , optional :: comment_char_optional
   character (len = 60 ) :: dummy
@@ -422,24 +422,38 @@ end function
 !!
 !! Computes spherical area on unit (default if optional argument \c radius is
 !! not given) sphere given by:
-!!   method 1
-!!    distance from station and azimuth angle 
+!!   - method 1 (\c alternative_method not given or \c alternative_method .false.)
+!!    - distance from station, segment size in spher distance and angle
+!!   - method 2 (\c alternative_method .true.)
+!!    - distance from station, segment size in spher distance and angle
 !!
-!! all input angles in radians
 !! 
-!! The ilustration below explain method
-!! \image latex /home/mrajner/src/grat/doc/rysunki/spher_area.pdf
+!! The ilustration explain optional \c method argument
+!! \latexonly
+!! \begin{center}
+!!  \tikzsetfigurename{spher_area} 
+!!  \input{/home/mrajner/src/grat/doc/rysunki/spher_area}
+!! \end{center}
+!! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/rysunki/spher_area.svg
+!!
+!! \warning All input angles in radiana output area on unit sphere or 
+!! in square units of given (optionally) \c radius.
 ! =============================================================================
-subroutine spher_area (distance ,ddistance, azstp,  area, method )
+subroutine spher_area (distance ,ddistance, azstp,  area, radius, alternative_method )
   use mod_constants, only: dp, sp
   real(dp), intent(out) :: area
   real(dp), intent(in)  :: distance,ddistance 
   real(dp), intent(in)  :: azstp
-  integer , intent(in), optional :: method
+  logical, intent(in), optional :: alternative_method
+  real(dp), intent(in), optional :: radius
 
-  area =  (-cos (d2r(distance+ddistance/2.)) &
-           + cos (d2r(distance-ddistance/2.)))*d2r(azstp)
+  if (present(alternative_method).and.alternative_method) then
+    area =  (-cos (ddistance) + cos (distance))*(azstp)
+  else
+    area =  (-cos (distance+ddistance/2.)+cos(distance-ddistance/2.))*(azstp)
+  endif
+  if(present(radius)) area = area * radius**2
 
 end subroutine
 
@@ -520,7 +534,7 @@ end subroutine
 !! \author M. Rajner
 ! =============================================================================
 subroutine count_records_to_read (file_name, rows , columns , comment_char )
-  use iso_fortran_env
+  use, intrinsic:: iso_fortran_env
   integer , optional , intent (out) :: rows, columns
   character(*) :: file_name
   character(255) :: line

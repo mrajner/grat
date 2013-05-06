@@ -8,7 +8,7 @@
 module mod_cmdline
 
   use mod_constants, only: dp 
-  use iso_fortran_env
+  use, intrinsic :: iso_fortran_env
 
   implicit none
 
@@ -135,11 +135,11 @@ module mod_cmdline
   end type
 
   ! External files
-  type(file) ::  log  , output , refpres , moreverbose
+  type(file) ::  log  , output , moreverbose
   type(file) , allocatable, dimension (:) :: model 
 
-  character (len =40) :: model_names (5) = ["pressure_surface" , &
-    "temperature_surface" , "topography" , "landsea" , "pressure levels" ]
+!  character (len =40) :: model_names (5) = ["pressure_surface" , &
+!    "temperature_surface" , "topography" , "landsea" , "pressure levels" ]
 
 
   character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
@@ -370,9 +370,6 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
 !      endif
     case ("-B")
       if (cmd_line_entry%field(1).eq."N" ) inverted_barometer = .false.
-    case ("-Q")
-      if (cmd_line_entry%field(1).eq."+" ) refpres%if = .true.
-      write (fileunit_tmp , form_62) "Reference pressure was set."
     case ('-D')
       call parse_dates ( cmd_line_entry )
     case ('-F')
@@ -1133,6 +1130,7 @@ function dataname(abbreviation)
   dataname="unknown"
   if (abbreviation.eq."LS") dataname = "Land-sea mask"
   if (abbreviation.eq."SP") dataname = "Surface pressure"
+  if (abbreviation.eq."RS") dataname = "Reference surface pressure"
 end function
 
 end module mod_cmdline

@@ -1,0 +1,49 @@
+%\documentclass{article}
+\documentclass{standalone}
+\usepackage{gravimeter}
+\usepackage{xparse}
+
+
+\NewDocumentCommand{\partikle}{O{} O{7} O{7} m}{
+  \def\rnd{.%
+    \pdfuniformdeviate10%
+    \pdfuniformdeviate10%
+    \pdfuniformdeviate10%
+  }%
+  \def\SquareUnit{1.15}%
+  \pgfmathsetmacro\RmaxParticle{.38}%
+  \def\cols{#2}%
+  \def\rows{#3}%
+  \begin{tikzpicture}[baseline,trim left={0.5*\cols cm +1 cm},
+  trim right={0.5*\cols cm +1 cm}]
+    \foreach \i in {1,...,\cols}{
+      \foreach \j in {1,...,\rows}{
+        \pgfmathsetmacro\radius{\RmaxParticle*\rnd}
+        \pgfmathsetmacro\l{1.3*\SquareUnit-2*\radius}
+        \pgfmathsetmacro\x{(\i-1)*\SquareUnit+\radius+\l*\rnd}
+        \pgfmathsetmacro\y{(\j-1)*\SquareUnit+\radius+\l*\rnd}
+        \fill[#1] (\x,\y)circle[radius=\radius];
+      }
+    }
+    \draw (0,0) rectangle +(\cols+1,\rows+1);
+  \end{tikzpicture}%
+}
+
+\begin{document}
+  
+
+  \centering
+
+  \pdfsetrandomseed0
+\begin{tikzpicture}
+\clip circle(7.1cm); 
+  \node{\partikle[scale=1,draw=violet,fill=violet!30][9][9]{}};
+  \node{
+\gravimeter[scale=0.8,fg5={draw=violet,ultra thick}]%
+};
+\draw[draw,line width=1mm,violet] circle(7.095cm); 
+\clip circle(7.1cm); 
+  \node{\partikle[scale=1,draw=red,,fill=violet!30][19][19]{}};
+%  \partikle[scale=0.5,draw=violet,fill=violet!30][9][9]{}%
+\end{tikzpicture}
+\end{document}

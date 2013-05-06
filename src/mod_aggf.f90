@@ -180,7 +180,7 @@ subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
     endif
   enddo
 
-  aggf_val = -G * dA * aggf_val * 1e8 * 1000 
+  aggf_val = -gravity%constant * dA * aggf_val * 1e8 * 1000 
 
   !> if you put the optional parameter \c if_normalization=.false.
   !! this block will be skipped
@@ -235,7 +235,7 @@ subroutine standard_pressure (height, pressure , &
   sfc_temperature = T0
   sfc_pressure = p0
   sfc_height = 0.
-  sfc_gravity = g0
+  sfc_gravity = earth%gravity%mean
 
   if (present(h_zero)) then
     sfc_height = h_zero
@@ -283,7 +283,7 @@ subroutine standard_gravity ( height , g )
   real(dp), intent(in)  :: height
   real(dp), intent(out) :: g
 
-  g= g0 * ( r0 / ( r0 + height ) )**2
+  g= earth%gravity%mean * ( r0 / ( r0 + height ) )**2
 end subroutine
 
 
@@ -472,10 +472,10 @@ end function
   if (present( R_opt ) ) then
     R = R_opt
     aux = h  + R  - sqrt(  R**2  + (h/2. ) ** 2 )
-    bouger = 2 * pi * G  * aux 
+    bouger = 2 * pi * gravity%constant  * aux 
   else
     aux = h
-    bouger = 2 * pi * G * aux
+    bouger = 2 * pi * gravity%constant * aux
     return
   endif
 end function
@@ -491,7 +491,7 @@ function simple_def (R)
   real(dp) :: simple_def
 
   delta = 0.22e-11 * R 
-  simple_def = g0 / R0 * delta * ( 2. - 3./2. * rho_crust / rho_earth &
+  simple_def = earth%gravity%mean / R0 * delta * ( 2. - 3./2. * rho_crust / rho_earth &
     -3./4. * rho_crust / rho_earth * sqrt (2* (1. )) ) * 1000
 end function
 

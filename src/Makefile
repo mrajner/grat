@@ -1,6 +1,9 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
-al: installlib install
+
+# ewr:t
+l:libgrat.a
+al: ../bin/grat example
 
 
   # compiler
@@ -14,7 +17,7 @@ al: installlib install
   # data for computation
   DAT_DIR  = /home/mrajner/dat
   NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
-  SFC      = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
+  SP      = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
   TMP      = $(NCEP_DIR)/air.sig995.2011.nc@@:air:lon:lat:level:time
   LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y:
   GRN_r    = ../dat/rajner_green.dat
@@ -25,7 +28,10 @@ al: installlib install
   fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
   # fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
   fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
-
+	#todo vienna
+  RS 			 = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
+RS 			 = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres
+RS 			 = 101300@RS
   SRCS  = mod_constants.f90    \
           mod_utilities.f90    \
           mod_cmdline.f90      \
@@ -75,8 +81,8 @@ all:          \
 
 
 example: 
-	$(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
-	@$(PROGS_DIR)/grat -V -F /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air -SR10.2/12/11/11,9,9 -Q -Ls
+	@$(PROGS_DIR)/grat V -F $(SP) , $(RS)  -SR,2,2,2 , -Ls
+	# $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 	# $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 ddd:

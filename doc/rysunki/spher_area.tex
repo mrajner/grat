@@ -2,20 +2,59 @@
 \usepackage{tikz}
 
 \begin{document}
+  \tikzset{
+    small dot/.style={
+      inner sep=0,
+      fill,
+      minimum size=4pt,
+      circle
+    }
+  }
   \begin{tikzpicture}
     \def\radius{3}
-    \def\dist{30}
-    \def\distt{60}
-    \coordinate (O) at (0,0);
-%    \draw (0,0) rectangle (4,4);
-    \draw circle (\radius);
-    \draw [red,thick] (O) -- (0:4);
-    \draw (O) -- (\dist:\radius) ;
-    \draw (O) -- (\distt:\radius) ;
-    \pgfmathsetmacro{\h}{\radius - \radius * cos (\dist)}
-    \pgfmathsetmacro{\hh}{\radius - \radius * cos (\distt)}
-    \draw[green , ultra thick] (\radius,0) -- + (180:\h ) ;
-    \draw[blue ,  thick] (\radius,0) -- + (180:\hh ) ;
-    
+    \def\dist{4}
+    \def\ddist{3}
+    \def\da{40}
+
+    \def\spherarea{
+    \node (stacja) at (0,0) [small dot,label={$S$}]{};
+    \draw [fill=gray!20]
+    (\da/2:\dist-\ddist/2) 
+    arc (\da/2:-\da/2:\dist-\ddist/2)
+    --(-\da/2:\dist+\ddist/2)
+    arc (-\da/2:\da/2:\dist+\ddist/2)
+    --cycle
+    ;
+
+    \draw[latex-latex](-\da/2:\dist)
+    arc (-\da/2:\da/2:\dist)
+    ;
+    \node [right]at (0:\dist){$\rm d A$};
+    }
+
+    \spherarea
+
+    \draw[latex-latex,thick]
+    (stacja)--+(0:\dist)node [above,midway]{$\psi$};
+    \draw[latex-latex,thick]
+    (stacja)
+    ++(-\da/2:\dist-\ddist/2)
+    --
+    +(-\da/2:\ddist)
+    node [below,midway,sloped] {$\rm d \psi$};
+    ;
+
+    \begin{scope}[shift={(7,0)}]
+    \spherarea
+
+    \draw[latex-latex,thick]
+    (stacja)--+(0:\dist-\ddist/2)node [above,midway]{$\psi_1$};
+    \draw[latex-latex,thick]
+    (stacja)
+    --
+    +(-\da/2:\dist+\ddist/2)
+    node [below,midway,sloped] {$\rm d \psi$};
+    ;
+    \end{scope}
   \end{tikzpicture}
 \end{document}

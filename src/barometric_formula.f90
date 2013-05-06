@@ -9,14 +9,19 @@ program check_transfer
 
   !!!!
   real (dp) :: r ,dr , da , area
-  r= 90.
-  dr=180
-  da= 360.
+  r= pi/2
+  dr=pi
+  da= 2*pi
 
-  do i = 1,3
-  call spher_area(r , dr , da , area, i)
-  print * , area - 4 * pi
-  enddo
+  call spher_area(r , dr , da , area,radius=dble(1),alternative_method=.false.)
+  print * , area 
+
+  r= 0.
+  dr= pi
+  da= 2*pi
+
+  call spher_area(r , dr , da , area,radius=dble(1),alternative_method=.true.)
+  print * , area 
 
   call exit
   !!!!
