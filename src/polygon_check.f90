@@ -6,7 +6,7 @@
 program polygon_check
   use mod_cmdline, only: polygons , sites , output , intro , print_settings
   use mod_polygon, only: read_polygon,chkgon
-  
+
   implicit none
   integer i , j
   integer iok 
@@ -23,8 +23,8 @@ program polygon_check
     enddo
   else
     do i=1 , size (sites)
-      call chkgon ( sites(i)%lon, sites(i)%lat , polygons(1) , iok )
-      write (output%unit , '(2f10.5,i4)' ) sites(i)%lon, sites(i)%lat   , iok
+      call chkgon (sites(i)%lon, sites(i)%lat, polygons(1), iok )
+      write (output%unit, '(2f10.5,i4)' ) sites(i)%lon, sites(i)%lat   , iok
     enddo
   endif 
 end program

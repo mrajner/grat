@@ -24,11 +24,11 @@ do
   else
     NAME_out=podklad2; E=-E200;Z="-I0.01 -Q"
   fi
-  #grdmath \
-    #  -F \
-    #  -R${R} -I${I} \
-    #  0 1 RAND \
-    #  = ${NAME}_F.grd
+  grdmath \
+      -F \
+      -R${R} -I${I} \
+      0 1 RAND \
+      = ${NAME}_F.grd
 
   grdsample ${NAME}_F.grd ${Z} -G${NAME}.grd
 
@@ -62,5 +62,7 @@ do
 
   ps2raster\
     -P -Tf -A ${NAME_out}.ps
+
+  rm ${NAME_out}.ps
 
 done

@@ -1,5 +1,6 @@
 ! ==============================================================================
-!> Some routines to deal with inclusion or exclusion of polygons
+!> \file
+!! Some routines to deal with inclusion or exclusion of polygons
 !!
 !! \author M.Rajner
 !! \date 2012-12-20
@@ -32,39 +33,39 @@ subroutine read_polygon (polygon)
   if (polygon%if) then
     ! polygon file
     open (newunit = polygon%unit , action="read", file=polygon%name )
-      
-      ! first get the number of polygons
-      call skip_header(polygon%unit)
-      read (polygon%unit , * ) number_of_polygons
-      allocate (polygon%polygons(number_of_polygons))
 
-      ! loop over all polygons in file
-      do  i=1, number_of_polygons
+    ! first get the number of polygons
+    call skip_header(polygon%unit)
+    read (polygon%unit , * ) number_of_polygons
+    allocate (polygon%polygons(number_of_polygons))
+
+    ! loop over all polygons in file
+    do  i=1, number_of_polygons
+      call skip_header(polygon%unit)
+      read (polygon%unit, * ) nvertex
+      allocate (polygon%polygons(i)%coords(nvertex, 2 ))
+      call skip_header(polygon%unit)
+      read (polygon%unit, * ) pm
+      if (pm.eq."+") polygon%polygons(i)%use=.true.
+      if (pm.eq."-") polygon%polygons(i)%use=.false.
+      ! override file +|- with global given with command line
+      if (polygon%pm.eq."+") polygon%polygons(i)%use=.true.
+      if (polygon%pm.eq."-") polygon%polygons(i)%use=.false.
+      do j = 1 , nvertex
         call skip_header(polygon%unit)
-        read (polygon%unit, * ) nvertex
-        allocate (polygon%polygons(i)%coords(nvertex, 2 ))
-        call skip_header(polygon%unit)
-        read (polygon%unit, * ) pm
-          if (pm.eq."+") polygon%polygons(i)%use=.true.
-          if (pm.eq."-") polygon%polygons(i)%use=.false.
-          ! override file +|- with global given with command line
-          if (polygon%pm.eq."+") polygon%polygons(i)%use=.true.
-          if (polygon%pm.eq."-") polygon%polygons(i)%use=.false.
-        do j = 1 , nvertex
-          call skip_header(polygon%unit)
-          ! lon lat , checks while reading
-          read (polygon%unit, * ) polygon%polygons(i)%coords(j,1:2)
-          if ( polygon%polygons(i)%coords(j,1).lt.-180. &
-           .or.polygon%polygons(i)%coords(j,1).gt.360.  & 
-           .or.polygon%polygons(i)%coords(j,2).lt.-90.  & 
-           .or.polygon%polygons(i)%coords(j,2).gt. 90. ) then 
-            write (error_unit , form_63) "Somethings wrong with coords in polygon file"
-            call exit
+        ! lon lat , checks while reading
+        read (polygon%unit, * ) polygon%polygons(i)%coords(j,1:2)
+        if ( polygon%polygons(i)%coords(j,1).lt.-180. &
+          .or.polygon%polygons(i)%coords(j,1).gt.360.  & 
+          .or.polygon%polygons(i)%coords(j,2).lt.-90.  & 
+          .or.polygon%polygons(i)%coords(j,2).gt. 90. ) then 
+          write (error_unit , form_63) "Somethings wrong with coords in polygon file"
+          call exit
           elseif ( polygon%polygons(i)%coords(j,1).lt.0. ) then
-            polygon%polygons(i)%coords(j,1) = polygon%polygons(i)%coords(j,1) + 360.
-          endif
-        enddo
+          polygon%polygons(i)%coords(j,1) = polygon%polygons(i)%coords(j,1) + 360.
+        endif
       enddo
+    enddo
     close (polygon%unit)
 
     ! print summary to log file
@@ -84,7 +85,6 @@ subroutine read_polygon (polygon)
 
 end subroutine
 
-
 ! ==============================================================================
 !> Check if point is in closed polygon
 !!
@@ -101,6 +101,10 @@ end subroutine
 !! \author D.C. Agnew \cite Agnew96
 !! \author adopted by Marcin Rajner
 !! \date 2013-03-04
+!! 
+!! The ilustration explain exclusion idea\n
+!! \image latex /home/mrajner/src/grat/doc/rysunki/polygon_ilustration.pdf "capt" width=\textwidth
+!! \image html /home/mrajner/src/grat/doc/rysunki/polygon_ilustration.png
 ! ==============================================================================
 subroutine chkgon (rlong , rlat , polygon , iok)
   use mod_constants, only: dp , dp
@@ -110,7 +114,7 @@ subroutine chkgon (rlong , rlat , polygon , iok)
   integer , intent (out) :: iok
   real(dp) :: rlong2
   type( polygon_info ) , intent (in) :: polygon
-  
+
   ! Check first if we need to use this soubroutine
   if (size(polygon%polygons).eq.0) then
     iok=0
@@ -125,30 +129,30 @@ subroutine chkgon (rlong , rlat , polygon , iok)
     if(.not.polygon%polygons(i)%use) then
       if (  if_inpoly(rlong  ,rlat,polygon%polygons(i)%coords).ne.0 &
         .or.if_inpoly(rlong2 ,rlat,polygon%polygons(i)%coords).ne.0 ) then
-        iok=0
-        return
-      endif
+      iok=0
+      return
     endif
-  enddo
-    ianyok=0
-  ! polygon is one we should be in; test to see if we are, and if so set
-  ! iok to 1 and return
-  do i=1,size(polygon%polygons)
-    if(polygon%polygons(i)%use) then
-       ianyok = ianyok+1
-      if (  if_inpoly(rlong  ,rlat,polygon%polygons(i)%coords).ne.0 &
-        .or.if_inpoly(rlong2 ,rlat,polygon%polygons(i)%coords).ne.0 ) then
-        iok=1
-        return
-      endif
-    endif
+  endif
+enddo
+ianyok=0
+! polygon is one we should be in; test to see if we are, and if so set
+! iok to 1 and return
+do i=1,size(polygon%polygons)
+  if(polygon%polygons(i)%use) then
+    ianyok = ianyok+1
+    if (  if_inpoly(rlong  ,rlat,polygon%polygons(i)%coords).ne.0 &
+      .or.if_inpoly(rlong2 ,rlat,polygon%polygons(i)%coords).ne.0 ) then
+    iok=1
+    return
+  endif
+endif
   enddo
   ! not inside any polygon%polygons; set iok to 0 if there are any we should have
   ! been in
-    iok = 1
-    if(ianyok.gt.0) iok = 0
+  iok = 1
+  if(ianyok.gt.0) iok = 0
 
-    return
+  return
 end subroutine
 
 ! ==============================================================================
@@ -177,20 +181,20 @@ integer function if_inpoly(x,y,coords)
       coords(i+1,2) - y )
     !  on edge - know the answer
     if(isc.eq.4) then
-        if_inpoly = 2
-        return
+      if_inpoly = 2
+      return
     endif
     if_inpoly = if_inpoly + isc
   enddo
-! check final segment
+  ! check final segment
   isc = ncross( &
     coords (size(coords(:,1)) , 1 ) - x , &
     coords (size(coords(:,2)) , 2 ) - y , &
     coords (1 , 1 ) - x , & 
     coords (1 , 2 ) - y )
   if(isc.eq.4) then
-      if_inpoly = 2
-      return
+    if_inpoly = 2
+    return
   endif
   if_inpoly = if_inpoly + isc
   if_inpoly = if_inpoly/2
@@ -255,16 +259,42 @@ integer function ncross(x1,y1,x2,y2)
     if(y1.gt.0) ncross = -2
     return
   endif
-! one end touches -x axis - goes which way?
+  ! one end touches -x axis - goes which way?
   if(y1.eq.0) then
     if(y2.lt.0) ncross = -1
     if(y2.gt.0) ncross = 1
   else
-! y2=0 - ends on x-axis
+    ! y2=0 - ends on x-axis
     if(y1.lt.0) ncross = 1
     if(y1.gt.0) ncross = -1
-    endif
+  endif
   return
 end function
 
 end module
+
+!\appendix
+! \chapter{Polygon}
+!  This examples show how the exclusion of~selected polygons works
+!  \begin{figure}[htb]
+!    \includegraphics[width=0.5\textwidth]{../mapa1}
+!    \caption{If only excluded polygons (red area) are given 
+!    all points falling in~it will be excluded (red points) all other
+!    will be included}
+!  \end{figure}
+!  \begin{figure}
+!    \includegraphics[width=0.5\textwidth]{../mapa2}
+!    \caption{If at least one included are are given
+!    (green area) than all points which not fall into included area will
+!    be excluded}
+!  \end{figure}
+!  \begin{figure}
+!    \includegraphics[width=0.5\textwidth]{../mapa3}
+!    \caption{If there is overlap of~polygons the exclusion has higher
+!    priority}
+!  \end{figure}
+!  \chapter{Interpolation}
+!  \begin{figure}
+!  \input{/home/mrajner/src/grat/doc/interpolation_ilustration.tex}
+!  \caption{Interpoloation}
+!  \end{figure}

@@ -1,7 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-# ewr:t
+
+e: value_check example
 
 
   # compiler
@@ -85,9 +86,10 @@ all:          \
 
 
 example: 
-	@$(PROGS_DIR)/grat V -F $(SP) , $(RS)  -SR,2,2,2 , -Ls
-	$(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
-	$(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+	$(PROGS_DIR)/value_check -F $(SP) -S joz , 52,21,1 -L:b -I 2
+#   @$(PROGS_DIR)/grat V -F $(SP) , $(RS)  -SR,2,2,2 , -Ls
+#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
@@ -130,3 +132,11 @@ clean:
 	rm -f *.o *.mod tmp* *.a fort??????
 
 todo: joinnc
+
+HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
+HELPS=$(addprefix ../dat/, $(HELP_NAMES))
+helps: $(HELPS) 
+$(HELPS): $(PROGS)
+
+%.hlp: 
+	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@

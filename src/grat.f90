@@ -38,32 +38,15 @@
 !! GNU General Public License for more details.
 !! \n\n 
 !! You should have received a copy of the GNU General Public License
-!! along with this program (LICENSE.txt). grat.f90
-!! If not, see <http://www.gnu.org/licenses/>. tmp.sh
-!! \include LICENSE.txt
+!! along with this program.
+!! If not, see <http://www.gnu.org/licenses/>.
+!! \page License
+!! \include LICENSE
 !! 
 !! \section Usage
 !! After sucsesfull compiling make sure the executables are in your search path
 !! 
 !! There is main program \c grat and some utilities program. For the options see
-!! the appropriate help:
-!!  - \link grat-h grat\endlink
-!!  - \link value_check-h value_check\endlink
-!!  - \link polygon_check-h polygon_check\endlink
-!!
-!! \page grat-h grat
-!!    \include grat.hlp
-
-!> \page ilustration
-!! \image latex /home/mrajner/src/grat/doc/interpolation_ilustration.pdf "example"
-!! \image latex /home/mrajner/src/grat/doc/mapa1
-!! \image latex /home/mrajner/src/grat/doc/mapa2
-!! \image latex /home/mrajner/src/grat/doc/mapa3
-!! 
-!! \image html /home/mrajner/src/grat/doc/interpolation_ilustration.png "interpolation example" width=\textwidth
-!! \image html /home/mrajner/src/grat/doc/mapa1.png
-!! \image html /home/mrajner/src/grat/doc/mapa2.png
-!! \image html /home/mrajner/src/grat/doc/mapa3.png
 
 !> \page intro_sec External resources
 !!   - <a href="https://code.google.com/p/grat">project page</a> (git repository)
@@ -71,8 +54,7 @@
 !!   \latexonly \href{https://grat.googlecode.com/git/doc/html/index.html}{html} version of this manual\endlatexonly
 !! \TODO give source for grant presentation
 !!   - <a href="">[pdf]</a> command line options (in Polish)
-
-!> \example example_aggf.f90
+!! \example example_aggf.f90
 !! \example grat_usage.sh
 ! ==============================================================================
 program grat
@@ -88,7 +70,7 @@ program grat
   implicit none
   real(dp) :: x , y , z , lat ,lon 
   integer :: i , j , ii, iii
-  
+
 
   ! program starts here with time stamp
   call cpu_time(cpu_start)
@@ -131,14 +113,15 @@ program grat
   enddo
 
 
-  if (moreverbose%if .and. moreverbose%names(1).eq."s") then
-    print '(15f13.5)', &
-      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
-      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
-      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
-      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
-      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
-  endif
+  !todo
+!  if (moreverbose%if .and. moreverbose%names(1).eq."s") then
+!    print '(15f13.5)', &
+!      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
+!      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
+!      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
+!      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
+!      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
+!  endif
 
 
   ! execution time-stamp

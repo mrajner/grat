@@ -243,18 +243,27 @@ end subroutine check
 
 ! =============================================================================
 !> \brief Returns the value from model file
+!! 
+!! The ilustration explain optional \c method argument
+!! \latexonly
+!! \begin{center}
+!!  \tikzsetfigurename{interpolation_ilustration}
+!!  \input{/home/mrajner/src/grat/doc/rysunki/interpolation_ilustration}\\
+!! \end{center}
+!! \endlatexonly
+!! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
 ! =============================================================================
 subroutine get_value( model, lat , lon , val ,level, method )
  
   use mod_constants , only: dp 
-  use mod_cmdline , only: file
+  use mod_cmdline , only: moreverbose ,file
 
   type(file) , intent (in) :: model
   real(dp) , intent (in) :: lat,lon
   real(dp) , intent(out) ::  val 
   integer , optional , intent(in) :: method
   integer , optional , intent(in) :: level
-  integer :: i , ilevel =1 
+  integer :: i ,j , ilevel =1 
   integer  :: ilon, ilat , ilon2 , ilat2
   real(dp), dimension(4,3) :: array_aux 
 
@@ -286,12 +295,15 @@ subroutine get_value( model, lat , lon , val ,level, method )
       array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, ilevel) ]
       array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
       array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
-      !todo
-!      if (moreverbose%if.and.moreverbose%names(1).eq."b") then
-!          write(moreverbose%unit ,  '(3f15.4)') , (array_aux(i,:), i = 1 ,4)
-!          write(moreverbose%unit ,  '(">")')
-!      endif
-        val = bilinear ( lon , lat , array_aux )
+
+      do i=1,size(moreverbose)
+        if (moreverbose(i)%dataname.eq."b") then
+          write(moreverbose(i)%unit ,  '(3f15.4," b")') , &
+            (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
+          write(moreverbose(i)%unit ,  '(">")')
+        endif
+      enddo
+      val = bilinear ( lon , lat , array_aux )
       return
     endif
   endif
@@ -301,15 +313,20 @@ subroutine get_value( model, lat , lon , val ,level, method )
   if (ilon .eq. size (model%lon) ) then
     if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
   endif
-  !todo
-!  if (moreverbose%if.and.moreverbose%names(1).eq."n") then
-!    write(moreverbose%unit ,  '(3f15.4)') , &
-!       model%lon(ilon) , model%lat(ilat) , model%data(ilon,ilat,ilevel)
-!    write(moreverbose%unit ,  '(">")')
-!  endif
+
+  do i=1,size(moreverbose)
+    if (moreverbose(i)%dataname.eq."n") then
+      write(moreverbose(i)%unit ,  '(3f15.4," n")') , &
+         model%lat(ilat) , model%lon(ilon) , model%data(ilon,ilat,ilevel)
+      write(moreverbose(i)%unit ,  '(">")')
+    endif
+  enddo
   val = model%data (ilon , ilat, ilevel)
 end subroutine 
 
+!> Performs bilinear interpolation
+!! \author Marcin Rajner
+!! \date 2013-05-07
 function bilinear (x , y , aux )
   use mod_constants, only: dp
   real(dp) :: bilinear

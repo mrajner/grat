@@ -13,9 +13,9 @@ module mod_aggf
   private
 
   public:: size_ntimes_denser, read_tabulated_green, standard_pressure, &
-         standard_temperature,               bouger,        simple_def, &
-             standard_density,     standard_gravity,      compute_aggf, &
-               compute_aggfdt,        GN_thin_layer,         geop2geom 
+    standard_temperature,               bouger,        simple_def, &
+    standard_density,     standard_gravity,      compute_aggf, &
+    compute_aggfdt,        GN_thin_layer,         geop2geom 
 
 contains
 
@@ -43,7 +43,7 @@ subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
   if (present ( delta_) )  deltat = delta_
   if (present ( aggf ) .and. aggf ) then
     h_ = 0.001 ! default if we compute dggfdh using this routine
-      if (present ( delta_) )  h_ = deltat
+    if (present ( delta_) )  h_ = deltat
     call compute_aggf ( psi , aux , h = + h_ )
     aggfdt = aux
     call compute_aggf ( psi , aux , h= -h_ )
@@ -79,15 +79,15 @@ subroutine read_tabulated_green ( table , author )
     rows    = 80
     columns = 5
     file_name = '../dat/huang_green.dat'
-  elseif ( author .eq. "rajner" ) then
+  else if ( author .eq. "rajner" ) then
     rows    = 85
     columns = 5
     file_name = '../dat/rajner_green.dat'
-  elseif ( author .eq. "merriam" ) then
+  else if ( author .eq. "merriam" ) then
     rows      = 85
     columns   = 6
     file_name = '../dat/merriam_green.dat'
-  elseif ( author .eq. "farrell" ) then
+  else if ( author .eq. "farrell" ) then
     file_name = '/home/mrajner/src/gotic2/data/grn1.data'
     call count_records_to_read(file_name, rows = rows, columns = columns)
   else
@@ -107,20 +107,19 @@ subroutine read_tabulated_green ( table , author )
   close(file_unit)
 end subroutine
 
-
 ! ==============================================================================
 !> This subroutine computes the value of atmospheric gravity green functions
 !! (AGGF) on the basis of spherical distance (psi)
 ! ==============================================================================
 subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
-                      t_zero , h ,  first_derivative_h , first_derivative_z , fels_type )
+    t_zero , h ,  first_derivative_h , first_derivative_z , fels_type )
   implicit none
   real(dp), intent(in)          :: psi       !< spherical distance from site   [degree]
   real(dp), intent(in),optional :: hmin ,  & !< minimum height, starting point [km]     (default=0)
-                               hmax ,  & !< maximum height. eding point    [km]     (default=60)
-                               dh ,    & !< integration step               [km]     (default=0.0001 -> 10 cm)
-                               t_zero, & !< temperature at the surface     [K]      (default=288.15=t0)
-                               h         !< station height                 [km]     (default=0)
+    hmax ,  & !< maximum height. eding point    [km]     (default=60)
+    dh ,    & !< integration step               [km]     (default=0.0001 -> 10 cm)
+    t_zero, & !< temperature at the surface     [K]      (default=288.15=t0)
+    h         !< station height                 [km]     (default=0)
   logical, intent(in), optional :: if_normalization , first_derivative_h , first_derivative_z
   character (len=*) , intent(in), optional  :: fels_type 
   real(dp), intent(out)         :: aggf_val
@@ -168,14 +167,14 @@ subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
       !! micro Gal / hPa / km
       if ( present ( first_derivative_z) .and. first_derivative_z ) then
         if (z.eq.h_min) then
-            aggf_val = aggf_val  &
-              + rho*( ((r0 + z)*cos(psir) - ( r0 + h_station ) ) / ( r**3 ) ) 
+          aggf_val = aggf_val  &
+            + rho*( ((r0 + z)*cos(psir) - ( r0 + h_station ) ) / ( r**3 ) ) 
         endif
       else
         !> aggf GN
         !! micro Gal / hPa
         aggf_val = aggf_val  &
-         + rho * ( ( (r0 + z ) * cos ( psir ) - ( r0 + h_station ) ) / ( r**3 ) ) * dz
+          + rho * ( ( (r0 + z ) * cos ( psir ) - ( r0 + h_station ) ) / ( r**3 ) ) * dz
       endif
     endif
   enddo
@@ -222,7 +221,7 @@ end subroutine
 !! Simplified method if optional argument if_simplificated = .true.
 ! =============================================================================
 subroutine standard_pressure (height, pressure , &
-          p_zero , t_zero , h_zero,  if_simplificated ,fels_type , inverted)
+    p_zero , t_zero , h_zero,  if_simplificated ,fels_type , inverted)
   implicit none
   real(dp) , intent(in)            :: height
   real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
@@ -266,8 +265,8 @@ subroutine standard_pressure (height, pressure , &
 
   !todo incorporate this
 
-!  Zdunkowski and Bott
-!  p(z) = p0 (T0-gamm z )/T0
+  !  Zdunkowski and Bott
+  !  p(z) = p0 (T0-gamm z )/T0
 
 
 end subroutine
@@ -375,27 +374,27 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
 
   if ( present (fels_type)) then
     if (fels_type .eq. "US1976" ) then
-    elseif (fels_type .eq. "tropical" ) then
+      elseif (fels_type .eq. "tropical" ) then
       z=(/ 2.0  , 3.0, 16.5 , 21.5 , 45.0 , 51.0, 70.0 , 100.0 , 200.0 , 300.0 /)
       c=(/-6.0 , -4.0, -6.7  , 4.0  , 2.2  , 1.0, -2.8  , -0.27  , 0.0   , 0.0 /)
       d=(/ 0.5  , 0.5 , 0.3  , 0.5  , 1.0  , 1.0 , 1.0   , 1.0   , 1.0   , 1.0 /)
       t=300.0
-    elseif (fels_type .eq. "subtropical_summer" ) then
+      elseif (fels_type .eq. "subtropical_summer" ) then
       z = (/ 1.5  , 6.5  , 13.0 , 18.0 , 26.0 , 36.0  , 48.0 ,  50.0 ,  70.0 , 100.0  /)
       c = (/-4.0 , -6.0  , -6.5  , 0.0  , 1.2  , 2.2  ,  2.5  ,  0.0   ,-3.0   ,-0.025/)
       d = (/ 0.5  , 1.0   , 0.5  , 0.5  , 1.0  , 1.0   , 2.5   , 0.5   , 1.0   , 1.0  /)
       t = 294.0
-    elseif (fels_type .eq. "subtropical_winter" ) then
+      elseif (fels_type .eq. "subtropical_winter" ) then
       z = (/ 3.0  ,10.0  , 19.0 , 25.0 , 32.0 , 44.5  , 50.0 ,  71.0 ,  98.0 , 200.0 /)
       c = (/-3.5 , -6.0  , -0.5  , 0.0  , 0.4  , 3.2  ,  1.6  , -1.8   , 0.7   , 0.0 /)
       d = (/ 0.5  , 0.5   , 1.0  , 1.0  , 1.0  , 1.0   , 1.0   , 1.0   , 1.0   , 1.0 /)
       t = 272.2
-    elseif (fels_type .eq. "subarctic_summer" ) then
+      elseif (fels_type .eq. "subarctic_summer" ) then
       z = (/  4.7 , 10.0 , 23.0 , 31.8 , 44.0 , 50.2  , 69.2 , 100.0 , 200.0 , 300.0 /)
       c = (/ -5.3 , -7.0 ,  0.0 ,  1.4 ,  3.0 , 0.7  , -3.3  , -0.2   , 0.0 ,   0.0 /)
       d = (/  0.5 ,  0.3 ,  1.0 ,  1.0 ,  2.0 , 1.0   , 1.5   , 1.0   , 1.0 ,   1.0 /)
       t = 287.0
-    elseif (fels_type .eq. "subarctic_winter" ) then
+      elseif (fels_type .eq. "subarctic_winter" ) then
       z = (/  1.0 ,  3.2 ,  8.5 , 15.5 , 25.0 , 30.0 , 35.0 , 50.0 , 70.0 , 100.0 /)
       c = (/  3.0 , -3.2 , -6.8 ,  0.0 , -0.6 ,  1.0 ,  1.2 ,  2.5 , -0.7 ,  -1.2 /)
       d = (/  0.4 ,  1.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
@@ -424,7 +423,7 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
     else
       cn = c(i+1)
     endif
-      aux = aux + d(i) * ( cn - c(i) )  * dlog ( dcosh ( (height - z(i)) / d(i) ) / dcosh (z(i)/d(i)) ) 
+    aux = aux + d(i) * ( cn - c(i) )  * dlog ( dcosh ( (height - z(i)) / d(i) ) / dcosh (z(i)/d(i)) ) 
   enddo
   temperature = t + c(1) * height/2. + aux/2.
 end subroutine
@@ -463,7 +462,7 @@ end function
 !> \brief Bouger plate computation
 !!
 ! ==============================================================================
-  real(dp) function bouger ( R_opt )
+real(dp) function bouger ( R_opt )
   real(dp), optional :: R_opt !< height of point above the cylinder
   real(dp) :: aux
   real(dp) :: R
@@ -493,7 +492,8 @@ function simple_def (R)
   real(dp) :: simple_def
 
   delta = 0.22e-11 * R 
-  simple_def = earth%gravity%mean / R0 * delta * ( 2. - 3./2. * earth%density%crust / earth%density%mean &
+  simple_def = earth%gravity%mean / R0 * &
+    delta * ( 2. - 3./2. * earth%density%crust / earth%density%mean &
     -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) ) * 1000
 end function
 

@@ -1,13 +1,7 @@
 ! =============================================================================
-!>  \file
-!! \mainpage
-!! \brief ...put...
-!! \page value_check-h value_check 
-!!    \include value_check.hlp
+!> \file
 !! \date 2013-01-09
 !! \author M. Rajner
-!!
-!! \date 2013-03-19 added -P (if point is excluded all values are zero)
 ! =============================================================================
 
 program value_check 
@@ -16,13 +10,14 @@ program value_check
   use mod_data     , only: get_variable, get_value,read_netCDF
   use mod_constants, only: dp
   use mod_polygon  , only: read_polygon, chkgon
-!  use ieee_arithmetic
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
   integer :: i,ii ,j ,start , imodel, iok
 
-  call intro          (program_calling = "value_check", accepted_switches="VFoShvIDLPR" , cmdlineargs=.true.)
+  call intro (program_calling = "value_check", &
+    accepted_switches="VFoShvIDLPR" , &
+    cmdlineargs=.true.)
   call print_settings (program_calling = "value_check")
 
   do i = 1 , size(model)
@@ -46,7 +41,8 @@ program value_check
   ! print header
   write (output%unit , '(30a15)', advance ="no"  ) "lat" , "lon"
   do i = 1 ,size(model)
-  if (model(i)%if .or. model(i)%if_constant_value ) write (output%unit , '(a15)',advance='no'  ) , trim ( model(i)%dataname )
+    if (model(i)%if .or. model(i)%if_constant_value ) &
+      write (output%unit,'(a15)',advance='no') , trim ( model(i)%dataname )
   enddo
   write (output%unit , *)
 
@@ -83,20 +79,19 @@ program value_check
           imodel = imodel + 1
           if (model(ii)%if) then 
             if (iok.eq.1) then
-              call get_value (model(ii), sites(i)%lat, sites(i)%lon, val(imodel), method=model(ii)%interpolation)
+              call get_value (model(ii), sites(i)%lat, sites(i)%lon, val(imodel), &
+                method=model(ii)%interpolation)
             else
               val (imodel) = 0
             endif
-          elseif (model(ii)%if_constant_value) then
+            elseif (model(ii)%if_constant_value) then
             val(imodel) = model(ii)%constant_value
           endif
         endif
       enddo
 
       write (output%unit ,   '(30f15.4)') , sites(i)%lat, sites(i)%lon, val
-
     enddo
-
   enddo
 
 end program
