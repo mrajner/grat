@@ -21,7 +21,7 @@ other:
 		interpolation_ilustration.pdf \
 		interpolation_ilustration.png 
 
-mapa1.pdf mapa2.pdf mapa3.pdf: ./polygon_ilustration.sh
+polygon_ilustration.pdf: polygon_ilustration.sh
 	bash $<
 
 interpolation_ilustration.pdf: interpolation_ilustration.tex
