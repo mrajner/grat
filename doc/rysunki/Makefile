@@ -3,13 +3,21 @@ all: \
 	podklad.pdf podklad2.pdf \
 	polygon_ilustration.pdf polygon_ilustration.png\
 	interpolation_ilustration.pdf\
-	interpolation_ilustration.svg
+	interpolation_ilustration.svg \
+	logo.pdf
 
-spher_area.pdf: spher_area.tex
+%.pdf: %.tex
 	pdflatex $<
 
+logo_grat.svg: logo_grat.pdf
+	pdf2svg $< $@
+
+# google code accept only png
+logo_grat.png: logo_grat.pdf
+	convert -density 700 $< $@
+
 %.svg:%.pdf
-	inkscape $< --export-plain-svg=$@ --export-text-to-path -w 50
+	inkscape $< --export-plain-svg=$@  # --export-text-to-path 
 %.png:%.pdf
 	convert -resize 900 $< $@
 
