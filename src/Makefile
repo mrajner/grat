@@ -2,64 +2,66 @@
 # for example: OBJS  = libgrat.a
 
 
-e: value_check example
+e: grat install
+	grat -L dddd  -V
 
 
-  # compiler
-  FC = ifort
 
-	# compiler flags
-  # FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
+# compiler
+FC = ifort
 
-  # libraries 
-  NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
-  FOULLIB = /home/mrajner/src/foul/foul.o -I/home/mrajner/src/foul
+# compiler flags
+# FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
 
-  # data for computation
-  DAT_DIR  = /home/mrajner/dat
-  NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
-  SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
-  TMP      = $(NCEP_DIR)/air.sig995.2011.nc@@:air:lon:lat:level:time
-  LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y:
-  GRN_r    = ../dat/rajner_green.dat
-  GRN_m    = ../dat/merriam_green.dat
-  POL      = ../polygon/baltyk.poly
-  GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-  H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
-  fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
-  # fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
-  fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
-	#todo vienna
-  RS 			 = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
-  RS 			 = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
-  RS 			 = 101300@RS
+# libraries 
+NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
+FOULLIB = /home/mrajner/src/foul/foul.o -I/home/mrajner/src/foul
 
-  SRCS  = mod_constants.f90    \
-          mod_utilities.f90    \
-          mod_cmdline.f90      \
-          mod_polygon.f90      \
-          mod_data.f90         \
-          mod_aggf.f90         \
-          mod_green.f90
+# data for computation
+DAT_DIR  = /home/mrajner/dat
+NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
+SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
+TMP      = $(NCEP_DIR)/air.sig995.2011.nc@@:air:lon:lat:level:time
+LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y:
+GRN_r    = ../dat/rajner_green.dat
+GRN_m    = ../dat/merriam_green.dat
+POL      = ../polygon/baltyk.poly
+GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
+H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
+fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
+# fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
+fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+#todo vienna
+RS 			 = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
+RS 			 = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
+RS 			 = 101300@RS
 
-  PROGSSRCS =                    \
-          grat.f90               \
-          value_check.f90        \
-          polygon_check.f90      \
-          real_vs_standard.f90   \
-					barometric_formula.f90
+SRCS  = mod_constants.f90    \
+				mod_utilities.f90    \
+				mod_cmdline.f90      \
+				mod_polygon.f90      \
+				mod_data.f90         \
+				mod_aggf.f90         \
+				mod_green.f90
 
-  EXAMPLESSRC =                \
-          example_aggf.f90
+PROGSSRCS =                    \
+															 grat.f90               \
+															 value_check.f90        \
+															 polygon_check.f90      \
+															 real_vs_standard.f90   \
+															 barometric_formula.f90
 
-  OBJS = $(SRCS:.f90=.o)
+EXAMPLESSRC =                \
+														 example_aggf.f90
 
-  PROGS_DIR=../bin
-  PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
-  PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
+OBJS = $(SRCS:.f90=.o)
 
-  EXAMPLES_DIR = ../examples
-  EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
+PROGS_DIR=../bin
+PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
+	PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
+
+EXAMPLES_DIR = ../examples
+EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 
 # implicit rules for object files
 %.o: %.f90
@@ -87,9 +89,9 @@ all:          \
 
 example: 
 	$(PROGS_DIR)/value_check -F $(SP) -S joz , 52,21,1 -L:b -I 2
-#   @$(PROGS_DIR)/grat V -F $(SP) , $(RS)  -SR,2,2,2 , -Ls
-#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
-#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+	#   @$(PROGS_DIR)/grat V -F $(SP) , $(RS)  -SR,2,2,2 , -Ls
+	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
