@@ -1,9 +1,19 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+al: tmp un
 
-e: grat install
-	grat -L dddd  -V
+tmp: tmp.f90 $(OBJS) mod_cmdline.o
+	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+
+un:
+	./tmp -Tmalpa@karp -Ogg@ww , -F field :x @ TRWW :y:z @ PR , next@Q : zx @X : pw @ TY  -S j o z e , 52 ,21
+
+
+
+
+# e: grat install
+#   grat -L dddd  -V
 
 
 
@@ -44,15 +54,13 @@ SRCS  = mod_constants.f90    \
 				mod_aggf.f90         \
 				mod_green.f90
 
-PROGSSRCS =                    \
-															 grat.f90               \
-															 value_check.f90        \
-															 polygon_check.f90      \
-															 real_vs_standard.f90   \
-															 barometric_formula.f90
+PROGSSRCS =  grat.f90               \
+						 value_check.f90        \
+						 polygon_check.f90      \
+						 real_vs_standard.f90   \
+						 barometric_formula.f90
 
-EXAMPLESSRC =                \
-														 example_aggf.f90
+EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
 

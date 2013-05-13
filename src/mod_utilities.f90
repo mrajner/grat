@@ -580,5 +580,4 @@ subroutine count_records_to_read (file_name, rows , columns , comment_char )
 end subroutine
 
 
-
 end module

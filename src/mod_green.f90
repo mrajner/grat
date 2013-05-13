@@ -58,9 +58,10 @@ subroutine green_unification (green , green_common , denser)
       green_common(:,i+2) = 0
     endif
   enddo
-  if (moreverbose%if.and. moreverbose%names(1).eq."G") then
-    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
-  endif
+  !todo
+!  if (moreverbose%if.and. moreverbose%names(1).eq."G") then
+!    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
+!  endif
 end subroutine
 
 
@@ -171,15 +172,17 @@ subroutine convolve (site ,  green , results, denserdist , denseraz  )
           (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
        endif
       endif
-      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
-        write (moreverbose%unit, '(">")')
-      endif
+!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+        !todo
+!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
+!        write (moreverbose%unit, '(">")')
+!      endif
     enddo
   enddo
-  if (moreverbose%if.and. moreverbose%names(1).eq."i") then
-    write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
-  endif
+  !todo
+!  if (moreverbose%if.and. moreverbose%names(1).eq."i") then
+!    write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
+!  endif
 end subroutine
 
 !!> \todo site height from model 
@@ -192,14 +195,14 @@ subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , 
   real(dp), intent(in) :: azimuth ,azstep, latin, lonin
   real(dp) :: distance, lat , lon , distancestep
 
-  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth - azstep/2. , lat , lon)
-  write(moreverbose%unit, '(2f12.6)') , lat , lon
-  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth + azstep/2. , lat , lon)
-  write(moreverbose%unit, '(2f12.6)') , lat , lon
-  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth + azstep/2. , lat , lon)
-  write(moreverbose%unit, '(2f12.6)') , lat , lon
-  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
-  write(moreverbose%unit, '(2f12.6)') , lat , lon
+!  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth - azstep/2. , lat , lon)
+!  write(moreverbose%unit, '(2f12.6)') , lat , lon
+!  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth + azstep/2. , lat , lon)
+!  write(moreverbose%unit, '(2f12.6)') , lat , lon
+!  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth + azstep/2. , lat , lon)
+!  write(moreverbose%unit, '(2f12.6)') , lat , lon
+!  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
+!  write(moreverbose%unit, '(2f12.6)') , lat , lon
 end subroutine
 
 
