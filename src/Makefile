@@ -1,13 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-al: tmp un
+al: value_check example
 
-tmp: tmp.f90 $(OBJS) mod_cmdline.o
-	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+# tmp: tmp.f90 $(OBJS) mod_cmdline.o
+#   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
-un:
-	./tmp -Tmalpa@karp -Ogg@ww , -F field :x @ TRWW :y:z @ PR , next@Q : zx @X : pw @ TY  -S j o z e , 52 ,21
+# un:
+#   @./tmp -V -h  -D 2006 06, 2007 12 ,2@M -Ogg@ww , -F
 
 
 
@@ -96,7 +96,10 @@ all:          \
 
 
 example: 
-	$(PROGS_DIR)/value_check -F $(SP) -S joz , 52,21,1 -L:b -I 2
+	$(PROGS_DIR)/value_check -F$(SP):a:b:c, $(SP), 55  -L:b -I 2 -V -S0/360/0/1,420 -D2011,1@M,4@D  -Fdd
+
+
+oo:
 	#   @$(PROGS_DIR)/grat V -F $(SP) , $(RS)  -SR,2,2,2 , -Ls
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
