@@ -71,8 +71,7 @@ subroutine read_netCDF (model)
     call get_dimension ( model , i  )
   enddo
 
-  if (size (model%time).gt.1)  call nctime2date (model)
-
+  if (size (model%time).gt.1) call nctime2date (model)
   call get_variable (model)
 
 end subroutine

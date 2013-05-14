@@ -6,7 +6,6 @@
 
 program value_check 
   use mod_cmdline 
-
   use mod_data     , only: get_variable, get_value,read_netCDF
   use mod_constants, only: dp
   use mod_polygon  , only: read_polygon, chkgon
@@ -18,14 +17,14 @@ program value_check
   call intro (program_calling = "value_check", &
     accepted_switches="VFoShvIDLPR" , &
     cmdlineargs=.true.)
- call print_settings (program_calling = "value_check")
-call exit
+  call print_settings (program_calling = "value_check")
   do i = 1 , size(model)
     if (model(i)%if) call read_netCDF(model(i))
   enddo
+  print * , start , "START", dates(1)%mjd
 
- ! check of exclusion or inclusion in polygon file
- ! for every site
+  ! check of exclusion or inclusion in polygon file
+  ! for every site
   call read_polygon (polygons(1))
 
   write(log%unit, form_separator) 
@@ -33,7 +32,7 @@ call exit
 
   start =0 
   if (size(dates).gt.0) then
-   start=1
+    start=1
     ! print header
     write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
   endif

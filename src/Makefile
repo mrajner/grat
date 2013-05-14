@@ -8,14 +8,8 @@ al: value_check example
 
 # un:
 #   @./tmp -V -h  -D 2006 06, 2007 12 ,2@M -Ogg@ww , -F
-
-
-
-
 # e: grat install
 #   grat -L dddd  -V
-
-
 
 # compiler
 FC = ifort
@@ -96,7 +90,8 @@ all:          \
 
 
 example: 
-	$(PROGS_DIR)/value_check -F$(SP):a:b:c, $(SP), 55  -L:b -I 2 -V -S0/360/0/1,420 -D2011,1@M,4@D  -Fdd
+	$(PROGS_DIR)/value_check -F$(SP)  -L:b -I 2,1,2 -V \
+	-Rg -Sjoze,52,21,100 -D201102,1@M,4@D  
 
 
 oo:
