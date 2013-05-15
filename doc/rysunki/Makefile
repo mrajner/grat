@@ -4,7 +4,7 @@ all: \
 	polygon_ilustration.pdf polygon_ilustration.png\
 	interpolation_ilustration.pdf\
 	interpolation_ilustration.svg \
-	logo.pdf
+	logo_grat.pdf
 
 %.pdf: %.tex
 	pdflatex $<
@@ -23,7 +23,6 @@ logo_grat.png: logo_grat.pdf
 
 podklad.pdf podklad2.pdf: podklad_do_convolution.sh
 	bash $^
-
 
 other: 
 		interpolation_ilustration.pdf \

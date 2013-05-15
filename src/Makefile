@@ -1,7 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-al: value_check example
+al: grat example
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
@@ -90,12 +90,13 @@ all:          \
 
 
 example: 
-	$(PROGS_DIR)/value_check -F$(SP)  -L:b -I 2,1,2 -V \
-	-Rg -Sjoze,52,21,100 -D201102,1@M,4@D  
+	$(PROGS_DIR)/grat -V -F $(SP) , $(RS)  -S,2,2,2 , -L:b  -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2
+#   $(PROGS_DIR)/value_check -F$(SP)  -L:b -I 2,1,2 -V \
+#      -Sjoze,45,15,100 -D201102,2@M,15@D  -P ../polygon/baltyk.poly:+
+
 
 
 oo:
-	#   @$(PROGS_DIR)/grat V -F $(SP) , $(RS)  -SR,2,2,2 , -Ls
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
 

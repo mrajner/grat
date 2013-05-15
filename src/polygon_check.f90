@@ -24,7 +24,7 @@ program polygon_check
   else
     do i=1 , size (sites)
       call chkgon (sites(i)%lon, sites(i)%lat, polygons(1), iok )
-      write (output%unit, '(2f10.5,i4)' ) sites(i)%lon, sites(i)%lat   , iok
+      write (output%unit, '(2f10.5,i4)' ) sites(i)%lat, sites(i)%lon   , iok
     enddo
   endif 
 end program

@@ -5,7 +5,7 @@
 !! \author M.Rajner
 !! \date 2012-12-20
 !! \date 2013-03-19 
-!!    added overriding of poly use bt command line like in \cite spotl
+!!    added overriding of poly use by command line like in \cite spotl
 ! ==============================================================================
 module mod_polygon
 
@@ -28,7 +28,6 @@ subroutine read_polygon (polygon)
   integer :: i , j , number_of_polygons , nvertex
   character(80) :: dummy
   character (1)  :: pm
-
 
   if (polygon%if) then
     ! polygon file

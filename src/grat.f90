@@ -60,39 +60,37 @@
 program grat
 
   use mod_constants , only : dp
-!  use mod_cmdline   , only : cpu_start , cpu_finish,  intro , print_settings , &
-!    polygons , model , form_separator , log ,dates , sites, output, &
-!    moreverbose, form_60 , form_61, green ,denser ,mod_cmdline_entry
-!  use mod_green     , only : results ,convolve
-!  use mod_polygon   , only : read_polygon
-!  use mod_data      , only : read_netCDF , get_variable
-!
-!  implicit none
-!  real(dp) :: x , y , z , lat ,lon 
-!  integer :: i , j , ii, iii
-!
-!
-!  ! program starts here with time stamp
-!  call cpu_time(cpu_start)
-!
-!  ! gather cmd line option decide where to put output
-!  call intro (program_calling = "grat" , &
-!    accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
-!
-!  ! read polygons
-!  do i =1 , 2
-!    call read_polygon (polygons(i))
-!  enddo
-!
-!  ! read models into memory
-!  do i =1 , size(model)
-!    if (model(i)%if) call read_netCDF (model(i))
-!    print *, i, model(i)%name , model(i)%if_constant_value
-!  enddo
-!
-!
-!  allocate (results(size(sites)*max(size(dates),1)))
-!
+  use mod_cmdline   
+  use mod_green     , only : results ,convolve
+  use mod_polygon   , only : read_polygon
+  use mod_data      , only : read_netCDF , get_variable
+
+  implicit none
+  real(dp) :: x , y , z , lat ,lon 
+  integer :: i , j , ii, iii
+
+
+  ! program starts here with time stamp
+  call cpu_time(cpu_start)
+
+  ! gather cmd line option decide where to put output
+  call intro (program_calling = "grat" , &
+    accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
+
+  ! read polygons
+  do i =1 , 2
+    call read_polygon (polygons(i))
+  enddo
+
+  ! read models into memory
+  do i =1 , size(model)
+    if (model(i)%if) call read_netCDF (model(i))
+    print *, i, model(i)%name , model(i)%if_constant_value
+  enddo
+
+
+  allocate (results(size(sites)*max(size(dates),1)))
+
 !  iii=0
 !  do j = 1 , max(size (dates),1)
 !    if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date

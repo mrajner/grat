@@ -48,6 +48,7 @@ OPTIONS:
    -f      file [required]
    -R      GMT specific range (e.g. -R10/30/30/50)
    -o      output file
+   -p      points file
 "
 }
  
@@ -136,7 +137,7 @@ pscoast $R -Slightblue -Glightgray  -K -Di $A -J${J}  > $output.ps
     echo "no points file given"
   else
     makecpt -Cjet -T0.1/0.9/0.2 |sed 's/^B.*/B 200 0 0/' |sed 's/^F.*/F 0 180 0/' > points.cpt
-    cat $POINTSFILE | awk "{print \$1 , \$2 ,\$(3)}" | psxy $R -J -Sc6p -Cpoints.cpt -Gred -W0.41p/gray -O -K -V  >> $output.ps
+    cat $POINTSFILE | awk "{print \$1 , \$2 ,\$(3)}" | psxy $R -J -Sc6p -Cpoints.cpt -Gred -W0.41p/gray -O -K -V -:  >> $output.ps
   fi
 
 
