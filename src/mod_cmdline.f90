@@ -104,7 +104,7 @@ module mod_cmdline
     ! varname , lonname,latname,levelname , timename
     character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
 
-    character(len=2) :: dataname
+    character(len=15) :: dataname
 
     integer :: unit = output_unit
 
