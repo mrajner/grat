@@ -88,11 +88,8 @@ all:          \
 	$(PROGS)    \
 	$(EXAMPLES) 
 
-
 example: 
-	$(PROGS_DIR)/grat -V -F $(SP) , $(RS)  -S,2,2,2 , -Lvx:b  -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2
-
-
+	$(PROGS_DIR)/grat  -L:s -Vlog -F $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2
 
 oo:
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 

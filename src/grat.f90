@@ -1,5 +1,4 @@
 ! ==============================================================================
-! ==============================================================================
 !> \file
 !! \mainpage grat overview
 !! \section Purpose
@@ -61,7 +60,7 @@ program grat
 
   use mod_constants , only : dp
   use mod_cmdline   
-  use mod_green     , only : results ,convolve
+!  use mod_green     , only : results ,convolve
   use mod_polygon   , only : read_polygon
   use mod_data      , only : read_netCDF , get_variable
 
@@ -91,39 +90,38 @@ program grat
 
   allocate (results(size(sites)*max(size(dates),1)))
 
-!  iii=0
-!  do j = 1 , max(size (dates),1)
-!    if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date
-!
-!    do ii = 1 , min(2,size(model))
-!      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
-!    enddo
-!
-!    write(log%unit, form_separator)
-!    write(log%unit, form_60) "Results:"
-!    if (output%if.and.(output%name /= "")) write(log%unit, form_61) "written into file:" , trim(output%name)
-!    do i = 1 , size(sites)
-!      write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
-!      iii=iii+1
+  iii=0
+  do j = 1 , max(size (dates),1)
+    if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date
+
+    do ii = 1 , min(2,size(model))
+      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
+    enddo
+
+    write(log%unit, form_separator)
+    write(log%unit, form_60) "Results:"
+    if (output%if.and.(output%name /= "")) write(log%unit, form_61) "written into file:" , trim(output%name)
+    do i = 1 , size(sites)
+      write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
+      iii=iii+1
 !      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))
-!      write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
-!    enddo
-!  enddo
-!
-!
-!  !todo
-!!  if (moreverbose%if .and. moreverbose%names(1).eq."s") then
-!!    print '(15f13.5)', &
-!!      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
-!!      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
-!!      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
-!!      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
-!!      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
-!!  endif
-!
-!
-!  ! execution time-stamp
-!  call cpu_time(cpu_finish)
-!  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
-!  write(log%unit, form_separator)
+      write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
+    enddo
+  enddo
+
+
+    if (any (moreverbose%dataname.eq."s")) then
+          print '(15f13.5)', &
+            results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
+            results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
+            results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
+            results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
+            results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
+    endif
+
+
+  ! execution time-stamp
+  call cpu_time(cpu_finish)
+  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
+  write(log%unit, form_separator)
 end program 
