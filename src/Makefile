@@ -1,7 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-al: grat example
+al: $(OBJS) grat example
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
@@ -89,7 +89,7 @@ all:          \
 	$(EXAMPLES) 
 
 example: 
-	$(PROGS_DIR)/grat  -L:s -Vlog -F $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2
+	$(PROGS_DIR)/grat  -L -V -F $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2, 4@A, 6@D
 
 oo:
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 

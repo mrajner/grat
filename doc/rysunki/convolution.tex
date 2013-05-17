@@ -2,6 +2,9 @@
 \usepackage{tikz}
 \usetikzlibrary{onslide}
 
+
+\newcounter{komorkaa}\setcounter{komorkaa}{0}
+\begin{document}
 \tikzset{
   small dot/.style={
     inner sep=0,
@@ -10,9 +13,6 @@
     circle,
   }
 }
-
-\newcounter{komorkaa}\setcounter{komorkaa}{0}
-\begin{document}
   \centering
   \begin{standaloneframe}
       \only<1-4>{\setcounter{komorkaa}{0}\def\cell{8}}

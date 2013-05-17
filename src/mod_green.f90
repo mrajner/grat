@@ -1,24 +1,24 @@
-!!> \file
-!!! module
-!module mod_green
-!  use mod_constants, only: dp
-!  use mod_utilities, only: spher_area
-!  implicit none
-!
-!!  private
-!!  public :: results
-!
-!  real(dp), allocatable , dimension(:,:)  :: green_common
-!  type result
-!    real(dp) :: N=0. , dt=0. ,E=0. , dh=0.,dz=0.
-!  end type
-!  type (result), allocatable, dimension(:) :: results
-! 
-!contains
-!
-!! =============================================================================
-!!> Unification:
-!! =============================================================================
+!> \file
+!! module
+module mod_green
+  use mod_constants, only: dp
+  use mod_utilities, only: spher_area
+  implicit none
+
+  private
+  public :: results , convolve
+
+  real(dp), allocatable , dimension(:,:)  :: green_common
+  type result
+    real(dp) :: N=0. , dt=0. ,E=0. , dh=0.,dz=0.
+  end type
+  type (result), allocatable, dimension(:) :: results
+ 
+contains
+
+! =============================================================================
+!> Unification:
+! =============================================================================
 !subroutine green_unification (green , green_common , denser)
 !  use mod_constants , only : dp 
 !  use mod_cmdline, only: moreverbose, method ,  green_functions
@@ -65,41 +65,42 @@
 !end subroutine
 !
 !
-!! =============================================================================
-!!> Perform convolution
-!!!
-!!! \date 2013-03-15
-!!! \author M. Rajner
-!! =============================================================================
-!subroutine convolve (site ,  green , results, denserdist , denseraz  )
-!  use, intrinsic :: iso_fortran_env, only : error_unit
-!!  use mod_constants, only: pi , dp,  atmosphere
-!  use mod_cmdline , only: site_data, green_functions , moreverbose , &
-!    inverted_barometer , model , polygons ,  method ,log
-!  use mod_utilities, only: d2r , spher_trig
-!!  use mod_data, only: get_value
-!!  use mod_polygon, only: chkgon
+! =============================================================================
+!> Perform convolution
+!!
+!! \date 2013-03-15
+!! \author M. Rajner
+! =============================================================================
+subroutine convolve (site ,  green , results, denserdist , denseraz)
+  use, intrinsic :: iso_fortran_env, only : error_unit
+  use mod_constants, only: pi , dp,  atmosphere
+  use mod_cmdline , only: site_data, green_functions , moreverbose , &
+    inverted_barometer , model , polygons ,  method ,log
+  use mod_utilities, only: d2r , spher_trig
+  use mod_data, only: get_value
+  use mod_polygon, only: chkgon
 !
-!  type(site_data) , intent(in) :: site
-!  type(green_functions), allocatable , dimension(:) :: green
-!  integer , intent (in) :: denserdist , denseraz
-!  real(dp) :: latin , lonin
-!  integer ::  ndenser , igreen  , iazimuth , nazimuth
-!  real(dp) :: azimuth
-!  real(dp) :: lat , lon , area  
-!  real(dp) :: val(4) , ref_p
-!  integer :: i , iok(2) , npoints
-!  real(dp) :: normalize 
-!  type (result) ,intent(out)  :: results
-!
-!  ! check if greens functions were specified
-!  if( size (green).eq.0) then
-!    stop "No green functions!"
-!  endif
-!
-!  if (.not.allocated(green_common))  then
+  type(site_data) , intent(in) :: site
+  type(green_functions), allocatable , dimension(:) :: green
+  integer , intent (in) :: denserdist , denseraz
+  real(dp) :: latin , lonin
+  integer ::  ndenser , igreen  , iazimuth , nazimuth
+  real(dp) :: azimuth
+  real(dp) :: lat , lon , area  
+  real(dp) :: val(4) , ref_p
+  integer :: i , iok(2) , npoints
+  real(dp) :: normalize 
+  type (result) ,intent(out)  :: results
+
+  ! check if greens functions were specified
+  if( size (green).eq.0) then
+    stop "No green functions!"
+  endif
+
+  print * ,denseraz,":::"
+  if (.not.allocated(green_common))  then
 !    call green_unification (green , green_common , denser = denserdist-1)
-!  endif
+  endif
 !
 !!  npoints=0
 !!  do igreen = 1 ,size(green_common(:,1))
@@ -183,7 +184,7 @@
 !!!  if (moreverbose%if.and. moreverbose%names(1).eq."i") then
 !!!    write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
 !!!  endif
-!end subroutine
+end subroutine
 !
 !!!> \todo site height from model 
 !!
@@ -460,5 +461,5 @@
 !!val = val * 1e18 * ( a * d2r(psi) )
 !
 !!end subroutine
-!
-!end module
+
+end module

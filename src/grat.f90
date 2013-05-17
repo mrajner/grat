@@ -60,7 +60,7 @@ program grat
 
   use mod_constants , only : dp
   use mod_cmdline   
-!  use mod_green     , only : results ,convolve
+  use mod_green     , only : results ,convolve
   use mod_polygon   , only : read_polygon
   use mod_data      , only : read_netCDF , get_variable
 
@@ -76,6 +76,12 @@ program grat
   call intro (program_calling = "grat" , &
     accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
 
+  do i =1 , size(info)
+    print * , info(i)%distance%start
+    print * , info(i)%distance%stop
+  enddo
+  stop
+  !
   ! read polygons
   do i =1 , 2
     call read_polygon (polygons(i))
@@ -86,7 +92,6 @@ program grat
     if (model(i)%if) call read_netCDF (model(i))
     print *, i, model(i)%name , model(i)%if_constant_value
   enddo
-
 
   allocate (results(size(sites)*max(size(dates),1)))
 
@@ -110,15 +115,14 @@ program grat
   enddo
 
 
-    if (any (moreverbose%dataname.eq."s")) then
-          print '(15f13.5)', &
-            results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
-            results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
-            results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
-            results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
-            results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
-    endif
-
+  if (any (moreverbose%dataname.eq."s")) then
+    print '(15f13.5)', &
+      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
+      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
+      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
+      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
+      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
+  endif
 
   ! execution time-stamp
   call cpu_time(cpu_finish)
