@@ -84,7 +84,6 @@ program grat
     print * , info(i)%interpolation
     print *
   enddo
-  stop
   !
   ! read polygons
   do i =1 , 2
@@ -95,7 +94,9 @@ program grat
   do i =1 , size(model)
     if (model(i)%if) call read_netCDF (model(i))
     print *, i, model(i)%name , model(i)%if_constant_value
+
   enddo
+  stop
 
   allocate (results(size(sites)*max(size(dates),1)))
 

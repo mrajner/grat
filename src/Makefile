@@ -89,6 +89,7 @@ all:          \
 	$(EXAMPLES) 
 
 example: 
+	$(PROGS_DIR)/value_check -V -F $(SP) -S1/2/2/3
 	$(PROGS_DIR)/grat  -L -V -F $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2, 4@A, 6@D \
 		-I 10@B: 20 @ E : 30 @ b : 333@e , 12@B : 30 @E
 
