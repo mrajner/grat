@@ -1,6 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+d: value_check example
 al: $(OBJS) grat example
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
@@ -18,7 +19,7 @@ FC = ifort
 # FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
 
 # libraries 
-NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdff -lnetcdf 
+NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff  
 FOULLIB = /home/mrajner/src/foul/foul.o -I/home/mrajner/src/foul
 
 # data for computation
@@ -77,7 +78,7 @@ polygon_check: ../bin/polygon_check
 grat: ../bin/grat
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
-	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+	$(FC) $(NETCDFLIB) $(FLAGS) $< -o $@ $(OBJS) 
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
@@ -89,9 +90,11 @@ all:          \
 	$(EXAMPLES) 
 
 example: 
-	$(PROGS_DIR)/value_check -V -F $(SP) -S1/2/2/3
-	$(PROGS_DIR)/grat  -L -V -F $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2, 4@A, 6@D \
-		-I 10@B: 20 @ E : 30 @ b : 333@e , 12@B : 30 @E
+	$(PROGS_DIR)/value_check -V -F $(SP) -S1/2/2/3 -D2011,2@M,1@M
+
+x:
+	# $(PROGS_DIR)/grat  -L -V -F $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2, 4@A, 6@D \
+	# 	-I 10@B: 20 @ E : 30 @ b : 333@e , 12@B : 30 @E
 
 oo:
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 

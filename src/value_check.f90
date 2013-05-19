@@ -21,7 +21,6 @@ program value_check
   do i = 1 , size(model)
     if (model(i)%if) call read_netCDF(model(i))
   enddo
-  print * , start , "START", dates(1)%mjd
 
   ! check of exclusion or inclusion in polygon file
   ! for every site

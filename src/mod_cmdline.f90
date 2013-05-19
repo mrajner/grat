@@ -48,6 +48,7 @@ module mod_cmdline
   type range
     real(dp):: start
     real(dp):: stop
+    real(dp):: step
     integer :: denser
   end type
   type info_info
@@ -456,7 +457,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     allocate(moreverbose(size(cmd_line_entry%field)))
     do i = 1, size(cmd_line_entry%field)
       moreverbose(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
-      moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(2)%name)
+      moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
       if (dataname(moreverbose(i)%dataname).ne."unknown") then 
         if (moreverbose(i)%name.ne."") then
           open(newunit=moreverbose(i)%unit, &

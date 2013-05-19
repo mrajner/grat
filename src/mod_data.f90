@@ -14,7 +14,7 @@ module mod_data
   implicit none
   private
 
-  public :: read_netcdf , get_variable , get_value
+  public :: read_netcdf , get_variable , get_value, check
 
 contains
 
