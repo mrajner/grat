@@ -79,6 +79,7 @@ program grat
   do i =1 , size(info)
     print * , info(i)%distance%start
     print * , info(i)%distance%stop
+    print * , info(i)%distance%step
     print * , info(i)%azimuth%start
     print * , info(i)%azimuth%stop
     print * , info(i)%interpolation

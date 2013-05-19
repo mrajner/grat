@@ -1,7 +1,6 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-d: value_check example
 al: $(OBJS) grat example
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
@@ -90,11 +89,15 @@ all:          \
 	$(EXAMPLES) 
 
 example: 
-	$(PROGS_DIR)/value_check -V -F $(SP) -S1/2/2/3 -D2011,2@M,1@M
+	$(PROGS_DIR)/value_check  -L -V \
+		-S 15/24/47/59\
+		-F \
+		/home/mrajner/dat/wghm/bin/WGHM_2.1f6_sumall_201011.grd@RP:z ,\
+		/home/mrajner/dat/wghm/bin/WGHM_2.1f6_sumall_201011.nc , -I2@I
 
-x:
-	# $(PROGS_DIR)/grat  -L -V -F $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2, 4@A, 6@D \
-	# 	-I 10@B: 20 @ E : 30 @ b : 333@e , 12@B : 30 @E
+
+#     $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2, 4@A, 6@D \
+#     -I 10@B: 20 @ E : 30 @ b : 333@e :6 @D , 12@B : 30 @E , 5@D
 
 oo:
 	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
