@@ -595,85 +595,85 @@ subroutine parse_info (cmd_line_entry)
       allocate (green (size(cmd_line_entry%field)))
 
       do i = 1 , size(cmd_line_entry%field)
-        !          if (cmd_line_entry%field(i)%subfield(1)%dataname.eq."GN") then
-        !          green
-        !        endif
+!                  if (cmd_line_entry%field(i)%subfield(1)%dataname.eq."GN") then
+!                  green
+!                endif
 
-        ! shortcuts for common files
-        !      if (.not.file_exists(cmd_line_entry%field(i)%subfield(1)%name) &
-        !        .and. (.not. cmd_line_entry%field(i)%subfield(1)%name.eq."merriam" &
-        !        .and.  .not. cmd_line_entry%field(i)%subfield(1)%name.eq."huang" &
-        !        .and.  .not. cmd_line_entry%field(i)%subfield(1)%name.eq."rajner" )) then
-          !        cmd_line_entry%field(i)%subfield(1)%name="merriam"
-          !      endif
+!         shortcuts for common files
+              if (.not.file_exists(cmd_line_entry%field(i)%subfield(1)%name) &
+                .and. (.not. cmd_line_entry%field(i)%subfield(1)%name.eq."merriam" &
+                .and.  .not. cmd_line_entry%field(i)%subfield(1)%name.eq."huang" &
+                .and.  .not. cmd_line_entry%field(i)%subfield(1)%name.eq."rajner" )) then
+                  cmd_line_entry%field(i)%subfield(1)%name="merriam"
+                endif
 
           ! change the paths accordingly
-          !      if (cmd_line_entry%field(i)%subfield(1)%name.eq."merriam") then
-          !        green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-          !        if (i.eq.1) fields = [1,2]
-          !        if (i.eq.2) fields = [1,3]
-          !        if (i.eq.3) fields = [1,4]
-          !        if (i.eq.4) fields = [1,4]
-          !        if (i.eq.5) fields = [1,6]
-          !      else if (cmd_line_entry%field(i)%subfield(1)%name.eq."huang") then
-          !        filename="/home/mrajner/src/grat/dat/huang_green.dat"
-          !        if (i.eq.1) fields = [1,2]
-          !        if (i.eq.2) fields = [1,3]
-          !        if (i.eq.3) fields = [1,4]
-          !        if (i.eq.4) fields = [1,5]
-          !        if (i.eq.5) fields = [1,6]
-          !      else if (cmd_line_entry%field(i)%subfield(1)%name.eq."rajner") then
-          !        filename="/home/mrajner/src/grat/dat/rajner_green.dat"
-          !        if (i.eq.1) fields = [1,2]
-          !        if (i.eq.2) fields = [1,3]
-          !        if (i.eq.3) fields = [1,4]
-          !        if (i.eq.4) fields = [1,5]
-          !        if (i.eq.5) fields = [1,6]
-          !      else if (file_exists(cmd_line_entry%field(i)%subfield(1)%name)) then
-          !        filename = cmd_line_entry%field(i)%subfield(1)%name
-          !        do ii=1, 2
-          !          if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
-          !            read( cmd_line_entry%field(i)%subfield(ii+1)%name, *) fields(ii)
-          !          endif
-          !        enddo
-          !      endif
+                if (cmd_line_entry%field(i)%subfield(1)%name.eq."merriam") then
+                  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+                  if (i.eq.1) fields = [1,2]
+                  if (i.eq.2) fields = [1,3]
+                  if (i.eq.3) fields = [1,4]
+                  if (i.eq.4) fields = [1,4]
+                  if (i.eq.5) fields = [1,6]
+                else if (cmd_line_entry%field(i)%subfield(1)%name.eq."huang") then
+                  filename="/home/mrajner/src/grat/dat/huang_green.dat"
+                  if (i.eq.1) fields = [1,2]
+                  if (i.eq.2) fields = [1,3]
+                  if (i.eq.3) fields = [1,4]
+                  if (i.eq.4) fields = [1,5]
+                  if (i.eq.5) fields = [1,6]
+                else if (cmd_line_entry%field(i)%subfield(1)%name.eq."rajner") then
+                  filename="/home/mrajner/src/grat/dat/rajner_green.dat"
+                  if (i.eq.1) fields = [1,2]
+                  if (i.eq.2) fields = [1,3]
+                  if (i.eq.3) fields = [1,4]
+                  if (i.eq.4) fields = [1,5]
+                  if (i.eq.5) fields = [1,6]
+                else if (file_exists(cmd_line_entry%field(i)%subfield(1)%name)) then
+                  filename = cmd_line_entry%field(i)%subfield(1)%name
+                  do ii=1, 2
+                    if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
+                      read( cmd_line_entry%field(i)%subfield(ii+1)%name, *) fields(ii)
+                    endif
+                  enddo
+                endif
 
           ! todo move it to green module : read_green!!!
-          !      allocate(tmp(max(fields(1),fields(2))))
-          !      lines = 0
-          !      open ( newunit =iunit,file=filename,action="read")
-          !      do 
-          !        call skip_header (iunit)
-          !        read (iunit , * , iostat = io_status)
-          !        if (io_status == iostat_end) exit
-          !        lines = lines + 1
-          !      enddo
-          !      allocate (green(i)%distance(lines))
-          !      allocate (green(i)%data(lines))
-          !      rewind(iunit)
-          !      lines = 0
-          !      do 
-          !        call skip_header (iunit)
-          !        lines = lines + 1
-          !        read (iunit , * , iostat = io_status) tmp
-          !        if (io_status == iostat_end) exit
-          !        green(i)%distance(lines) = tmp (fields(1))
-          !        green(i)%data(lines)     = tmp (fields(2))
-          !      enddo
-          !      deallocate(tmp)
-          !      close(iunit)
+                allocate(tmp(max(fields(1),fields(2))))
+                lines = 0
+                open ( newunit =iunit,file=filename,action="read")
+                do 
+                  call skip_header (iunit)
+                  read (iunit , * , iostat = io_status)
+                  if (io_status == iostat_end) exit
+                  lines = lines + 1
+                enddo
+                allocate (green(i)%distance(lines))
+                allocate (green(i)%data(lines))
+                rewind(iunit)
+                lines = 0
+                do 
+                  call skip_header (iunit)
+                  lines = lines + 1
+                  read (iunit , * , iostat = io_status) tmp
+                  if (io_status == iostat_end) exit
+                  green(i)%distance(lines) = tmp (fields(1))
+                  green(i)%data(lines)     = tmp (fields(2))
+                enddo
+                deallocate(tmp)
+                close(iunit)
 
-          !      ! file specific 
-          !      if (cmd_line_entry%field(i)%subfield(1)%name.eq."merriam" .and. i.eq.4) then
-          !        green(i)%data = green(i)%data * (-1.)
-          !      endif
-          !      !    if (cmd_line_entry%field(i)%subfield(1)%name.eq."huang" .and. (i.eq.3.or.i.eq.4)) then
-          !      !      green(i)%data = green(i)%data * 1000.
-          !      !    endif
-          !      write(log%unit , form_63) &
-          !        !                    trim(green_names(i))
-          !      trim(cmd_line_entry%field(i)%subfield(1)%name),":", fields, &
-          !        dataname(cmd_line_entry%field(i)%subfield(1)%dataname)
+                ! file specific 
+                if (cmd_line_entry%field(i)%subfield(1)%name.eq."merriam" .and. i.eq.4) then
+                  green(i)%data = green(i)%data * (-1.)
+                endif
+                !    if (cmd_line_entry%field(i)%subfield(1)%name.eq."huang" .and. (i.eq.3.or.i.eq.4)) then
+                !      green(i)%data = green(i)%data * 1000.
+                !    endif
+                write(log%unit , form_63) &
+                  !                    trim(green_names(i))
+                trim(cmd_line_entry%field(i)%subfield(1)%name),":", fields, &
+                  dataname(cmd_line_entry%field(i)%subfield(1)%dataname)
 
         enddo
       end subroutine
