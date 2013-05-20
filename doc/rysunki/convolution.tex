@@ -4,6 +4,8 @@
 
 
 \newcounter{komorkaa}\setcounter{komorkaa}{0}
+\colorlet{color1}{red}
+\colorlet{color2}{red}
 \begin{document}
 \tikzset{
   small dot/.style={
@@ -29,7 +31,7 @@
       \node<3>[use as bounding box,anchor=south west,inner sep=0] (image) at (0,0) 
         {\includegraphics[width=\textwidth,height=\textheight]{/home/mrajner/src/grat/doc/rysunki/podklad2}};
       \begin{scope}[x={(image.south east)},y={(image.north west)}]
-        \fill<1->[fill=white,onslide=<{2-}>{fill=none},onslide=<2>{draw=cyan},ultra 
+        \fill<1->[fill=white,onslide=<{2-}>{fill=none},onslide=<2>{draw=color1},ultra 
           thick,even odd rule,opacity=1,
         ] (0,0) rectangle (1,1)
         \foreach \x in {
@@ -41,12 +43,17 @@
             ({\x/3-1/6},\y/3-1/6)circle (2mm)
           } 
         };
-      \draw<2>[cyan,thick,step=0.333] (0,0) grid (1,1);
+      \draw<2>[color1,thick,step=0.333] (0,0) grid (1,1);
 
       \tikzset{
         paletka/.style={
           onslide=<{1-3}>{opacity=0},
           overlay,
+        },
+        komorka/.style={
+          paletka,
+          fill=black,
+          draw=white,
         }
       }
             \coordinate(start) at (0.6,0.4);
@@ -66,13 +73,13 @@
 
                 \addtocounter{komorkaa}{1}
                 \ifnum\thekomorkaa=\cell
-                \draw[paletka,even odd rule,fill=green] 
+                \draw[komorka,even odd rule] 
                   (start)++(\a:\startradius)
                 --+ (\a:\endradius-\startradius)
                 arc (\a:\a+\da:\endradius)
-                node[midway,auto,cyan,font=\LARGE]{${\rm d}A$}
+                node[midway,auto,color1,font=\LARGE]{${\rm d}A$}
                 --+ (\a+\da:\startradius-\endradius)
-                node [cyan,auto,midway,font=\LARGE]{$\mathbf{\rm d \boldsymbol\psi}$}
+                node [color1,auto,midway,font=\LARGE]{$\mathbf{\rm d \boldsymbol\psi}$}
                 arc (\a+\da:\a:\startradius)
         %        \path
                 (start) ++(\a+\da/2:\startradius)
@@ -80,7 +87,7 @@
                 circle (2mm)
                 node(centroid-\thekomorkaa){}
                 ;
-                \draw[paletka,cyan,ultra thick,latex-latex]
+                \draw[paletka,color1,ultra thick,latex-latex]
                   (centroid-\thekomorkaa.center) -- (start)
                   node[midway ,auto,font=\LARGE]{$\boldsymbol\psi$}
                   ;
