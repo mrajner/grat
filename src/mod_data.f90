@@ -260,7 +260,7 @@ subroutine get_value( model, lat , lon , val ,level, method )
   type(file) , intent (in) :: model
   real(dp) , intent (in) :: lat,lon
   real(dp) , intent(out) ::  val 
-  integer , optional , intent(in) :: method
+  character(1), optional , intent(in) :: method
   integer , optional , intent(in) :: level
   integer :: i ,j , ilevel =1 
   integer  :: ilon, ilat , ilon2 , ilat2
@@ -284,7 +284,7 @@ subroutine get_value( model, lat , lon , val ,level, method )
   ilat = minloc(abs(model%lat-lat),1)
   ilon = minloc(abs(model%lon-lon),1)
 
-  if (present(method) .and. method .eq. 2 ) then
+  if (present(method) .and. method .eq. "l" ) then
     ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
     ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
 
@@ -323,9 +323,11 @@ subroutine get_value( model, lat , lon , val ,level, method )
   val = model%data (ilon , ilat, ilevel)
 end subroutine 
 
+! =============================================================================
 !> Performs bilinear interpolation
 !! \author Marcin Rajner
 !! \date 2013-05-07
+! =============================================================================
 function bilinear (x , y , aux )
   use mod_constants, only: dp
   real(dp) :: bilinear

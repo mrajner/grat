@@ -8,11 +8,28 @@
 !!    added overriding of poly use by command line like in \cite spotl
 ! ==============================================================================
 module mod_polygon
+  use mod_constants, only : dp
 
   implicit none
-  private
+!  private
+!  public :: read_polygon ,chkgon
+  !----------------------------------------------------
+  ! polygons
+  !----------------------------------------------------
+  type polygon_data
+    logical :: use
+    real(dp), allocatable , dimension (:,:) :: coords
+  end type
 
-  public :: read_polygon ,chkgon
+  type polygon_info
+    integer :: unit
+    character(:), allocatable  :: name
+    type(polygon_data) , dimension (:) , allocatable :: polygon
+    logical :: if
+    ! global setting (+|-) which override this in polygon file
+    character(1):: pm
+  end type
+  type(polygon_info) , dimension (:), allocatable :: polygon
 
 contains
 
@@ -24,7 +41,7 @@ contains
 subroutine read_polygon (polygon)
   use mod_cmdline
   use mod_utilities, only: skip_header
-  type(polygon_info):: polygon
+  type(polygon_info) :: polygon
   integer :: i , j , number_of_polygons , nvertex
   character(80) :: dummy
   character (1)  :: pm
@@ -33,53 +50,51 @@ subroutine read_polygon (polygon)
     ! polygon file
     open (newunit = polygon%unit , action="read", file=polygon%name )
 
-    ! first get the number of polygons
+    ! first get the number of polygon
     call skip_header(polygon%unit)
     read (polygon%unit , * ) number_of_polygons
-    allocate (polygon%polygons(number_of_polygons))
+    allocate (polygon%polygon(number_of_polygons))
 
     ! loop over all polygons in file
     do  i=1, number_of_polygons
       call skip_header(polygon%unit)
       read (polygon%unit, * ) nvertex
-      allocate (polygon%polygons(i)%coords(nvertex, 2 ))
+      allocate (polygon%polygon(i)%coords(nvertex, 2 ))
       call skip_header(polygon%unit)
       read (polygon%unit, * ) pm
-      if (pm.eq."+") polygon%polygons(i)%use=.true.
-      if (pm.eq."-") polygon%polygons(i)%use=.false.
+      if (pm.eq."+") polygon%polygon(i)%use=.true.
+      if (pm.eq."-") polygon%polygon(i)%use=.false.
       ! override file +|- with global given with command line
-      if (polygon%pm.eq."+") polygon%polygons(i)%use=.true.
-      if (polygon%pm.eq."-") polygon%polygons(i)%use=.false.
+      if (polygon%pm.eq."+") polygon%polygon(i)%use=.true.
+      if (polygon%pm.eq."-") polygon%polygon(i)%use=.false.
       do j = 1 , nvertex
         call skip_header(polygon%unit)
         ! lon lat , checks while reading
-        read (polygon%unit, * ) polygon%polygons(i)%coords(j,1:2)
-        if ( polygon%polygons(i)%coords(j,1).lt.-180. &
-          .or.polygon%polygons(i)%coords(j,1).gt.360.  & 
-          .or.polygon%polygons(i)%coords(j,2).lt.-90.  & 
-          .or.polygon%polygons(i)%coords(j,2).gt. 90. ) then 
+        read (polygon%unit, * ) polygon%polygon(i)%coords(j,1:2)
+        if ( polygon%polygon(i)%coords(j,1).lt.-180. &
+          .or.polygon%polygon(i)%coords(j,1).gt.360.  & 
+          .or.polygon%polygon(i)%coords(j,2).lt.-90.  & 
+          .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then 
           write (error_unit , form_63) "Somethings wrong with coords in polygon file"
-          call exit
-          elseif ( polygon%polygons(i)%coords(j,1).lt.0. ) then
-          polygon%polygons(i)%coords(j,1) = polygon%polygons(i)%coords(j,1) + 360.
+          polygon%if=.false.
+          return
+          elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
+          polygon%polygon(i)%coords(j,1) = polygon%polygon(i)%coords(j,1) + 360.
         endif
       enddo
     enddo
     close (polygon%unit)
-
     ! print summary to log file
-    write (log%unit, form_separator) 
-    write (log%unit, form_60) "Summary of polygon file"
-    write (log%unit, form_61) "name:", trim(polygon%name)
-    write (log%unit, form_61) "number of polygons:" , size (polygon%polygons)
-    do i = 1 , size (polygon%polygons)
-      if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_62) &
-        "Usage overwritten with command line option", polygon%pm
-      write (log%unit, form_62) "use [true/false]:" , &
-        polygon%polygons(i)%use 
-      write (log%unit, form_62) "number of coords:" , &
-        size (polygon%polygons(i)%coords(:,1)) 
-    enddo
+    write (log%unit, form_64) "name:", trim(polygon%name)
+!    write (log%unit, form_64) "number of polygons:" , size (polygon%polygon)
+!    do i = 1 , size (polygon%polygon)
+!      if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_62) &
+!        "Usage overwritten with command line option", polygon%pm
+!      write (log%unit, form_64) "use [true/false]:" , &
+!        polygon%polygon(i)%use 
+!      write (log%unit, form_64) "number of coords:" , &
+!        size (polygon%polygon(i)%coords(:,1)) 
+!    enddo
   endif
 
 end subroutine
@@ -115,19 +130,19 @@ subroutine chkgon (rlong , rlat , polygon , iok)
   type( polygon_info ) , intent (in) :: polygon
 
   ! Check first if we need to use this soubroutine
-  if (size(polygon%polygons).eq.0) then
+  if (size(polygon%polygon).eq.0) then
     iok=0
     return
   endif
 
   if(rlong.gt.180) rlong2 = rlong - 360.
   ! loop over polygons
-  do i=1,size(polygon%polygons)
+  do i=1,size(polygon%polygon)
     ! loop twice for elastic and newtonian
     ! polygon is one we should not be in
-    if(.not.polygon%polygons(i)%use) then
-      if (  if_inpoly(rlong  ,rlat,polygon%polygons(i)%coords).ne.0 &
-        .or.if_inpoly(rlong2 ,rlat,polygon%polygons(i)%coords).ne.0 ) then
+    if(.not.polygon%polygon(i)%use) then
+      if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0 &
+        .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) then
       iok=0
       return
     endif
@@ -136,11 +151,11 @@ enddo
 ianyok=0
 ! polygon is one we should be in; test to see if we are, and if so set
 ! iok to 1 and return
-do i=1,size(polygon%polygons)
-  if(polygon%polygons(i)%use) then
+do i=1,size(polygon%polygon)
+  if(polygon%polygon(i)%use) then
     ianyok = ianyok+1
-    if (  if_inpoly(rlong  ,rlat,polygon%polygons(i)%coords).ne.0 &
-      .or.if_inpoly(rlong2 ,rlat,polygon%polygons(i)%coords).ne.0 ) then
+    if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0 &
+      .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) then
     iok=1
     return
   endif

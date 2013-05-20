@@ -2,29 +2,29 @@
 \usepackage{tikz}
 \usetikzlibrary{onslide}
 
+\usetikzlibrary{external}
+\tikzexternalize
 
 \newcounter{komorkaa}\setcounter{komorkaa}{0}
 \colorlet{color1}{red}
 \colorlet{color2}{red}
 \begin{document}
-\tikzset{
-  small dot/.style={
-    inner sep=0,
-    minimum size=1mm,
-    fill,
-    circle,
+  \tikzset{
+    small dot/.style={
+      inner sep=0,
+      minimum size=1mm,
+      fill,
+      circle,
+    }
   }
-}
-  \centering
   \begin{standaloneframe}
-      \only<1-4>{\setcounter{komorkaa}{0}\def\cell{8}}
-      \only<5>{\setcounter{komorkaa}{0}\def\cell{2}}
-      \only<6>{\setcounter{komorkaa}{0}\def\cell{3}}
-      \only<7>{\setcounter{komorkaa}{0}\def\cell{9}}
-      \only<8>{\setcounter{komorkaa}{0}\def\cell{10}}
-      \only<9>{\setcounter{komorkaa}{0}\def\cell{13}}
-      \only<10>{\setcounter{komorkaa}{0}\def\cell{14}}
-
+    \only<1-4>{\setcounter{komorkaa}{0}\def\cell{8}}
+    \only<5>{\setcounter{komorkaa}{0}\def\cell{2}}
+    \only<6>{\setcounter{komorkaa}{0}\def\cell{3}}
+    \only<7>{\setcounter{komorkaa}{0}\def\cell{9}}
+    \only<8>{\setcounter{komorkaa}{0}\def\cell{10}}
+    \only<9>{\setcounter{komorkaa}{0}\def\cell{13}}
+    \only<10>{\setcounter{komorkaa}{0}\def\cell{14}}
     \begin{tikzpicture}
       \node[use as bounding box,anchor=south west,inner sep=0] (image) at (0,0) 
         {\includegraphics[width=\textwidth,height=\textheight]{/home/mrajner/src/grat/doc/rysunki/podklad}};
@@ -56,47 +56,45 @@
           draw=white,
         }
       }
-            \coordinate(start) at (0.6,0.4);
-            \foreach \startradius/\endradius/\ileaz in {
-              0/.1/4,
-              0.1/0.3/6,
-              0.3/0.6/10
-%              8/14/12
-            }{
-              \draw[paletka](start) circle (\endradius);
-              \pgfmathsetmacro{\da}{360/\ileaz}
-              \foreach \az in {
-                1,...,\ileaz
-              }{
-                \pgfmathsetmacro{\a}{\da/2+\az*\da}
-                \draw[paletka] (start)++(\a:\startradius) -- ++(\a:\endradius-\startradius);
+      \coordinate(start) at (0.6,0.4);
+      \foreach \startradius/\endradius/\ileaz in {
+        0/.1/4,
+        0.1/0.3/6,
+        0.3/0.6/10
+        %              8/14/12
+      }{
+        \draw[paletka](start) circle (\endradius);
+        \pgfmathsetmacro{\da}{360/\ileaz}
+        \foreach \az in {
+          1,...,\ileaz
+        }{
+          \pgfmathsetmacro{\a}{\da/2+\az*\da}
+          \draw[paletka] (start)++(\a:\startradius) -- ++(\a:\endradius-\startradius);
 
-                \addtocounter{komorkaa}{1}
-                \ifnum\thekomorkaa=\cell
-                \draw[komorka,even odd rule] 
-                  (start)++(\a:\startradius)
-                --+ (\a:\endradius-\startradius)
-                arc (\a:\a+\da:\endradius)
-                node[midway,auto,color1,font=\LARGE]{${\rm d}A$}
-                --+ (\a+\da:\startradius-\endradius)
-                node [color1,auto,midway,font=\LARGE]{$\mathbf{\rm d \boldsymbol\psi}$}
-                arc (\a+\da:\a:\startradius)
-        %        \path
-                (start) ++(\a+\da/2:\startradius)
-                ++(\a+\da/2:\endradius/2-\startradius/2)
-                circle (2mm)
-                node(centroid-\thekomorkaa){}
-                ;
-                \draw[paletka,color1,ultra thick,latex-latex]
-                  (centroid-\thekomorkaa.center) -- (start)
-                  node[midway ,auto,font=\LARGE]{$\boldsymbol\psi$}
-                  ;
-                \fi
-
-              }
-            }
+          \addtocounter{komorkaa}{1}
+          \ifnum\thekomorkaa=\cell
+            \draw[komorka,even odd rule] 
+              (start)++(\a:\startradius)
+              --+ (\a:\endradius-\startradius)
+              arc (\a:\a+\da:\endradius)
+              node[midway,auto,color1,font=\LARGE]{${\rm d}A$}
+              --+ (\a+\da:\startradius-\endradius)
+              node [color1,auto,midway,font=\LARGE]{$\mathbf{\rm d \boldsymbol\psi}$}
+              arc (\a+\da:\a:\startradius)
+              %        \path
+              (start) ++(\a+\da/2:\startradius)
+              ++(\a+\da/2:\endradius/2-\startradius/2)
+              circle (2mm)
+              node(centroid-\thekomorkaa){}
+            ;
+            \draw[paletka,color1,ultra thick,latex-latex]
+              (centroid-\thekomorkaa.center) -- (start)
+              node[midway ,auto,font=\LARGE]{$\boldsymbol\psi$}
+            ;
+          \fi
+        }
+      }
     \end{scope}
   \end{tikzpicture}%
 \end{standaloneframe}
-
-\end{document}
+ \end{document}

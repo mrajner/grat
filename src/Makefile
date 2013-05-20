@@ -2,6 +2,7 @@
 # for example: OBJS  = libgrat.a
 
 al: $(OBJS) grat example
+# al: $(OBJS) value_check example_value_check
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
@@ -26,7 +27,7 @@ DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 TMP      = $(NCEP_DIR)/air.sig995.2011.nc@@:air:lon:lat:level:time
-LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y:
+LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
 GRN_r    = ../dat/rajner_green.dat
 GRN_m    = ../dat/merriam_green.dat
 POL      = ../polygon/baltyk.poly
@@ -89,19 +90,20 @@ all:          \
 	$(EXAMPLES) 
 
 example: 
-	$(PROGS_DIR)/value_check  -L -V \
-		-S 15/24/47/59\
-		-F \
-		/home/mrajner/dat/wghm/bin/WGHM_2.1f6_sumall_201011.grd@RP:z ,\
-		/home/mrajner/dat/wghm/bin/WGHM_2.1f6_sumall_201011.nc , -I2@I
+	$(PROGS_DIR)/grat \
+		-F $(SP),$(GPT) \
+		-G\
+		rajner@GN, \
+		merriam@GE,\
+		erriam@GNdz,\
+		/home/mrajner/src/gotic2/data/grn1.data @ GN :1 :1  \
+		-P ../polygon/baltyk.poly , ../polygon/tmp.poly \
+		-Sjoze,52,21 \
+		-V \
+		-Il@I 
 
-
-#     $(SP) , $(RS)  -S,2,2,2 -G/home/mrajner/src/gotic2/data/grn1.data@GN:1:2, 4@A, 6@D \
-#     -I 10@B: 20 @ E : 30 @ b : 333@e :6 @D , 12@B : 30 @E , 5@D
-
-oo:
-	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
-	#   $(PROGS_DIR)/real_vs_standard -F$(SFC),$(GPT) -Sjoze,52,21 -V 
+example_value_check: 
+	$(PROGS_DIR)/value_check -I l@I -F$(SFC),$(GPT) -Sjoze,52,21 -V  -Grajner@GN, merriam@GE , /home/mrajner/src/gotic2/data/grn1.data @ GN : 3u:454@t
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)

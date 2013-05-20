@@ -60,7 +60,7 @@ program grat
 
   use mod_constants , only : dp
   use mod_cmdline   
-  use mod_green     , only : results ,convolve
+  use mod_green     , only : results ,convolve , read_green , green
   use mod_polygon   , only : read_polygon
   use mod_data      , only : read_netCDF , get_variable
 
@@ -80,24 +80,20 @@ program grat
     print * , info(i)%distance%start
     print * , info(i)%distance%stop
     print * , info(i)%distance%step
+
     print * , info(i)%azimuth%start
     print * , info(i)%azimuth%stop
     print * , info(i)%interpolation
     print *
   enddo
-  !
-  ! read polygons
-  do i =1 , 2
-    call read_polygon (polygons(i))
-  enddo
+  
 
   ! read models into memory
   do i =1 , size(model)
     if (model(i)%if) call read_netCDF (model(i))
-    print *, i, model(i)%name , model(i)%if_constant_value
-
   enddo
-  stop
+
+  print form_separator 
 
   allocate (results(size(sites)*max(size(dates),1)))
 
@@ -115,7 +111,7 @@ program grat
     do i = 1 , size(sites)
       write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
       iii=iii+1
-!      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))
+      !      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))
       write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
     enddo
   enddo

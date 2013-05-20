@@ -2,11 +2,24 @@
 !! module
 module mod_green
   use mod_constants, only: dp
-  use mod_utilities, only: spher_area
+  use mod_utilities, only: spher_area , file_exists , is_numeric, skip_header
   implicit none
 
-  private
-  public :: results , convolve
+!  private
+!  public :: results , convolve , read_green , green
+
+  !----------------------------------------------------
+  ! Greens function
+  !----------------------------------------------------
+  type green_functions
+    character (len=255) :: name
+    character (len=25) :: dataname
+    integer,dimension(2) :: column
+    real(dp),allocatable,dimension(:) :: distance
+    real(dp),allocatable,dimension(:) :: data
+  end type
+  type(green_functions), allocatable , dimension(:) :: green
+
 
   real(dp), allocatable , dimension(:,:)  :: green_common
   type result
@@ -15,6 +28,112 @@ module mod_green
   type (result), allocatable, dimension(:) :: results
  
 contains
+
+! =============================================================================
+!> This subroutine read 
+! =============================================================================
+subroutine read_green (green)
+  use iso_fortran_env
+  use mod_cmdline, only: form_63 , log
+  integer :: lines , fileunit, io_status
+  real (dp) , allocatable , dimension(:) :: tmp
+  type(green_functions) :: green
+
+  ! change the paths accordingly
+  if (.not.file_exists(green%name) &
+    .and. (.not. green%name.eq."merriam" &
+    .and.  .not. green%name.eq."huang" &
+    .and.  .not. green%name.eq."rajner" )) then
+    green%name="merriam"
+  endif
+  if (green%name.eq."merriam") then
+    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+    if (green%dataname.eq."GN") then
+      green%column=[1,2]
+    else if &
+      (green%dataname.eq."GNdt") then
+      green%column=[1,3]
+    else if &
+      (green%dataname.eq."GNdz") then
+      green%column=[1,4]
+    else if &
+      (green%dataname.eq."GNdz2") then
+      green%column=[1,5]
+    else if &
+      (green%dataname.eq."GE") then
+      green%column=[1,6]
+    endif
+  else if (green%name.eq."huang") then
+    green%name="/home/mrajner/src/grat/dat/huang_green.dat"
+    if (green%dataname.eq."GN") then
+      green%column=[1,2]
+    else if &
+      (green%dataname.eq."GNdt") then
+      green%column=[1,3]
+    else if &
+      (green%dataname.eq."GNdh") then
+      green%column=[1,4]
+    else if &
+      (green%dataname.eq."GNdz") then
+      green%column=[1,5]
+    endif
+  else if (green%name.eq."rajner") then
+    green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
+    if (green%dataname.eq."GN") then
+      green%column=[1,2]
+    else if &
+      (green%dataname.eq."GNdt") then
+      green%column=[1,3]
+    else if &
+      (green%dataname.eq."GNdh") then
+      green%column=[1,4]
+    else if &
+      (green%dataname.eq."GNdz") then
+      green%column=[1,5]
+    endif
+  endif
+
+  if(green%column(1).ne.0 .and. green%column(2).ne.0) then
+    allocate(tmp(max(green%column(1),green%column(2))))
+    lines = 0
+    open ( newunit =fileunit, file=green%name, action="read", status="old")
+    do 
+      call skip_header (fileunit)
+      read (fileunit , * , iostat = io_status) tmp
+      if (io_status == iostat_end) exit
+      lines = lines + 1
+    enddo
+
+    allocate (green%distance(lines))
+    allocate (green%data(lines))
+    rewind(fileunit)
+    lines = 0
+    do 
+      call skip_header (fileunit)
+      lines = lines + 1
+      read (fileunit , * , iostat = io_status) tmp
+      if (io_status == iostat_end) exit
+      green%distance(lines) = tmp (green%column(1))
+      green%data(lines)     = tmp (green%column(2))
+    enddo
+    deallocate(tmp)
+    close(fileunit)
+  endif
+
+  ! file specific 
+  if (green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat".and. green%dataname.eq."GNdz") then
+    green%data = green%data * (-1.)
+  endif
+  if (green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" .and. &
+    (green%dataname.eq."GNdh".or.green%dataname.eq."GNdh")) &
+    then
+    green%data = green%data * 1000.
+  endif
+  write(log%unit, form_63) trim(green%name) ,trim(green%dataname), &
+    "columns:",green%column ,&
+    "lines:", size(green%distance)
+end subroutine
+
 
 ! =============================================================================
 !> Unification:
@@ -74,12 +193,12 @@ contains
 subroutine convolve (site ,  green , results, denserdist , denseraz)
   use, intrinsic :: iso_fortran_env, only : error_unit
   use mod_constants, only: pi , dp,  atmosphere
-  use mod_cmdline , only: site_data, green_functions , moreverbose , &
-    inverted_barometer , model , polygons ,  method ,log
-  use mod_utilities, only: d2r , spher_trig
+  use mod_cmdline , only: site_data,  moreverbose , &
+    inverted_barometer , model,  method ,log
+  use mod_utilities, only: d2r, spher_trig
   use mod_data, only: get_value
   use mod_polygon, only: chkgon
-!
+  !
   type(site_data) , intent(in) :: site
   type(green_functions), allocatable , dimension(:) :: green
   integer , intent (in) :: denserdist , denseraz
@@ -99,91 +218,91 @@ subroutine convolve (site ,  green , results, denserdist , denseraz)
 
   print * ,denseraz,":::"
   if (.not.allocated(green_common))  then
-!    call green_unification (green , green_common , denser = denserdist-1)
+    !    call green_unification (green , green_common , denser = denserdist-1)
   endif
-!
-!!  npoints=0
-!!  do igreen = 1 ,size(green_common(:,1))
-!!    nazimuth = max(int(360*sin(d2r(green_common(igreen,1)))),100) * denseraz
-!!    do iazimuth  = 1 , nazimuth
-!!      npoints = npoints + 1
-!!      azimuth = (iazimuth - 1) * 360./nazimuth
-!
-!!      ! get lat and lon of point
-!!      call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
-!
-!!      ! get values of model
-!!      do i = 1 , size(model)
-!!        if(model(i)%if) then 
-!!          call get_value (model(i) , lat , lon , val(i) , level=1, method =model(i)%interpolation)
-!!        else 
-!!          val(i) = 0.
-!!        endif
-!!      enddo
-!
-!!      !todo
-!!!      if (refpres%if) then
-!!!       call get_value (refpres , lat , lon , ref_p , method =1)
-!!!     else
-!!       ref_p=0.
-!!!     endif
-!
-!!      ! get polygons
-!!      do i = 1 , 2
-!!        if (polygons(i)%if) then
-!!          call chkgon ( lon, lat , polygons(i) , iok(i) )
-!!        else
-!!          iok(i)=1
-!!        endif
-!!      end do
-!
-!!      ! calculate area using spherical formulae
-!!      if (val(1).ne.0) then
-!!        ! todo !!!!! spher area was changed to work with RADIANS
-!!        call spher_area(green_common(igreen,1) , green_common(igreen,2), dble(360./nazimuth) , area) 
-!
-!!        ! force topography to zero over oceans
-!!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
-!
-!!        ! normalization according to Merriam (1992) 
-!!        normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1.e5  )
-!
-!!       ! elastic part
-!!        ! if the cell is not over sea and inverted barometer assumption was not set 
-!!        ! and is not excluded by polygon
-!!        if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-!!          results%e = results%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
-!!        endif
-!!  !       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
-!!  !       stop 
-!
-!!        ! newtonian part
-!!        if(.not. iok(1).eq.0) then
-!!         results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
-!
-!!         if (model(2)%if.and.size(model).ge.2) then
-!!            results%dt = results%dt + (val(1)/ 100.-ref_p) * &
-!!              (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
-!!          endif
-!
-!!         results%dh = results%dh + (val(1)/ 100.-ref_p) * &
-!!          (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
-!
-!!         results%dz = results%dz + (val(1)/ 100.-ref_p) * &
-!!          (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
-!!       endif
-!!      endif
-!!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-!!        !todo
-!!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
-!!!        write (moreverbose%unit, '(">")')
-!!!      endif
-!!    enddo
-!!  enddo
-!!  !todo
-!!!  if (moreverbose%if.and. moreverbose%names(1).eq."i") then
-!!!    write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
-!!!  endif
+  !
+  !!  npoints=0
+  !!  do igreen = 1 ,size(green_common(:,1))
+  !!    nazimuth = max(int(360*sin(d2r(green_common(igreen,1)))),100) * denseraz
+  !!    do iazimuth  = 1 , nazimuth
+  !!      npoints = npoints + 1
+  !!      azimuth = (iazimuth - 1) * 360./nazimuth
+  !
+  !!      ! get lat and lon of point
+  !!      call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
+  !
+  !!      ! get values of model
+  !!      do i = 1 , size(model)
+  !!        if(model(i)%if) then 
+  !!          call get_value (model(i) , lat , lon , val(i) , level=1, method =model(i)%interpolation)
+  !!        else 
+  !!          val(i) = 0.
+  !!        endif
+  !!      enddo
+  !
+  !!      !todo
+  !!!      if (refpres%if) then
+  !!!       call get_value (refpres , lat , lon , ref_p , method =1)
+  !!!     else
+  !!       ref_p=0.
+  !!!     endif
+  !
+  !!      ! get polygons
+  !!      do i = 1 , 2
+  !!        if (polygons(i)%if) then
+  !!          call chkgon ( lon, lat , polygons(i) , iok(i) )
+  !!        else
+  !!          iok(i)=1
+  !!        endif
+  !!      end do
+  !
+  !!      ! calculate area using spherical formulae
+  !!      if (val(1).ne.0) then
+  !!        ! todo !!!!! spher area was changed to work with RADIANS
+  !!        call spher_area(green_common(igreen,1) , green_common(igreen,2), dble(360./nazimuth) , area) 
+  !
+  !!        ! force topography to zero over oceans
+  !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
+  !
+  !!        ! normalization according to Merriam (1992) 
+  !!        normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1.e5  )
+  !
+  !!       ! elastic part
+  !!        ! if the cell is not over sea and inverted barometer assumption was not set 
+  !!        ! and is not excluded by polygon
+  !!        if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+  !!          results%e = results%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
+  !!        endif
+  !!  !       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
+  !!  !       stop 
+  !
+  !!        ! newtonian part
+  !!        if(.not. iok(1).eq.0) then
+  !!         results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
+  !
+  !!         if (model(2)%if.and.size(model).ge.2) then
+  !!            results%dt = results%dt + (val(1)/ 100.-ref_p) * &
+  !!              (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
+  !!          endif
+  !
+  !!         results%dh = results%dh + (val(1)/ 100.-ref_p) * &
+  !!          (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
+  !
+  !!         results%dz = results%dz + (val(1)/ 100.-ref_p) * &
+  !!          (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
+  !!       endif
+  !!      endif
+  !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+  !!        !todo
+  !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
+  !!!        write (moreverbose%unit, '(">")')
+  !!!      endif
+  !!    enddo
+  !!  enddo
+  !!  !todo
+  !!!  if (moreverbose%if.and. moreverbose%names(1).eq."i") then
+  !!!    write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
+  !!!  endif
 end subroutine
 !
 !!!> \todo site height from model 

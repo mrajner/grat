@@ -12,12 +12,20 @@ program value_check
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
-  integer :: i,ii ,j ,start , imodel, iok
+  integer :: i,ii ,j ,start , imodel, iok 
+  character(1) :: interpolation
 
   call intro (program_calling = "value_check", &
     accepted_switches="VFoShvIDLPR" , &
     cmdlineargs=.true.)
   call print_settings (program_calling = "value_check")
+
+  if (.not.allocated(info)) then
+    interpolation="n"
+  else
+    interpolation = info(1)%interpolation
+  endif
+
   do i = 1 , size(model)
     if (model(i)%if) call read_netCDF(model(i))
   enddo
@@ -78,7 +86,7 @@ program value_check
           if (model(ii)%if) then 
             if (iok.eq.1) then
               call get_value (model(ii), sites(i)%lat, sites(i)%lon, val(imodel), &
-                method=model(ii)%interpolation)
+                method=interpolation)
             else
               val (imodel) = 0
             endif
