@@ -8,7 +8,7 @@ program value_check
   use mod_cmdline 
   use mod_data     , only: get_variable, get_value,read_netCDF
   use mod_constants, only: dp
-  use mod_polygon  , only: read_polygon, chkgon
+  use mod_polygon  , only: read_polygon, chkgon, polygon
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
@@ -18,7 +18,6 @@ program value_check
   call intro (program_calling = "value_check", &
     accepted_switches="VFoShvIDLPR" , &
     cmdlineargs=.true.)
-  call print_settings (program_calling = "value_check")
 
   if (.not.allocated(info)) then
     interpolation="n"
@@ -32,7 +31,7 @@ program value_check
 
   ! check of exclusion or inclusion in polygon file
   ! for every site
-  call read_polygon (polygons(1))
+  call read_polygon (polygon(1))
 
   write(log%unit, form_separator) 
   allocate (val (nmodels(model)))
@@ -73,8 +72,8 @@ program value_check
 
       ! if this point should not be used (polygon) leave as zero
       ! get polygons
-      if (polygons(1)%if) then
-        call chkgon( sites(i)%lon , sites(i)%lat , polygons(1) , iok)
+      if (polygon(1)%if) then
+        call chkgon( sites(i)%lon , sites(i)%lat , polygon(1) , iok)
       else
         iok=1
       endif

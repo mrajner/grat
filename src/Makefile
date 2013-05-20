@@ -1,6 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+# a: ../bin/real_vs_standard
+#   $< -F $(SP)
 al: $(OBJS) grat example
 # al: $(OBJS) value_check example_value_check
 
@@ -43,11 +45,11 @@ RS 			 = 101300@RS
 
 SRCS  = mod_constants.f90    \
 				mod_utilities.f90    \
+				mod_green.f90 \
 				mod_cmdline.f90      \
 				mod_polygon.f90      \
 				mod_data.f90         \
-				mod_aggf.f90         \
-				mod_green.f90
+				mod_aggf.f90         
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -58,6 +60,9 @@ PROGSSRCS =  grat.f90               \
 EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
+# mod_cmdline.o: mod_green.o mod_polygon.o
+# mod_polygon.o: mod_cmdline.o
+# mod_green.o: mod_cmdline.o
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
@@ -100,7 +105,7 @@ example:
 		-P ../polygon/baltyk.poly , ../polygon/tmp.poly \
 		-Sjoze,52,21 \
 		-V \
-		-Il@I 
+		-I5@B:l@I 
 
 example_value_check: 
 	$(PROGS_DIR)/value_check -I l@I -F$(SFC),$(GPT) -Sjoze,52,21 -V  -Grajner@GN, merriam@GE , /home/mrajner/src/gotic2/data/grn1.data @ GN : 3u:454@t

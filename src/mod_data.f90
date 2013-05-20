@@ -81,22 +81,21 @@ end subroutine
 ! =============================================================================
 subroutine get_variable( model , date )
   use netcdf
-  use mod_cmdline , only: file,dates, log ,form_61
+  use mod_cmdline, only: file, form_61 , log
   type (file), intent(inout) :: model
   integer , optional , intent(in) ,dimension(6) ::date
   integer :: varid
   integer :: start(3)
   integer :: index_time, i , j
-  integer::tmp(6)
 
   index_time = 0
-!  write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
+  write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
   call check ( nf90_inq_varid ( model%ncid , model%names(1) ,  varid ) )
   if (allocated(model%data)) deallocate(model%data)
   allocate (model%data ( size (model%lon)  , size(model%lat  ), &
                          size (model%level)))
  
-  if (size(dates).gt.0 .and. present(date)) then                       
+  if (size(date).gt.0 .and. present(date)) then                       
     outer: do i = 1 , size(model%date(:,1))
       do j = 1 , 6
         if (model%date(i,j) .eq. date(j)) then
@@ -113,7 +112,7 @@ subroutine get_variable( model , date )
       write(log%unit,form_61) "Cannot find date:", date, &
         "var:", trim(model%names(1)), "file:" , model%name
         model%data= sqrt(-1.)
-!        stop "PROBLEM getting variable"
+        stop "PROBLEM getting variable"
       return
     endif
   else

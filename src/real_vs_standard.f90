@@ -6,33 +6,29 @@
 ! ==============================================================================
 program real_vs_standard
 !  use mod_constants, only :dp
-!  use mod_cmdline,   only :intro,cpu_start, cpu_finish, print_settings, model , &
-!    dates , sites , output , log , form_separator, green , denser
-!  use mod_green,     only : results, convolve
-!  use mod_data,      only : read_netCDF , get_variable , get_value
+  use mod_cmdline
+  use mod_green,     only : result
+  use mod_data,      only : read_netCDF , get_variable , get_value
 !  use mod_aggf,      only : geop2geom
 !  
-!  implicit none
+  implicit none
 !  real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
-!  integer :: i , j, ii, iii
-!
-!  !> program starts here with time stamp
-!  call cpu_time(cpu_start)
-!
-!  ! gather cmd line option decide where to put output
-!  ! todo specific for current program
-!  call intro ("rat")
-!
-!  ! print header to log: version, date and summary of command line options
-!  call print_settings ("rat")
-!  
-!   !read models into memory
-!  do i =1 , size(model)
-!    if (model(i)%if) call read_netCDF ( model(i) )
-!  enddo
-!
-!   
-!  allocate (results(size(sites)*max(size(dates),1)))
+  integer :: i , j, ii, iii
+
+  ! program starts here with time stamp
+  call cpu_time(cpu_start)
+
+  ! gather cmd line option decide where to put output
+  ! todo specific for current program
+  call intro (program_calling="real_vs_standard")
+  
+   !read models into memory
+  do i =1 , size(model)
+    if (model(i)%if) call read_netCDF ( model(i) )
+  enddo
+
+   
+!  allocate (result(size(site)*max(size(dates),1)))
 !  iii=0
 !  do j = 1 , max(size (dates),1)
 !    if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date

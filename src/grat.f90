@@ -89,29 +89,32 @@ program grat
   
 
   ! read models into memory
+  ! todo move it to mod_data?
   do i =1 , size(model)
     if (model(i)%if) call read_netCDF (model(i))
   enddo
 
-  print form_separator 
-
-  allocate (results(size(sites)*max(size(dates),1)))
+  ! move it to mod_green?
+  allocate (results(size(site)*max(size(date),1)))
+  print *, size(green), size(results) , shape(results)
+  
 
   iii=0
-  do j = 1 , max(size (dates),1)
-    if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date
+  do j = 1 , max(size (date),1)
+    if(size(date).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") date(j)%date
 
+    !TODO
     do ii = 1 , min(2,size(model))
-      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
+      if (model(ii)%if) call get_variable ( model(ii) , date = date(j)%date)
     enddo
 
     write(log%unit, form_separator)
     write(log%unit, form_60) "Results:"
     if (output%if.and.(output%name /= "")) write(log%unit, form_61) "written into file:" , trim(output%name)
-    do i = 1 , size(sites)
-      write(output%unit, '(2f15.5f)', advance ="no") sites(i)%lat ,sites(i)%lon
+    do i = 1 , size(site)
+      write(output%unit, '(2f15.5f)', advance ="no") site(i)%lat ,site(i)%lon
       iii=iii+1
-      !      call convolve (sites(i) , green , results(iii), denserdist = denser(1) , denseraz = denser(2))
+      call convolve (site(i))
       write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
     enddo
   enddo

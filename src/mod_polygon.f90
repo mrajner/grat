@@ -11,8 +11,8 @@ module mod_polygon
   use mod_constants, only : dp
 
   implicit none
-!  private
-!  public :: read_polygon ,chkgon
+  private
+  public :: read_polygon ,chkgon , polygon
   !----------------------------------------------------
   ! polygons
   !----------------------------------------------------

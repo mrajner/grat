@@ -36,7 +36,7 @@ module mod_cmdline
   end type
 
   real(dp) :: cpu_start , cpu_finish  
-  type(dateandmjd) , allocatable,dimension (:) :: dates
+  type(dateandmjd) , allocatable,dimension (:) :: date
 
   !----------------------------------------------------
   ! command line entry
@@ -67,12 +67,11 @@ module mod_cmdline
     real(dp)                  :: lat,lon,height
   end type 
 
-  type(site_data) , allocatable , dimension(:) :: sites
+  type(site_data) , allocatable , dimension(:) :: site
 
   !----------------------------------------------------
   ! various
   !----------------------------------------------------
-  ! unit of scratch file
   integer,dimension(8):: execution_date !< To give time stamp of execution
   character (len = 2) :: method = "2D"  !< computation method
 
@@ -128,9 +127,6 @@ module mod_cmdline
   logical :: if_verbose  = .false.  
   logical :: inverted_barometer  = .true.  
 
-  character (50) :: interpolation_names (2) &
-    = [ "nearest" , "bilinear" ]
-
   !----------------------------------------------------
   ! For preety printing
   !----------------------------------------------------
@@ -145,6 +141,7 @@ module mod_cmdline
     form_64        = "(4x,4x,a,4x,a)"
 
 contains
+
 ! =============================================================================
 ! =============================================================================
 subroutine collect_args (accepted_switches)
@@ -195,7 +192,6 @@ subroutine collect_args (accepted_switches)
           cmd_line(i)%field(j)%subfield(n)%dataname = " "
         endif
       enddo
-
       dummy_aux=dummy_aux(indeks_comma+1:)
     enddo
     dummy= dummy(indeks_space+1:)
@@ -272,6 +268,11 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs )
   endif
 
   call print_version(program_calling=program_calling)
+  call date_and_time (values = execution_date)
+  write(log%unit,'("Program started:",1x,i4,2("-",i2.2), &
+    1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),          &
+    execution_date (1:3),execution_date(5:7),execution_date(4)/60
+  write(log%unit, form_separator)
   write (log%unit, form_61) "Command invoked:"
   call get_command(dummy)
   write (log%unit, form_62) trim(dummy)
@@ -361,7 +362,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   use mod_utilities, only : file_exists, is_numeric
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: program_calling,accepted_switches
-  integer :: i
+  integer :: i, j
 
   write(log%unit, form_61) cmd_line_entry%switch , "{", trim(cmd_line_entry%full) ,"}"
   if(.not.cmd_line_entry%accepted) then
@@ -378,46 +379,54 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ('-S','-R')
     ! check if format is proper for site
     ! i,e. -Sname,B,L[,H]
-    if (.not. allocated(sites)) then
+    if (.not. allocated(site)) then
       if(index(cmd_line_entry%field(1)%subfield(1)%name, "/" ).ne.0 &
         .or.(cmd_line_entry%field(1)%subfield(1)%name.eq. "g" ) ) &
         then
         call parse_GMT_like_boundaries ( cmd_line_entry )
         return
-      endif
-      if (size(cmd_line_entry%field).ge.3) then
+      else if (size(cmd_line_entry%field).ge.3) then
         if (is_numeric(cmd_line_entry%field(2)%subfield(1)%name) &
           .and.is_numeric(cmd_line_entry%field(3)%subfield(1)%name) &
           .and.index(cmd_line_entry%field(1)%subfield(1)%name, "/" ).eq.0 &
           .and.(.not.cmd_line_entry%field(1)%subfield(1)%name.eq. "Rg" ) &
           ) then
-          allocate (sites(1))
-          sites(1)%name = trim(cmd_line_entry%field(1)%subfield(1)%name)
-          read ( cmd_line_entry%field(2)%subfield(1)%name , * ) sites(1)%lat
-          if (abs(sites(1)%lat).gt.90.) sites(1)%lat = sign(90.,sites(1)%lat) 
-          read ( cmd_line_entry%field(3)%subfield(1)%name , * ) sites(1)%lon
-          if (sites(1)%lon.ge.360.) sites(1)%lon = mod(sites(1)%lon,360.)
+          allocate (site(1))
+          site(1)%name = trim(cmd_line_entry%field(1)%subfield(1)%name)
+          read ( cmd_line_entry%field(2)%subfield(1)%name , * ) site(1)%lat
+          if (abs(site(1)%lat).gt.90.) site(1)%lat = sign(90.,site(1)%lat) 
+          read ( cmd_line_entry%field(3)%subfield(1)%name , * ) site(1)%lon
+          if (site(1)%lon.ge.360.) site(1)%lon = mod(site(1)%lon,360.)
           if (size(cmd_line_entry%field).ge.4) then
             if (is_numeric (cmd_line_entry%field(4)%subfield(1)%name ) ) then
-              read (cmd_line_entry%field(4)%subfield(1)%name, * ) sites(1)%height
+              read (cmd_line_entry%field(4)%subfield(1)%name, * ) site(1)%height
             endif
           endif
-          write(log%unit, form_62) 'the site was set (BLH):' , &
-            sites(1)%name, real(sites(1)%lat) , &
-            real(sites(1)%lon) , real(sites(1)%height) 
-          return
         endif
-      endif
       !or read sites from file
-      if (file_exists (cmd_line_entry%field(1)%subfield(1)%name))  then
+      else if (file_exists (cmd_line_entry%field(1)%subfield(1)%name))  then
         write(log%unit, form_62) 'the site file was set:' , &
           cmd_line_entry%field(1)%subfield(1)%name
         call read_site_file (cmd_line_entry%field(1)%subfield(1)%name)
-        return
+      else
+        call print_warning ( "site" )
       endif
-      call print_warning ( "site" )
     else
       call print_warning ( "repeated" , error_unit)
+    endif
+    !----------------------------------------------------
+    ! Site summary
+    !----------------------------------------------------
+    if (size(site).ge.1) then
+            write(log%unit, form_63 ) "Processing:", size(site), "site(s)"
+            if (size(site).le.15) then
+              write(log%unit, '(8x,a,t16,3a15)') &
+                "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
+              do j = 1,size(site)
+                write(log%unit, '(8x,a,t16,3f15.4)') &
+                  site(j)%name, site(j)%lat, site(j)%lon , site(j)%height
+              enddo
+            endif
     endif
   case ("-I")
     call parse_info(cmd_line_entry)
@@ -472,7 +481,7 @@ end subroutine
 !> This subroutine parse -P option. 
 !!
 !! \author M. Rajner
-!! \date 2013-05-17
+!! \date 2013.05.20
 ! =============================================================================
 subroutine parse_polygon (cmd_line_entry)
   use mod_utilities, only:file_exists
@@ -481,22 +490,22 @@ subroutine parse_polygon (cmd_line_entry)
   integer :: i
 
   write(log%unit, form_62), 'polygon file was set: ' 
-  allocate(polygon(size(cmd_line_entry%field)))
+  !  allocate(polygon(size(cmd_line_entry%field)))
   do i = 1, size(cmd_line_entry%field)
     !prevent from multiple -P
-    if (polygon(i)%if) then
-      call print_warning ("repeated")
-      return
-    endif
-    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
-    if (file_exists((polygon(i)%name))) then
-      polygon(i)%if=.true.
-      polygon(i)%pm = trim(cmd_line_entry%field(i)%subfield(2)%name)
-      ! read polygon
-      call read_polygon (polygon(i))
-    else
-      write(log%unit, form_62), 'file do not exist. Polygon file was IGNORED'
-    endif
+    !    if (polygon(i)%if) then
+    !      call print_warning ("repeated")
+    !      return
+    !    endif
+    !    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+    !    if (file_exists((polygon(i)%name))) then
+    !      polygon(i)%if=.true.
+    !      polygon(i)%pm = trim(cmd_line_entry%field(i)%subfield(2)%name)
+    !      ! read polygon
+    !!      call read_polygon (polygon(i))
+    !    else
+    !      write(log%unit, form_62), 'file do not exist. Polygon file was IGNORED'
+    !    endif
   enddo
 end subroutine
 
@@ -792,15 +801,15 @@ end function
     range_lat=limits(4) - limits(3)
     n_lon = floor ( range_lon / resolution(1)) + 1
     n_lat = floor ( range_lat / resolution(2)) + 1  
-    allocate (sites ( n_lon * n_lat ) )
+    allocate (site ( n_lon * n_lat ) )
 
     do i = 1 , n_lon
       lon = limits (1) + (i-1) * resolution(1)
       if (lon.ge.360.) lon = lon - 360. 
       do ii = 1 , n_lat
         lat = limits (3) + (ii-1) * resolution (2)
-        sites( (i-1) * n_lat + ii  )%lon = lon
-        sites( (i-1) * n_lat + ii  )%lat = lat
+        site( (i-1) * n_lat + ii  )%lon = lon
+        site( (i-1) * n_lat + ii  )%lat = lat
       enddo
     enddo
   end subroutine
@@ -824,7 +833,7 @@ end function
     ! two loops, first count good lines and print rejected
     ! second allocate array of sites and read coordinates into it
     do nloop = 1, 2
-      if (nloop.eq.2) allocate(sites(good_lines))
+      if (nloop.eq.2) allocate(site(good_lines))
       if (number_of_lines.ne.good_lines) then
         call print_warning ("site_file_format")
       endif
@@ -859,10 +868,10 @@ end function
             if (aux%lon.ge.-180 .and. aux%lon.le.360) then
               good_lines=good_lines+1
               if (nloop.eq.2) then
-                sites(good_lines)%name= trim(dummy(1))
-                read(dummy(2),*) sites(good_lines)%lat 
-                read(dummy(3),*) sites(good_lines)%lon 
-                read(dummy(4),*) sites(good_lines)%height 
+                site(good_lines)%name= trim(dummy(1))
+                read(dummy(2),*) site(good_lines)%lat 
+                read(dummy(3),*) site(good_lines)%lon 
+                read(dummy(4),*) site(good_lines)%height 
               endif
             else
               if (nloop.eq.2) then 
@@ -885,9 +894,9 @@ end function
     enddo
 
     ! if longitude <-180, 180> change to <0,360) domain
-    do i =1, size (sites)
-      if (sites(i)%lon.lt.0) sites(i)%lon= sites(i)%lon + 360.
-      if (sites(i)%lon.eq.360) sites(i)%lon= 0.
+    do i =1, size (site)
+      if (site(i)%lon.lt.0) site(i)%lon= site(i)%lon + 360.
+      if (site(i)%lon.eq.360) site(i)%lon= 0.
     enddo
   end subroutine
 
@@ -959,20 +968,20 @@ end function
         interval_unit="M"
       endif
       if (interval_unit.eq."M") then
-        allocate (dates( int((12*(stop(1) - start(1))+stop(2)-start(2))/(step)) +1 ))
-        dates(1)%date=start
-        dates(1)%mjd=mjd(dates(1)%date)
-        do i= 2 ,size(dates)
-          dates(i)%date=dates(i-1)%date
-          dates(i)%date(2)=dates(i-1)%date(2)+step
-          if (dates(i)%date(2).gt.12) then
-            dates(i)%date(1) =dates(i)%date(1)+int(dates(i)%date(2)/12)
-            dates(i)%date(2) =modulo(dates(i)%date(2),12)
-          else if (dates(i)%date(2).lt.1) then
-            dates(i)%date(1) =dates(i)%date(1)-int(-dates(i)%date(2)/12+1)
-            dates(i)%date(2) =dates(i)%date(2)+12*(1+int(-dates(i)%date(2)/12))
+        allocate (date( int((12*(stop(1) - start(1))+stop(2)-start(2))/(step)) +1 ))
+        date(1)%date=start
+        date(1)%mjd=mjd(date(1)%date)
+        do i= 2 ,size(date)
+          date(i)%date=date(i-1)%date
+          date(i)%date(2)=date(i-1)%date(2)+step
+          if (date(i)%date(2).gt.12) then
+            date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
+            date(i)%date(2) =modulo(date(i)%date(2),12)
+          else if (date(i)%date(2).lt.1) then
+            date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
+            date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
           endif
-          dates(i)%mjd=mjd(dates(i)%date)
+          date(i)%mjd=mjd(date(i)%date)
         enddo
       endif
     else
@@ -980,15 +989,12 @@ end function
       if (interval_unit.eq."m") step = step /60.
       if (interval_unit.eq."s") step = step /60./60.
 
-      allocate (dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ) ))
-      do i = 1 , size(dates)
-        dates(i)%mjd = mjd(start) + ( i -1 ) * step / 24.
-        call invmjd ( dates(i)%mjd , dates(i)%date)
+      allocate (date (int((mjd(stop)-mjd(start)) / step * 24. + 1 ) ))
+      do i = 1 , size(date)
+        date(i)%mjd = mjd(start) + ( i -1 ) * step / 24.
+        call invmjd ( date(i)%mjd , date(i)%date)
       enddo
     endif
-    !      do i = 1 , size(dates)
-    !        print * , ":" ,dates(i)%mjd ,dates(i)%date(1:4)
-    !      enddo
   end subroutine
   !
   !
@@ -1075,49 +1081,6 @@ end function
     write(log%unit , form_header ) 
   end subroutine
 
-  ! =============================================================================
-  !> Print settings 
-  ! =============================================================================
-  subroutine print_settings (program_calling)
-    logical :: exists
-    character (len=255):: dummy
-    integer :: io_status , j
-    character(*), intent(in), optional :: program_calling
-
-    call date_and_time (values = execution_date)
-    write(log%unit,'("Program started:",1x,i4,2("-",i2.2), &
-      1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),          &
-      execution_date (1:3),execution_date(5:7),execution_date(4)/60
-    write(log%unit, form_separator)
-
-    !----------------------------------------------------
-    ! Site summary
-    !----------------------------------------------------
-    if (size(sites).ge.1) then
-      write(log%unit, form_separator)
-      write(log%unit, form_60 ) "Processing:", size(sites), "site(s)"
-      if (size(sites).le.15) then
-        write(log%unit, '(2x,a,t16,3a15)') &
-          "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
-        do j = 1,size(sites)
-          write(log%unit, '(2x,a,t16,3f15.4)') &
-            sites(j)%name, sites(j)%lat, sites(j)%lon , sites(j)%height
-        enddo
-      endif
-    endif
-
-    !----------------------------------------------------
-    ! Computation method summary
-    !----------------------------------------------------
-    !if (program_calling.eq."grat" ) then
-    !  write(log%unit, form_separator)
-    !  write(log%unit, form_60 ) "Method used:", method
-    !endif
-
-    !write(log%unit, form_separator)
-    !write(log%unit, form_60 ) "Interpolation data:", & 
-    !  interpolation_names(model%interpolation)(1:7)
-  end subroutine
 
   !! =============================================================================
   !! =============================================================================
@@ -1211,7 +1174,7 @@ end function
       write(def_unit, form_62) "something wrong with -S|-R specification. IGNORED"
     else if (warn .eq. "repeated") then
       write(def_unit, form_62) "reapeted specification. IGNORED"
-    else if (warn .eq. "dates") then
+    else if (warn .eq. "date") then
       write(def_unit, form_62) "something wrong with date format -D. IGNORED"
     else if (warn .eq. "model") then
       write(def_unit, form_62) "something wrong with -F."

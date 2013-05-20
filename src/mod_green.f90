@@ -190,36 +190,36 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve (site ,  green , results, denserdist , denseraz)
-  use, intrinsic :: iso_fortran_env, only : error_unit
-  use mod_constants, only: pi , dp,  atmosphere
-  use mod_cmdline , only: site_data,  moreverbose , &
-    inverted_barometer , model,  method ,log
-  use mod_utilities, only: d2r, spher_trig
-  use mod_data, only: get_value
-  use mod_polygon, only: chkgon
+subroutine convolve (site )
+!subroutine convolve (site ,  green , results, denserdist , denseraz)
+!  use, intrinsic :: iso_fortran_env, only : error_unit
+!  use mod_constants, only: pi , dp,  atmosphere
+  use mod_cmdline
+!  use mod_utilities, only: d2r, spher_trig
+!  use mod_data, only: get_value
+!  use mod_polygon, only: chkgon
   !
   type(site_data) , intent(in) :: site
-  type(green_functions), allocatable , dimension(:) :: green
-  integer , intent (in) :: denserdist , denseraz
-  real(dp) :: latin , lonin
-  integer ::  ndenser , igreen  , iazimuth , nazimuth
-  real(dp) :: azimuth
-  real(dp) :: lat , lon , area  
-  real(dp) :: val(4) , ref_p
-  integer :: i , iok(2) , npoints
-  real(dp) :: normalize 
-  type (result) ,intent(out)  :: results
+!  type(green_functions), allocatable , dimension(:) :: green
+!  integer , intent (in) :: denserdist , denseraz
+!  real(dp) :: latin , lonin
+!  integer ::  ndenser , igreen  , iazimuth , nazimuth
+!  real(dp) :: azimuth
+!  real(dp) :: lat , lon , area  
+!  real(dp) :: val(4) , ref_p
+!  integer :: i , iok(2) , npoints
+!  real(dp) :: normalize 
+!  type (result) ,intent(out)  :: results
 
   ! check if greens functions were specified
   if( size (green).eq.0) then
     stop "No green functions!"
   endif
 
-  print * ,denseraz,":::"
-  if (.not.allocated(green_common))  then
-    !    call green_unification (green , green_common , denser = denserdist-1)
-  endif
+!  print * ,denseraz,":::"
+!  if (.not.allocated(green_common))  then
+!        call green_unification (green , green_common , denser = denserdist-1)
+!  endif
   !
   !!  npoints=0
   !!  do igreen = 1 ,size(green_common(:,1))
