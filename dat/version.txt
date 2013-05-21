@@ -1,3 +1,4 @@
+!!!! OBSOLETE !! pass version in program!!
 This file contains the version for grat and utilities program.
 
 Rule: 

@@ -1,17 +1,7 @@
 module mod_utilities
-
+  use, intrinsic:: iso_fortran_env
+  use mod_constants, only:dp, pi
   implicit none
-  private
-
-  public:: &
-    ntokens           , jd                   , mjd        , &
-    invmjd            , spline_interpolation , spline     , &
-    ispline           , file_exists          , skip_header, &
-    d2r               , r2d                  , is_numeric , &
-    spher_trig_inverse, count_records_to_read, spher_trig , &
-    spher_area , size_ntimes_denser
-
-
 contains
 
 ! ==============================================================================
@@ -20,7 +10,6 @@ contains
 !! uses \c ispline and \c spline subroutines
 ! ==============================================================================
 subroutine spline_interpolation(x,y,n, x_interpolated, y_interpolated, n2, method)
-  use mod_constants, only:dp
   integer,intent(in) :: n, n2
   real(dp) , intent(in) :: x(n), y(n) , x_interpolated(n2)
   real(dp) , intent(out) :: y_interpolated(n2)
@@ -42,7 +31,6 @@ end subroutine
 
 !the procedure below will be soon removed (just for backward compability)
 subroutine spline_interpolation2 (x, y, x_interpolated, y_interpolated, method)
-  use mod_constants, only:dp
   real(dp) , allocatable , dimension (:), intent(in)  :: x, y, x_interpolated
   real(dp) , allocatable , dimension (:), intent(out) :: y_interpolated
   real(dp) , dimension (:) , allocatable :: b, c, d
@@ -85,7 +73,6 @@ end subroutine
 !!  the accompanying function fspline can be used for interpolation
 !! ==============================================================================
 subroutine spline (x, y, b, c, d, n)
-  use mod_constants, only: dp
   integer n
   real(dp) :: x(n), y(n), b(n), c(n), d(n)
   integer i, j, gap
@@ -177,7 +164,6 @@ end subroutine spline
 !! added optional parameter method
 !!=======================================================================
 real (dp) function ispline(u, x, y, b, c, d, n, method)
-  use mod_constants, only : dp
   integer n
   real(dp)::  u, x(n), y(n), b(n), c(n), d(n)
   integer ::  i, j, k
@@ -262,7 +248,6 @@ end function ntokens
 !! from opened files (unit) to read
 ! ==============================================================================
 subroutine skip_header ( unit , comment_char_optional )
-  use, intrinsic :: iso_fortran_env, only: iostat_end
   integer , intent (in) :: unit 
   character (len = 1) , optional :: comment_char_optional
   character (len = 60 ) :: dummy
@@ -294,7 +279,6 @@ end subroutine
 !! \date 2013-03-04
 ! ==============================================================================
 function jd (year,month,day, hh,mm,ss)
-  use mod_constants, only: dp
   integer, intent(in) ::  year,month,day
   integer, intent(in) :: hh,mm, ss
   integer :: i , j , k
@@ -316,7 +300,6 @@ end function
 !! \date 2013-03-04
 ! ==============================================================================
 function mjd  (date)
-  use mod_constants, only: dp
   integer ,intent(in) :: date (6)
   integer :: aux (6)
   integer :: i , k
@@ -342,7 +325,6 @@ end function
 !! \date 2013-03-04
 ! ==============================================================================
 subroutine invmjd (mjd , date)
-  use mod_constants, only: dp
   real(dp), intent (in) :: mjd
   integer , intent (out):: date (6)
   integer :: t1 ,t4 , h , t2 , t3 , ih1 , ih2
@@ -419,7 +401,6 @@ end function
 !! \date 2013-03-04
 ! =============================================================================
 function d2r (degree)
-  use mod_constants, only: pi, dp
   real(dp) , intent (in) :: degree
   real(dp) :: d2r
   d2r= pi / 180.0 * degree
@@ -433,7 +414,6 @@ end function
 !! \date 2013-03-04
 ! =============================================================================
 function r2d ( radian )
-  use mod_constants, only: pi, dp
   real(dp) :: r2d 
   real(dp), intent (in) :: radian
   r2d= 180. / pi * radian
@@ -463,7 +443,6 @@ end function
 !! in square units of given (optionally) \c radius.
 ! =============================================================================
 subroutine spher_area (distance ,ddistance, azstp,  area, radius, alternative_method )
-  use mod_constants, only: dp, sp
   real(dp), intent(out) :: area
   real(dp), intent(in)  :: distance,ddistance 
   real(dp), intent(in)  :: azstp
@@ -490,7 +469,6 @@ end subroutine
 !! \date 2013-03-06
 ! =============================================================================
 subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
-  use mod_constants, only : dp 
   real(dp) , intent(in)  :: distance 
   real(dp) , intent(in)  :: latin , lonin , azimuth
   real(dp) , intent(out) :: latout, lonout 
@@ -521,7 +499,6 @@ end subroutine
 !! All arguments in radians
 ! =============================================================================
 subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, haversine)
-  use mod_constants, only : dp , pi
 
   real(dp) , intent (in)         :: lat1 , lon1 , lat2 , lon2
   real(dp) , intent (out)        :: distance , azimuth
@@ -556,7 +533,6 @@ end subroutine
 !! \author M. Rajner
 ! =============================================================================
 subroutine count_records_to_read (file_name, rows , columns , comment_char )
-  use, intrinsic:: iso_fortran_env
   integer , optional , intent (out) :: rows, columns
   character(*) :: file_name
   character(255) :: line
@@ -589,4 +565,27 @@ function size_ntimes_denser (size_original, ndenser)
   integer, intent(in) :: size_original , ndenser
   size_ntimes_denser= (size_original - 1 ) * (ndenser +1 ) + 1
 end function
+
+! =============================================================================
+!> Counts occurence of character (separator, default comma) in string
+! =============================================================================
+integer function count_separator (dummy, separator)
+  character(*) , intent(in) ::dummy
+  character(1), intent(in), optional  :: separator
+  character(1)  :: sep
+  character(:), allocatable :: dummy2
+  integer :: i
+
+  dummy2=dummy
+  sep = ","
+  if (present(separator)) sep = separator
+  count_separator=0
+  do 
+    i = index (dummy2, sep)
+    if (i.eq.0) exit
+    dummy2 = dummy2(i+1:)
+    count_separator=count_separator+1
+  enddo
+end function
+
 end module

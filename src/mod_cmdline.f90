@@ -9,6 +9,7 @@ module mod_cmdline
 
   use mod_constants, only: dp 
   use, intrinsic :: iso_fortran_env
+  use mod_printing 
 
   implicit none
 
@@ -26,16 +27,6 @@ module mod_cmdline
     character (1) :: interpolation
   end type
   type(info_info), dimension(:), allocatable:: info
-
-  !----------------------------------------------------
-  ! dates
-  !----------------------------------------------------
-  type dateandmjd
-    real(dp) :: mjd
-    integer,dimension (6) :: date
-  end type
-  real(dp) :: cpu_start , cpu_finish  
-  type(dateandmjd) , allocatable,dimension (:) :: date
 
   !----------------------------------------------------
   ! command line entry
@@ -79,7 +70,7 @@ module mod_cmdline
     ! if file was determined
     logical :: if =.false.
 
-    logical :: first_call =.true. !mrajner 2013-05-21 07:20
+    logical :: first_call =.true. 
 
     ! boundary of model e , w ,s ,n
     real(dp):: limits(4)
@@ -99,8 +90,6 @@ module mod_cmdline
     integer :: ncid
   end type
 
-  ! External files
-  type(file) ::  log  , output 
   type(file) , allocatable, dimension (:) :: model , moreverbose
 
   ! todo --- make @ like for models
@@ -109,25 +98,17 @@ module mod_cmdline
   logical :: if_verbose  = .false.  
   logical :: inverted_barometer  = .true.  
 
-  !----------------------------------------------------
-  ! For preety printing
-  !----------------------------------------------------
-  character(len=255), parameter ::               & 
-    form_header    = '(60("#"))' ,               & 
-    form_separator = '("#",59("-"))' ,           & 
-    form_inheader  = '(("#"),1x,a56,1x,("#"))' , & 
-    form_60        = "(a,100(1x,g0))",           & 
-    form_61        = "(2x,a,100(1x,g0))",        & 
-    form_62        = "(4x,a,100(1x,g0))",        & 
-    form_63        = "(6x,100(x,g0))",           & 
-    form_64        = "(8x,100(x,g0))"
-
 contains
 
 ! =============================================================================
+!> This routine collect command line arguments to one matrix depending on
+!! given switches and separators
+!!
+!! \date 2013.05.21
+!! \author Marcin Rajner
 ! =============================================================================
 subroutine collect_args (accepted_switches)
-  use mod_utilities, only: ntokens
+  use mod_utilities, only: ntokens, count_separator
   character(355) :: dummy , dummy_aux ,dummy_aux2
   character(len=*) , intent (in), optional :: accepted_switches
   integer :: i, j, n,  indeks_space,indeks_comma, indeks_at , indeks_colon
@@ -197,13 +178,13 @@ end subroutine
 !!    (-S -11... was previously treated as two cmmand line entries, now only -? 
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro (program_calling, accepted_switches , cmdlineargs )
-  integer :: i
-  character(len=255) :: dummy,dummy_cleaned
+subroutine intro (program_calling, accepted_switches , cmdlineargs ,version )
   character(len=*), intent(in) :: program_calling
   character(len=*) , intent (in), optional :: accepted_switches
   logical , intent (in), optional :: cmdlineargs
-  character(2) :: delete
+  character(*) , intent (in), optional :: version
+  integer :: i
+  character(len=255) :: dummy,dummy_cleaned
 
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
     write(output_unit , '(a)' ) , &
@@ -216,7 +197,7 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs )
   if (any(cmd_line%switch.eq.'-h') &
     .and.if_accepted_switch("-h",accepted_switches)) &
     then
-    log%unit=error_unit
+    log%unit = error_unit
     call print_help(program_calling=program_calling, &
       accepted_switches = accepted_switches)
     call exit
@@ -225,7 +206,7 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs )
     .and.if_accepted_switch("-v",accepted_switches)) &
     then
     log%unit=error_unit
-    call print_version(program_calling=program_calling)
+    call print_version(program_calling=program_calling, version=version)
     call exit
   endif
   if (any(cmd_line%switch.eq.'-V')) then
@@ -249,7 +230,7 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs )
     open (newunit=log%unit, file = "/dev/null", action = "write" )
   endif
 
-  call print_version(program_calling=program_calling)
+  call print_version(program_calling=program_calling, version=version)
   call date_and_time (values = execution_date)
   write(log%unit,'("Program started:",1x,i4,2("-",i2.2), &
     1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),          &
@@ -263,9 +244,9 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs )
     call parse_option(cmd_line(i))
   enddo
 end subroutine
-
+!
 ! ==============================================================================
-!! This subroutine removes unnecesary blank spaces from cmdline entry
+!> This subroutine removes unnecesary blank spaces from cmdline entry
 !!
 !! Marcin Rajner
 !! \date 2013-05-13
@@ -286,8 +267,7 @@ subroutine get_command_cleaned(dummy)
     else
       arg=trim(arg)//trim(a)
     endif
-    if(check_if_switch_or_minus(b).or.i.eq.iargc()) &
-      then
+    if(check_if_switch_or_minus(b).or.i.eq.iargc()) then
       if(trim(dummy).eq."") then
         dummy=trim(arg)
       else
@@ -333,19 +313,24 @@ logical function if_accepted_switch (switch , accepted_switches)
   if_accepted_switch=.false.
   ! loop trough accepted switches
   do i =1, len(accepted_switches)
-    if (switch(2:2).eq.accepted_switches(i:i)) if_accepted_switch=.true.
+    if (switch(2:2).eq.accepted_switches(i:i)) then
+      if_accepted_switch=.true.
+      return
+    endif
   enddo
 end function
-
-! =============================================================================
-!> This subroutine counts the command line arguments and parse appropriately
-! =============================================================================
+!
+!! =============================================================================
+!!> This subroutine counts the command line arguments and parse appropriately
+!! =============================================================================
 subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
-  use mod_utilities, only : file_exists, is_numeric
+  use mod_site, only: parse_site
+  use mod_date, only: parse_date
+  !  use mod_utilities, only : file_exists, is_numeric
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: program_calling,accepted_switches
-  integer :: i, j
-
+  !  integer :: i, j
+  !
   write(log%unit, form_61) cmd_line_entry%switch , "{", trim(cmd_line_entry%full) ,"}"
   if(.not.cmd_line_entry%accepted) then
     write(log%unit, form_62) 'this switch is not accepted'
@@ -359,56 +344,80 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
       write(log%unit, form_62) 'the log file was set:' ,log%name
     endif
   case ('-S','-R')
-    !    call parse_site(cmd_line_entry)
+    if (size(cmd_line_entry%field).lt.1) then
+    else if (size(cmd_line_entry%field).lt.3) then
+      call parse_site ( &
+        name = cmd_line_entry%field(1)%subfield(1)%name &
+        )
+    else if (size(cmd_line_entry%field).lt.4) then
+      call parse_site ( &
+        name = cmd_line_entry%field(1)%subfield(1)%name , &
+        B    = cmd_line_entry%field(2)%subfield(1)%name , &
+        L    = cmd_line_entry%field(3)%subfield(1)%name &
+        )
+    else if (size(cmd_line_entry%field).ge.4) then
+      call parse_site ( &
+        name = cmd_line_entry%field(1)%subfield(1)%name , &
+        B    = cmd_line_entry%field(2)%subfield(1)%name , &
+        L    = cmd_line_entry%field(3)%subfield(1)%name , &
+        H    = cmd_line_entry%field(4)%subfield(1)%name   &
+        )
+    endif
   case ("-I")
     call parse_info(cmd_line_entry)
-  case ("-L")
-    write (log%unit , form_62) "printing additional information:"
-    allocate(moreverbose(size(cmd_line_entry%field)))
-    do i = 1, size(cmd_line_entry%field)
-      moreverbose(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
-      moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
-      if (dataname(moreverbose(i)%dataname).ne."unknown") then 
-        if (moreverbose(i)%name.ne."") then
-          open(newunit=moreverbose(i)%unit, &
-            file =moreverbose(i)%name , action = 'write')
-        else
-          moreverbose(i)%unit = output_unit
-        endif
-      endif
-      write (log%unit , form_62),  moreverbose(i)%name , &
-        "<-", dataname(moreverbose(i)%dataname)
-    enddo
+    !  case ("-L")
+    !    write (log%unit , form_62) "printing additional information:"
+    !    allocate(moreverbose(size(cmd_line_entry%field)))
+    !    do i = 1, size(cmd_line_entry%field)
+    !      moreverbose(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
+    !      moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
+    !      if (dataname(moreverbose(i)%dataname).ne."unknown") then 
+    !        if (moreverbose(i)%name.ne."") then
+    !          open(newunit=moreverbose(i)%unit, &
+    !            file =moreverbose(i)%name , action = 'write')
+    !        else
+    !          moreverbose(i)%unit = output_unit
+    !        endif
+    !      endif
+    !      write (log%unit , form_62),  moreverbose(i)%name , &
+    !        "<-", dataname(moreverbose(i)%dataname)
+    !    enddo
   case ("-B")
     if (cmd_line_entry%field(1)%subfield(1)%name.eq."N" ) inverted_barometer = .false.
   case ('-D')
-    call parse_dates (cmd_line_entry)
-  case ('-F')
-    if (allocated(model)) then
-      call print_warning ('repeated')
-    else
-      call get_model_info (cmd_line_entry)
+    if (size(cmd_line_entry%field).lt.1) then
+    else if (size(cmd_line_entry%field).lt.2) then
+      call parse_date ( &
+        s_start = cmd_line_entry%field(1)%subfield(1)%name , &
+        s_stop = "", &
+        s_step = ""  &
+        )
     endif
-  case ("-G")
-    call parse_green(cmd_line_entry)
-  case ('-M')
-    !> \todo rozbudować
-    method = cmd_line_entry%field(1)%subfield(1)%name
-    write(log%unit, form_62), 'method was set: ' , method
-  case ('-o')
-    output%if=.true.
-    output%name=cmd_line_entry%field(1)%subfield(1)%name
-    write(log%unit, form_62), 'output file was set: ' , output%name 
-    if (len(output%name).gt.0.and. output%name.ne."") then
-      open (newunit = output%unit , file = output%name , action = "write" )
-    endif
-  case ('-P')
-    call parse_polygon(cmd_line_entry)
+    !  case ('-F')
+    !    if (allocated(model)) then
+    !      call print_warning ('repeated')
+    !    else
+    !      call get_model_info (cmd_line_entry)
+    !    endif
+    !  case ("-G")
+    !    call parse_green(cmd_line_entry)
+    !  case ('-M')
+    !    !> \todo rozbudować
+    !    method = cmd_line_entry%field(1)%subfield(1)%name
+    !    write(log%unit, form_62), 'method was set: ' , method
+    !  case ('-o')
+    !    output%if=.true.
+    !    output%name=cmd_line_entry%field(1)%subfield(1)%name
+    !    write(log%unit, form_62), 'output file was set: ' , output%name 
+    !    if (len(output%name).gt.0.and. output%name.ne."") then
+    !      open (newunit = output%unit , file = output%name , action = "write" )
+    !    endif
+    !  case ('-P')
+    !    call parse_polygon(cmd_line_entry)
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
   end select
 end subroutine 
-
 
 ! =============================================================================
 !> This subroutine parse -I option. 
@@ -456,7 +465,6 @@ subroutine parse_info (cmd_line_entry)
         info(i)%distance%start = info(i-1)%distance%stop
       endif
     endif
-
   enddo
   !      write( log%unit , form_62 , advance="no" ) "interpolation method was set:"
   !      do i = 1 , size(cmd_line_entry%field)
@@ -481,417 +489,209 @@ subroutine parse_info (cmd_line_entry)
   !        write(log%unit, form_63) "Denser distance:" , denser%distance
   !      endif
 end subroutine
-
-! =============================================================================
-!> This subroutine parse -G option -- Greens function.
 !!
-!! This subroutines takes the -G argument specified as follows:
-!!   -G 
+!!! =============================================================================
+!!!> This subroutine parse -G option -- Greens function.
+!!!!
+!!!! This subroutines takes the -G argument specified as follows:
+!!!!   -G 
+!!!!
+!!!! \author M. Rajner
+!!!! \date 2013-03-06
+!!! =============================================================================
+!!subroutine parse_green ( cmd_line_entry)
+!!  use mod_utilities, only: file_exists, is_numeric
+!!  use mod_green, only:read_green, green
+!!  type (cmd_line_arg)  :: cmd_line_entry
+!!  integer :: i , ii 
 !!
-!! \author M. Rajner
-!! \date 2013-03-06
-! =============================================================================
-subroutine parse_green ( cmd_line_entry)
-  use mod_utilities, only: file_exists, is_numeric
-  use mod_green, only:read_green, green
-  type (cmd_line_arg)  :: cmd_line_entry
-  integer :: i , ii 
-
-  write(log%unit , form_62) "Green function file was set:"
-  allocate (green (size(cmd_line_entry%field)))
-
-  do i = 1 , size(cmd_line_entry%field)
-    green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
-    green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
-    do ii=1, 2
-      if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
-        read( cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
-      endif
-    enddo
-    call read_green(green(i))
-  enddo
-end subroutine
-
-! =============================================================================
-!> Counts occurence of character (separator, default comma) in string
-! =============================================================================
-integer function count_separator (dummy , separator)
-  character(*) , intent(in) ::dummy
-  character(1), intent(in), optional  :: separator
-  character(1)  :: sep
-  character(:), allocatable :: dummy2
-  integer :: i
-
-  dummy2=dummy
-  sep = ","
-  if (present(separator)) sep = separator
-  count_separator=0
-  do 
-    i = index (dummy2, sep)
-    if (i.eq.0) exit
-    dummy2 = dummy2(i+1:)
-    count_separator=count_separator+1
-  enddo
-end function
-
-! =============================================================================
-!> This subroutine fills the model info
-! =============================================================================
-subroutine get_model_info ( cmd_line_entry )
-  use mod_utilities, only : file_exists, is_numeric
-  type(cmd_line_arg),intent(in):: cmd_line_entry
-  integer ::  i , j , indeks
-
-  allocate(model(size(cmd_line_entry%field)))
-
-  do i = 1 , size(model)
-    model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
-    model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
-    if (model(i)%dataname.eq." ") model(i)%dataname="NN"
-    write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
-    if (model(i)%name.eq."") then
-      call print_warning ("model")
-    endif
-    write (log%unit , form_63,advance='no') , trim (dataname(model(i)%dataname)), &
-      "("//trim(model(i)%dataname)//")"
-    if ( file_exists (model(i)%name) ) then
-      do j =2 , size (cmd_line_entry%field(i)%subfield)
-        if (cmd_line_entry%field(i)%subfield(j)%name.ne."") then
-          model(i)%names(j-1)=cmd_line_entry%field(i)%subfield(j)%name
-        endif
-      enddo
-      write(log%unit, '(5(a,x))', advance="no") , (trim(model(i)%names(j)), j =1,5)
-      model(i)%if=.true.
-      write(log%unit, *) 
-    else if (is_numeric(model(i)%name)) then
-      model(i)%if_constant_value=.true.
-      read (model(i)%name , * ) model(i)%constant_value
-      write(log%unit, *), 'constant value was set: ' , model(i)%constant_value
-    else
-      call print_warning ("model")
-    endif
-  enddo
-end subroutine
-
-!! =============================================================================
-!!> Parse date given as 20110503020103  to yy mm dd hh mm ss and mjd
-!!! 
-!!! \warning decimal seconds are not allowed
-!! =============================================================================
-subroutine parse_dates (cmd_line_entry) 
-  use mod_utilities, only: is_numeric,mjd,invmjd
-  type(cmd_line_arg) cmd_line_entry
-  integer , dimension(6) :: start , stop , swap 
-  real (dp) :: step =6. ! step in hours
-  integer :: i
-  character(1) :: interval_unit="h"
-
-  call string2date(cmd_line_entry%field(1)%subfield(1)%name, start)
-  stop = start
-
-  if (size(cmd_line_entry%field).eq.3) then
-    if(len(trim(cmd_line_entry%field(3)%subfield(1)%dataname)).ne.0) then
-      read(cmd_line_entry%field(3)%subfield(1)%dataname,*) interval_unit
-    endif
-    if (len(trim(cmd_line_entry%field(3)%subfield(1)%name)).ne.0) &
-      then
-      read(cmd_line_entry%field(3)%subfield(1)%name,*) step
-    endif
-  endif
-  if (size(cmd_line_entry%field).ge.2) then
-    if(len(trim(cmd_line_entry%field(2)%subfield(1)%name)).ne.0) then
-      call string2date(cmd_line_entry%field(2)%subfield(1)%name, stop)
-      if(len(trim(cmd_line_entry%field(2)%subfield(1)%dataname)).ne.0) then
-        if(cmd_line_entry%field(2)%subfield(1)%dataname.eq.'Y') then
-          stop(1)=start(1)+stop(1)
-          stop(2:)=start(2:)
-          ! specification like -D 20110212 , 1 @ M
-        else if(cmd_line_entry%field(2)%subfield(1)%dataname.eq.'M') then
-          stop(2)=start(2)+stop(1)
-          stop(1)=start(1)
-          stop(3:)=start(3:)
-          if (stop(2).gt.12) then
-            stop(1) =stop(1)+int(stop(2)/12)
-            stop(2) =modulo(stop(2),12)
-          else if (stop(2).lt.1) then
-            stop(1) =stop(1)-int(-stop(2)/12+1)
-            stop(2) =stop(2)+12*(1+int(-stop(2)/12))
-          endif
-          ! specification like -D 20110212 , 1 @ D
-        else if(cmd_line_entry%field(2)%subfield(1)%dataname.eq.'D') then
-          call invmjd ( mjd(start)+stop(1) , stop)
-        endif
-      endif
-    endif
-  endif
-
-  write (log%unit , "(T6, a,x,i4.4,x,5(i2.2,x))") "start date:" , start
-  write (log%unit , "(T6, a,x,i4.4,x,5(i2.2,x))") "stop  date:" , stop
-  write (log%unit , "(T6, a,x,f8.0,a)") "interval:" , step, interval_unit
-
-  ! allow that stop is previous than start and list in reverse order
-  ! chage the sign of step in dates if necessery
-  if(mjd(stop).lt.mjd(start).and. step.gt.0) step = -step
-  ! or if step is negative
-  if(mjd(stop).gt.mjd(start).and. step.lt.0) then
-    swap=start
-    start=stop
-    stop=swap
-  endif
-
-  if (interval_unit.eq."M".or.interval_unit.eq."Y") then
-    if (interval_unit.eq."Y") then
-      step=step*12
-      interval_unit="M"
-    endif
-    if (interval_unit.eq."M") then
-      allocate (date( int((12*(stop(1) - start(1))+stop(2)-start(2))/(step)) +1 ))
-      date(1)%date=start
-      date(1)%mjd=mjd(date(1)%date)
-      do i= 2 ,size(date)
-        date(i)%date=date(i-1)%date
-        date(i)%date(2)=date(i-1)%date(2)+step
-        if (date(i)%date(2).gt.12) then
-          date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
-          date(i)%date(2) =modulo(date(i)%date(2),12)
-        else if (date(i)%date(2).lt.1) then
-          date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
-          date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
-        endif
-        date(i)%mjd=mjd(date(i)%date)
-      enddo
-    endif
-  else
-    if (interval_unit.eq."D") step = 24. * step
-    if (interval_unit.eq."m") step = step /60.
-    if (interval_unit.eq."s") step = step /60./60.
-
-    allocate (date (int((mjd(stop)-mjd(start)) / step * 24. + 1 ) ))
-    do i = 1 , size(date)
-      date(i)%mjd = mjd(start) + ( i -1 ) * step / 24.
-      call invmjd ( date(i)%mjd , date(i)%date)
-    enddo
-  endif
-end subroutine
+!!  write(log%unit , form_62) "Green function file was set:"
+!!  allocate (green (size(cmd_line_entry%field)))
+!!
+!!  do i = 1 , size(cmd_line_entry%field)
+!!    green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
+!!    green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
+!!    do ii=1, 2
+!!      if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
+!!        read( cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
+!!      endif
+!!    enddo
+!!    call read_green(green(i))
+!!  enddo
+!!end subroutine
+!!
 !
+!!! =============================================================================
+!!!> This subroutine fills the model info
+!!! =============================================================================
+!!subroutine get_model_info ( cmd_line_entry )
+!!  use mod_utilities, only : file_exists, is_numeric
+!!  type(cmd_line_arg),intent(in):: cmd_line_entry
+!!  integer ::  i , j , indeks
+!!
+!!  allocate(model(size(cmd_line_entry%field)))
+!!
+!!  do i = 1 , size(model)
+!!    model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
+!!    model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
+!!    if (model(i)%dataname.eq." ") model(i)%dataname="NN"
+!!    write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
+!!    if (model(i)%name.eq."") then
+!!      call print_warning ("model")
+!!    endif
+!!    write (log%unit , form_63,advance='no') , trim (dataname(model(i)%dataname)), &
+!!      "("//trim(model(i)%dataname)//")"
+!!    if ( file_exists (model(i)%name) ) then
+!!      do j =2 , size (cmd_line_entry%field(i)%subfield)
+!!        if (cmd_line_entry%field(i)%subfield(j)%name.ne."") then
+!!          model(i)%names(j-1)=cmd_line_entry%field(i)%subfield(j)%name
+!!        endif
+!!      enddo
+!!      write(log%unit, '(5(a,x))', advance="no") , (trim(model(i)%names(j)), j =1,5)
+!!      model(i)%if=.true.
+!!      write(log%unit, *) 
+!!    else if (is_numeric(model(i)%name)) then
+!!      model(i)%if_constant_value=.true.
+!!      read (model(i)%name , * ) model(i)%constant_value
+!!      write(log%unit, *), 'constant value was set: ' , model(i)%constant_value
+!!    else
+!!      call print_warning ("model")
+!!    endif
+!!  enddo
+!!end subroutine
+!!
 !
-!! =============================================================================
-!!> Convert dates given as string to integer (6 elements)
-!!! 
-!!! 20110612060302 --> [2011 , 6 , 12 , 6 , 3 , 2
-!!! you can omit
-!!! \warning decimal seconds are not allowed
-!! =============================================================================
-subroutine string2date ( string , date )
-  use mod_utilities, only: is_numeric
-  integer , dimension(6) ,intent(out):: date 
-  character (*) , intent(in) :: string
-  integer :: start_char , end_char , j
-
-  ! this allow to specify !st Jan of year simple as -Dyyyy
-  date = [2000 , 1 , 1 , 0 ,0 ,0]
-
-  start_char = 1
-  do j = 1 , 6 
-    if (j.eq.1) then
-      end_char=start_char+3
-    else
-      end_char=start_char+1
-    endif
-    if (is_numeric(string(start_char : end_char) )) then
-      read(string(start_char : end_char),*) date(j)
-    endif
-    start_char=end_char+1
-  enddo 
-
-end subroutine
-
-
-!! =============================================================================
-!! =============================================================================
-!subroutine sprawdzdate(mjd)
-!  use mod_utilities 
-!  real(dp):: mjd
-!  !    if (mjd.gt.jd(data_uruchomienia(1),data_uruchomienia(2),data_uruchomienia(3),data_uruchomienia(4),data_uruchomienia(5),data_uruchomienia(6))) then
-!  write (*,'(4x,a)') "Data późniejsza niż dzisiaj. KOŃCZĘ!"
-!  !      call exit
-!  !    else if (mjd.lt.jd(1980,1,1,0,0,0)) then
-!  !      write (*,'(4x,a)') "Data wcześniejsza niż 1980-01-01. KOŃCZĘ!"
-!  !      call exit
-!  !    endif
-!  !    if (.not.log_E) then
-!  !      data_koniec=data_poczatek
-!  !      mjd_koniec=mjd_poczatek
-!  !    endif
-!  !    if (mjd_koniec.lt.mjd_poczatek) then
-!  !      write (*,*) "Data końcowa większa od początkowej. KOŃCZĘ!"
-!  !      write (*,form_64) "Data końcowa większa od początkowej. KOŃCZĘ!"
-!  !    endif
-!end subroutine
-
 ! =============================================================================
 !> Print version of program depending on program calling
 !! 
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
-subroutine print_version (program_calling)
+subroutine print_version (program_calling,version)
   character(*) :: program_calling 
   integer :: version_unit , io_stat
-  character(40) :: version
+  character(*) , optional :: version
 
-  ! from the file storing version number
-  open(newunit=version_unit, file = '/home/mrajner/src/grat/dat/version.txt', &
-    action = 'read' , status = 'old')
-  do 
-    read (version_unit , '(a)' , iostat = io_stat ) version
-    if (io_stat == iostat_end) exit
-    if (version(1:2) == ' '//program_calling(1:1)) exit
-  enddo
   write(log%unit , form_header ) 
   write(log%unit,form_inheader ) , trim(program_calling)
-  write(log%unit,form_inheader ) , trim(version(3:))
+  write(log%unit,form_inheader ) , version
   write(log%unit , form_header ) 
   write(log%unit,form_inheader ) , 'Copyright 2013 by Marcin Rajner'
   write(log%unit,form_inheader ) , 'Warsaw University of Technology'
   write(log%unit,form_inheader ) , 'License: GPL v3 or later'
   write(log%unit , form_header ) 
 end subroutine
-
-
+!
 !! =============================================================================
 !! =============================================================================
 subroutine print_help (program_calling, accepted_switches)
   character(*) , intent(in) :: program_calling
   character(*) , intent(in),optional :: accepted_switches
-  integer :: help_unit , io_stat
-  character(500)::line
-  character(255)::syntax
-  logical:: if_print_line = .false., if_optional=.true.
-
-  if_print_line=.false.
-
-  ! change this path according to your settings
-  open(newunit=help_unit, file="~/src/grat/dat/help.hlp", action="read",status="old")
-
-  write (log%unit ,"(a)" , advance="no" ) program_calling
-  ! first loop - print only syntax with squre brackets if parameter is optional
-  do 
-    read (help_unit , '(a)', iostat=io_stat) line
-    if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
-      if (if_optional) write(log%unit, '(a)' , advance="no") " ["
-      if (if_optional) write(log%unit, '(a)' , advance="no") trim(syntax)
-      if (if_optional) write(log%unit, '(a)' , advance="no") "]"
-    endif
-    if (io_stat==iostat_end) then
-      write(log%unit, *) " " 
-      if_print_line = .false.
-      exit
-    endif
-    if(line(1:1)=="-") then
-      if(if_accepted_switch (line(1:2),accepted_switches )) then
-        if_print_line = .true.
-      else
-        if(line(1:1)=="-") if_print_line=.false.
-      endif
-    endif
-
-    if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
-      if_optional=.true.
-    else if (line(5:13) == "mandatory") then
-      if_optional=.false.
-    endif
-    if (line(2:2)=="s") then
-      syntax = trim(adjustl(line(3:)))
-    endif
-  enddo
-  rewind(help_unit)
-
-  write(log%unit , form_60) , 'Summary of available options for program '//program_calling
-  ! second loop - print informations
-  do 
-    read (help_unit , '(a)', iostat=io_stat) line
-    if (io_stat==iostat_end) exit
-
-    if(line(1:1)=="-") then
-      !todo
-      if(if_accepted_switch (line(1:2),accepted_switches )) then
-        if_print_line = .true.
-        write (log%unit , form_61 ) trim(line)
-      else
-        if(line(1:1)=="-") if_print_line=.false.
-      endif
-    else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
-      if (if_print_line) then
-        write (log%unit , form_61 ) "  "//trim(line(3:))
-      endif
-    else if (line(2:2)=="") then
-      if (if_print_line) write (log%unit , form_61 ) trim(line)
-    endif
-  enddo
-  close(help_unit)
-
+  !  integer :: help_unit , io_stat
+  !  character(500)::line
+  !  character(255)::syntax
+  !  logical:: if_print_line = .false., if_optional=.true.
+  !
+  !  if_print_line=.false.
+  !
+  !  ! change this path according to your settings
+  !  open(newunit=help_unit, file="~/src/grat/dat/help.hlp", action="read",status="old")
+  !
+  !  write (log%unit ,"(a)" , advance="no" ) program_calling
+  !  ! first loop - print only syntax with squre brackets if parameter is optional
+  !  do 
+  !    read (help_unit , '(a)', iostat=io_stat) line
+  !    if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
+  !      if (if_optional) write(log%unit, '(a)' , advance="no") " ["
+  !      if (if_optional) write(log%unit, '(a)' , advance="no") trim(syntax)
+  !      if (if_optional) write(log%unit, '(a)' , advance="no") "]"
+  !    endif
+  !    if (io_stat==iostat_end) then
+  !      write(log%unit, *) " " 
+  !      if_print_line = .false.
+  !      exit
+  !    endif
+  !    if(line(1:1)=="-") then
+  !      if(if_accepted_switch (line(1:2),accepted_switches )) then
+  !        if_print_line = .true.
+  !      else
+  !        if(line(1:1)=="-") if_print_line=.false.
+  !      endif
+  !    endif
+  !
+  !    if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
+  !      if_optional=.true.
+  !    else if (line(5:13) == "mandatory") then
+  !      if_optional=.false.
+  !    endif
+  !    if (line(2:2)=="s") then
+  !      syntax = trim(adjustl(line(3:)))
+  !    endif
+  !  enddo
+  !  rewind(help_unit)
+  !
+  !  write(log%unit , form_60) , 'Summary of available options for program '//program_calling
+  !  ! second loop - print informations
+  !  do 
+  !    read (help_unit , '(a)', iostat=io_stat) line
+  !    if (io_stat==iostat_end) exit
+  !
+  !    if(line(1:1)=="-") then
+  !      !todo
+  !      if(if_accepted_switch (line(1:2),accepted_switches )) then
+  !        if_print_line = .true.
+  !        write (log%unit , form_61 ) trim(line)
+  !      else
+  !        if(line(1:1)=="-") if_print_line=.false.
+  !      endif
+  !    else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
+  !      if (if_print_line) then
+  !        write (log%unit , form_61 ) "  "//trim(line(3:))
+  !      endif
+  !    else if (line(2:2)=="") then
+  !      if (if_print_line) write (log%unit , form_61 ) trim(line)
+  !    endif
+  !  enddo
+  !  close(help_unit)
+  !
 end subroutine
 
-subroutine print_warning (  warn , unit)
-  character (len=*)  :: warn
-  integer , optional :: unit
-  integer :: def_unit
-
-  def_unit=log%unit
-  if (present (unit) ) def_unit=unit
-
-  if (warn .eq. "site_file_format") then
-    write(def_unit, form_63) "Some records were rejected"
-    write(def_unit, form_63) "you should specify for each line at least 3[4] parameters in free format:"
-    write(def_unit, form_63) "name lat lon [H=0] (skipped)"
-  else if (warn .eq. "boundaries") then
-    write(def_unit, form_62) "something wrong with boundaries. IGNORED"
-  else if (warn .eq. "site") then
-    write(def_unit, form_62) "something wrong with -S|-R specification. IGNORED"
-  else if (warn .eq. "repeated") then
-    write(def_unit, form_62) "reapeted specification. IGNORED"
-  else if (warn .eq. "date") then
-    write(def_unit, form_62) "something wrong with date format -D. IGNORED"
-  else if (warn .eq. "model") then
-    write(def_unit, form_62) "something wrong with -F."
-  endif
-end subroutine
 
 ! =============================================================================
-!> Counts number of properly specified models
+!!> Counts number of properly specified models
+!!!
+!!! \date 2013-03-15
+!!! \author M. Rajner
+!!! TODO move to mod_data?
+!! =============================================================================
+!!integer function nmodels (model)
+!!  type(file) , allocatable, dimension (:) :: model
+!!  integer :: i
 !!
-!! \date 2013-03-15
-!! \author M. Rajner
-! =============================================================================
-integer function nmodels (model)
-  type(file) , allocatable, dimension (:) :: model
-  integer :: i
-
-  nmodels = 0
-  do i = 1 , size (model)
-    if (model(i)%if) nmodels =nmodels + 1
-    if (model(i)%if_constant_value) nmodels =nmodels + 1
-  enddo
-end function
-
-! =============================================================================
-!> Attach full dataname by abbreviation
-!!
-!! \date 2013-03-21
-!! \author M. Rajner
-! =============================================================================
-! todo split to appropriate modules and call
-function dataname(abbreviation)
-  character(len=40) :: dataname
-  character(len=2) :: abbreviation
-
-  dataname="unknown"
-  if (abbreviation.eq."LS") dataname = "Land-sea mask"
-  if (abbreviation.eq."SP") dataname = "Surface pressure"
-  if (abbreviation.eq."RS") dataname = "Reference surface pressure"
-  if (abbreviation.eq."n") dataname = "nearest"
-  if (abbreviation.eq."b") dataname = "bilinear"
-  if (abbreviation.eq."GN") dataname = "Green newtonian"
-end function
-end module mod_cmdline
+!!  nmodels = 0
+!!  do i = 1 , size (model)
+!!    if (model(i)%if) nmodels =nmodels + 1
+!!    if (model(i)%if_constant_value) nmodels =nmodels + 1
+!!  enddo
+!!end function
+!
+!! =============================================================================
+!!> Attach full dataname by abbreviation
+!!!
+!!! \date 2013-03-21
+!!! \author M. Rajner
+!! =============================================================================
+!! todo split to appropriate modules and call
+!function dataname(abbreviation)
+!  character(len=40) :: dataname
+!  character(len=2) :: abbreviation
+!
+!  dataname="unknown"
+!  if (abbreviation.eq."LS") dataname = "Land-sea mask"
+!  if (abbreviation.eq."SP") dataname = "Surface pressure"
+!  if (abbreviation.eq."RS") dataname = "Reference surface pressure"
+!  if (abbreviation.eq."n")  dataname = "nearest"
+!  if (abbreviation.eq."b")  dataname = "bilinear"
+!  if (abbreviation.eq."GN") dataname = "Green newtonian"
+!end function
+  end module mod_cmdline

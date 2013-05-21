@@ -12,10 +12,11 @@ module mod_aggf
   implicit none
   private
 
-  public::  read_tabulated_green, standard_pressure, &
-    standard_temperature,               bouger,        simple_def, &
-    standard_density,     standard_gravity,      compute_aggf, &
-    compute_aggfdt,        GN_thin_layer,         geop2geom 
+  public:: &
+    read_tabulated_green , standard_pressure ,                & 
+    standard_temperature , bouger            , simple_def   , & 
+    standard_density     , standard_gravity  , compute_aggf , & 
+    compute_aggfdt       , GN_thin_layer     , geop2geom
 
 contains
 
@@ -40,19 +41,21 @@ subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
   real(dp) :: deltat , aux , h_
 
   deltat = 10. ! Default value
-  if (present ( delta_) )  deltat = delta_
-  if (present ( aggf ) .and. aggf ) then
+  if (present(delta_))  deltat = delta_
+  if (present(aggf) .and. aggf ) then
     h_ = 0.001 ! default if we compute dggfdh using this routine
-    if (present ( delta_) )  h_ = deltat
+    if (present(delta_))  h_ = deltat
     call compute_aggf ( psi , aux , h = + h_ )
     aggfdt = aux
-    call compute_aggf ( psi , aux , h= -h_ )
+    call compute_aggf (psi, aux, h= -h_)
     aggfdt = aggfdt - aux
     aggfdt = aggfdt / ( 2. * h_ )
   else
-    call compute_aggf ( psi , aux , t_zero = atmosphere%temperature%standard + deltat )
+    call compute_aggf (psi, aux, &
+      t_zero = atmosphere%temperature%standard + deltat )
     aggfdt = aux
-    call compute_aggf ( psi , aux , t_zero = atmosphere%temperature%standard - deltat )
+    call compute_aggf (psi, aux,&
+      t_zero = atmosphere%temperature%standard - deltat )
     aggfdt = aggfdt - aux
     aggfdt = aggfdt / ( 2. * deltat)
   endif

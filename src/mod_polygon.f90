@@ -9,7 +9,7 @@
 ! ==============================================================================
 module mod_polygon
   use mod_constants, only : dp
-  
+
   implicit none
   !----------------------------------------------------
   ! polygons
@@ -71,7 +71,7 @@ end subroutine
 !! inspired by spotl \cite Agnew97
 ! ==============================================================================
 subroutine read_polygon (polygon)
-  
+
   use, intrinsic :: iso_fortran_env
   use mod_cmdline, only: form_63,log 
   use mod_utilities, only: skip_header
@@ -156,15 +156,15 @@ end subroutine
 !! \image html /home/mrajner/src/grat/doc/rysunki/polygon_ilustration.png
 ! ==============================================================================
 subroutine chkgon (rlong , rlat , polygon , iok)
-  use mod_constants, only: dp , dp
-  use mod_cmdline
+  !  use mod_constants, only: dp
+  !  use mod_cmdline
   real(dp),intent (in) :: rlong, rlat
   integer :: i ,ii , ianyok
   integer , intent (out) :: iok
   real(dp) :: rlong2
-  type( polygon_info ) , intent (in) :: polygon
+  type(polygon_info) , intent (in) :: polygon
 
-  ! Check first if we need to use this soubroutine
+  !  ! Check first if we need to use this soubroutine
   if (size(polygon%polygon).eq.0) then
     iok=0
     return
@@ -200,7 +200,6 @@ endif
   ! been in
   iok = 1
   if(ianyok.gt.0) iok = 0
-
   return
 end subroutine
 

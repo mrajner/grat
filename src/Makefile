@@ -3,11 +3,22 @@
 
 # a: ../bin/real_vs_standard
 #   $< -F $(SP)
-p: mod_site.o mod_constants.o mod_green.o \
-	mod_data.o mod_aggf.o mod_utilities.o mod_polygon.o
+
+w: tmp te
+tmp: tmp.f90 mod_site.o mod_utilities.o mod_constants.o mod_printing.o \
+	mod_cmdline.o mod_date.o
+	$(FC) $(FLAGS) -o $@ $^
+te:
+	./tmp -V -h \
+		-S 4,3,3,3,3,3, \
+		-I n @I
+
+L:	mod_constants.o mod_green.o \
+	mod_data.o mod_aggf.o mod_utilities.o mod_polygon.o \
+	mod_cmdline.o
 
 al: grat example
-# al: value_check example_value_check
+	# al: value_check example_value_check
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
@@ -21,7 +32,7 @@ al: grat example
 FC = ifort
 
 # compiler flags
-# FLAGS = -r8 -O2  # -CB  # -Wunused -Wall  # -g -traceback
+FLAGS = -O2  -CB   -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff  
@@ -33,18 +44,18 @@ NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 TMP      = $(NCEP_DIR)/air.sig995.2011.nc@@:air:lon:lat:level:time
 LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
-GRN_r    = ../dat/rajner_green.dat
-GRN_m    = ../dat/merriam_green.dat
-POL      = ../polygon/baltyk.poly
-GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
-fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
-# fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
-fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
-#todo vienna
-RS 			 = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
-RS 			 = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
-RS 			 = 101300@RS
+	GRN_r    = ../dat/rajner_green.dat
+	GRN_m    = ../dat/merriam_green.dat
+	POL      = ../polygon/baltyk.poly
+	GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
+	H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
+	fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
+	# fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
+	fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+	#todo vienna
+	RS 			 = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
+	RS 			 = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
+	RS 			 = 101300@RS
 
 SRCS  = mod_constants.f90    \
 				mod_utilities.f90    \
@@ -53,7 +64,10 @@ SRCS  = mod_constants.f90    \
 				mod_cmdline.f90      \
 				mod_polygon.f90      \
 				mod_data.f90         \
-				mod_aggf.f90         
+				mod_aggf.f90         \
+				mod_site.f90 \
+				mod_printing.f90 \
+				mod_date.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -64,9 +78,17 @@ PROGSSRCS =  grat.f90               \
 EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
-# mod_cmdline.o: mod_green.o mod_polygon.o
-# mod_polygon.o: mod_cmdline.o
-# mod_green.o: mod_cmdline.o
+
+#module dependencies
+mod_utilities.o: mod_constants.o
+mod_aggf.o: mod_constants.o mod_utilities.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
+
+# mod_cmdline.o: mod_polygon.o mod_date.o
+
+i:	# mod_cmdline.o: mod_green.o mod_polygon.o
+	# mod_polygon.o: mod_cmdline.o
+	# mod_green.o: mod_cmdline.o
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
@@ -77,7 +99,7 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 
 # implicit rules for object files
 %.o: %.f90
-	$(FC) $< -c
+	$(FC) $(FLAGS) $< -c
 
 # rules for programs files
 # todo - shorter
@@ -159,8 +181,12 @@ installlib: /usr/local/lib/libgrat.a
 	@sudo cp -uv *.mod /usr/local/include
 	@echo "library grat sucessfully installed"
 
-clean:
-	rm -f *.o *.mod tmp* *.a fort??????
+rmlib:
+	-sudo rm /usr/local/include/mod_*
+
+clean: rmlib
+	rm -f *.o *.mod *.a fort?????? 
+	ls tmp.*
 
 todo: joinnc
 
