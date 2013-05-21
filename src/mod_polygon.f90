@@ -36,9 +36,11 @@ contains
 !! \author M. Rajner
 !! \date 2013.05.20
 ! =============================================================================
-subroutine parse_polygon (po)
+subroutine parse_polygon (polygon_name , pm)
   use mod_printing
   use mod_utilities, only: file_exists
+  character(*) :: polygon_name
+  character(*) :: pm
 
 
   !prevent from multiple -P
@@ -50,14 +52,14 @@ subroutine parse_polygon (po)
   allocate(polygon(2))
 !  do i = 1, size(cmd_line_entry%field)
 !    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
-    if (file_exists((polygon(i)%name))) then
+!    if (file_exists((polygon(i)%name))) then
 !      polygon(i)%if=.true.
 !      polygon(i)%pm = trim(cmd_line_entry%field(i)%subfield(2)%name)
        !read polygon
 !      call read_polygon (polygon(i))
-    else
+!    else
 !      write(log%unit, form_62), 'file do not exist. Polygon file was IGNORED'
-    endif
+!    endif
 !  enddo
 end subroutine
 ! ==============================================================================

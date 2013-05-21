@@ -4,6 +4,7 @@
 # a: ../bin/real_vs_standard
 #   $< -F $(SP)
 
+a:grat
 w: tmp te
 tmp: tmp.f90 mod_site.o mod_utilities.o mod_constants.o mod_printing.o \
 	 mod_date.o mod_polygon.o mod_cmdline.o
@@ -60,16 +61,16 @@ LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
 	RS 			 = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
 	RS 			 = 101300@RS
 
-SRCS  = mod_constants.f90    \
-				mod_utilities.f90    \
-				mod_site.f90 \
-				mod_green.f90 \
-				mod_cmdline.f90      \
-				mod_polygon.f90      \
-				mod_data.f90         \
-				mod_aggf.f90         \
-				mod_site.f90 \
-				mod_printing.f90 \
+SRCS  = mod_constants.f90 \
+				mod_utilities.f90 \
+				mod_site.f90      \
+				mod_green.f90     \
+				mod_cmdline.f90   \
+				mod_polygon.f90   \
+				mod_data.f90      \
+				mod_aggf.f90      \
+				mod_site.f90      \
+				mod_printing.f90  \
 				mod_date.f90
 
 PROGSSRCS =  grat.f90               \
@@ -83,13 +84,13 @@ EXAMPLESSRC = example_aggf.f90
 OBJS = $(SRCS:.f90=.o)
 
 #module dependencies
-mod_utilities.o: mod_constants.o
-mod_aggf.o: mod_constants.o mod_utilities.o
+# mod_utilities.o: mod_constants.o
+# mod_aggf.o: mod_constants.o mod_utilities.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
 
 # mod_cmdline.o: mod_polygon.o mod_date.o
 
-i:	# mod_cmdline.o: mod_green.o mod_polygon.o
+mod_cmdline.o: mod_green.o mod_polygon.o
 	# mod_polygon.o: mod_cmdline.o
 	# mod_green.o: mod_cmdline.o
 

@@ -29,107 +29,107 @@ contains
 ! =============================================================================
 !> This subroutine read 
 ! =============================================================================
-subroutine read_green (green)
-  use iso_fortran_env
-  use mod_cmdline, only: form_63 , log
-  integer :: lines , fileunit, io_status
-  real (dp) , allocatable , dimension(:) :: tmp
-  type(green_functions) :: green
-
-  ! change the paths accordingly
-  if (.not.file_exists(green%name) &
-    .and. (.not. green%name.eq."merriam" &
-    .and.  .not. green%name.eq."huang" &
-    .and.  .not. green%name.eq."rajner" )) then
-    green%name="merriam"
-  endif
-  if (green%name.eq."merriam") then
-    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-    if (green%dataname.eq."GN") then
-      green%column=[1,2]
-    else if &
-      (green%dataname.eq."GNdt") then
-      green%column=[1,3]
-    else if &
-      (green%dataname.eq."GNdz") then
-      green%column=[1,4]
-    else if &
-      (green%dataname.eq."GNdz2") then
-      green%column=[1,5]
-    else if &
-      (green%dataname.eq."GE") then
-      green%column=[1,6]
-    endif
-  else if (green%name.eq."huang") then
-    green%name="/home/mrajner/src/grat/dat/huang_green.dat"
-    if (green%dataname.eq."GN") then
-      green%column=[1,2]
-    else if &
-      (green%dataname.eq."GNdt") then
-      green%column=[1,3]
-    else if &
-      (green%dataname.eq."GNdh") then
-      green%column=[1,4]
-    else if &
-      (green%dataname.eq."GNdz") then
-      green%column=[1,5]
-    endif
-  else if (green%name.eq."rajner") then
-    green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
-    if (green%dataname.eq."GN") then
-      green%column=[1,2]
-    else if &
-      (green%dataname.eq."GNdt") then
-      green%column=[1,3]
-    else if &
-      (green%dataname.eq."GNdh") then
-      green%column=[1,4]
-    else if &
-      (green%dataname.eq."GNdz") then
-      green%column=[1,5]
-    endif
-  endif
-
-  if(green%column(1).ne.0 .and. green%column(2).ne.0) then
-    allocate(tmp(max(green%column(1),green%column(2))))
-    lines = 0
-    open ( newunit =fileunit, file=green%name, action="read", status="old")
-    do 
-      call skip_header (fileunit)
-      read (fileunit , * , iostat = io_status) tmp
-      if (io_status == iostat_end) exit
-      lines = lines + 1
-    enddo
-
-    allocate (green%distance(lines))
-    allocate (green%data(lines))
-    rewind(fileunit)
-    lines = 0
-    do 
-      call skip_header (fileunit)
-      lines = lines + 1
-      read (fileunit , * , iostat = io_status) tmp
-      if (io_status == iostat_end) exit
-      green%distance(lines) = tmp (green%column(1))
-      green%data(lines)     = tmp (green%column(2))
-    enddo
-    deallocate(tmp)
-    close(fileunit)
-  endif
-
-  ! file specific 
-  if (green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat".and. green%dataname.eq."GNdz") then
-    green%data = green%data * (-1.)
-  endif
-  if (green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" .and. &
-    (green%dataname.eq."GNdh".or.green%dataname.eq."GNdh")) &
-    then
-    green%data = green%data * 1000.
-  endif
-  write(log%unit, form_63) trim(green%name) ,trim(green%dataname), &
-    "columns:",green%column ,&
-    "lines:", size(green%distance)
-end subroutine
+!subroutine read_green (green)
+!  use iso_fortran_env
+!!  use mod_cmdline, only: form_63 , log
+!  integer :: lines , fileunit, io_status
+!  real (dp) , allocatable , dimension(:) :: tmp
+!  type(green_functions) :: green
+!
+!  ! change the paths accordingly
+!  if (.not.file_exists(green%name) &
+!    .and. (.not. green%name.eq."merriam" &
+!    .and.  .not. green%name.eq."huang" &
+!    .and.  .not. green%name.eq."rajner" )) then
+!    green%name="merriam"
+!  endif
+!  if (green%name.eq."merriam") then
+!    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+!    if (green%dataname.eq."GN") then
+!      green%column=[1,2]
+!    else if &
+!      (green%dataname.eq."GNdt") then
+!      green%column=[1,3]
+!    else if &
+!      (green%dataname.eq."GNdz") then
+!      green%column=[1,4]
+!    else if &
+!      (green%dataname.eq."GNdz2") then
+!      green%column=[1,5]
+!    else if &
+!      (green%dataname.eq."GE") then
+!      green%column=[1,6]
+!    endif
+!  else if (green%name.eq."huang") then
+!    green%name="/home/mrajner/src/grat/dat/huang_green.dat"
+!    if (green%dataname.eq."GN") then
+!      green%column=[1,2]
+!    else if &
+!      (green%dataname.eq."GNdt") then
+!      green%column=[1,3]
+!    else if &
+!      (green%dataname.eq."GNdh") then
+!      green%column=[1,4]
+!    else if &
+!      (green%dataname.eq."GNdz") then
+!      green%column=[1,5]
+!    endif
+!  else if (green%name.eq."rajner") then
+!    green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
+!    if (green%dataname.eq."GN") then
+!      green%column=[1,2]
+!    else if &
+!      (green%dataname.eq."GNdt") then
+!      green%column=[1,3]
+!    else if &
+!      (green%dataname.eq."GNdh") then
+!      green%column=[1,4]
+!    else if &
+!      (green%dataname.eq."GNdz") then
+!      green%column=[1,5]
+!    endif
+!  endif
+!
+!  if(green%column(1).ne.0 .and. green%column(2).ne.0) then
+!    allocate(tmp(max(green%column(1),green%column(2))))
+!    lines = 0
+!    open ( newunit =fileunit, file=green%name, action="read", status="old")
+!    do 
+!      call skip_header (fileunit)
+!      read (fileunit , * , iostat = io_status) tmp
+!      if (io_status == iostat_end) exit
+!      lines = lines + 1
+!    enddo
+!
+!    allocate (green%distance(lines))
+!    allocate (green%data(lines))
+!    rewind(fileunit)
+!    lines = 0
+!    do 
+!      call skip_header (fileunit)
+!      lines = lines + 1
+!      read (fileunit , * , iostat = io_status) tmp
+!      if (io_status == iostat_end) exit
+!      green%distance(lines) = tmp (green%column(1))
+!      green%data(lines)     = tmp (green%column(2))
+!    enddo
+!    deallocate(tmp)
+!    close(fileunit)
+!  endif
+!
+!  ! file specific 
+!  if (green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat".and. green%dataname.eq."GNdz") then
+!    green%data = green%data * (-1.)
+!  endif
+!  if (green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" .and. &
+!    (green%dataname.eq."GNdh".or.green%dataname.eq."GNdh")) &
+!    then
+!    green%data = green%data * 1000.
+!  endif
+!  write(log%unit, form_63) trim(green%name) ,trim(green%dataname), &
+!    "columns:",green%column ,&
+!    "lines:", size(green%distance)
+!end subroutine
 
 
 ! =============================================================================

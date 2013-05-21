@@ -431,10 +431,11 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ('-P')
     if (size(cmd_line_entry%field).lt.1) then
     else if (size(cmd_line_entry%field).lt.2) then
-    call parse_polygon ( &
-      polygon = cmd_line_entry%field(1)%subfield(1)%name, &
-      pm      = cmd_line_entry%field(1)%subfield(2)%name
-      )
+!    call parse_polygon ( &
+!      polygon = cmd_line_entry%field(1)%subfield(1)%name, &
+!      pm      = cmd_line_entry%field(1)%subfield(2)%name
+!      )
+endif
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
   end select
