@@ -33,7 +33,38 @@ module mod_polygon
   public :: read_polygon ,chkgon , polygon
 
 contains
+! =============================================================================
+!> This subroutine parse polygon information from command line entry
+!!
+!! \author M. Rajner
+!! \date 2013.05.20
+! =============================================================================
+subroutine parse_polygon (cmd_line_entry)
+  use mod_utilities, only: file_exists
+  use mod_cmdline,   only: cmd_line_arg, form_62, log
 
+  type (cmd_line_arg)  :: cmd_line_entry
+  integer :: i
+
+  !prevent from multiple -P
+  if (allocated(polygon)) then
+    call print_warning ("repeated")
+    return
+  endif
+  write(log%unit, form_62), 'polygon file was set: ' 
+  allocate(polygon(size(cmd_line_entry%field)))
+  do i = 1, size(cmd_line_entry%field)
+    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+    if (file_exists((polygon(i)%name))) then
+      polygon(i)%if=.true.
+      polygon(i)%pm = trim(cmd_line_entry%field(i)%subfield(2)%name)
+      ! read polygon
+      call read_polygon (polygon(i))
+    else
+      write(log%unit, form_62), 'file do not exist. Polygon file was IGNORED'
+    endif
+  enddo
+end subroutine
 ! ==============================================================================
 !> Reads polygon data
 !!

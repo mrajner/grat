@@ -3,6 +3,9 @@
 
 # a: ../bin/real_vs_standard
 #   $< -F $(SP)
+p: mod_site.o mod_constants.o mod_green.o \
+	mod_data.o mod_aggf.o mod_utilities.o mod_polygon.o
+
 al: grat example
 # al: value_check example_value_check
 
@@ -45,6 +48,7 @@ RS 			 = 101300@RS
 
 SRCS  = mod_constants.f90    \
 				mod_utilities.f90    \
+				mod_site.f90 \
 				mod_green.f90 \
 				mod_cmdline.f90      \
 				mod_polygon.f90      \
