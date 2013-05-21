@@ -6,12 +6,15 @@
 
 w: tmp te
 tmp: tmp.f90 mod_site.o mod_utilities.o mod_constants.o mod_printing.o \
-	mod_cmdline.o mod_date.o
+	 mod_date.o mod_polygon.o mod_cmdline.o
 	$(FC) $(FLAGS) -o $@ $^
 te:
 	./tmp -V -h \
 		-S 4,3,3,3,3,3, \
-		-I n @I
+		-I n @I,, \
+		-D 2011 04 , -30@M ,1@M \
+		-P \
+		-P
 
 L:	mod_constants.o mod_green.o \
 	mod_data.o mod_aggf.o mod_utilities.o mod_polygon.o \

@@ -32,7 +32,7 @@ module mod_cmdline
   ! command line entry
   !----------------------------------------------------
   type subfield_info
-    character (len=255) :: name
+    character (len=100) :: name
     character (len=25) :: dataname
   end type
   type field_info
@@ -324,9 +324,10 @@ end function
 !!> This subroutine counts the command line arguments and parse appropriately
 !! =============================================================================
 subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
-  use mod_site, only: parse_site
-  use mod_date, only: parse_date
-  !  use mod_utilities, only : file_exists, is_numeric
+  use mod_site,    only: parse_site
+  use mod_date,    only: parse_date
+  use mod_polygon, only: parse_polygon
+
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: program_calling,accepted_switches
   !  integer :: i, j
@@ -346,26 +347,26 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ('-S','-R')
     if (size(cmd_line_entry%field).lt.1) then
     else if (size(cmd_line_entry%field).lt.3) then
-      call parse_site ( &
-        name = cmd_line_entry%field(1)%subfield(1)%name &
+      call parse_site (                                   & 
+        name = cmd_line_entry%field(1)%subfield(1)%name   & 
         )
     else if (size(cmd_line_entry%field).lt.4) then
-      call parse_site ( &
-        name = cmd_line_entry%field(1)%subfield(1)%name , &
-        B    = cmd_line_entry%field(2)%subfield(1)%name , &
-        L    = cmd_line_entry%field(3)%subfield(1)%name &
+      call parse_site (                                   & 
+        name = cmd_line_entry%field(1)%subfield(1)%name , & 
+        B    = cmd_line_entry%field(2)%subfield(1)%name , & 
+        L    = cmd_line_entry%field(3)%subfield(1)%name   & 
         )
     else if (size(cmd_line_entry%field).ge.4) then
-      call parse_site ( &
-        name = cmd_line_entry%field(1)%subfield(1)%name , &
-        B    = cmd_line_entry%field(2)%subfield(1)%name , &
-        L    = cmd_line_entry%field(3)%subfield(1)%name , &
-        H    = cmd_line_entry%field(4)%subfield(1)%name   &
+      call parse_site (                                   & 
+        name = cmd_line_entry%field(1)%subfield(1)%name , & 
+        B    = cmd_line_entry%field(2)%subfield(1)%name , & 
+        L    = cmd_line_entry%field(3)%subfield(1)%name , & 
+        H    = cmd_line_entry%field(4)%subfield(1)%name   & 
         )
     endif
   case ("-I")
     call parse_info(cmd_line_entry)
-    !  case ("-L")
+      case ("-L")
     !    write (log%unit , form_62) "printing additional information:"
     !    allocate(moreverbose(size(cmd_line_entry%field)))
     !    do i = 1, size(cmd_line_entry%field)
@@ -387,13 +388,28 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ('-D')
     if (size(cmd_line_entry%field).lt.1) then
     else if (size(cmd_line_entry%field).lt.2) then
-      call parse_date ( &
-        s_start = cmd_line_entry%field(1)%subfield(1)%name , &
-        s_stop = "", &
-        s_step = ""  &
+      call parse_date (                                         & 
+        s_start = cmd_line_entry%field(1)%subfield(1)%name,     & 
+        u_start = cmd_line_entry%field(1)%subfield(1)%dataname  & 
+        )
+    else if (size(cmd_line_entry%field).lt.3) then
+      call parse_date (                                         & 
+        s_start = cmd_line_entry%field(1)%subfield(1)%name,     & 
+        u_start = cmd_line_entry%field(1)%subfield(1)%dataname, & 
+        s_stop  = cmd_line_entry%field(2)%subfield(1)%name,     & 
+        u_stop  = cmd_line_entry%field(2)%subfield(1)%dataname  & 
+        )
+    else
+      call parse_date (                                         & 
+        s_start = cmd_line_entry%field(1)%subfield(1)%name,     & 
+        u_start = cmd_line_entry%field(1)%subfield(1)%dataname, & 
+        s_stop  = cmd_line_entry%field(2)%subfield(1)%name,     & 
+        u_stop  = cmd_line_entry%field(2)%subfield(1)%dataname, & 
+        s_step  = cmd_line_entry%field(3)%subfield(1)%name,     & 
+        u_step  = cmd_line_entry%field(3)%subfield(1)%dataname  & 
         )
     endif
-    !  case ('-F')
+  case ('-F')
     !    if (allocated(model)) then
     !      call print_warning ('repeated')
     !    else
@@ -405,15 +421,20 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     !    !> \todo rozbudować
     !    method = cmd_line_entry%field(1)%subfield(1)%name
     !    write(log%unit, form_62), 'method was set: ' , method
-    !  case ('-o')
-    !    output%if=.true.
-    !    output%name=cmd_line_entry%field(1)%subfield(1)%name
-    !    write(log%unit, form_62), 'output file was set: ' , output%name 
-    !    if (len(output%name).gt.0.and. output%name.ne."") then
-    !      open (newunit = output%unit , file = output%name , action = "write" )
-    !    endif
-    !  case ('-P')
-    !    call parse_polygon(cmd_line_entry)
+  case ('-o')
+    output%if=.true.
+    output%name=cmd_line_entry%field(1)%subfield(1)%name
+    write(log%unit, form_62), 'output file was set: ' , output%name 
+    if (len(output%name).gt.0.and. output%name.ne."") then
+      open (newunit = output%unit , file = output%name , action = "write" )
+    endif
+  case ('-P')
+    if (size(cmd_line_entry%field).lt.1) then
+    else if (size(cmd_line_entry%field).lt.2) then
+    call parse_polygon ( &
+      polygon = cmd_line_entry%field(1)%subfield(1)%name, &
+      pm      = cmd_line_entry%field(1)%subfield(2)%name
+      )
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
   end select
@@ -437,7 +458,7 @@ subroutine parse_info (cmd_line_entry)
 
   allocate (info(size(cmd_line_entry%field)))
   do i = 1 , size(cmd_line_entry%field)
-    write(log%unit, form_62) , "Range:" , i
+    write(log%unit, form%i2) , "Range:" , i
     do j = 1 , size(cmd_line_entry%field(i)%subfield)
       if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
         select case (cmd_line_entry%field(i)%subfield(j)%dataname)

@@ -12,9 +12,6 @@
 module mod_data
 
   implicit none
-  private
-
-  public :: read_netcdf , get_variable , get_value, check
 
 contains
 
@@ -133,7 +130,7 @@ subroutine nctime2date (model)
   use netcdf
   use mod_cmdline ,  only: file, log, form_61
   use mod_constants, only: dp
-  use mod_utilities, only: mjd, invmjd
+  use mod_date, only: mjd, invmjd
   type (file)        :: model
   real(dp)           :: mjd_start , mjd_
   integer            :: varid ,i , date (6)
