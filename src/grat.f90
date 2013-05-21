@@ -98,15 +98,21 @@ program grat
   allocate (results(size(site)*max(size(date),1)))
   print *, size(green), size(results) , shape(results)
   
+  
 
   iii=0
-  do j = 1 , max(size (date),1)
+
+  do j = 0 , size (date)
     if(size(date).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") date(j)%date
 
     !TODO
     do ii = 1 , min(2,size(model))
-      if (model(ii)%if) call get_variable ( model(ii) , date = date(j)%date)
+      print*, model(ii)%if , allocated(date),size(model(ii)%date)
+!      if (size(model(ii)%date).gt.1) then
+!        if (model(ii)%if) call get_variable ( model(ii) , date = date(j)%date)
+!      endif
     enddo
+    stop
 
     write(log%unit, form_separator)
     write(log%unit, form_60) "Results:"
@@ -114,7 +120,7 @@ program grat
     do i = 1 , size(site)
       write(output%unit, '(2f15.5f)', advance ="no") site(i)%lat ,site(i)%lon
       iii=iii+1
-      call convolve (site(i))
+      call convolve ()
       write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
     enddo
   enddo

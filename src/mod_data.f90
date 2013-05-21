@@ -89,7 +89,7 @@ subroutine get_variable( model , date )
   integer :: index_time, i , j
 
   index_time = 0
-  write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
+!  write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
   call check ( nf90_inq_varid ( model%ncid , model%names(1) ,  varid ) )
   if (allocated(model%data)) deallocate(model%data)
   allocate (model%data ( size (model%lon)  , size(model%lat  ), &
@@ -112,13 +112,12 @@ subroutine get_variable( model , date )
       write(log%unit,form_61) "Cannot find date:", date, &
         "var:", trim(model%names(1)), "file:" , model%name
         model%data= sqrt(-1.)
-        stop "PROBLEM getting variable"
+!        stop "PROBLEM getting variable"
       return
     endif
   else
     index_time = 1
   endif
-
   start = [ 1,1,index_time]
   call check (nf90_get_var (model%ncid , varid , model%data , start = start ))
   call unpack_netcdf(model)

@@ -9,10 +9,8 @@
 ! ==============================================================================
 module mod_polygon
   use mod_constants, only : dp
-
+  
   implicit none
-  private
-  public :: read_polygon ,chkgon , polygon
   !----------------------------------------------------
   ! polygons
   !----------------------------------------------------
@@ -31,6 +29,9 @@ module mod_polygon
   end type
   type(polygon_info) , dimension (:), allocatable :: polygon
 
+  private
+  public :: read_polygon ,chkgon , polygon
+
 contains
 
 ! ==============================================================================
@@ -39,8 +40,11 @@ contains
 !! inspired by spotl \cite Agnew97
 ! ==============================================================================
 subroutine read_polygon (polygon)
-  use mod_cmdline
+  
+  use, intrinsic :: iso_fortran_env
+  use mod_cmdline, only: form_63,log 
   use mod_utilities, only: skip_header
+
   type(polygon_info) :: polygon
   integer :: i , j , number_of_polygons , nvertex
   character(80) :: dummy
@@ -85,16 +89,16 @@ subroutine read_polygon (polygon)
     enddo
     close (polygon%unit)
     ! print summary to log file
-    write (log%unit, form_64) "name:", trim(polygon%name)
-!    write (log%unit, form_64) "number of polygons:" , size (polygon%polygon)
-!    do i = 1 , size (polygon%polygon)
-!      if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_62) &
-!        "Usage overwritten with command line option", polygon%pm
-!      write (log%unit, form_64) "use [true/false]:" , &
-!        polygon%polygon(i)%use 
-!      write (log%unit, form_64) "number of coords:" , &
-!        size (polygon%polygon(i)%coords(:,1)) 
-!    enddo
+    write (log%unit, form_63) "name:", trim(polygon%name)
+    write (log%unit, form_63) "number of polygons:" , size (polygon%polygon)
+    do i = 1 , size (polygon%polygon)
+      if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_63) &
+        "Usage overwritten with command line option", polygon%pm
+      write (log%unit, form_63) "use [true/false]:" , &
+        polygon%polygon(i)%use 
+      write (log%unit, form_63) "number of coords:" , &
+        size (polygon%polygon(i)%coords(:,1)) 
+    enddo
   endif
 
 end subroutine
@@ -103,7 +107,7 @@ end subroutine
 !> Check if point is in closed polygon
 !!
 !! From spotl \cite Agnew97
-!! adopted to grat and Fortran90 syntax
+!! adopted to \c grat and Fortran90 syntax
 !! From original description
 !!  returns iok=0 if
 !!     1. there is any polygon (of all those read in) in which the

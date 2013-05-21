@@ -9,7 +9,7 @@ module mod_utilities
     ispline           , file_exists          , skip_header, &
     d2r               , r2d                  , is_numeric , &
     spher_trig_inverse, count_records_to_read, spher_trig , &
-    spher_area
+    spher_area , size_ntimes_denser
 
 
 contains
@@ -579,5 +579,14 @@ subroutine count_records_to_read (file_name, rows , columns , comment_char )
   if (present(columns)) columns = n_columns
 end subroutine
 
-
+! ==============================================================================
+!> \brief returns numbers of arguments for n times denser size
+!!
+!! i.e. * * * *  -->  * . . * . . * . . * (3 times denser)
+! ==============================================================================
+function size_ntimes_denser (size_original, ndenser)
+  integer :: size_ntimes_denser 
+  integer, intent(in) :: size_original , ndenser
+  size_ntimes_denser= (size_original - 1 ) * (ndenser +1 ) + 1
+end function
 end module

@@ -1,8 +1,10 @@
 # this makefile simple link to rules in main Makefile
 # in grat/src
 
-all: 
-	make ../examples/example_aggf -C ../src
+all: example_aggf run
 
-example:
+example_aggf: example_aggf.f90
+	make ../examples/example_aggf -C ../src/
+
+run:
 	./example_aggf

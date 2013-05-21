@@ -7,13 +7,12 @@
 program example_aggf
   implicit none
 
-!  print *, "...standard1976 ()"
-!  call standard1976 ()
+!  call standard1976 ('standard1976.dat')
 
-!  print *, "...aggf_resp_hmax ()"
+  print *, "...aggf_resp_hmax ()"
 !  call aggf_resp_hmax ()
 
-!  print *, "...aggf_resp_dz ()"
+  print *, "...aggf_resp_dz ()"
 !  call aggf_resp_dz ()
 
 !  print *, "...aggf_resp_t ()"
@@ -31,7 +30,6 @@ program example_aggf
 !  print *, "...compute_tabulated_green_functions ()"
 !  call compute_tabulated_green_functions ()
 
-!  print *, "...aggf_thin_layer ()"
 !   call aggf_thin_layer ()
 
 !  print *, "...aggf_resp_fels_profiles ()"
@@ -40,8 +38,7 @@ program example_aggf
 !  print *, "...compare_tabulated_green_functions ()"
 !  call compare_tabulated_green_functions ()
 
-!  print *, "...simple_atmospheric_model()"
-!  call simple_atmospheric_model()
+!  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 
 contains 
  
@@ -52,17 +49,26 @@ contains
 !! \author M. Rajner
 !!
 ! =============================================================================
-subroutine simple_atmospheric_model ()
+subroutine simple_atmospheric_model (filename)
+  use, intrinsic:: iso_fortran_env
   use mod_constants, only:dp
   use mod_aggf, only:simple_def, bouger
 
   real(dp) :: R ! km
-  integer :: iunit
+  integer :: file_unit
+  character(*) , intent (in) , optional:: filename
 
-  open (newunit=iunit,file="/home/mrajner/dr/rysunki/simple_approach.dat" ,&
-    action = "write")
+  write(*,*), "simple_atmospheric_model ---> ",filename
+  if (present (filename)) then
+    open ( newunit = file_unit , &
+      file =filename , &
+      action  = 'write' )
+  else
+    file_unit = output_unit
+  endif
+
     do R = 0. , 25*8
-    write ( iunit ,  * ) , R , bouger ( R_opt= R) * 1e8, & !conversion to microGal
+    write (file_unit,  * ), R, bouger (R_opt = R) * 1e8, & !conversion to microGal
       simple_def(R) * 1e8
   enddo
 
@@ -76,8 +82,8 @@ end subroutine
 ! =============================================================================
 subroutine compare_tabulated_green_functions ()
   use mod_constants, only : dp
-  use mod_aggf, only:size_ntimes_denser,read_tabulated_green
-  use mod_utilities, only : spline_interpolation
+  use mod_aggf, only:read_tabulated_green
+  use mod_utilities, only : size_ntimes_denser, spline_interpolation
 
   integer :: i , j , file_unit , ii , iii
   real(dp), dimension(:,:), allocatable :: table , results
@@ -432,16 +438,25 @@ end subroutine
 !! It computes temperature, gravity, pressure, pressure (simplified formula)
 !! density for given height
 ! ============================================================================
-subroutine standard1976  !()
+subroutine standard1976(filename)
+  use, intrinsic :: iso_fortran_env
   use mod_constants, only : dp
-  use mod_aggf, only : standard_temperature, standard_pressure , &
-    standard_gravity , standard_density
+  use mod_aggf, only: &
+    standard_temperature, standard_pressure , &
+    standard_gravity,     standard_density
   real(dp) :: height , temperature , gravity , pressure , pressure2 , density
   integer :: file_unit
+  character(*) , intent (in) , optional:: filename
 
-  open ( newunit = file_unit , &
-         file    = '../examples/standard1976.dat', &
-         action  = 'write' )
+  write(*,*), "standard1976 ---> ",filename
+  if (present (filename)) then
+    open ( newunit = file_unit , &
+      file =filename , &
+      action  = 'write' )
+  else
+    file_unit = output_unit
+  endif
+
   ! print header
   write ( file_unit , '(6(a12))' ) &
     'height[km]', 'T[K]' , 'g[m/s2]' , 'p[hPa]', 'p_simp[hPa]' , 'rho[kg/m3]'
@@ -450,10 +465,10 @@ subroutine standard1976  !()
     call standard_gravity     ( height , gravity )
     call standard_pressure    ( height , pressure )
     call standard_pressure    ( height , pressure2 , if_simplificated = .true. )
-    call standard_density     ( height , density )
+    density = standard_density (height)
     ! print results to file
     write( file_unit,'(5f12.5, e12.3)'), &
-    height,temperature , gravity , pressure , pressure2 , density 
+      height,temperature , gravity , pressure , pressure2 , density 
   enddo
   close( file_unit )
 end subroutine
@@ -478,13 +493,13 @@ subroutine aggf_resp_hmax ()
   call aux_heights ( heights )
 
   open ( newunit = file_unit , &
-         file    = '../examples/aggf_resp_hmax.dat', & 
-         action  = 'write')
+    file    = '../examples/aggf_resp_hmax.dat', & 
+    action  = 'write')
 
   allocate ( results ( 0:size(heights)-1 , 1+size(psi) ) ) 
 
   do j=0 , size (results (:,1))
-      results ( j , 1 ) = heights(j)
+    results ( j , 1 ) = heights(j)
 
     do i = 1 , size(psi)
       call compute_aggf ( psi (i) , val_aggf , hmax = heights(j) )
@@ -523,7 +538,7 @@ subroutine aux_heights ( table )
     i=i+1
     if (height.lt.0.10) then
       height=height+2./1000
-    elseif (height.lt.1) then
+      elseif (height.lt.1) then
       height=height+50./1000
     else
       height=height+1
@@ -535,11 +550,22 @@ subroutine aux_heights ( table )
   table (0 : count_heights ) = heights ( 0 : count_heights )
 end subroutine
 
-subroutine aggf_thin_layer ()
+subroutine aggf_thin_layer (filename)
+  use, intrinsic:: iso_fortran_env
   use mod_constants, only : dp 
   use mod_aggf, only : read_tabulated_green, GN_thin_layer
   integer :: file_unit , i
   real(dp) , dimension (:,:), allocatable :: table
+  character(*) , intent (in) , optional:: filename
+
+  write(*,*), "aggf_thin_layer ---> ",filename
+  if (present (filename)) then
+    open ( newunit = file_unit , &
+      file =filename , &
+      action  = 'write' )
+  else
+    file_unit = output_unit
+  endif
 
   ! read spherical distances from Merriam
   call read_tabulated_green (table, "merriam")

@@ -34,7 +34,6 @@ module mod_cmdline
     real(dp) :: mjd
     integer,dimension (6) :: date
   end type
-
   real(dp) :: cpu_start , cpu_finish  
   type(dateandmjd) , allocatable,dimension (:) :: date
 
@@ -96,8 +95,7 @@ module mod_cmdline
     ! if file was determined
     logical :: if =.false.
 
-    ! to read into only once
-    logical :: first_call =.true.
+    logical :: first_call =.true. !mrajner 2013-05-21 07:20
 
     ! boundary of model e , w ,s ,n
     real(dp):: limits(4)
@@ -130,15 +128,15 @@ module mod_cmdline
   !----------------------------------------------------
   ! For preety printing
   !----------------------------------------------------
-  character(len=255), parameter ::  &
-    form_header    = '(60("#"))' , &
-    form_separator = '("#",59("-"))' , &
-    form_inheader  = '(("#"),1x,a56,1x,("#"))' , &
-    form_60        = "(a,100(1x,g0))",          &
-    form_61        = "(2x,a,100(1x,g0))",    &
-    form_62        = "(4x,a,100(1x,g0))",       &
-    form_63        = "(6x,100(x,g0))",       &
-    form_64        = "(4x,4x,a,4x,a)"
+  character(len=255), parameter ::               & 
+    form_header    = '(60("#"))' ,               & 
+    form_separator = '("#",59("-"))' ,           & 
+    form_inheader  = '(("#"),1x,a56,1x,("#"))' , & 
+    form_60        = "(a,100(1x,g0))",           & 
+    form_61        = "(2x,a,100(1x,g0))",        & 
+    form_62        = "(4x,a,100(1x,g0))",        & 
+    form_63        = "(6x,100(x,g0))",           & 
+    form_64        = "(8x,100(x,g0))"
 
 contains
 
@@ -403,7 +401,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
             endif
           endif
         endif
-      !or read sites from file
+        !or read sites from file
       else if (file_exists (cmd_line_entry%field(1)%subfield(1)%name))  then
         write(log%unit, form_62) 'the site file was set:' , &
           cmd_line_entry%field(1)%subfield(1)%name
@@ -418,15 +416,15 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     ! Site summary
     !----------------------------------------------------
     if (size(site).ge.1) then
-            write(log%unit, form_63 ) "Processing:", size(site), "site(s)"
-            if (size(site).le.15) then
-              write(log%unit, '(8x,a,t16,3a15)') &
-                "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
-              do j = 1,size(site)
-                write(log%unit, '(8x,a,t16,3f15.4)') &
-                  site(j)%name, site(j)%lat, site(j)%lon , site(j)%height
-              enddo
-            endif
+      write(log%unit, form_63 ) "Processing:", size(site), "site(s)"
+      if (size(site).le.15) then
+        write(log%unit, '(8x,a,t16,3a15)') &
+          "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
+        do j = 1,size(site)
+          write(log%unit, '(8x,a,t16,3f15.4)') &
+            site(j)%name, site(j)%lat, site(j)%lon , site(j)%height
+        enddo
+      endif
     endif
   case ("-I")
     call parse_info(cmd_line_entry)
@@ -485,27 +483,27 @@ end subroutine
 ! =============================================================================
 subroutine parse_polygon (cmd_line_entry)
   use mod_utilities, only:file_exists
-  use mod_polygon
+  use mod_polygon, only: polygon, read_polygon
   type (cmd_line_arg)  :: cmd_line_entry
   integer :: i
 
+  !prevent from multiple -P
+  if (allocated(polygon)) then
+    call print_warning ("repeated")
+    return
+  endif
   write(log%unit, form_62), 'polygon file was set: ' 
-  !  allocate(polygon(size(cmd_line_entry%field)))
+  allocate(polygon(size(cmd_line_entry%field)))
   do i = 1, size(cmd_line_entry%field)
-    !prevent from multiple -P
-    !    if (polygon(i)%if) then
-    !      call print_warning ("repeated")
-    !      return
-    !    endif
-    !    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
-    !    if (file_exists((polygon(i)%name))) then
-    !      polygon(i)%if=.true.
-    !      polygon(i)%pm = trim(cmd_line_entry%field(i)%subfield(2)%name)
-    !      ! read polygon
-    !!      call read_polygon (polygon(i))
-    !    else
-    !      write(log%unit, form_62), 'file do not exist. Polygon file was IGNORED'
-    !    endif
+    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+    if (file_exists((polygon(i)%name))) then
+      polygon(i)%if=.true.
+      polygon(i)%pm = trim(cmd_line_entry%field(i)%subfield(2)%name)
+      ! read polygon
+      call read_polygon (polygon(i))
+    else
+      write(log%unit, form_62), 'file do not exist. Polygon file was IGNORED'
+    endif
   enddo
 end subroutine
 
@@ -905,7 +903,7 @@ end function
   !!! 
   !!! \warning decimal seconds are not allowed
   !! =============================================================================
-  subroutine parse_dates (cmd_line_entry ) 
+  subroutine parse_dates (cmd_line_entry) 
     use mod_utilities, only: is_numeric,mjd,invmjd
     type(cmd_line_arg) cmd_line_entry
     integer , dimension(6) :: start , stop , swap 
@@ -932,6 +930,7 @@ end function
           if(cmd_line_entry%field(2)%subfield(1)%dataname.eq.'Y') then
             stop(1)=start(1)+stop(1)
             stop(2:)=start(2:)
+            ! specification like -D 20110212 , 1 @ M
           else if(cmd_line_entry%field(2)%subfield(1)%dataname.eq.'M') then
             stop(2)=start(2)+stop(1)
             stop(1)=start(1)
@@ -943,6 +942,9 @@ end function
               stop(1) =stop(1)-int(-stop(2)/12+1)
               stop(2) =stop(2)+12*(1+int(-stop(2)/12))
             endif
+            ! specification like -D 20110212 , 1 @ D
+          else if(cmd_line_entry%field(2)%subfield(1)%dataname.eq.'D') then
+            call invmjd ( mjd(start)+stop(1) , stop)
           endif
         endif
       endif

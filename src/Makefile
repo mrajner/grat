@@ -3,8 +3,8 @@
 
 # a: ../bin/real_vs_standard
 #   $< -F $(SP)
-al: $(OBJS) grat example
-# al: $(OBJS) value_check example_value_check
+al: grat example
+# al: value_check example_value_check
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
@@ -108,7 +108,13 @@ example:
 		-I5@B:l@I 
 
 example_value_check: 
-	$(PROGS_DIR)/value_check -I l@I -F$(SFC),$(GPT) -Sjoze,52,21 -V  -Grajner@GN, merriam@GE , /home/mrajner/src/gotic2/data/grn1.data @ GN : 3u:454@t
+	$(PROGS_DIR)/value_check \
+		-F$(SP) \
+		-Sjoze,52,21 -V \
+		-I l @I \
+		-D2011,1@D \
+		-P ../polygon/baltyk.poly:=\
+		-P ../polygon/tyk.po
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
@@ -135,7 +141,9 @@ docman: doc
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
-install: $(PROGS) 
+install: installprogs installlib
+
+installprogs: $(PROGS) 
 	@cp -u -v ../bin/*  ~/.local/bin/
 	@echo "program grat sucessfully installed"
 

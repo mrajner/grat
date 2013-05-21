@@ -3,11 +3,8 @@
 module mod_green
   use mod_constants, only: dp
   use mod_utilities, only: spher_area , file_exists , is_numeric, skip_header
+
   implicit none
-
-!  private
-!  public :: results , convolve , read_green , green
-
   !----------------------------------------------------
   ! Greens function
   !----------------------------------------------------
@@ -190,16 +187,16 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve (site )
+subroutine convolve ( )
 !subroutine convolve (site ,  green , results, denserdist , denseraz)
 !  use, intrinsic :: iso_fortran_env, only : error_unit
 !  use mod_constants, only: pi , dp,  atmosphere
-  use mod_cmdline
+!  use mod_cmdline
 !  use mod_utilities, only: d2r, spher_trig
 !  use mod_data, only: get_value
 !  use mod_polygon, only: chkgon
   !
-  type(site_data) , intent(in) :: site
+!  type(site_data) , intent(in) :: site
 !  type(green_functions), allocatable , dimension(:) :: green
 !  integer , intent (in) :: denserdist , denseraz
 !  real(dp) :: latin , lonin

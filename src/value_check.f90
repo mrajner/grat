@@ -31,13 +31,12 @@ program value_check
 
   ! check of exclusion or inclusion in polygon file
   ! for every site
-  call read_polygon (polygon(1))
 
   write(log%unit, form_separator) 
   allocate (val (nmodels(model)))
 
   start =0 
-  if (size(dates).gt.0) then
+  if (size(date).gt.0) then
     start=1
     ! print header
     write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
@@ -51,29 +50,30 @@ program value_check
   enddo
   write (output%unit , *)
 
-  do j = start , size (dates)
+  do j = start , size (date)
     do i = 1 , size(model)
       if (model(i)%if) then
         ! only read from multidate files for specific date
         ! for 'static' data files get_variable was performed
         ! during read_netCDF
         if (size(model(i)%date).gt.1) then
-          call get_variable ( model(i) , date = dates(j)%date)
+          call get_variable ( model(i) , date = date(j)%date)
         endif
       endif
     enddo
 
-    do i = 1 , size(sites)
+    do i = 1 , size(site)
       ! add time stamp if -D option was specified
       if (j.gt.0) then
-        write (output%unit , '(f15.3,x,i4.4,5(i2.2))' , advance = "no" ) dates(j)%mjd , dates(j)%date
+        write (output%unit , '(f15.3,x,i4.4,5(i2.2))' , advance = "no" ) date(j)%mjd , date(j)%date
       endif
 
 
       ! if this point should not be used (polygon) leave as zero
       ! get polygons
-      if (polygon(1)%if) then
-        call chkgon( sites(i)%lon , sites(i)%lat , polygon(1) , iok)
+      
+      if (allocated(polygon).and.polygon(1)%if) then
+        call chkgon( site(i)%lon , site(i)%lat , polygon(1) , iok)
       else
         iok=1
       endif
@@ -84,7 +84,7 @@ program value_check
           imodel = imodel + 1
           if (model(ii)%if) then 
             if (iok.eq.1) then
-              call get_value (model(ii), sites(i)%lat, sites(i)%lon, val(imodel), &
+              call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
                 method=interpolation)
             else
               val (imodel) = 0
@@ -95,7 +95,7 @@ program value_check
         endif
       enddo
 
-      write (output%unit ,   '(30f15.4)') , sites(i)%lat, sites(i)%lon, val
+      write (output%unit ,   '(30f15.4)') , site(i)%lat, site(i)%lon, val
     enddo
   enddo
 
