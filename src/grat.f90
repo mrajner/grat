@@ -58,6 +58,7 @@
 ! ==============================================================================
 program grat
 
+  use mod_printing
 !  use mod_constants , only : dp
 !  use mod_cmdline   
 !  use mod_green     , only : results ,convolve , read_green , green

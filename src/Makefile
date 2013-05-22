@@ -4,7 +4,7 @@
 # a: ../bin/real_vs_standard
 #   $< -F $(SP)
 
-a:grat
+a:mod_spherical.o
 w: tmp te
 tmp: tmp.f90 mod_site.o mod_utilities.o mod_constants.o mod_printing.o \
 	 mod_date.o mod_polygon.o mod_cmdline.o
@@ -71,7 +71,8 @@ SRCS  = mod_constants.f90 \
 				mod_aggf.f90      \
 				mod_site.f90      \
 				mod_printing.f90  \
-				mod_date.f90
+#         mod_date.f90 \
+				mod_spherical.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
