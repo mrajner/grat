@@ -1,0 +1,34 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usetikzlibrary{pgfplots.groupplots}
+\begin{document}
+  \begin{tikzpicture}
+    \begin{groupplot}
+      [
+        group style = {group size=2 by 1},
+        colormap/jet,
+        enlargelimits=false,
+        grid = major,
+        xtick=\empty,
+        ytick=\empty,
+        %      xtick={2.5,5},
+        %      ytick={0,2.5,...,5},
+        %      x unit = {\deg}
+      ]
+      \nextgroupplot
+      [only marks, 
+        scatter,
+        scatter src=explicit,]
+      \addplot table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpb1.dat};
+      %      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
+      \nextgroupplot
+      [only marks, 
+        scatter,
+        colorbar,
+        scatter src=explicit,]
+      \addplot table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpn1.dat};
+      %      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
+    \end{groupplot}
+  \end{tikzpicture}
+\end{document}

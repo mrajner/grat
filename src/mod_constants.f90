@@ -16,7 +16,6 @@ module mod_constants
     R_air       = 287.05,                   & ! dry air constant  [J/kg/K]
     pi          = 4*atan(dble(1.))     
 
-
   !---------------------------------------
   ! gravity
   !---------------------------------------
@@ -51,7 +50,6 @@ module mod_constants
     standard    = 288.15                    & ! K (15 degC)
     )                                       & 
     )
-
 
   !---------------------------------------
   ! Earth

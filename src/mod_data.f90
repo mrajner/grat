@@ -10,11 +10,74 @@
 !! \date 2013-03-04
 ! =============================================================================
 module mod_data
+  use mod_constants, only: dp
 
   implicit none
+  type file
+    !    character(:), allocatable :: name 
+    character(60) :: name 
+
+    ! varname , lonname,latname,levelname , timename
+    character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
+
+    character(len=15) :: dataname
+
+    ! if file was determined
+    logical :: if =.false.
+
+    logical :: first_call =.true. 
+
+    ! boundary of model e , w ,s ,n
+    real(dp):: limits(4)
+
+    real(dp), allocatable, dimension(:) :: lat , lon , time ,level
+    integer , allocatable, dimension(:,: ) :: date
+
+    real (dp), dimension(2) :: latrange , lonrange
+
+    logical :: if_constant_value
+    real(dp):: constant_value
+
+    ! 4 dimension - lat , lon , level , mjd
+    real(dp) , allocatable , dimension (:,:,:) :: data
+
+    ! netcdf identifiers
+    integer :: ncid
+  end type
+
+  type(file) , allocatable, dimension (:) :: model 
 
 contains
+! =============================================================================
+!> This subroutine parse data information from command line entry
+!!
+!! \author M. Rajner
+!! \date 2013.05.20
+! =============================================================================
+subroutine parse_model (model_name , fields , i , model_total)
+  use mod_printing
+  use mod_utilities, only: file_exists
+  character(*), intent(in) :: model_name
+  integer, intent(in) :: i, model_total
+  character(*), intent(in) ,allocatable , dimension(:)  :: fields
 
+
+  if (i.eq.1 .and. allocated(model)) deallocate(model)
+  if (i.eq.1) allocate(model(model_total))
+  model(i)%name=model_name
+  write(log%unit, form%i2), 'model file:' , model(i)%name
+!  if (file_exists((model(i)%name))) then
+!    !      model(i)%if=.true.
+!    !      if(present(pm)) then
+!    !        model(i)%pm = pm
+!    !        write(log%unit, form%i3) , "global override:", model(i)%pm
+!  endif
+  !      call read_model (model(i))
+  !    else
+  !      write(log%unit, form%i3), 'file do not exist. model file was IGNORED'
+  !    endif
+  !   
+end subroutine
 !! =============================================================================
 !!> Put netCDF COARDS compliant 
 !!!
@@ -269,91 +332,91 @@ contains
 !    .or. (lon.gt.max(model%latrange(1), model%latrange(2)) &
 !       .and.   lon.gt.max(model%latrange(1), model%latrange(2))) &
 !  ) then
-!    val = sqrt(-1.)
-!  endif
-!  if (model%if_constant_value) then
-!    val = model%constant_value
-!    return
-!  end if
-!
-!  ilat = minloc(abs(model%lat-lat),1)
-!  ilon = minloc(abs(model%lon-lon),1)
-!
-!  if (present(method) .and. method .eq. "l" ) then
-!    ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
-!    ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
-!
-!    if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
-!    else
-!      array_aux (1, :) = [ model%lon(ilon) , model%lat(ilat) , model%data(ilon , ilat , ilevel) ]
-!      array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, ilevel) ]
-!      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
-!      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
-!
-!      do i=1,size(moreverbose)
-!        if (moreverbose(i)%dataname.eq."b") then
-!          write(moreverbose(i)%unit ,  '(3f15.4," b")') , &
-!            (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
-!          write(moreverbose(i)%unit ,  '(">")')
-!        endif
-!      enddo
-!      val = bilinear ( lon , lat , array_aux )
-!      return
-!    endif
-!  endif
-!
-!  ! if the last element is the neares then check if the firt is not nearer
-!  ! i.e. search in 0-357.5E for 359E
-!  if (ilon .eq. size (model%lon) ) then
-!    if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
-!  endif
-!
-!  do i=1,size(moreverbose)
-!    if (moreverbose(i)%dataname.eq."n") then
-!      write(moreverbose(i)%unit ,  '(3f15.4," n")') , &
-!         model%lat(ilat) , model%lon(ilon) , model%data(ilon,ilat,ilevel)
-!      write(moreverbose(i)%unit ,  '(">")')
-!    endif
-!  enddo
-!  val = model%data (ilon , ilat, ilevel)
-!end subroutine 
-!
-!! =============================================================================
-!!> Performs bilinear interpolation
-!!! \author Marcin Rajner
-!!! \date 2013-05-07
-!! =============================================================================
-!function bilinear (x , y , aux )
-!  use mod_constants, only: dp
-!  real(dp) :: bilinear
-!  real(dp) :: x , y , aux(4,3) 
-!  real(dp) :: a , b , c
-!  a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
-!  b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 
-!  c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
-!  bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
-!end function
-!!
-!
-!!! delteme
-!!subroutine invspt(alp,del,b,rlong)
-!!  real alp, del , b ,rlong
-!!!      data dtr/.01745329251/
-!!!      ca = cos(alp*dtr)
-!!!      sa = sin(alp*dtr)
-!!!      cd = cos(del*dtr)
-!!!      sd = sin(del*dtr)
-!!!      cb = cd*ct + sd*st*ca
-!!!      sb = sqrt(1.-cb*cb)
-!!!      b = acos(cb)/dtr
-!!!      if(sb.le.1.e-3) then
-!!!   rlong = 0
-!!!   return
-!!!      endif
-!!!      sg = sd*sa/sb
-!!!      cg = (st*cd-sd*ct*ca)/sb
-!!!      g = atan2(sg,cg)/dtr
-!!!     rlong = dlugosc_stacji + g
-!!!     return
-!!end subroutine
+  !    val = sqrt(-1.)
+  !  endif
+  !  if (model%if_constant_value) then
+  !    val = model%constant_value
+  !    return
+  !  end if
+  !
+  !  ilat = minloc(abs(model%lat-lat),1)
+  !  ilon = minloc(abs(model%lon-lon),1)
+  !
+  !  if (present(method) .and. method .eq. "l" ) then
+  !    ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
+  !    ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
+  !
+  !    if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
+  !    else
+  !      array_aux (1, :) = [ model%lon(ilon) , model%lat(ilat) , model%data(ilon , ilat , ilevel) ]
+  !      array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, ilevel) ]
+  !      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
+  !      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
+  !
+  !      do i=1,size(moreverbose)
+  !        if (moreverbose(i)%dataname.eq."b") then
+  !          write(moreverbose(i)%unit ,  '(3f15.4," b")') , &
+  !            (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
+  !          write(moreverbose(i)%unit ,  '(">")')
+  !        endif
+  !      enddo
+  !      val = bilinear ( lon , lat , array_aux )
+  !      return
+  !    endif
+  !  endif
+  !
+  !  ! if the last element is the neares then check if the firt is not nearer
+  !  ! i.e. search in 0-357.5E for 359E
+  !  if (ilon .eq. size (model%lon) ) then
+  !    if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
+  !  endif
+  !
+  !  do i=1,size(moreverbose)
+  !    if (moreverbose(i)%dataname.eq."n") then
+  !      write(moreverbose(i)%unit ,  '(3f15.4," n")') , &
+  !         model%lat(ilat) , model%lon(ilon) , model%data(ilon,ilat,ilevel)
+  !      write(moreverbose(i)%unit ,  '(">")')
+  !    endif
+  !  enddo
+  !  val = model%data (ilon , ilat, ilevel)
+  !end subroutine 
+  !
+  !! =============================================================================
+  !!> Performs bilinear interpolation
+  !!! \author Marcin Rajner
+  !!! \date 2013-05-07
+  !! =============================================================================
+  !function bilinear (x , y , aux )
+  !  use mod_constants, only: dp
+  !  real(dp) :: bilinear
+  !  real(dp) :: x , y , aux(4,3) 
+  !  real(dp) :: a , b , c
+  !  a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
+  !  b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 
+  !  c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
+  !  bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
+  !end function
+  !!
+  !
+  !!! delteme
+  !!subroutine invspt(alp,del,b,rlong)
+  !!  real alp, del , b ,rlong
+  !!!      data dtr/.01745329251/
+  !!!      ca = cos(alp*dtr)
+  !!!      sa = sin(alp*dtr)
+  !!!      cd = cos(del*dtr)
+  !!!      sd = sin(del*dtr)
+  !!!      cb = cd*ct + sd*st*ca
+  !!!      sb = sqrt(1.-cb*cb)
+  !!!      b = acos(cb)/dtr
+  !!!      if(sb.le.1.e-3) then
+  !!!   rlong = 0
+  !!!   return
+  !!!      endif
+  !!!      sg = sd*sa/sb
+  !!!      cg = (st*cd-sd*ct*ca)/sb
+  !!!      g = atan2(sg,cg)/dtr
+  !!!     rlong = dlugosc_stacji + g
+  !!!     return
+  !!end subroutine
 end module

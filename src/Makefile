@@ -1,25 +1,20 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-# a: ../bin/real_vs_standard
-#   $< -F $(SP)
 
-a:mod_spherical.o
-w: tmp te
-tmp: tmp.f90 mod_site.o mod_utilities.o mod_constants.o mod_printing.o \
-	 mod_date.o mod_polygon.o mod_cmdline.o
-	$(FC) $(FLAGS) -o $@ $^
-te:
+
+xxx: ddd tmp runtmp
+
+tmp: tmp.f90 ddd
+	$(FC) $(FLAGS) -o $@ $< $(OBJS) 
+runtmp:
 	./tmp -V -h \
 		-S 4,3,3,3,3,3, \
 		-I n @I,, \
 		-D 2011 04 , -30@M ,1@M \
-		-P \
-		-P
-
-L:	mod_constants.o mod_green.o \
-	mod_data.o mod_aggf.o mod_utilities.o mod_polygon.o \
-	mod_cmdline.o
+		-P ../polygon/baltyk.poly\
+		-F dfe :333 \
+		, name : x
 
 al: grat example
 	# al: value_check example_value_check
@@ -63,16 +58,15 @@ LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
 
 SRCS  = mod_constants.f90 \
 				mod_utilities.f90 \
+				mod_printing.f90  \
 				mod_site.f90      \
+				mod_date.f90      \
+				mod_spherical.f90 \
 				mod_green.f90     \
-				mod_cmdline.f90   \
 				mod_polygon.f90   \
 				mod_data.f90      \
 				mod_aggf.f90      \
-				mod_site.f90      \
-				mod_printing.f90  \
-#         mod_date.f90 \
-				mod_spherical.f90
+				mod_cmdline.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -84,16 +78,20 @@ EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
 
+
+ddd: $(OBJS)
+
 #module dependencies
 # mod_utilities.o: mod_constants.o
 # mod_aggf.o: mod_constants.o mod_utilities.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
 
-# mod_cmdline.o: mod_polygon.o mod_date.o
 
-mod_cmdline.o: mod_green.o mod_polygon.o
-	# mod_polygon.o: mod_cmdline.o
-	# mod_green.o: mod_cmdline.o
+# mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90
+#   
+# E:
+#   mod_polygon.o: mod_cmdline.o
+#   mod_green.o: mod_cmdline.o
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))

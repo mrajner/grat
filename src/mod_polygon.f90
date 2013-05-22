@@ -36,31 +36,29 @@ contains
 !! \author M. Rajner
 !! \date 2013.05.20
 ! =============================================================================
-subroutine parse_polygon (polygon_name , pm)
+subroutine parse_polygon (polygon_name , pm, i , polygon_total)
   use mod_printing
   use mod_utilities, only: file_exists
-  character(*) :: polygon_name
-  character(*) :: pm
+  character(*), intent(in) :: polygon_name
+  character(*), intent(in), optional :: pm
+  integer, intent(in) :: i, polygon_total
 
 
-  !prevent from multiple -P
-  if (allocated(polygon)) then
-    call print_warning ("repeated")
-    return
-  endif
-  write(log%unit, form%i2), 'polygon file was set: ' 
-  allocate(polygon(2))
-!  do i = 1, size(cmd_line_entry%field)
-!    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
-!    if (file_exists((polygon(i)%name))) then
-!      polygon(i)%if=.true.
-!      polygon(i)%pm = trim(cmd_line_entry%field(i)%subfield(2)%name)
-       !read polygon
-!      call read_polygon (polygon(i))
-!    else
-!      write(log%unit, form_62), 'file do not exist. Polygon file was IGNORED'
-!    endif
-!  enddo
+  if (i.eq.1 .and. allocated(polygon)) deallocate(polygon)
+  if (i.eq.1) allocate(polygon(polygon_total))
+  polygon(i)%name=polygon_name
+  write(log%unit, form%i2), 'polygon file:' , polygon(i)%name
+    if (file_exists((polygon(i)%name))) then
+      polygon(i)%if=.true.
+      if(present(pm)) then
+        polygon(i)%pm = pm
+        write(log%unit, form%i3) , "global override:", polygon(i)%pm
+      endif
+      call read_polygon (polygon(i))
+    else
+      write(log%unit, form%i3), 'file do not exist. Polygon file was IGNORED'
+    endif
+   
 end subroutine
 ! ==============================================================================
 !> Reads polygon data
@@ -70,65 +68,66 @@ end subroutine
 
 subroutine read_polygon (polygon)
 
-!  use, intrinsic :: iso_fortran_env
-!  use mod_utilities, only: skip_header
-!
+  use, intrinsic :: iso_fortran_env
+  use mod_utilities, only: skip_header
+  use mod_printing
+
   type(polygon_info) :: polygon
-!  integer :: i , j , number_of_polygons , nvertex
-!  character(80) :: dummy
-!  character (1)  :: pm
-!
-!  if (polygon%if) then
-!    ! polygon file
-!    open (newunit = polygon%unit , action="read", file=polygon%name )
-!
-!    ! first get the number of polygon
-!    call skip_header(polygon%unit)
-!    read (polygon%unit , * ) number_of_polygons
-!    allocate (polygon%polygon(number_of_polygons))
-!
-!    ! loop over all polygons in file
-!    do  i=1, number_of_polygons
-!      call skip_header(polygon%unit)
-!      read (polygon%unit, * ) nvertex
-!      allocate (polygon%polygon(i)%coords(nvertex, 2 ))
-!      call skip_header(polygon%unit)
-!      read (polygon%unit, * ) pm
-!      if (pm.eq."+") polygon%polygon(i)%use=.true.
-!      if (pm.eq."-") polygon%polygon(i)%use=.false.
-!      ! override file +|- with global given with command line
-!      if (polygon%pm.eq."+") polygon%polygon(i)%use=.true.
-!      if (polygon%pm.eq."-") polygon%polygon(i)%use=.false.
-!      do j = 1 , nvertex
-!        call skip_header(polygon%unit)
-!        ! lon lat , checks while reading
-!        read (polygon%unit, * ) polygon%polygon(i)%coords(j,1:2)
-!        if ( polygon%polygon(i)%coords(j,1).lt.-180. &
-!          .or.polygon%polygon(i)%coords(j,1).gt.360.  & 
-!          .or.polygon%polygon(i)%coords(j,2).lt.-90.  & 
-!          .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then 
-!          write (error_unit , form_63) "Somethings wrong with coords in polygon file"
-!          polygon%if=.false.
-!          return
-!          elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
-!          polygon%polygon(i)%coords(j,1) = polygon%polygon(i)%coords(j,1) + 360.
-!        endif
-!      enddo
-!    enddo
-!    close (polygon%unit)
-!    ! print summary to log file
-!    write (log%unit, form_63) "name:", trim(polygon%name)
-!    write (log%unit, form_63) "number of polygons:" , size (polygon%polygon)
-!    do i = 1 , size (polygon%polygon)
-!      if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_63) &
-!        "Usage overwritten with command line option", polygon%pm
-!      write (log%unit, form_63) "use [true/false]:" , &
-!        polygon%polygon(i)%use 
-!      write (log%unit, form_63) "number of coords:" , &
-!        size (polygon%polygon(i)%coords(:,1)) 
-!    enddo
-!  endif
-!
+  integer :: i , j , number_of_polygons , nvertex
+  character(80) :: dummy
+  character (1)  :: pm
+
+  if (polygon%if) then
+    ! polygon file
+    open (newunit = polygon%unit , action="read", file=polygon%name )
+
+    ! first get the number of polygon
+    call skip_header(polygon%unit)
+    read (polygon%unit , * ) number_of_polygons
+    allocate (polygon%polygon(number_of_polygons))
+
+    ! loop over all polygons in file
+    do  i=1, number_of_polygons
+      call skip_header(polygon%unit)
+      read (polygon%unit, * ) nvertex
+      allocate (polygon%polygon(i)%coords(nvertex, 2 ))
+      call skip_header(polygon%unit)
+      read (polygon%unit, * ) pm
+      if (pm.eq."+") polygon%polygon(i)%use=.true.
+      if (pm.eq."-") polygon%polygon(i)%use=.false.
+      ! override file +|- with global given with command line
+      if (polygon%pm.eq."+") polygon%polygon(i)%use=.true.
+      if (polygon%pm.eq."-") polygon%polygon(i)%use=.false.
+      do j = 1 , nvertex
+        call skip_header(polygon%unit)
+        ! lon lat , checks while reading
+        read (polygon%unit, * ) polygon%polygon(i)%coords(j,1:2)
+        if ( polygon%polygon(i)%coords(j,1).lt.-180. &
+          .or.polygon%polygon(i)%coords(j,1).gt.360.  & 
+          .or.polygon%polygon(i)%coords(j,2).lt.-90.  & 
+          .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then 
+          write (error_unit , form_63) "Somethings wrong with coords in polygon file"
+          polygon%if=.false.
+          return
+          elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
+          polygon%polygon(i)%coords(j,1) = polygon%polygon(i)%coords(j,1) + 360.
+        endif
+      enddo
+    enddo
+    close (polygon%unit)
+    ! print summary to log file
+    write (log%unit, form_63) "name:", trim(polygon%name)
+    write (log%unit, form_63) "number of polygons:" , size (polygon%polygon)
+    do i = 1 , size (polygon%polygon)
+      if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_63) &
+        "Usage overwritten with command line option", polygon%pm
+      write (log%unit, form_63) "use [true/false]:" , &
+        polygon%polygon(i)%use 
+      write (log%unit, form_63) "number of coords:" , &
+        size (polygon%polygon(i)%coords(:,1)) 
+    enddo
+  endif
+
 end subroutine
 
 ! ==============================================================================

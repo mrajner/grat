@@ -10,7 +10,9 @@ module mod_site
   type site_data 
     character(:), allocatable :: name
     real(dp)                  :: lat,lon,height
-  end type 
+  end type
+
+
 
   type(site_data) , allocatable , dimension(:) :: site
 

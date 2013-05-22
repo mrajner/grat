@@ -52,6 +52,7 @@ end subroutine
 !! \date 2013-03-06
 ! =============================================================================
 subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
+  use mod_utilities, only: d2r, r2d
   real(dp) , intent(in)  :: distance 
   real(dp) , intent(in)  :: latin , lonin , azimuth
   real(dp) , intent(out) :: latout, lonout 

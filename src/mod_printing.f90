@@ -16,6 +16,8 @@ module mod_printing
     character(60) :: a, &
       i1      = "(2x,a,100(1x,g0))",        & 
       i2      = "(4x,a,100(1x,g0))",        & 
+      i3      = "(6x,a,100(1x,g0))",        & 
+      t2      = "4x",        & 
       separator = '("#",59("-"))' 
   end type
   type(printing_info) :: form

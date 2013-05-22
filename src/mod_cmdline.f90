@@ -56,41 +56,6 @@ module mod_cmdline
   integer,dimension(8):: execution_date !< To give time stamp of execution
   character (len = 2) :: method = "2D"  !< computation method
 
-  type file
-    !    character(:), allocatable :: name 
-    character(60) :: name 
-
-    ! varname , lonname,latname,levelname , timename
-    character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
-
-    character(len=15) :: dataname
-
-    integer :: unit = output_unit
-
-    ! if file was determined
-    logical :: if =.false.
-
-    logical :: first_call =.true. 
-
-    ! boundary of model e , w ,s ,n
-    real(dp):: limits(4)
-
-    real(dp), allocatable, dimension(:) :: lat , lon , time ,level
-    integer , allocatable, dimension(:,: ) :: date
-
-    real (dp), dimension(2) :: latrange , lonrange
-
-    logical :: if_constant_value
-    real(dp):: constant_value
-
-    ! 4 dimension - lat , lon , level , mjd
-    real(dp) , allocatable , dimension (:,:,:) :: data
-
-    ! netcdf identifiers
-    integer :: ncid
-  end type
-
-  type(file) , allocatable, dimension (:) :: model , moreverbose
 
   ! todo --- make @ like for models
   !  character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
@@ -327,11 +292,12 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   use mod_site,    only: parse_site
   use mod_date,    only: parse_date
   use mod_polygon, only: parse_polygon
+  use mod_data,    only: parse_model
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: program_calling,accepted_switches
-  !  integer :: i, j
-  !
+  integer :: i
+
   write(log%unit, form_61) cmd_line_entry%switch , "{", trim(cmd_line_entry%full) ,"}"
   if(.not.cmd_line_entry%accepted) then
     write(log%unit, form_62) 'this switch is not accepted'
@@ -367,8 +333,8 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ("-I")
     call parse_info(cmd_line_entry)
       case ("-L")
-    !    write (log%unit , form_62) "printing additional information:"
-    !    allocate(moreverbose(size(cmd_line_entry%field)))
+        write (log%unit , form_62) "printing additional information:"
+!        allocate(moreverbose(size(cmd_line_entry%field)))
     !    do i = 1, size(cmd_line_entry%field)
     !      moreverbose(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
     !      moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
@@ -384,7 +350,8 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     !        "<-", dataname(moreverbose(i)%dataname)
     !    enddo
   case ("-B")
-    if (cmd_line_entry%field(1)%subfield(1)%name.eq."N" ) inverted_barometer = .false.
+    if (cmd_line_entry%field(1)%subfield(1)%name.eq."N" ) &
+      inverted_barometer = .false.
   case ('-D')
     if (size(cmd_line_entry%field).lt.1) then
     else if (size(cmd_line_entry%field).lt.2) then
@@ -410,6 +377,19 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
         )
     endif
   case ('-F')
+    do i = 1 , size (cmd_line_entry%field)
+!      if (size(cmd_line_entry%field(i)%subfield).ge.2) then
+        print * , "x" , &
+        cmd_line_entry%field(i)%subfield(2:size(cmd_line_entry%field(i)%subfield)), "xxxx"
+        call parse_model ( &
+          model_name  = cmd_line_entry%field(i)%subfield(1)%name, & 
+          fields = cmd_line_entry%field(i)%subfield(1)%name, &
+          i             = i,                                        & 
+          model_total = size(cmd_line_entry%field)                & 
+          )
+!      else
+!      endif
+    enddo
     !    if (allocated(model)) then
     !      call print_warning ('repeated')
     !    else
@@ -429,13 +409,22 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
       open (newunit = output%unit , file = output%name , action = "write" )
     endif
   case ('-P')
-    if (size(cmd_line_entry%field).lt.1) then
-    else if (size(cmd_line_entry%field).lt.2) then
-!    call parse_polygon ( &
-!      polygon = cmd_line_entry%field(1)%subfield(1)%name, &
-!      pm      = cmd_line_entry%field(1)%subfield(2)%name
-!      )
-endif
+    do i = 1 , size (cmd_line_entry%field)
+      if (size(cmd_line_entry%field(i)%subfield).ge.2) then
+        call parse_polygon ( &
+          polygon_name  = cmd_line_entry%field(i)%subfield(1)%name, & 
+          pm            = cmd_line_entry%field(i)%subfield(2)%name, & 
+          i             = i,                                        & 
+          polygon_total = size(cmd_line_entry%field)                & 
+          )
+      else
+        call parse_polygon ( &
+          polygon_name  = cmd_line_entry%field(i)%subfield(1)%name, & 
+          i             = i,                                        & 
+          polygon_total = size(cmd_line_entry%field)                & 
+          )
+      endif
+    enddo
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
   end select

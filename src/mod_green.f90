@@ -1,8 +1,7 @@
 !> \file
-!! module
 module mod_green
   use mod_constants, only: dp
-  use mod_utilities, only: spher_area , file_exists , is_numeric, skip_header
+!  use mod_utilities, only: spher_area , file_exists , is_numeric, skip_header
 
   implicit none
   !----------------------------------------------------
@@ -209,9 +208,9 @@ subroutine convolve ( )
 !  type (result) ,intent(out)  :: results
 
   ! check if greens functions were specified
-  if( size (green).eq.0) then
-    stop "No green functions!"
-  endif
+!  if( size (green).eq.0) then
+!    stop "No green functions!"
+!  endif
 
 !  print * ,denseraz,":::"
 !  if (.not.allocated(green_common))  then
