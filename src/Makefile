@@ -31,7 +31,7 @@ al: grat example
 FC = ifort
 
 # compiler flags
-FLAGS = -O2  -CB   -g -traceback -heap-arrays
+FLAGS =  # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff  

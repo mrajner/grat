@@ -59,13 +59,18 @@ subroutine parse_model (model_name , fields , i , model_total)
   use mod_utilities, only: file_exists
   character(*), intent(in) :: model_name
   integer, intent(in) :: i, model_total
-  character(*), intent(in) ,allocatable , dimension(:)  :: fields
+  character(*) :: fields(5)
+
+  fields  = [ "z", "lon", "lat","level","time"]
 
 
-  if (i.eq.1 .and. allocated(model)) deallocate(model)
-  if (i.eq.1) allocate(model(model_total))
-  model(i)%name=model_name
-  write(log%unit, form%i2), 'model file:' , model(i)%name
+!  print * , fields
+  print *, model_total,"XX" , model_name,"L"
+
+!  if (i.eq.1 .and. allocated(model)) deallocate(model)
+!  if (i.eq.1) allocate(model(model_total))
+!  model(i)%name=model_name
+!  write(log%unit, form%i2), 'model file:' , model(i)%name
 !  if (file_exists((model(i)%name))) then
 !    !      model(i)%if=.true.
 !    !      if(present(pm)) then

@@ -381,9 +381,10 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
 !      if (size(cmd_line_entry%field(i)%subfield).ge.2) then
         print * , "x" , &
         cmd_line_entry%field(i)%subfield(2:size(cmd_line_entry%field(i)%subfield)), "xxxx"
+      print *,  size(cmd_line_entry%field),"?????"
         call parse_model ( &
           model_name  = cmd_line_entry%field(i)%subfield(1)%name, & 
-          fields = cmd_line_entry%field(i)%subfield(1)%name, &
+          fields = cmd_line_entry%field(i)%subfield(2:)%name, &
           i             = i,                                        & 
           model_total = size(cmd_line_entry%field)                & 
           )
