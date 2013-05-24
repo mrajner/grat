@@ -1,23 +1,30 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-
-
+# mak: clean mod_cmdline.o
+# as: value_check  example_value_check second
+oooiii: polygon_check
+	../bin/polygon_check \
+		-P ../polygon/tmp.poly \
+		, ../polygon/tmp.poly \
+		, ../polygon/baltyk.poly \
+		-S sites -V
+al:
 xxx: ddd tmp runtmp
 
 tmp: tmp.f90 ddd
-	$(FC) $(FLAGS) -o $@ $< $(OBJS) 
+	$(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB)
 runtmp:
-	./tmp -V -h \
-		-S 4,3,3,3,3,3, \
-		-I n @I,, \
-		-D 2011 04 , -30@M ,1@M \
-		-P ../polygon/baltyk.poly\
-		-F dfe :333 \
-		, name : x
+	./tmp \
+		-S j:4:4:2 \
+		-D2011 \
+		-f $(SP)  \
+		, gfg:xx \
+		-G rajner \
+		, merriam :2 :4\
+		-V 
 
 al: grat example
-	# al: value_check example_value_check
 
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
@@ -41,13 +48,13 @@ FOULLIB = /home/mrajner/src/foul/foul.o -I/home/mrajner/src/foul
 DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
-TMP      = $(NCEP_DIR)/air.sig995.2011.nc@@:air:lon:lat:level:time
-LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
-	GRN_r    = ../dat/rajner_green.dat
-	GRN_m    = ../dat/merriam_green.dat
-	POL      = ../polygon/baltyk.poly
-	GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-	H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
+ST       = $(NCEP_DIR)/air.sig995.2011.nc@ST:air:lon:lat:level:time
+LS      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
+GRN_r    = ../dat/rajner_green.dat
+GRN_m    = ../dat/merriam_green.dat
+POL      = ../polygon/baltyk.poly
+GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
+H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 	fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
 	# fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
 	fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
@@ -59,6 +66,7 @@ LND      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
 SRCS  = mod_constants.f90 \
 				mod_utilities.f90 \
 				mod_printing.f90  \
+				mod_cmdline.f90   \
 				mod_site.f90      \
 				mod_date.f90      \
 				mod_spherical.f90 \
@@ -66,7 +74,7 @@ SRCS  = mod_constants.f90 \
 				mod_polygon.f90   \
 				mod_data.f90      \
 				mod_aggf.f90      \
-				mod_cmdline.f90
+				mod_parser.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -81,10 +89,11 @@ OBJS = $(SRCS:.f90=.o)
 
 ddd: $(OBJS)
 
-#module dependencies
-# mod_utilities.o: mod_constants.o
-# mod_aggf.o: mod_constants.o mod_utilities.o
-# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
+# module dependencies
+mod_utilities.o: mod_constants.o
+mod_aggf.o: mod_constants.o mod_utilities.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
+mod_parser.o: mod_cmdline.o mod_data.o
 
 
 # mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90
@@ -125,25 +134,31 @@ all:          \
 
 example: 
 	$(PROGS_DIR)/grat \
-		-F $(SP),$(GPT) \
-		-G\
+		-F $(SP), $(ST) \
+		, $(LS) \
+		-G \
 		rajner@GN, \
 		merriam@GE,\
 		erriam@GNdz,\
 		/home/mrajner/src/gotic2/data/grn1.data @ GN :1 :1  \
-		-P ../polygon/baltyk.poly , ../polygon/tmp.poly \
-		-Sjoze,52,21 \
+		-P ../polygon/baltyk.poly @ N:- ,\
+		../polygon/tmp.poly @ E:- \
+		-Sjoze:52:21,666:6:6:6 \
+		, 10/10/33/33 \
 		-V \
+		-D 2011 : 1@M : 10@D \
 		-I5@B:l@I 
 
 example_value_check: 
 	$(PROGS_DIR)/value_check \
 		-F$(SP) \
-		-Sjoze,52,21 -V \
+		, 4@PR\
+		-Szr:52:21 \
+		-V \
 		-I l @I \
-		-D2011,1@D \
-		-P ../polygon/baltyk.poly:=\
-		-P ../polygon/tyk.po
+		-D2011:1@D ,20110606 
+
+second:
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)

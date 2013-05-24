@@ -22,7 +22,8 @@ module mod_polygon
   type polygon_info
     integer :: unit
     character(:), allocatable  :: name
-    type(polygon_data) , dimension (:) , allocatable :: polygon
+    character(:), allocatable  :: dataname
+    type(polygon_data), dimension (:), allocatable :: polygon
     logical :: if
     ! global setting (+|-) which override this in polygon file
     character(1):: pm
@@ -36,28 +37,35 @@ contains
 !! \author M. Rajner
 !! \date 2013.05.20
 ! =============================================================================
-subroutine parse_polygon (polygon_name , pm, i , polygon_total)
+subroutine parse_polygon (cmd_line_entry)
   use mod_printing
+  use mod_cmdline
   use mod_utilities, only: file_exists
-  character(*), intent(in) :: polygon_name
-  character(*), intent(in), optional :: pm
-  integer, intent(in) :: i, polygon_total
+  type(cmd_line_arg),intent(in):: cmd_line_entry
+  integer :: i
 
+  if (allocated(polygon)) then
+    call print_warning ("repeated")
+    return
+  endif
 
-  if (i.eq.1 .and. allocated(polygon)) deallocate(polygon)
-  if (i.eq.1) allocate(polygon(polygon_total))
-  polygon(i)%name=polygon_name
+  allocate(polygon(size(cmd_line_entry%field)))
+  do i  =1 , size(cmd_line_entry%field)
+  polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+  polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
   write(log%unit, form%i2), 'polygon file:' , polygon(i)%name
     if (file_exists((polygon(i)%name))) then
       polygon(i)%if=.true.
-      if(present(pm)) then
-        polygon(i)%pm = pm
+      if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
+      .or.cmd_line_entry%field(i)%subfield(2)%name.eq."-" ) then
+        polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
         write(log%unit, form%i3) , "global override:", polygon(i)%pm
       endif
       call read_polygon (polygon(i))
     else
       write(log%unit, form%i3), 'file do not exist. Polygon file was IGNORED'
     endif
+enddo
    
 end subroutine
 ! ==============================================================================

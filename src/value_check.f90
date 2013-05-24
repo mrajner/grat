@@ -6,7 +6,10 @@
 
 program value_check 
   use mod_cmdline 
-  use mod_data     , only: get_variable, get_value,read_netCDF
+  use mod_parser
+  use mod_data     
+  use mod_date
+  use mod_site
   use mod_constants, only: dp
   use mod_polygon  , only: read_polygon, chkgon, polygon
 
@@ -25,15 +28,9 @@ program value_check
     interpolation = info(1)%interpolation
   endif
 
-  do i = 1 , size(model)
-    if (model(i)%if) call read_netCDF(model(i))
-  enddo
-
-  ! check of exclusion or inclusion in polygon file
-  ! for every site
 
   write(log%unit, form_separator) 
-  allocate (val (nmodels(model)))
+  allocate (val (size(model)))
 
   start =0 
   if (size(date).gt.0) then
@@ -43,10 +40,10 @@ program value_check
   endif
 
   ! print header
-  write (output%unit , '(30a15)', advance ="no"  ) "lat" , "lon"
+  write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
   do i = 1 ,size(model)
     if (model(i)%if .or. model(i)%if_constant_value ) &
-      write (output%unit,'(a15)',advance='no') , trim ( model(i)%dataname )
+      write (output%unit,'(a15)',advance='no') , trim( model(i)%dataname)
   enddo
   write (output%unit , *)
 
@@ -56,8 +53,12 @@ program value_check
         ! only read from multidate files for specific date
         ! for 'static' data files get_variable was performed
         ! during read_netCDF
-        if (size(model(i)%date).gt.1) then
-          call get_variable ( model(i) , date = date(j)%date)
+        if (allocated(date)) then
+          if (size(model(i)%date).gt.1) then
+            call get_variable ( model(i), date = date(j)%date)
+          endif
+        else
+          call get_variable (model(i))
         endif
       endif
     enddo
@@ -70,8 +71,7 @@ program value_check
 
 
       ! if this point should not be used (polygon) leave as zero
-      ! get polygons
-      
+      !      
       if (allocated(polygon).and.polygon(1)%if) then
         call chkgon( site(i)%lon , site(i)%lat , polygon(1) , iok)
       else
@@ -94,8 +94,7 @@ program value_check
           endif
         endif
       enddo
-
-      write (output%unit ,   '(30f15.4)') , site(i)%lat, site(i)%lon, val
+      write (output%unit , '(a8,30f15.4)') , site(i)%name, site(i)%lat, site(i)%lon, val
     enddo
   enddo
 

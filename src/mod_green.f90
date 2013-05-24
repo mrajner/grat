@@ -1,7 +1,6 @@
 !> \file
 module mod_green
   use mod_constants, only: dp
-!  use mod_utilities, only: spher_area , file_exists , is_numeric, skip_header
 
   implicit none
   !----------------------------------------------------
@@ -18,117 +17,150 @@ module mod_green
 
 
   real(dp), allocatable , dimension(:,:)  :: green_common
-  type result
-    real(dp) :: N=0. , dt=0. ,E=0. , dh=0.,dz=0.
-  end type
-  type (result), allocatable, dimension(:) :: results
- 
+
+  real(dp) , allocatable, dimension(:,:) :: result
+
 contains
+! =============================================================================
+!> This subroutine parse -G option -- Greens function.
+!!
+!! This subroutines takes the -G argument specified as follows:
+!!   -G 
+!!
+!! \author M. Rajner
+!! \date 2013-03-06
+! =============================================================================
+subroutine parse_green (cmd_line_entry)
+  use mod_utilities, only: file_exists, is_numeric
+  use mod_cmdline
+  use mod_printing
+  type (cmd_line_arg)  :: cmd_line_entry
+  integer :: i , ii 
+
+  if (allocated(green)) then
+    call print_warning ("repeated")
+    return
+  endif
+
+  allocate (green (size(cmd_line_entry%field)))
+  do i = 1 , size(cmd_line_entry%field)
+    write(log%unit, form%i2) trim(cmd_line_entry%field(i)%full)
+    green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
+    green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
+    do ii=1, 2
+      if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
+        read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
+      endif
+    enddo
+    call read_green(green(i))
+  enddo
+end subroutine
 
 ! =============================================================================
-!> This subroutine read 
+!> This subroutine read  green file
 ! =============================================================================
-!subroutine read_green (green)
-!  use iso_fortran_env
-!!  use mod_cmdline, only: form_63 , log
-!  integer :: lines , fileunit, io_status
-!  real (dp) , allocatable , dimension(:) :: tmp
-!  type(green_functions) :: green
-!
-!  ! change the paths accordingly
-!  if (.not.file_exists(green%name) &
-!    .and. (.not. green%name.eq."merriam" &
-!    .and.  .not. green%name.eq."huang" &
-!    .and.  .not. green%name.eq."rajner" )) then
-!    green%name="merriam"
-!  endif
-!  if (green%name.eq."merriam") then
-!    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-!    if (green%dataname.eq."GN") then
-!      green%column=[1,2]
-!    else if &
-!      (green%dataname.eq."GNdt") then
-!      green%column=[1,3]
-!    else if &
-!      (green%dataname.eq."GNdz") then
-!      green%column=[1,4]
-!    else if &
-!      (green%dataname.eq."GNdz2") then
-!      green%column=[1,5]
-!    else if &
-!      (green%dataname.eq."GE") then
-!      green%column=[1,6]
-!    endif
-!  else if (green%name.eq."huang") then
-!    green%name="/home/mrajner/src/grat/dat/huang_green.dat"
-!    if (green%dataname.eq."GN") then
-!      green%column=[1,2]
-!    else if &
-!      (green%dataname.eq."GNdt") then
-!      green%column=[1,3]
-!    else if &
-!      (green%dataname.eq."GNdh") then
-!      green%column=[1,4]
-!    else if &
-!      (green%dataname.eq."GNdz") then
-!      green%column=[1,5]
-!    endif
-!  else if (green%name.eq."rajner") then
-!    green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
-!    if (green%dataname.eq."GN") then
-!      green%column=[1,2]
-!    else if &
-!      (green%dataname.eq."GNdt") then
-!      green%column=[1,3]
-!    else if &
-!      (green%dataname.eq."GNdh") then
-!      green%column=[1,4]
-!    else if &
-!      (green%dataname.eq."GNdz") then
-!      green%column=[1,5]
-!    endif
-!  endif
-!
-!  if(green%column(1).ne.0 .and. green%column(2).ne.0) then
-!    allocate(tmp(max(green%column(1),green%column(2))))
-!    lines = 0
-!    open ( newunit =fileunit, file=green%name, action="read", status="old")
-!    do 
-!      call skip_header (fileunit)
-!      read (fileunit , * , iostat = io_status) tmp
-!      if (io_status == iostat_end) exit
-!      lines = lines + 1
-!    enddo
-!
-!    allocate (green%distance(lines))
-!    allocate (green%data(lines))
-!    rewind(fileunit)
-!    lines = 0
-!    do 
-!      call skip_header (fileunit)
-!      lines = lines + 1
-!      read (fileunit , * , iostat = io_status) tmp
-!      if (io_status == iostat_end) exit
-!      green%distance(lines) = tmp (green%column(1))
-!      green%data(lines)     = tmp (green%column(2))
-!    enddo
-!    deallocate(tmp)
-!    close(fileunit)
-!  endif
-!
-!  ! file specific 
-!  if (green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat".and. green%dataname.eq."GNdz") then
-!    green%data = green%data * (-1.)
-!  endif
-!  if (green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" .and. &
-!    (green%dataname.eq."GNdh".or.green%dataname.eq."GNdh")) &
-!    then
-!    green%data = green%data * 1000.
-!  endif
-!  write(log%unit, form_63) trim(green%name) ,trim(green%dataname), &
-!    "columns:",green%column ,&
-!    "lines:", size(green%distance)
-!end subroutine
+subroutine read_green (green)
+  use mod_utilities, only: file_exists, skip_header
+  use iso_fortran_env
+  use mod_printing
+  integer :: lines , fileunit, io_status
+  real (dp) , allocatable , dimension(:) :: tmp
+  type(green_functions) :: green
+
+  ! change the paths accordingly
+  if (.not.file_exists(green%name) &
+    .and. (.not. green%name.eq."merriam" &
+    .and.  .not. green%name.eq."huang" &
+    .and.  .not. green%name.eq."rajner" )) then
+    green%name="merriam"
+  endif
+  if (green%name.eq."merriam") then
+    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+    if (green%dataname.eq."GN") then
+      green%column=[1,2]
+    else if &
+      (green%dataname.eq."GNdt") then
+      green%column=[1,3]
+    else if &
+      (green%dataname.eq."GNdz") then
+      green%column=[1,4]
+    else if &
+      (green%dataname.eq."GNdz2") then
+      green%column=[1,5]
+    else if &
+      (green%dataname.eq."GE") then
+      green%column=[1,6]
+    endif
+  else if (green%name.eq."huang") then
+    green%name="/home/mrajner/src/grat/dat/huang_green.dat"
+    if (green%dataname.eq."GN") then
+      green%column=[1,2]
+    else if &
+      (green%dataname.eq."GNdt") then
+      green%column=[1,3]
+    else if &
+      (green%dataname.eq."GNdh") then
+      green%column=[1,4]
+    else if &
+      (green%dataname.eq."GNdz") then
+      green%column=[1,5]
+    endif
+  else if (green%name.eq."rajner") then
+    green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
+    if (green%dataname.eq."GN") then
+      green%column=[1,2]
+    else if &
+      (green%dataname.eq."GNdt") then
+      green%column=[1,3]
+    else if &
+      (green%dataname.eq."GNdh") then
+      green%column=[1,4]
+    else if &
+      (green%dataname.eq."GNdz") then
+      green%column=[1,5]
+    endif
+  endif
+
+  if(green%column(1).ne.0 .and. green%column(2).ne.0) then
+    allocate(tmp(max(green%column(1),green%column(2))))
+    lines = 0
+    open ( newunit =fileunit, file=green%name, action="read", status="old")
+    do 
+      call skip_header (fileunit)
+      read (fileunit , * , iostat = io_status) tmp
+      if (io_status == iostat_end) exit
+      lines = lines + 1
+    enddo
+
+    allocate (green%distance(lines))
+    allocate (green%data(lines))
+    rewind(fileunit)
+    lines = 0
+    do 
+      call skip_header (fileunit)
+      lines = lines + 1
+      read (fileunit , * , iostat = io_status) tmp
+      if (io_status == iostat_end) exit
+      green%distance(lines) = tmp (green%column(1))
+      green%data(lines)     = tmp (green%column(2))
+    enddo
+    deallocate(tmp)
+    close(fileunit)
+  endif
+
+  ! file specific 
+  if (green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat".and. green%dataname.eq."GNdz") then
+    green%data = green%data * (-1.)
+  endif
+  if (green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" .and. &
+    (green%dataname.eq."GNdh".or.green%dataname.eq."GNdh")) &
+    then
+    green%data = green%data * 1000.
+  endif
+  write(log%unit, form_63) trim(green%name) ,trim(green%dataname), &
+    "columns:",green%column ,&
+    "lines:", size(green%distance)
+end subroutine
 
 
 ! =============================================================================
@@ -178,44 +210,44 @@ contains
 !!!    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
 !!!  endif
 !end subroutine
-!
-!
+
 ! =============================================================================
 !> Perform convolution
 !!
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve ( )
-!subroutine convolve (site ,  green , results, denserdist , denseraz)
-!  use, intrinsic :: iso_fortran_env, only : error_unit
-!  use mod_constants, only: pi , dp,  atmosphere
-!  use mod_cmdline
-!  use mod_utilities, only: d2r, spher_trig
-!  use mod_data, only: get_value
-!  use mod_polygon, only: chkgon
+  subroutine convolve (site ,  green )
+!    , results, denserdist , denseraz)
+  use mod_site, only : site_info
+  !  use, intrinsic :: iso_fortran_env, only : error_unit
+  !  use mod_constants, only: pi , dp,  atmosphere
+  !  use mod_cmdline
+  !  use mod_utilities, only: d2r, spher_trig
+  !  use mod_data, only: get_value
+  !  use mod_polygon, only: chkgon
   !
-!  type(site_data) , intent(in) :: site
-!  type(green_functions), allocatable , dimension(:) :: green
-!  integer , intent (in) :: denserdist , denseraz
-!  real(dp) :: latin , lonin
-!  integer ::  ndenser , igreen  , iazimuth , nazimuth
-!  real(dp) :: azimuth
-!  real(dp) :: lat , lon , area  
-!  real(dp) :: val(4) , ref_p
-!  integer :: i , iok(2) , npoints
-!  real(dp) :: normalize 
-!  type (result) ,intent(out)  :: results
+    type(site_info), intent(in) :: site
+    type(green_functions), allocatable , dimension(:) :: green
+  !  integer , intent (in) :: denserdist , denseraz
+  !  real(dp) :: latin , lonin
+  !  integer ::  ndenser , igreen  , iazimuth , nazimuth
+  !  real(dp) :: azimuth
+  !  real(dp) :: lat , lon , area  
+  !  real(dp) :: val(4) , ref_p
+  !  integer :: i , iok(2) , npoints
+  !  real(dp) :: normalize 
+  !  type (result) ,intent(out)  :: results
 
   ! check if greens functions were specified
-!  if( size (green).eq.0) then
-!    stop "No green functions!"
-!  endif
+  !  if( size (green).eq.0) then
+  !    stop "No green functions!"
+  !  endif
 
-!  print * ,denseraz,":::"
-!  if (.not.allocated(green_common))  then
-!        call green_unification (green , green_common , denser = denserdist-1)
-!  endif
+  !  print * ,denseraz,":::"
+  !  if (.not.allocated(green_common))  then
+  !        call green_unification (green , green_common , denser = denserdist-1)
+  !  endif
   !
   !!  npoints=0
   !!  do igreen = 1 ,size(green_common(:,1))
@@ -295,15 +327,15 @@ subroutine convolve ( )
   !!!      endif
   !!    enddo
   !!  enddo
-  !!  !todo
-  !!!  if (moreverbose%if.and. moreverbose%names(1).eq."i") then
-  !!!    write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
-  !!!  endif
+
+!    if (moreverbose%if.and. moreverbose%names(1).eq."i") then
+!      write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
+!    endif
 end subroutine
 !
 !!!> \todo site height from model 
 !!
-!!
+
 !subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
 !  use mod_cmdline , only : moreverbose
 !  use mod_utilities, only: spher_trig

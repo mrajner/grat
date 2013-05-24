@@ -58,86 +58,83 @@
 ! ==============================================================================
 program grat
 
-  use mod_printing
-!  use mod_constants , only : dp
-!  use mod_cmdline   
-!  use mod_green     , only : results ,convolve , read_green , green
-!  use mod_polygon   , only : read_polygon
-!  use mod_data      , only : read_netCDF , get_variable
-!
-!  implicit none
-!  real(dp) :: x , y , z , lat ,lon 
-!  integer :: i , j , ii, iii
-!
-!
-!  ! program starts here with time stamp
-!  call cpu_time(cpu_start)
-!
-!  ! gather cmd line option decide where to put output
-!  call intro (program_calling = "grat" , &
-!    accepted_switches="VSBLGPpoFIDLvhRQ" , cmdlineargs=.true.)
-!
-!  do i =1 , size(info)
-!    print * , info(i)%distance%start
-!    print * , info(i)%distance%stop
-!    print * , info(i)%distance%step
-!
-!    print * , info(i)%azimuth%start
-!    print * , info(i)%azimuth%stop
-!    print * , info(i)%interpolation
-!    print *
-!  enddo
-!  
-!
-!  ! read models into memory
-!  ! todo move it to mod_data?
-!  do i =1 , size(model)
-!    if (model(i)%if) call read_netCDF (model(i))
-!  enddo
-!
-!  ! move it to mod_green?
-!  allocate (results(size(site)*max(size(date),1)))
-!  print *, size(green), size(results) , shape(results)
-!  
-!  
-!
-!  iii=0
-!
-!  do j = 0 , size (date)
-!    if(size(date).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") date(j)%date
-!
-!    !TODO
-!    do ii = 1 , min(2,size(model))
-!      print*, model(ii)%if , allocated(date),size(model(ii)%date)
-!!      if (size(model(ii)%date).gt.1) then
-!!        if (model(ii)%if) call get_variable ( model(ii) , date = date(j)%date)
-!!      endif
-!    enddo
-!    stop
-!
-!    write(log%unit, form%separator)
-!    write(log%unit, form_60) "Results:"
-!    if (output%if.and.(output%name /= "")) write(log%unit, form_61) "written into file:" , trim(output%name)
-!    do i = 1 , size(site)
-!      write(output%unit, '(2f15.5f)', advance ="no") site(i)%lat ,site(i)%lon
-!      iii=iii+1
-!      call convolve ()
-!      write (output%unit,'(15f13.5)') , results(iii)%e ,results(iii)%n  ,results(iii)%dt , results(iii)%dh, results(iii)%dz
-!    enddo
-!  enddo
-!
-!
-!  if (any (moreverbose%dataname.eq."s")) then
-!    print '(15f13.5)', &
-!      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
-!      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
-!      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
-!      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
-!      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
-!  endif
-!
-!  ! execution time-stamp
-!  call cpu_time(cpu_finish)
-!  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu_finish - cpu_start
-  write(log%unit, form_separator)
-end program 
+  use mod_parser
+  use mod_data
+  use mod_date
+  use mod_green
+  use mod_site
+  use mod_polygon
+
+  implicit none
+  real(dp) :: x , y , z , lat ,lon , cpu(2)
+  integer :: isite, i, ii , iii , idate, start , iok
+
+
+  ! program starts here with time stamp
+  call cpu_time(cpu(1))
+
+  ! gather cmd line option decide where to put output
+  call intro ( & 
+    program_calling = "grat" , &
+    accepted_switches="VSBLGPpoFIDLvhRQ" , &
+    cmdlineargs=.true. &
+    )
+
+  allocate (result(size(site)*max(size(date),1), size(green) ))
+
+
+  start=0
+  if (size(date).gt.0) then
+    write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
+    start = 1
+  endif
+  write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
+  do i = 1 ,size(green)
+    write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
+  enddo
+  write (output%unit , *)
+
+  do idate = start , size (date)
+    do isite = 1 , size(site)
+      if (idate.gt.0) then
+        write (output%unit , '(f15.3,x,i4.4,5(i2.2))' , advance = "no" ) date(idate)%mjd , date(idate)%date
+      endif
+
+      write (output%unit , '(a8,30f15.4)') , site(isite)%name, site(isite)%lat, site(isite)%lon
+      print *
+      do i = 1 , size(polygon)
+        call chkgon( site(isite)%lon , site(isite)%lat , polygon(i) , iok)
+      enddo
+
+      do i = 1 , size(model)
+        if (idate.ne.start) then
+          select case (model(i)%dataname)
+          case ("LS", "H")
+            cycle
+          end select
+          endif
+          if (allocated(date)) then
+            call get_variable (model(1), date = date(idate)%date)
+          else
+            call get_variable (model(1))
+          endif
+        enddo
+        call convolve (site(isite), green)
+      enddo
+    enddo
+
+
+    !  if (any (moreverbose%dataname.eq."s")) then
+    !    print '(15f13.5)', &
+    !      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
+    !      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
+    !      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
+    !      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
+    !      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
+    !  endif
+
+    ! execution time-stamp
+    call cpu_time(cpu(2))
+    write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+    write(log%unit, form_separator)
+  end program 

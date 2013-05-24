@@ -21,101 +21,128 @@ contains
 !! 
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine parse_date (s_start, s_stop, s_step , u_start , u_stop, u_step) 
-  character(*), intent (in) :: s_start
-  character(*), intent (in), optional :: s_stop, s_step, u_start, u_stop, u_step
+subroutine parse_date (cmd_line_entry) 
+  use mod_cmdline
   integer , dimension(6) :: start , stop , swap 
-  real (dp) :: step =6. ! step in hours
-  integer :: i
-  character(1) :: interval_unit="h"
+  real (dp) :: step 
+  integer :: i_ , i ,  start_index
+  character(1) :: interval_unit
+  type(cmd_line_arg)  :: cmd_line_entry
 
   if (allocated(date)) then
     call print_warning ("repeated")
     return
   endif
-  call string2date(s_start, start)
-  stop = start
+  do i_ = 1 , size(cmd_line_entry%field)
+    interval_unit = "h"
+    write(log%unit,form%i2) trim(cmd_line_entry%field(i_)%full)
+    call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
 
-  if (present(s_step).and.len(s_step).gt.0) then
-    if(present(u_step)) then
-      read(u_step,*) interval_unit
-    endif
-    if(present(u_step)) then
-      read(s_step,*) step
-    endif
-  endif
-  if (present(s_stop)) then
-    if(len(s_stop).gt.0) then
-      call string2date(s_stop, stop)
-      if(present(u_stop)) then
-        if(u_stop.eq.'Y') then
-          stop(1)=start(1)+stop(1)
-          stop(2:)=start(2:)
-        else if(u_stop.eq.'M') then
-          stop(2)=start(2)+stop(1)
-          stop(1)=start(1)
-          stop(3:)=start(3:)
-          if (stop(2).gt.12) then
-            stop(1) =stop(1)+int(stop(2)/12)
-            stop(2) =modulo(stop(2),12)
-          else if (stop(2).lt.1) then
-            stop(1) =stop(1)-int(-stop(2)/12+1)
-            stop(2) =stop(2)+12*(1+int(-stop(2)/12))
-          endif
-        else if(u_stop.eq.'D') then
-          call invmjd ( mjd(start)+stop(1) , stop)
+    if (size(cmd_line_entry%field(i_)%subfield).ge.2 )then
+      call string2date(cmd_line_entry%field(i_)%subfield(2)%name, stop)
+      select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
+      case('Y')
+        stop(1)=start(1)+stop(1)
+        stop(2:)=start(2:)
+      case('M')
+        stop(2)=start(2)+stop(1)
+        stop(1)=start(1)
+        stop(3:)=start(3:)
+        if (stop(2).gt.12) then
+          stop(1) = stop(1)+int(stop(2)/12)
+          stop(2) = modulo(stop(2),12)
+        else if (stop(2).lt.1) then
+          stop(1) =stop(1)-int(-stop(2)/12+1)
+          stop(2) =stop(2)+12*(1+int(-stop(2)/12))
         endif
+      case('D')
+        call invmjd ( mjd(start)+stop(1) , stop)
+      case default
+      endselect
+    else
+      stop = start
+    endif
+    if (size(cmd_line_entry%field(i_)%subfield).ge.3 )then
+      read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
+      select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
+      case("M","D","Y")
+        read (cmd_line_entry%field(i_)%subfield(3)%dataname,* ) interval_unit
+      endselect
+    else
+      step=6
+    endif
+
+    write (log%unit , '('//form%t3//',a,x,i4,5(1x,i2.2))')  "start date:" , start
+    if (mjd(start).ne.mjd(stop)) then
+      write (log%unit , '('//form%t3//',a,x,i4,5(1x,i2.2))') "stop  date:" , stop
+      write (log%unit , form%i3) "interval:" , step, interval_unit
+    endif
+
+    ! allow that stop is previous than start and list in reverse order
+    ! chage the sign of step in dates if necessery
+    if(mjd(stop).lt.mjd(start).and. step.gt.0) step = -step
+    ! or if step is negative
+    if(mjd(stop).gt.mjd(start).and. step.lt.0) then
+      swap=start
+      start=stop
+      stop=swap
+    endif
+
+    if (interval_unit.eq."M".or.interval_unit.eq."Y") then
+      if (interval_unit.eq."Y") then
+        step=step*12
+        interval_unit="M"
       endif
-    endif
-  endif
-  write (log%unit , '('//form%t2//',a,x,i4,5(1x,i2.2))')  "start date:" , start
-  write (log%unit , '('//form%t2//',a,x,i4,5(1x,i2.2))') "stop  date:" , stop
-  write (log%unit , form%i2) "interval:" , step, interval_unit
+      if (interval_unit.eq."M") then
+        call more_dates &
+          ( int((12*(stop(1) - start(1))+stop(2)-start(2))/(step)) +1  , start_index)
+        date(start_index)%date=start
+        date(start_index)%mjd=mjd(date(start_index)%date)
+        do i= start_index+1 ,size(date)
+          date(i)%date=date(i-1)%date
+          date(i)%date(2)=date(i-1)%date(2)+step
+          if (date(i)%date(2).gt.12) then
+            date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
+            date(i)%date(2) =modulo(date(i)%date(2),12)
+          else if (date(i)%date(2).lt.1) then
+            date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
+            date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
+          endif
+          date(i)%mjd=mjd(date(i)%date)
+        enddo
+      endif
+    else
+      if (interval_unit.eq."D") step = 24. * step
+      if (interval_unit.eq."m") step = step /60.
+      if (interval_unit.eq."s") step = step /60./60.
 
-  ! allow that stop is previous than start and list in reverse order
-  ! chage the sign of step in dates if necessery
-  if(mjd(stop).lt.mjd(start).and. step.gt.0) step = -step
-  ! or if step is negative
-  if(mjd(stop).gt.mjd(start).and. step.lt.0) then
-    swap=start
-    start=stop
-    stop=swap
-  endif
-
-  if (interval_unit.eq."M".or.interval_unit.eq."Y") then
-    if (interval_unit.eq."Y") then
-      step=step*12
-      interval_unit="M"
-    endif
-    if (interval_unit.eq."M") then
-      allocate (date( int((12*(stop(1) - start(1))+stop(2)-start(2))/(step)) +1 ))
-      date(1)%date=start
-      date(1)%mjd=mjd(date(1)%date)
-      do i= 2 ,size(date)
-        date(i)%date=date(i-1)%date
-        date(i)%date(2)=date(i-1)%date(2)+step
-        if (date(i)%date(2).gt.12) then
-          date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
-          date(i)%date(2) =modulo(date(i)%date(2),12)
-        else if (date(i)%date(2).lt.1) then
-          date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
-          date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
-        endif
-        date(i)%mjd=mjd(date(i)%date)
+      call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index )
+      do i = start_index , size(date)
+        date(i)%mjd = mjd(start) + ( i - start_index ) * step / 24.
+        call invmjd ( date(i)%mjd , date(i)%date)
       enddo
     endif
-  else
-    if (interval_unit.eq."D") step = 24. * step
-    if (interval_unit.eq."m") step = step /60.
-    if (interval_unit.eq."s") step = step /60./60.
+  enddo
+  write (log%unit , form%i3) "dates total:" , size(date)
+end subroutine
+! =============================================================================
+! =============================================================================
+subroutine more_dates (number, start_index)
+  integer, intent(in)  :: number
+  integer, intent(out) :: start_index
+  type(dateandmjd), allocatable , dimension(:) :: tmpdate
 
-    allocate (date (int((mjd(stop)-mjd(start)) / step * 24. + 1 ) ))
-    do i = 1 , size(date)
-      date(i)%mjd = mjd(start) + ( i -1 ) * step / 24.
-      call invmjd ( date(i)%mjd , date(i)%date)
-    enddo
+  if (allocated(date)) then
+    write(log%unit, form%i3) ,"added date(s):", number
+    start_index=size(date) + 1
+    call move_alloc(date, tmpdate)
+    allocate(date(size(tmpdate)+number))
+    date=tmpdate
+    deallocate(tmpdate)
+  else 
+    allocate(date(number))
+    start_index=1
   endif
-  write (log%unit , form%i2) "dates total:" , size(date)
 end subroutine
 
 

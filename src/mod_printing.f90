@@ -3,9 +3,9 @@ module mod_printing
   ! For preety printing
   !----------------------------------------------------
   character(len=255), parameter ::               & 
-    form_header    = '(60("#"))' ,               & 
-    form_separator = '("#",59("-"))' ,           & 
-    form_inheader  = '(("#"),1x,a56,1x,("#"))' , & 
+    form_header    = '(72("#"))' ,               & 
+    form_separator = '("#",71("-"))' ,           & 
+    form_inheader  = '(("#"),1x,a68,1x,("#"))' , & 
     form_60        = "(a,100(1x,g0))",           & 
     form_61        = "(2x,a,100(1x,g0))",        & 
     form_62        = "(4x,a,100(1x,g0))",        & 
@@ -14,11 +14,14 @@ module mod_printing
 
   type printing_info
     character(60) :: a, &
+      i0      = "(a,100(1x,g0))",           & 
       i1      = "(2x,a,100(1x,g0))",        & 
       i2      = "(4x,a,100(1x,g0))",        & 
       i3      = "(6x,a,100(1x,g0))",        & 
+      i4      = "(8x,a,100(1x,g0))",        & 
       t2      = "4x",        & 
-      separator = '("#",59("-"))' 
+      t3      = "6x",        & 
+      separator = '("#",71("-"))' 
   end type
   type(printing_info) :: form
 
@@ -40,7 +43,7 @@ subroutine print_warning (warn , unit)
   integer , optional :: unit
   integer :: def_unit
 
-  def_unit = error_unit
+  def_unit = log%unit
   if (present (unit) ) def_unit=unit
 
   if (warn .eq. "site_file_format") then
@@ -57,7 +60,7 @@ subroutine print_warning (warn , unit)
   else if (warn .eq. "date") then
     write(def_unit, form_62) "something wrong with date format -D. IGNORED"
   else if (warn .eq. "model") then
-    write(def_unit, form%a) "something wrong with -F."
+    write(def_unit, form%i3) "something wrong with -F."
   endif
 end subroutine
 

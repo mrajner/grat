@@ -7,25 +7,24 @@
 program real_vs_standard
 !  use mod_constants, only :dp
   use mod_cmdline
-  use mod_green,     only : result
   use mod_data,      only : read_netCDF , get_variable , get_value
 !  use mod_aggf,      only : geop2geom
 !  
-  implicit none
+!  implicit none
 !  real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
-  integer :: i , j, ii, iii
+!  integer :: i , j, ii, iii
 
   ! program starts here with time stamp
-  call cpu_time(cpu_start)
+!  call cpu_time(cpu_start)
 
   ! gather cmd line option decide where to put output
   ! todo specific for current program
-  call intro (program_calling="real_vs_standard")
+!  call intro (program_calling="real_vs_standard")
   
    !read models into memory
-  do i =1 , size(model)
-    if (model(i)%if) call read_netCDF ( model(i) )
-  enddo
+!  do i =1 , size(model)
+!    if (model(i)%if) call read_netCDF ( model(i) )
+!  enddo
 
    
 !  allocate (result(size(site)*max(size(dates),1)))

@@ -4,6 +4,11 @@
 \usetikzlibrary{pgfplots.groupplots}
 \begin{document}
   \begin{tikzpicture}
+    \pgfplotsset{
+      table/x index={1},
+      table/y index={2},
+      table/header={true},
+    }
     \begin{groupplot}
       [
         group style = {group size=2 by 1},
@@ -17,18 +22,45 @@
         %      x unit = {\deg}
       ]
       \nextgroupplot
-      [only marks, 
+      [
+        only marks, 
         scatter,
-        scatter src=explicit,]
-      \addplot table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpb1.dat};
-      %      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
+        scatter src=explicit,
+        clip = false,
+      ]
+      \addplot
+        table 
+        [point meta=\thisrowno{3}/100]
+        {/home/mrajner/src/grat/doc/rysunki/interpn1.dat};
+      \addplot+
+        [ mark size=0.41em ]
+        table 
+        [
+          point meta=\thisrowno{2}/100,
+          x index=0,
+          y index=1,
+          header = false,
+        ]
+        {/home/mrajner/src/grat/doc/rysunki/interp1.dat};
       \nextgroupplot
       [only marks, 
         scatter,
         colorbar,
         scatter src=explicit,]
-      \addplot table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpn1.dat};
-      %      \addplot+[mark size=0.41em] table[point meta=\thisrowno{2}/100 ] {/home/mrajner/src/grat/doc/interpl1.dat};
+      \addplot
+        table
+        [point meta=\thisrowno{3}/100 ] 
+        {/home/mrajner/src/grat/doc/rysunki/interpl1.dat};
+      \addplot+
+        [mark size=0.41em]
+        table
+        [
+          point meta=\thisrowno{2}/100,
+          x index=0,
+          y index=1,
+          header = false,
+        ]
+        {/home/mrajner/src/grat/doc/rysunki/interp1.dat};
     \end{groupplot}
   \end{tikzpicture}
 \end{document}

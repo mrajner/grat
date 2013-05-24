@@ -1,12 +1,11 @@
 program tmp
-  use mod_site
-  use mod_cmdline
+  use mod_printing
+  use mod_parser
   print  form%separator
 
   call intro(program_calling="tmp", version="alpga")
 
-  print  form%separator
-  print  form%separator
+
 
 
 end program

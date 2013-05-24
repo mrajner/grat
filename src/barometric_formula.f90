@@ -4,27 +4,27 @@ program check_transfer
   use mod_green
   use mod_utilities
 
-  real(dp) :: pressure ,x , x2 , pressure2 , temperature , pressure3, pressure4
-  real(dp) :: h(23)
+!  real(dp) :: pressure ,x , x2 , pressure2 , temperature , pressure3, pressure4
+!  real(dp) :: h(23)
 
-  !!!!
-  real (dp) :: r ,dr , da , area
-  r= pi/2
-  dr=pi
-  da= 2*pi
+!  !!!!
+!  real (dp) :: r ,dr , da , area
+!  r= pi/2
+!  dr=pi
+!  da= 2*pi
 
-  call spher_area(r , dr , da , area,radius=dble(1),alternative_method=.false.)
-  print * , area 
+!  call spher_area(r , dr , da , area,radius=dble(1),alternative_method=.false.)
+!  print * , area 
 
-  r= 0.
-  dr= pi
-  da= 2*pi
+!  r= 0.
+!  dr= pi
+!  da= 2*pi
 
-  call spher_area(r , dr , da , area,radius=dble(1),alternative_method=.true.)
-  print * , area 
+!  call spher_area(r , dr , da , area,radius=dble(1),alternative_method=.true.)
+!  print * , area 
 
-  call exit
-  !!!!
+!  call exit
+!  !!!!
 
 
 !  i=0
