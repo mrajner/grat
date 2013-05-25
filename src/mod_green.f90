@@ -166,14 +166,14 @@ end subroutine
 ! =============================================================================
 !> Unification:
 ! =============================================================================
-!subroutine green_unification (green , green_common , denser)
+subroutine green_unification (green , green_common , denser)
 !  use mod_constants , only : dp 
 !  use mod_cmdline, only: moreverbose, method ,  green_functions
 !  use mod_aggf, only: size_ntimes_denser
 !  use mod_utilities, only:spline_interpolation
 !
 !  type(green_functions), allocatable , dimension(:) , intent(in) :: green
-!  integer, optional :: denser
+  integer, optional :: denser
 !  integer :: i , ndenser , j ,ii
 !  real(dp), allocatable , dimension(:) :: x , y , dist
 !  real(dp), allocatable , dimension(:,:) , intent(out) :: green_common
@@ -209,7 +209,7 @@ end subroutine
 !!!  if (moreverbose%if.and. moreverbose%names(1).eq."G") then
 !!!    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
 !!!  endif
-!end subroutine
+end subroutine
 
 ! =============================================================================
 !> Perform convolution
@@ -217,8 +217,7 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-  subroutine convolve (site ,  green )
-!    , results, denserdist , denseraz)
+  subroutine convolve (site ,  green ,  denserdist , denseraz)
   use mod_site, only : site_info
   !  use, intrinsic :: iso_fortran_env, only : error_unit
   !  use mod_constants, only: pi , dp,  atmosphere
@@ -226,10 +225,10 @@ end subroutine
   !  use mod_utilities, only: d2r, spher_trig
   !  use mod_data, only: get_value
   !  use mod_polygon, only: chkgon
-  !
+  
     type(site_info), intent(in) :: site
     type(green_functions), allocatable , dimension(:) :: green
-  !  integer , intent (in) :: denserdist , denseraz
+    integer , intent (in) , optional :: denserdist , denseraz
   !  real(dp) :: latin , lonin
   !  integer ::  ndenser , igreen  , iazimuth , nazimuth
   !  real(dp) :: azimuth
@@ -239,15 +238,9 @@ end subroutine
   !  real(dp) :: normalize 
   !  type (result) ,intent(out)  :: results
 
-  ! check if greens functions were specified
-  !  if( size (green).eq.0) then
-  !    stop "No green functions!"
-  !  endif
-
-  !  print * ,denseraz,":::"
-  !  if (.not.allocated(green_common))  then
-  !        call green_unification (green , green_common , denser = denserdist-1)
-  !  endif
+    if (.not.allocated(green_common))  then
+          call green_unification (green , green_common , denser = denserdist-1)
+    endif
   !
   !!  npoints=0
   !!  do igreen = 1 ,size(green_common(:,1))

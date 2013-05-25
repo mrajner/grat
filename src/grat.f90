@@ -82,7 +82,6 @@ program grat
 
   allocate (result(size(site)*max(size(date),1), size(green) ))
 
-
   start=0
   if (size(date).gt.0) then
     write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
@@ -109,6 +108,7 @@ program grat
       do i = 1 , size(model)
         if (idate.ne.start) then
           select case (model(i)%dataname)
+          ! this field read only once (constant in time) 
           case ("LS", "H")
             cycle
           end select

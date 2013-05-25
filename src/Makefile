@@ -3,12 +3,6 @@
 
 # mak: clean mod_cmdline.o
 # as: value_check  example_value_check second
-oooiii: polygon_check
-	../bin/polygon_check \
-		-P ../polygon/tmp.poly \
-		, ../polygon/tmp.poly \
-		, ../polygon/baltyk.poly \
-		-S sites 
 al:
 xxx: ddd tmp runtmp
 
