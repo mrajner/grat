@@ -8,32 +8,26 @@ program polygon_check
   use mod_parser
   use mod_site
 
-!  use mod_polygon, only: read_polygon,chkgon, polygon
-    
+  !  use mod_polygon, only: read_polygon,chkgon, polygon
+
 
   implicit none
   integer i , j
-  integer iok 
+  integer , allocatable , dimension (:) :: iok 
 
   ! gather cmd line option decide where to put output
-  call intro ( &
-    program_calling = "polygon_check" , &
+  call intro  &
+    ( &
+    program_calling = "polygon_check" ,  &
       accepted_switches = "VfABLPoShvIiR" , &
-      cmdlineargs=.true. &
-      )
+      cmdlineargs=.true. )
 
-
-    do j = 1 , size(polygon)
-      if (size (polygon(j)%polygon).eq.0) then
-        do i=1 , size (site)
-          write (output%unit , '(2f10.5)' ) site(i)%lon, site(i)%lat   
-        enddo
-      else
-        do i=1 , size (site)
-          call chkgon (site(i)%lon, site(i)%lat, polygon(j), iok )
-          write (output%unit, '(2f10.5,i4)' ) site(i)%lat, site(i)%lon   , iok
-        enddo
-      endif 
-    enddo
-  end program
+    do i=1 , size (site)
+      write (output%unit , '(a8,1x,2f10.5)' , advance="no" ) site(i)%name, site(i)%lon, site(i)%lat   
+!      do j = 1 , size(polygon)
+!          call chkgon (site(i)%lon, site(i)%lat, polygon(j), iok )
+!          write (output%unit, '(2f10.5,i4)' ) , iok
+!        enddo
+      enddo
+    end program
 

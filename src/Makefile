@@ -8,7 +8,7 @@ oooiii: polygon_check
 		-P ../polygon/tmp.poly \
 		, ../polygon/tmp.poly \
 		, ../polygon/baltyk.poly \
-		-S sites -V
+		-S sites 
 al:
 xxx: ddd tmp runtmp
 
