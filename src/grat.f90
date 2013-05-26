@@ -61,7 +61,7 @@ program grat
   use mod_parser
   use mod_data
   use mod_date
-  use mod_green
+  use mod_green, only : convolve, green, result
   use mod_site
   use mod_polygon
 
@@ -96,45 +96,45 @@ program grat
   do idate = start , size (date)
     do isite = 1 , size(site)
       if (idate.gt.0) then
-        write (output%unit , '(f15.3,x,i4.4,5(i2.2))' , advance = "no" ) date(idate)%mjd , date(idate)%date
+        write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date(idate)%mjd, date(idate)%date
       endif
 
-      write (output%unit , '(a8,30f15.4)') , site(isite)%name, site(isite)%lat, site(isite)%lon
+      write (output%unit, '(a8,30f15.4)'), site(isite)%name, site(isite)%lat, site(isite)%lon
       print *
       do i = 1 , size(polygon)
         call chkgon( site(isite)%lon , site(isite)%lat , polygon(i) , iok)
       enddo
 
       do i = 1 , size(model)
-        if (idate.ne.start) then
-          select case (model(i)%dataname)
-          ! this field read only once (constant in time) 
-          case ("LS", "H")
+        select case (model(i)%dataname)
+        case ("LS")
+          if (idate.gt.start) then
             cycle
-          end select
-          endif
-          if (allocated(date)) then
-            call get_variable (model(1), date = date(idate)%date)
           else
-            call get_variable (model(1))
+            call get_variable (model(i))
           endif
-        enddo
-        call convolve (site(isite), green)
+        case default
+          call get_variable (model(i), date = date(idate)%date)
+        end select
+
       enddo
+      call convolve (site(isite))
+      stop ! only 1 time for debug
     enddo
+  enddo
 
 
-    !  if (any (moreverbose%dataname.eq."s")) then
-    !    print '(15f13.5)', &
-    !      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
-    !      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
-    !      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
-    !      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
-    !      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
-    !  endif
+  !  if (any (moreverbose%dataname.eq."s")) then
+  !    print '(15f13.5)', &
+  !      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
+  !      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
+  !      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
+  !      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
+  !      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
+  !  endif
 
-    ! execution time-stamp
-    call cpu_time(cpu(2))
-    write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
-    write(log%unit, form_separator)
-  end program 
+  ! execution time-stamp
+  call cpu_time(cpu(2))
+  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+  write(log%unit, form_separator)
+end program 

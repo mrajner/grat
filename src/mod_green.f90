@@ -15,9 +15,6 @@ module mod_green
   end type
   type(green_functions), allocatable , dimension(:) :: green
 
-
-  real(dp), allocatable , dimension(:,:)  :: green_common
-
   real(dp) , allocatable, dimension(:,:) :: result
 
 contains
@@ -124,7 +121,7 @@ subroutine read_green (green)
   if(green%column(1).ne.0 .and. green%column(2).ne.0) then
     allocate(tmp(max(green%column(1),green%column(2))))
     lines = 0
-    open ( newunit =fileunit, file=green%name, action="read", status="old")
+    open (newunit =fileunit, file=green%name, action="read", status="old")
     do 
       call skip_header (fileunit)
       read (fileunit , * , iostat = io_status) tmp
@@ -140,12 +137,15 @@ subroutine read_green (green)
       call skip_header (fileunit)
       lines = lines + 1
       read (fileunit , * , iostat = io_status) tmp
-      if (io_status == iostat_end) exit
+      if (io_status == iostat_end) then
+        exit
+        ! todo why line below causes problems?
+        !close(fileunit) 
+      endif
       green%distance(lines) = tmp (green%column(1))
       green%data(lines)     = tmp (green%column(2))
     enddo
     deallocate(tmp)
-    close(fileunit)
   endif
 
   ! file specific 
@@ -157,58 +157,65 @@ subroutine read_green (green)
     then
     green%data = green%data * 1000.
   endif
-  write(log%unit, form_63) trim(green%name) ,trim(green%dataname), &
+  write(log%unit, form_63) trim(green%name), trim(green%dataname), &
     "columns:",green%column ,&
     "lines:", size(green%distance)
 end subroutine
 
-
 ! =============================================================================
 !> Unification:
 ! =============================================================================
-subroutine green_unification (green , green_common , denser)
-!  use mod_constants , only : dp 
-!  use mod_cmdline, only: moreverbose, method ,  green_functions
-!  use mod_aggf, only: size_ntimes_denser
-!  use mod_utilities, only:spline_interpolation
-!
-  type(green_functions), allocatable , dimension(:) , intent(in) :: green
-  integer, optional :: denser
-!  integer :: i , ndenser , j ,ii
-!  real(dp), allocatable , dimension(:) :: x , y , dist
-  real(dp), allocatable , dimension(:,:) , intent(out) :: green_common
-!
-!
-!  ndenser=0
-!  if (present(denser)) ndenser = denser
-!
-!  allocate (x (size_ntimes_denser(size(green(1)%distance),ndenser)-1))
-!  allocate(dist(size(x)))
-!  ii=0
-!  do i = 1 , size(green(1)%distance)-1
-!    do j = 0 , ndenser
-!      ii=ii+1
-!      x(ii) = green(1)%distance (i)  + (j +1./2.) * (green(1)%distance (i+1) -green(1)%distance (i) ) / ( ndenser + 1 )
-!!      dist(ii) = (green(1)%distance (i+1) -green(1)%distance (i) ) / ( ndenser + 1 )
-!    enddo
-!  enddo
-!  ! x(size(x)) = green(1)%distance(size(green(1)%distance))
-!!  allocate(green_common (size(x) , 7))
-!!  green_common(:,1) = x
-!!  green_common(:,2) = dist
-!!  do i = 1 , 5
-!!    if (size(green).ge.i .and. allocated(green(i)%distance)) then
-!!      call spline_interpolation (green(i)%distance , green(i)%data, &
-!!        size(green(i)%data), x , y , size(x)) 
-!!      green_common(:,i+2) = y
-!!    else 
-!!      green_common(:,i+2) = 0
-!!    endif
-!!  enddo
-!!  !todo
-!!!  if (moreverbose%if.and. moreverbose%names(1).eq."G") then
-!!!    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
-!!!  endif
+subroutine green_unification ()
+  use mod_utilities, only: size_ntimes_denser
+  use mod_cmdline, only: info
+  type(green_functions), allocatable , dimension(:) :: green_tmp
+  integer :: i , denser , which_green
+
+  if (.not.allocated(info)) then
+    denser = 1
+  else
+    !find grenn with maksimum
+    which_green=0
+    do i = 2, size(green)
+      if (size(green(i)%distance).gt.size(green(i-1)%distance)) which_green=i
+      if (green(i)%distance(1).lt.green(i-1)%distance(1)) which_green=i
+      if (green(i)%distance(size(green(i)%distance)) &
+        .gt.green(i-1)%distance(size(green(i-1)%distance))) which_green=i
+    enddo
+    do i =1 , size(info)
+      print * , info(i)%distance%start
+      print * , info(i)%distance%stop
+    enddo
+
+  !  allocate (x (size_ntimes_denser(size(green(1)%distance),ndenser)-1))
+  !  allocate(dist(size(x)))
+  !  ii=0
+
+  !  do i = 1 , size(green(1)%distance)-1
+  !    do j = 0 , ndenser
+  !      ii=ii+1
+  !      x(ii) = green(1)%distance (i)  + (j +1./2.) * (green(1)%distance (i+1) -green(1)%distance (i) ) / ( ndenser + 1 )
+  !      dist(ii) = (green(1)%distance (i+1) -green(1)%distance (i) ) / ( ndenser + 1 )
+  !    enddo
+  !  enddo
+  !  ! x(size(x)) = green(1)%distance(size(green(1)%distance))
+  !!  allocate(green_common (size(x) , 7))
+  !!  green_common(:,1) = x
+  !!  green_common(:,2) = dist
+  !!  do i = 1 , 5
+  !!    if (size(green).ge.i .and. allocated(green(i)%distance)) then
+  !!      call spline_interpolation (green(i)%distance , green(i)%data, &
+  !!        size(green(i)%data), x , y , size(x)) 
+  !!      green_common(:,i+2) = y
+  !!    else 
+  !!      green_common(:,i+2) = 0
+  !!    endif
+  !!  enddo
+  !!  !todo
+  !!!  if (moreverbose%if.and. moreverbose%names(1).eq."G") then
+  !!!    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
+  !!!  endif
+  endif
 end subroutine
 
 ! =============================================================================
@@ -217,113 +224,109 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-  subroutine convolve (site ,  green ,  denserdist , denseraz)
+subroutine convolve (site ,  denserdist , denseraz)
   use mod_site, only : site_info
   !  use, intrinsic :: iso_fortran_env, only : error_unit
   !  use mod_constants, only: pi , dp,  atmosphere
   !  use mod_cmdline
-  !  use mod_utilities, only: d2r, spher_trig
-  !  use mod_data, only: get_value
-  !  use mod_polygon, only: chkgon
-  
-    type(site_info), intent(in) :: site
-    type(green_functions), allocatable , dimension(:) :: green
-    integer , intent (in) , optional :: denserdist , denseraz
+  use mod_utilities, only: d2r
+  use mod_spherical
+  use mod_data
+  use mod_polygon
+
+  type(site_info), intent(in) :: site
+  integer , intent (in) , optional :: denserdist , denseraz
+
   !  real(dp) :: latin , lonin
-  !  integer ::  ndenser , igreen  , iazimuth , nazimuth
-  !  real(dp) :: azimuth
-  !  real(dp) :: lat , lon , area  
+  integer  ::  ndenser , igreen , idist  , iazimuth , nazimuth
+  integer :: imodel
+  real(dp) :: azimuth
+  real(dp) :: lat , lon , area  
   !  real(dp) :: val(4) , ref_p
-  !  integer :: i , iok(2) , npoints
+  integer :: i , iok(2) , npoints
   !  real(dp) :: normalize 
   !  type (result) ,intent(out)  :: results
 
-    if (.not.allocated(green_common))  then
-          call green_unification (green , green_common , denser = denserdist-1)
-    endif
-  !
-  !!  npoints=0
-  !!  do igreen = 1 ,size(green_common(:,1))
-  !!    nazimuth = max(int(360*sin(d2r(green_common(igreen,1)))),100) * denseraz
-  !!    do iazimuth  = 1 , nazimuth
-  !!      npoints = npoints + 1
-  !!      azimuth = (iazimuth - 1) * 360./nazimuth
-  !
-  !!      ! get lat and lon of point
-  !!      call spher_trig ( site%lat , site%lon , green_common(igreen,1) , azimuth , lat , lon)
-  !
-  !!      ! get values of model
-  !!      do i = 1 , size(model)
-  !!        if(model(i)%if) then 
-  !!          call get_value (model(i) , lat , lon , val(i) , level=1, method =model(i)%interpolation)
-  !!        else 
-  !!          val(i) = 0.
-  !!        endif
-  !!      enddo
-  !
-  !!      !todo
-  !!!      if (refpres%if) then
-  !!!       call get_value (refpres , lat , lon , ref_p , method =1)
-  !!!     else
-  !!       ref_p=0.
-  !!!     endif
-  !
-  !!      ! get polygons
-  !!      do i = 1 , 2
-  !!        if (polygons(i)%if) then
-  !!          call chkgon ( lon, lat , polygons(i) , iok(i) )
-  !!        else
-  !!          iok(i)=1
-  !!        endif
-  !!      end do
-  !
-  !!      ! calculate area using spherical formulae
-  !!      if (val(1).ne.0) then
-  !!        ! todo !!!!! spher area was changed to work with RADIANS
-  !!        call spher_area(green_common(igreen,1) , green_common(igreen,2), dble(360./nazimuth) , area) 
-  !
-  !!        ! force topography to zero over oceans
-  !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
-  !
-  !!        ! normalization according to Merriam (1992) 
-  !!        normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1.e5  )
-  !
-  !!       ! elastic part
-  !!        ! if the cell is not over sea and inverted barometer assumption was not set 
-  !!        ! and is not excluded by polygon
-  !!        if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-  !!          results%e = results%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
-  !!        endif
-  !!  !       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
-  !!  !       stop 
-  !
-  !!        ! newtonian part
-  !!        if(.not. iok(1).eq.0) then
-  !!         results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
-  !
-  !!         if (model(2)%if.and.size(model).ge.2) then
-  !!            results%dt = results%dt + (val(1)/ 100.-ref_p) * &
-  !!              (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
-  !!          endif
-  !
-  !!         results%dh = results%dh + (val(1)/ 100.-ref_p) * &
-  !!          (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
-  !
-  !!         results%dz = results%dz + (val(1)/ 100.-ref_p) * &
-  !!          (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
-  !!       endif
-  !!      endif
-  !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-  !!        !todo
-  !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
-  !!!        write (moreverbose%unit, '(">")')
-  !!!      endif
-  !!    enddo
-  !!  enddo
+  call green_unification()
 
-!    if (moreverbose%if.and. moreverbose%names(1).eq."i") then
-!      write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
-!    endif
+  npoints=0
+  do igreen = 1 ,size(green)
+    do idist = 1, size(green(igreen)%distance)
+      nazimuth = max(int(360*sin(d2r(green(igreen)%distance(idist)))),100)  !* denseraz
+      do iazimuth  = 1 , nazimuth
+        npoints = npoints + 1
+        azimuth = (iazimuth - 1) * 360./nazimuth
+
+        ! get lat and lon of point
+        call spher_trig (site%lat, site%lon, green(igreen)%distance(idist) , azimuth , lat , lon)
+        ! get values of model
+        do imodel = 1 , size(model)
+          !!        if(model(i)%if) then 
+          !!          call get_value (model(i) , lat , lon , val(i) , level=1, method =model(i)%interpolation)
+          !!        else 
+          !!          val(i) = 0.
+          !!        endif
+        enddo
+        !
+        !!      !todo
+
+        !  do i =1,size(polygon)
+        !    if (polygon(i)%if) then
+        !      call chkgon ( site%lon, site%lat , polygon(i) , iok(i) )
+        !    else
+        !                  iok(i)=1
+        !    endif
+        !  enddo
+        !  print * ,site%name, iok
+        !
+        !!      ! calculate area using spherical formulae
+        !!      if (val(1).ne.0) then
+        !!        ! todo !!!!! spher area was changed to work with RADIANS
+        !!        call spher_area(green_common(igreen,1) , green_common(igreen,2), dble(360./nazimuth) , area) 
+        !
+        !!        ! force topography to zero over oceans
+        !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
+        !
+        !!        ! normalization according to Merriam (1992) 
+        !!        normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1.e5  )
+        !
+        !!       ! elastic part
+        !!        ! if the cell is not over sea and inverted barometer assumption was not set 
+        !!        ! and is not excluded by polygon
+        !!        if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+        !!          results%e = results%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
+        !!        endif
+        !!  !       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
+        !!  !       stop 
+        !
+        !!        ! newtonian part
+        !!        if(.not. iok(1).eq.0) then
+        !!         results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
+        !
+        !!         if (model(2)%if.and.size(model).ge.2) then
+        !!            results%dt = results%dt + (val(1)/ 100.-ref_p) * &
+        !!              (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
+        !!          endif
+        !
+        !!         results%dh = results%dh + (val(1)/ 100.-ref_p) * &
+        !!          (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
+        !
+        !!         results%dz = results%dz + (val(1)/ 100.-ref_p) * &
+        !!          (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
+        !!       endif
+        !!      endif
+        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+        !!        !todo
+        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
+        !!!        write (moreverbose%unit, '(">")')
+        !!!      endif
+      enddo
+    enddo
+  enddo
+
+  !    if (moreverbose%if.and. moreverbose%names(1).eq."i") then
+  !      write (moreverbose%unit, '(a,x,g0)') "Points used in convolution" ,npoints
+  !    endif
 end subroutine
 !
 !!!> \todo site height from model 

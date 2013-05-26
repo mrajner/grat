@@ -6,6 +6,7 @@
 !! convienient to use with auto completion of names
 ! =============================================================================
 module mod_cmdline
+  use mod_constants, only : dp
 
   implicit none
 
@@ -37,6 +38,23 @@ module mod_cmdline
     integer :: unit
   end type
   type(moreverbose_info), allocatable , dimension(:) :: moreverbose
+
+  !----------------------------------------------------
+  ! info
+  !----------------------------------------------------
+  type range
+    real(dp):: start
+    real(dp):: stop
+    real(dp):: step
+    integer :: denser
+  end type
+  type info_info
+    type (range):: distance,azimuth
+    character (1) :: interpolation
+  end type
+  type(info_info), dimension(:), allocatable:: info
+
+  !logical :: inverted_barometer  = .true.  
 
 contains
 ! =============================================================================

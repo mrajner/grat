@@ -87,7 +87,8 @@ ddd: $(OBJS)
 mod_utilities.o: mod_constants.o
 mod_aggf.o: mod_constants.o mod_utilities.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
-mod_parser.o: mod_cmdline.o mod_data.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+mod_green.o: mod_data.o mod_polygon.o
 
 
 # mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90
@@ -127,21 +128,23 @@ all:          \
 	$(EXAMPLES) 
 
 example: 
-	$(PROGS_DIR)/grat \
-		-F $(SP), $(ST) \
-		, $(LS) \
-		-G \
-		rajner@GN, \
-		merriam@GE,\
-		erriam@GNdz,\
-		/home/mrajner/src/gotic2/data/grn1.data @ GN :1 :1  \
-		-P ../polygon/baltyk.poly @ N:- ,\
-		../polygon/tmp.poly @ E:- \
-		-Sjoze:52:21,666:6:6:6 \
-		, 10/10/33/33 \
-		-V \
-		-D 2011 : 1@M : 10@D \
-		-I5@B:l@I 
+	$(PROGS_DIR)/grat                                 \
+		-F $(SP), $(ST)                                 \
+		, $(LS)                                         \
+		-G                                              \
+		/home/mrajner/src/gotic2/data/grn1.data@GE:1:2, \
+		rajner@GN,                                      \
+		merriam@GE,                                     \
+		/home/mrajner/\
+		src/gotic2/data/grn1.data@GE:1:2  \
+		-P ../polygon/baltyk.poly @ N:+ ,               \
+		../polygon/tmp.poly @ E:-                       \
+		-Sjoze:52:21,666:6:6:6                          \
+		, 10/10/33/33                                   \
+		-V                                              \
+		-D 2011                                         \
+		-I3@DB:5@B:l@I: 2DD , 6@DB:10@DE                \
+		33@DB::l@I , 36@DB:10@DE
 
 example_value_check: 
 	$(PROGS_DIR)/value_check \

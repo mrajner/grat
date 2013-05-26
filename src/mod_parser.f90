@@ -11,25 +11,7 @@ module mod_parser
   ! todo --- make @ like for models
   !  character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
 
-
-  !----------------------------------------------------
-  ! info
-  !----------------------------------------------------
-  type range
-    real(dp):: start
-    real(dp):: stop
-    real(dp):: step
-    integer :: denser
-  end type
-  type info_info
-    type (range):: distance,azimuth
-    character (1) :: interpolation
-  end type
-  type(info_info), dimension(:), allocatable:: info
-
-  !logical :: inverted_barometer  = .true.  
-
-  contains
+contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
@@ -259,19 +241,25 @@ subroutine parse_info (cmd_line_entry)
   allocate (info(size(cmd_line_entry%field)))
   do i = 1 , size(cmd_line_entry%field)
     write(log%unit, form%i2) , "Range:" , i
+    info(i)%distance%start=0.
+    info(i)%distance%stop=180.
     do j = 1 , size(cmd_line_entry%field(i)%subfield)
       if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
         select case (cmd_line_entry%field(i)%subfield(j)%dataname)
-        case ("B")
+        case ("DB")
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
-        case ("E")
+        case ("DE")
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
-        case ("b")
+        case ("AB")
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
-        case ("e")
+        case ("AE")
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
-        case ("D")
+        case ("DS")
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
+        case ("DD")
+          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
+        case ("AD")
+          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
         endselect
       else 
         select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -283,32 +271,13 @@ subroutine parse_info (cmd_line_entry)
     enddo
     if (i.gt.1) then
       if (info(i)%distance%start.lt.info(i-1)%distance%stop) then
-        info(i)%distance%start = info(i-1)%distance%stop
+        info(i-1)%distance%stop = info(i)%distance%start
+      endif
+      if (info(i)%distance%stop.lt.info(i)%distance%start) then
+        info(i)%distance%stop = info(i)%distance%start
       endif
     endif
   enddo
-  !  !      write( log%unit , form_62 , advance="no" ) "interpolation method was set:"
-  !  !      do i = 1 , size(cmd_line_entry%field)
-  !  !        if (is_numeric(cmd_line_entry%field(i)%subfield(1)%name)) then
-  !  !          read ( cmd_line_entry%field(i)%subfield(1)%name , * ) model(i)%interpolation
-  !  !          write(log%unit , '(a10,x,$)' ) interpolation_names (model(i)%interpolation)
-  !  !          if (model(i)%interpolation.gt.size(interpolation_names)) then
-  !  !            model(i)%interpolation=1
-  !  !          endif
-  !  !        endif
-  !  !      enddo
-  !  !      write(log%unit , *)
-  !
-  !  !    if (cmd_line_entry%field(i)%subfield(1)%dataname.eq."A") then
-  !  !      if (is_numeric(cmd_line_entry%field(i)%subfield(1)%name)) then
-  !  !        read(cmd_line_entry%field(i)%subfield(1)%name,*) denser%azimuth
-  !  !        write(log%unit, form_63) "Denser azimuth: " , denser%azimuth 
-  !  !      endif
-  !  !      elseif (cmd_line_entry%field(i)%subfield(1)%dataname.eq."D") then
-  !  !      if (is_numeric(cmd_line_entry%field(i)%subfield(1)%name)) then
-  !  !        read(cmd_line_entry%field(i)%subfield(1)%name,*) denser%distance
-  !  !        write(log%unit, form_63) "Denser distance:" , denser%distance
-  !  !      endif
 end subroutine
 
 ! =============================================================================

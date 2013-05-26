@@ -29,7 +29,7 @@ module mod_data
     real(dp):: limits(4)
 
     real(dp), allocatable, dimension(:) :: lat , lon , time ,level
-    integer , allocatable, dimension(:,: ) :: date
+    integer , allocatable, dimension(:,:) :: date
 
     real (dp), dimension(2) :: latrange , lonrange
 
@@ -116,7 +116,6 @@ subroutine read_netCDF (model)
   do i = 2,5
     call get_dimension (model, i)
   enddo
-
   if (size (model%time).gt.1) call nctime2date (model)
 end subroutine
 
@@ -163,7 +162,7 @@ subroutine get_dimension ( model , i )
     status = nf90_get_var  (model%ncid,  varid , model%level)
     elseif (i.eq.5 ) then
     allocate(model%time (length) )
-    status = nf90_get_var  (model%ncid,  varid , model%time)
+    status = nf90_get_var (model%ncid,  varid , model%time)
   endif
 end subroutine
 
@@ -203,7 +202,7 @@ end subroutine
 ! =============================================================================
 !> \brief Get values from netCDF file for specified variables
 ! =============================================================================
-subroutine get_variable( model , date )
+subroutine get_variable(model , date)
   use netcdf
   use mod_printing
   type (file), intent(inout) :: model
@@ -216,7 +215,7 @@ subroutine get_variable( model , date )
   ! write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
   call check ( nf90_inq_varid ( model%ncid , model%names(1) ,  varid ) )
   if (allocated(model%data)) deallocate(model%data)
-  allocate (model%data ( size (model%lon)  , size(model%lat  ), &
+  allocate (model%data (size(model%lon), size(model%lat), &
     size (model%level)))
 
   if (size(date).gt.0 .and. present(date)) then                       
@@ -245,7 +244,7 @@ start = [ 1,1,index_time]
 call check (nf90_get_var (model%ncid , varid , model%data , start = start ))
 call unpack_netcdf(model)
 end subroutine
-!
+
 ! =============================================================================
 !> \brief Unpack variable 
 !!
