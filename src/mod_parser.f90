@@ -74,9 +74,9 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ("-G")
     call parse_green(cmd_line_entry)
   case ('-M')
-    !    !    !> \todo rozbudować
-    !    !    method = cmd_line_entry%field(1)%subfield(1)%name
-    !    !    write(log%unit, form_62), 'method was set: ' , method
+    !    !> \todo rozbudować
+    !    method = cmd_line_entry%field(1)%subfield(1)%name
+    !    write(log%unit, form_62), 'method was set: ' , method
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name

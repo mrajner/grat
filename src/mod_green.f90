@@ -172,11 +172,11 @@ subroutine green_unification (green , green_common , denser)
 !  use mod_aggf, only: size_ntimes_denser
 !  use mod_utilities, only:spline_interpolation
 !
-!  type(green_functions), allocatable , dimension(:) , intent(in) :: green
+  type(green_functions), allocatable , dimension(:) , intent(in) :: green
   integer, optional :: denser
 !  integer :: i , ndenser , j ,ii
 !  real(dp), allocatable , dimension(:) :: x , y , dist
-!  real(dp), allocatable , dimension(:,:) , intent(out) :: green_common
+  real(dp), allocatable , dimension(:,:) , intent(out) :: green_common
 !
 !
 !  ndenser=0
