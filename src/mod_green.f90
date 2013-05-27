@@ -168,23 +168,16 @@ end subroutine
 subroutine green_unification ()
   use mod_utilities, only: size_ntimes_denser
   use mod_cmdline, only: info
-  type(green_functions), allocatable , dimension(:) :: green_tmp
+  type(green_functions), allocatable , dimension(:) :: tmpgreen
   integer :: i , denser , which_green
 
-  if (.not.allocated(info)) then
-    denser = 1
-  else
-    !find grenn with maksimum
+    !find green with maksimum
     which_green=0
     do i = 2, size(green)
       if (size(green(i)%distance).gt.size(green(i-1)%distance)) which_green=i
       if (green(i)%distance(1).lt.green(i-1)%distance(1)) which_green=i
       if (green(i)%distance(size(green(i)%distance)) &
         .gt.green(i-1)%distance(size(green(i-1)%distance))) which_green=i
-    enddo
-    do i =1 , size(info)
-      print * , info(i)%distance%start
-      print * , info(i)%distance%stop
     enddo
 
   !  allocate (x (size_ntimes_denser(size(green(1)%distance),ndenser)-1))
@@ -215,7 +208,6 @@ subroutine green_unification ()
   !!!  if (moreverbose%if.and. moreverbose%names(1).eq."G") then
   !!!    write(moreverbose%unit , '(7F13.6)' ) (green_common (i,:), i =1,ubound(green_common,1))
   !!!  endif
-  endif
 end subroutine
 
 ! =============================================================================

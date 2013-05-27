@@ -241,8 +241,10 @@ subroutine parse_info (cmd_line_entry)
   allocate (info(size(cmd_line_entry%field)))
   do i = 1 , size(cmd_line_entry%field)
     write(log%unit, form%i2) , "Range:" , i
+    info(i)%interpolation="n"
     info(i)%distance%start=0.
     info(i)%distance%stop=180.
+    info(i)%distance%denser=1
     do j = 1 , size(cmd_line_entry%field(i)%subfield)
       if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
         select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -265,7 +267,6 @@ subroutine parse_info (cmd_line_entry)
         select case (cmd_line_entry%field(i)%subfield(j)%dataname)
         case ("I")
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
-          write(log%unit, form_63) , "interpolation:", info(i)%interpolation
         endselect
       end if
     enddo
@@ -277,6 +278,17 @@ subroutine parse_info (cmd_line_entry)
         info(i)%distance%stop = info(i)%distance%start
       endif
     endif
+    write(log%unit, &
+      "("//form%t3//" &
+      'DB:',f7.2, & 
+      '|DE:',f8.3, &
+      '|I:',a, &
+      '|DD:',i2, &
+      '|DS:',f5.2, &
+      )") , &
+      info(i)%distance%start, info(i)%distance%stop, &
+      info(i)%interpolation, info(i)%distance%denser, &
+      info(i)%distance%step
   enddo
 end subroutine
 

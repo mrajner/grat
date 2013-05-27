@@ -23,11 +23,6 @@ al: grat example
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
-# un:
-#   @./tmp -V -h  -D 2006 06, 2007 12 ,2@M -Ogg@ww , -F
-# e: grat install
-#   grat -L dddd  -V
-
 # compiler
 FC = ifort
 
@@ -81,14 +76,12 @@ EXAMPLESSRC = example_aggf.f90
 OBJS = $(SRCS:.f90=.o)
 
 
-ddd: $(OBJS)
-
 # module dependencies
-mod_utilities.o: mod_constants.o
-mod_aggf.o: mod_constants.o mod_utilities.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o
+# mod_utilities.o: mod_constants.o
+# mod_aggf.o: mod_constants.o mod_utilities.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o
 
 
 # mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90
@@ -143,8 +136,7 @@ example:
 		, 10/10/33/33                                   \
 		-V                                              \
 		-D 2011                                         \
-		-I3@DB:5@B:l@I: 2DD , 6@DB:10@DE                \
-		33@DB::l@I , 36@DB:10@DE
+		-I3@DB:5@B:l@I: 2@DD , 6@DB:10@DS     
 
 example_value_check: 
 	$(PROGS_DIR)/value_check \
