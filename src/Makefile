@@ -77,11 +77,11 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-# mod_utilities.o: mod_constants.o
-# mod_aggf.o: mod_constants.o mod_utilities.o
-# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
-# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-# mod_green.o: mod_data.o mod_polygon.o
+mod_utilities.o: mod_constants.o
+mod_aggf.o: mod_constants.o mod_utilities.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+mod_green.o: mod_data.o mod_polygon.o
 
 
 # mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90
@@ -123,20 +123,21 @@ all:          \
 example: 
 	$(PROGS_DIR)/grat                                 \
 		-F $(SP), $(ST)                                 \
-		, $(LS)                                         \
+		, $(LS) ,5 ,11                                        \
 		-G                                              \
 		/home/mrajner/src/gotic2/data/grn1.data@GE:1:2, \
 		rajner@GN,                                      \
 		merriam@GE,                                     \
-		/home/mrajner/\
-		src/gotic2/data/grn1.data@GE:1:2  \
+		meam@GE ,d @G                                  \
 		-P ../polygon/baltyk.poly @ N:+ ,               \
 		../polygon/tmp.poly @ E:-                       \
 		-Sjoze:52:21,666:6:6:6                          \
 		, 10/10/33/33                                   \
-		-V                                              \
-		-D 2011                                         \
-		-I3@DB:5@B:l@I: 2@DD , 6@DB:10@DS     
+		, 10/10/33/33                                   \
+     -D 2011  \
+		 -V \
+		 -L tmp@p  \
+		 -I  20 @DB : 27@DE: 1@DD : 2 @AD
 
 example_value_check: 
 	$(PROGS_DIR)/value_check \

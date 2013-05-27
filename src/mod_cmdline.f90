@@ -18,7 +18,7 @@ module mod_cmdline
     character (len=25) :: dataname
   end type
   type field_info
-    character (len=255) :: full
+    character (len=355) :: full
     type(subfield_info), allocatable, &
       dimension(:)  :: subfield
   end type
@@ -26,7 +26,7 @@ module mod_cmdline
     character(2) :: switch
     type (field_info), allocatable, &
       dimension(:) :: field
-    character (len=255) :: full
+    character (len=455) :: full
   end type
   type(cmd_line_arg) , allocatable , dimension(:) :: cmd_line
 
@@ -170,4 +170,20 @@ function check_if_switch_or_minus(dummy)
   if (dummy(2:2).eq.":") check_if_switch_or_minus = .false.
   if (is_numeric(dummy(2:2))) check_if_switch_or_minus = .false.
 end function
+
+! ==============================================================================
+! ==============================================================================
+function moreverbose_unit(dataname)
+  integer:: moreverbose_unit
+  character(*), intent(in):: dataname
+  integer :: i
+
+    do i = 1, size(moreverbose)
+      if(moreverbose(i)%dataname.eq."p") then
+        moreverbose_unit = moreverbose(i)%unit
+      endif
+    enddo
+!  endif
+end function
+
 end module

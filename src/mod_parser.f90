@@ -122,6 +122,9 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
       (program_calling=program_calling, version=version)
     call exit
   endif
+  if (.not.any(cmd_line%switch.eq.'-I')) then
+    call parse_info()
+  endif
   if (any(cmd_line%switch.eq.'-V')) then
     if_verbose = .true.
     do i=1,size(cmd_line)
@@ -230,7 +233,7 @@ end subroutine
 subroutine parse_info (cmd_line_entry)
   use mod_utilities, only:is_numeric
   use mod_cmdline
-  type (cmd_line_arg)  :: cmd_line_entry
+  type (cmd_line_arg), intent(in),optional :: cmd_line_entry
   integer :: i,j
 
   if(allocated(info)) then
@@ -238,13 +241,12 @@ subroutine parse_info (cmd_line_entry)
     return
   endif
 
+  if (present(cmd_line_entry)) then
+
   allocate (info(size(cmd_line_entry%field)))
   do i = 1 , size(cmd_line_entry%field)
     write(log%unit, form%i2) , "Range:" , i
-    info(i)%interpolation="n"
-    info(i)%distance%start=0.
-    info(i)%distance%stop=180.
-    info(i)%distance%denser=1
+    call info_defaults(info(i))
     do j = 1 , size(cmd_line_entry%field(i)%subfield)
       if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
         select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -270,26 +272,46 @@ subroutine parse_info (cmd_line_entry)
         endselect
       end if
     enddo
-    if (i.gt.1) then
-      if (info(i)%distance%start.lt.info(i-1)%distance%stop) then
-        info(i-1)%distance%stop = info(i)%distance%start
-      endif
-      if (info(i)%distance%stop.lt.info(i)%distance%start) then
-        info(i)%distance%stop = info(i)%distance%start
-      endif
-    endif
+    !    if (i.gt.1) then
+    !      if (info(i)%distance%start.lt.info(i-1)%distance%stop) then
+    !        info(i-1)%distance%stop = info(i)%distance%start
+    !      endif
+    !      if (info(i)%distance%stop.lt.info(i)%distance%start) then
+    !        info(i)%distance%stop = info(i)%distance%start
+    !      endif
+    !    endif
+    if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
     write(log%unit, &
       "("//form%t3//" &
       'DB:',f7.2, & 
       '|DE:',f8.3, &
       '|I:',a, &
       '|DD:',i2, &
-      '|DS:',f5.2, &
+      '|DS:',f6.2, &
       )") , &
       info(i)%distance%start, info(i)%distance%stop, &
       info(i)%interpolation, info(i)%distance%denser, &
       info(i)%distance%step
   enddo
+else
+  allocate(info(1))
+  call info_defaults(info(1))
+endif
+end subroutine
+
+! =============================================================================
+! =============================================================================
+subroutine info_defaults(info)
+  use mod_cmdline, only: info_info
+  type(info_info),intent(inout) :: info
+
+    info%interpolation="n"
+    info%distance%start=0.
+    info%distance%stop=180.
+    info%distance%denser=1
+    info%distance%step=0
+    info%azimuth%denser=1
+
 end subroutine
 
 ! =============================================================================
@@ -403,6 +425,9 @@ function dataname(abbreviation)
   !  if (abbreviation.eq."RS") dataname = "Reference surface pressure"
   if (abbreviation.eq."n")  dataname = "nearest"
   if (abbreviation.eq."l")  dataname = "bilinear"
+  if (abbreviation.eq."g")  dataname = "green function used"
+  if (abbreviation.eq."p")  dataname = "points"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
+
 end module

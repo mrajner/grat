@@ -106,17 +106,18 @@ program grat
       enddo
 
       do i = 1 , size(model)
-        select case (model(i)%dataname)
-        case ("LS")
-          if (idate.gt.start) then
-            cycle
-          else
-            call get_variable (model(i))
-          endif
-        case default
-          call get_variable (model(i), date = date(idate)%date)
-        end select
-
+        if(model(i)%if) then
+          select case (model(i)%dataname)
+          case ("LS")
+            if (idate.gt.start) then
+              cycle
+            else
+              call get_variable (model(i))
+            endif
+          case default
+            call get_variable (model(i), date = date(idate)%date)
+          endselect
+        endif
       enddo
       call convolve (site(isite))
       stop ! only 1 time for debug

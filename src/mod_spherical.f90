@@ -1,5 +1,5 @@
 module mod_spherical
-  use mod_constants, only: dp
+  use mod_constants, only: dp, pi
 
 contains
 ! =============================================================================
@@ -22,7 +22,7 @@ contains
 !! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/rysunki/spher_area.svg
 !!
-!! \warning All input angles in radiana output area on unit sphere or 
+!! \warning All input angles in radians, output area on unit sphere or 
 !! in square units of given (optionally) \c radius.
 ! =============================================================================
 subroutine spher_area (distance ,ddistance, azstp,  area, radius, alternative_method )
@@ -50,25 +50,25 @@ end subroutine
 !! \date 2012
 !! \author M. Rajner - modification
 !! \date 2013-03-06
+!! \warning all values in radians
 ! =============================================================================
 subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
-  use mod_utilities, only: d2r, r2d
   real(dp) , intent(in)  :: distance 
   real(dp) , intent(in)  :: latin , lonin , azimuth
   real(dp) , intent(out) :: latout, lonout 
   real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
 
-  ct  = cos (d2r(90.-latin))
-  st  = sin (d2r(90.-latin))
-  cd  = cos (d2r(distance))
-  sd  = sin (d2r(distance))
-  saz = sin (d2r(azimuth))
-  caz = cos (d2r(azimuth))
+  ct  = cos (pi/2.-latin)
+  st  = sin (pi/2.-latin)
+  cd  = cos (distance)
+  sd  = sin (distance)
+  saz = sin (azimuth)
+  caz = cos (azimuth)
   cb = cd*ct + sd*st*caz
   !  todo !if(abs(cb).gt.1) cb = cb/abs(cb)
   sb = sqrt(1.-cb**2)
-  latout = 90 - r2d(acos(cb))
-  lonout = lonin + r2d(atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb))
+  latout = pi/2. - acos(cb)
+  lonout = lonin + atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb)
 end subroutine
 
 ! =============================================================================
@@ -83,7 +83,6 @@ end subroutine
 !! All arguments in radians
 ! =============================================================================
 subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, haversine)
-
   real(dp) , intent (in)         :: lat1 , lon1 , lat2 , lon2
   real(dp) , intent (out)        :: distance , azimuth
   real(dp)                       :: dlat , dlon ,  distancetmp , a

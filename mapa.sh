@@ -42,7 +42,7 @@ Height=0.0
 J=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/1.8i
 pscoast -Slightblue -Dl $R $J  -K -Wthinnest -A2000 -N1 > tmp.ps
 #grdimage  -R -J -O -K cut0.grd -Ccolor.cpt >> tmp.ps
-cat ./wypisz_komorki.dat | psxy  -m  -W0.001p/gray -R -J -O -K >> tmp.ps
+cat src/tmp | psxy  -m  -W0.001p/gray -R -J -O -K >> tmp.ps
 #cat tmp |awk '{print $1,$2,$3}' | psxy -Ccolor.cpt -: -R -J -O -K -Sc0.03c -W0.1p -Gwhite >> tmp.ps
 echo 52 21  | psxy  -: -R -J -O -K -Sc0.03c -W2.1p -Gwhite >> tmp.ps
 
