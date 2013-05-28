@@ -29,7 +29,7 @@ module mod_printing
   type output_info
     integer :: unit = 6
     character (255) :: name
-    logical :: if
+    logical :: if, header
   end type
   type(output_info) :: log, output 
 

@@ -327,13 +327,8 @@ subroutine convolve (site ,  denserdist , denseraz)
   real(dp) :: normalize 
 
   if(.not.allocated(green_common)) then
-  call green_unification()
-endif
-
-  poly_elastic=.false.
-  where(polygon%dataname.eq."E")
-    poly_elastic=.true.
-  end where
+    call green_unification()
+  endif
 
   npoints=0
   area = 0
@@ -373,6 +368,7 @@ endif
           write(moreverbose_unit("p"),'(2f10.4,<size(val)>f15.4, <size(iok)>i4)'), &
             r2d(lat),r2d(lon),val, iok
         endif
+
         ! calculate area using spherical formulae
         area= spher_area( &
           d2r(green_common(igreen)%start(idist)), &
@@ -384,21 +380,26 @@ endif
         normalize= 1./ &
           (2.*pi*(1.-cos(d2r(dble(1.)))) * &
           d2r(green_common(igreen)%distance(idist))*1.e5)
+
+        if (any(green_common(igreen)%dataname.eq."GE")) then
         ! elastic part
         ! if the cell is not over sea and inverted barometer assumption was not set 
         ! and is not excluded by polygon
         !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-!          results(1,1) = results(1,1) + &
-!            (val(1) / 100. -ref_p) * &
-!            green_common(igreen,7) * & 
-!            area * normalize
-          result(1,1) = result(1,1)+ &
-            (val(1) / 100. -1000. )  * &
-            green_common(igreen)%data(idist,1) * & 
-            area * normalize
+        !        print * ,val
+        !          results(1,1) = results(1,1) + &
+        !            (val(1) / 100. -ref_p) * &
+        !            green_common(igreen,7) * & 
+        !            area * normalize
+!        result(1,1) = result(1,1)+ &
+!          (val(1) / 100. -1000. )  * &
+!          green_common(igreen)%data(idist,1) * & 
+!          area * normalize
         !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
         !!       stop 
 
+        stop
+      endif
         !      ! newtonian part
         !      if(.not. iok(1).eq.0) then
         !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
@@ -422,8 +423,8 @@ endif
         !        !!!      endif
       enddo
     enddo
-!    write(log%unit,*)  , "npoints:", npoints ,"area", area
-print * , result(1,1)
+    !    write(log%unit,*)  , "npoints:", npoints ,"area", area
+!    print * , result(1,1)
   enddo 
 end subroutine
 

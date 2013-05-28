@@ -92,7 +92,7 @@ subroutine parse_model (cmd_line_entry)
     else if (is_numeric(model(i)%name)) then
       model(i)%if_constant_value=.true.
       read (model(i)%name , * ) model(i)%constant_value
-      write(log%unit, *), 'constant value was set: ' , model(i)%constant_value
+      write(log%unit, form%i3), 'constant value was set: ' , model(i)%constant_value
     else
       call print_warning ("model")
       stop

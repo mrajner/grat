@@ -54,7 +54,7 @@ module mod_cmdline
   end type
   type(info_info), dimension(:), allocatable:: info
 
-  !logical :: inverted_barometer  = .true.  
+  logical :: inverted_barometer  = .true.  
 
 contains
 ! =============================================================================

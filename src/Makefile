@@ -31,7 +31,6 @@ FLAGS =   # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff  
-FOULLIB = /home/mrajner/src/foul/foul.o -I/home/mrajner/src/foul
 
 # data for computation
 DAT_DIR  = /home/mrajner/dat
@@ -39,18 +38,14 @@ NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 ST       = $(NCEP_DIR)/air.sig995.2011.nc@ST:air:lon:lat:level:time
 LS      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
-GRN_r    = ../dat/rajner_green.dat
-GRN_m    = ../dat/merriam_green.dat
-POL      = ../polygon/baltyk.poly
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
-	fnl      = /home/mrajner/meteo/fnl/sfc_hgt/
-	# fnl_   = /home/mrajner/meteo/fnl/sfc_hgt/hgt_sfc20090101_00_00.nc:HGT_P0_L1_GLL0:lon_0:lat_0
-	fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
-	#todo vienna
-	RS 			 = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
-	RS 			 = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
-	RS 			 = 101300@RS
+FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
+fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+#todo vienna
+RS = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
+RS = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
+RS = 101300@RS
 
 SRCS  = mod_constants.f90 \
 				mod_utilities.f90 \
@@ -123,15 +118,16 @@ all:          \
 example: 
 	$(PROGS_DIR)/grat                                 \
 		-F $(SP), $(ST)                                 \
-		, $(LS) ,5 ,11                                        \
+		, $(LS) ,101325@RS ,11                                        \
 		-G                                              \
-		m @GN \
+		merriam @GN \
 		-P ../polygon/baltyk.poly @ N:+, @E:-               \
 		-S j:52:21:10                          \
-		-D 2011:2012:1@D \
-		 -V \
-		 -L @r  \
-		 -I 12.9 @rB : 26@rE: 1@DD : 1 @AD : l@I
+		-D 2011 \
+		-V \
+		-L @r  \
+		-H \
+		-I 12.9 @rB : 26@rE: 1@DD : 1@AD : l@I
 
 example_value_check: 
 	$(PROGS_DIR)/value_check \

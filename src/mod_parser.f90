@@ -2,6 +2,8 @@ module mod_parser
   use mod_constants, only : dp
   use iso_fortran_env
   use mod_printing
+
+  implicit none
   !----------------------------------------------------
   ! various
   !----------------------------------------------------
@@ -36,7 +38,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
 
   select case (cmd_line_entry%switch)
   case ('-V')
-    write(log%unit, form_62) 'verbose mode' ,trim(log%name)
+    write(log%unit, form%i3) 'verbose mode' ,trim(log%name)
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       write(log%unit, form_62) 'the log file was set:' ,log%name
     endif
@@ -55,6 +57,9 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     call parse_model(cmd_line_entry)
   case ("-G")
     call parse_green(cmd_line_entry)
+  case ("-H")
+    write(log%unit, form%i3) 'header'
+    output%header=.true.
   case ('-M')
     !    !> \todo rozbudować
     !    method = cmd_line_entry%field(1)%subfield(1)%name
@@ -126,7 +131,7 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
     call parse_info()
   endif
   if (any(cmd_line%switch.eq.'-V')) then
-    if_verbose = .true.
+    !if_verbose = .true.
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
         if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
@@ -429,5 +434,34 @@ function dataname(abbreviation)
   if (abbreviation.eq."p")  dataname = "points"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
+
+
+! =============================================================================
+! =============================================================================
+subroutine get_index()
+  use mod_polygon
+  use mod_data
+
+  type model_index
+    integer :: SP, T, RS
+  end type
+  type index_info
+    type (model_index) :: model
+  end type
+  type(index_info) :: index
+  integer :: i
+
+  print * , model%dataname
+  do i = 1 , size(model)
+    select case (model(i)%dataname)
+    case ("SP")
+      index%model%SP = i
+    case ("T")
+      index%model%T = i
+    case ("RS")
+      index%model%RS = i
+    endselect
+  enddo
+end subroutine
 
 end module
