@@ -193,8 +193,7 @@ rmlib:
 	-sudo rm /usr/local/include/mod_*
 
 clean: rmlib
-	rm -f *.o *.mod *.a fort?????? 
-	ls tmp.*
+	rm -f *.o *.mod *.a fort?????? tmp*
 
 todo: joinnc
 

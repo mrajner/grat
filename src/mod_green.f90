@@ -292,12 +292,31 @@ subroutine convolve (site ,  denserdist , denseraz)
   real(dp) :: azimuth
   real(dp) :: lat , lon , area  
   real(dp) :: val(size(model)) , ref_p
-  integer :: i , iok(size(polygon)) , npoints
+  integer :: i,j , iok(size(polygon)) , npoints
+  type ne 
+   integer, allocatable, dimension(:):: n, e
+  end type
+  type indeks_info
+    type (ne) :: green
+  end type
+  type(indeks_info), allocatable, dimension(:) :: indeks
 
   !  real(dp) :: normalize 
   !  type (result) ,intent(out)  :: results
 
   call green_unification()
+
+  !find indexes
+  allocate(indeks(size(green_common)))
+  do i=1,size(indeks)
+    allocate(indeks(i)%green%e(count(green_common(i)%dataname.eq."GE")))
+    do j= 1, size(green_common(i)%dataname)
+      print *,j, green_common(i)%dataname(j).eq."GN"
+    enddo
+  enddo
+
+
+  stop
 
 
   npoints=0

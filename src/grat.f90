@@ -64,10 +64,12 @@ program grat
   use mod_green, only : convolve, green, result
   use mod_site
   use mod_polygon
+  use mod_cmdline
 
   implicit none
   real(dp) :: x , y , z , lat ,lon , cpu(2)
   integer :: isite, i, ii , iii , idate, start , iok
+
 
 
   ! program starts here with time stamp
@@ -79,6 +81,10 @@ program grat
     accepted_switches="VSBLGPpoFIDLvhRQ" , &
     cmdlineargs=.true. &
     )
+
+  print *, find_indexes(3)
+  print * ,green(1)%dataname, polygon(1)%dataname
+  stop
 
   allocate (result(size(site)*max(size(date),1), size(green) ))
 

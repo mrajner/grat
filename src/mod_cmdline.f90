@@ -178,12 +178,20 @@ function moreverbose_unit(dataname)
   character(*), intent(in):: dataname
   integer :: i
 
-    do i = 1, size(moreverbose)
-      if(moreverbose(i)%dataname.eq."p") then
-        moreverbose_unit = moreverbose(i)%unit
-      endif
-    enddo
-!  endif
+  do i = 1, size(moreverbose)
+    if(moreverbose(i)%dataname.eq.dataname) then
+      moreverbose_unit = moreverbose(i)%unit
+    endif
+  enddo
+end function
+
+! ==============================================================================
+! ==============================================================================
+function find_indexes(n)
+  integer, allocatable, dimension(:) :: find_indexes
+  integer :: n
+  allocate(find_indexes(n))
+  find_indexes=1
 end function
 
 end module
