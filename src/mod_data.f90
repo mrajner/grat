@@ -42,7 +42,6 @@ module mod_data
     ! netcdf identifiers
     integer :: ncid
   end type
-
   type(file) , allocatable, dimension (:) :: model 
   
   private :: dataname

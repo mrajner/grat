@@ -13,24 +13,23 @@ program polygon_check
   integer i , j
   integer , allocatable , dimension (:) :: iok 
 
-  call intro  &
-    ( &
+  call intro  ( &
     program_calling = "polygon_check" ,  &
       accepted_switches = "VfABLPoShvIiR" , &
-      cmdlineargs=.true. )
+      cmdlineargs=.true. &
+      )
 
     allocate(iok(size(polygon)))
 
     do i=1 , size (site)
       write (output%unit , '(a8,1x,2f10.5)' , advance="no" ) site(i)%name, site(i)%lon, site(i)%lat   
       if (allocated(polygon)) then
-      do j = 1 , size(polygon)
-        call chkgon (site(i)%lon, site(i)%lat, polygon(j), iok(j) )
-      enddo
-      write (output%unit, '(<size(iok)>i4)' ) , iok
-    else
-      write(output%unit, *)
-    endif
+        do j = 1 , size(polygon)
+          call chkgon (site(i)%lon, site(i)%lat, polygon(j), iok(j) )
+        enddo
+        write (output%unit, '(<size(iok)>i4)' ) , iok
+      else
+        write(output%unit, *)
+      endif
     enddo
   end program
-

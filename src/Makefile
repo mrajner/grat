@@ -27,7 +27,7 @@ al: grat example
 FC = ifort
 
 # compiler flags
-FLAGS =  # -O2  -CB    # -g -traceback -heap-arrays
+FLAGS =   # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff  
@@ -125,19 +125,13 @@ example:
 		-F $(SP), $(ST)                                 \
 		, $(LS) ,5 ,11                                        \
 		-G                                              \
-		/home/mrajner/src/gotic2/data/grn1.data@GE:1:2, \
-		rajner@GN,                                      \
-		merriam@GE,                                     \
-		meam@GE ,d @G                                  \
-		-P ../polygon/baltyk.poly @ N:+ ,               \
-		../polygon/tmp.poly @ E:-                       \
-		-Sjoze:52:21,666:6:6:6                          \
-		, 10/10/33/33                                   \
-		, 10/10/33/33                                   \
-     -D 2011  \
+		m @GN \
+		-P ../polygon/baltyk.poly @ N:+, @E:-               \
+		-S j:52:21:10                          \
+		-D 2011:2012:1@D \
 		 -V \
-		 -L tmp@p  \
-		 -I  20 @DB : 27@DE: 1@DD : 2 @AD
+		 -L @r  \
+		 -I 12.9 @rB : 26@rE: 1@DD : 1 @AD : l@I
 
 example_value_check: 
 	$(PROGS_DIR)/value_check \

@@ -22,13 +22,13 @@ module mod_polygon
   type polygon_info
     integer :: unit
     character(:), allocatable  :: name
-    character(:), allocatable  :: dataname
+    character(len=25) :: dataname
     type(polygon_data), dimension (:), allocatable :: polygon
     logical :: if
     ! global setting (+|-) which override this in polygon file
     character(1):: pm
   end type
-  type(polygon_info) , dimension (:), allocatable :: polygon
+  type(polygon_info) , allocatable, dimension (:) :: polygon
 
 contains
 ! =============================================================================

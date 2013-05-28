@@ -19,8 +19,11 @@ module mod_green
 
   type green_common_info
     real(dp),allocatable,dimension(:) :: distance
+    real(dp),allocatable,dimension(:) :: start
+    real(dp),allocatable,dimension(:) :: stop
     real(dp),allocatable,dimension(:,:) :: data
     character (len=25), allocatable, dimension(:) :: dataname
+    logical ,allocatable,dimension(:) :: elastic
   end type
   type(green_common_info), allocatable, dimension(:) :: green_common
 
@@ -67,6 +70,7 @@ subroutine read_green (green)
   use mod_utilities, only: file_exists, skip_header
   use iso_fortran_env
   use mod_printing
+
   integer :: lines , fileunit, io_status
   real (dp) , allocatable , dimension(:) :: tmp
   type(green_functions) :: green
@@ -200,12 +204,11 @@ subroutine green_unification ()
       abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start),1)-1 
     imax=minloc( &
       abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop),1)+1
-    
+
     if (imin.lt.1) imin = 1
     if( imax.gt.size(green(which_green(iinfo))%distance)) then
       imax = size(green(which_green(iinfo))%distance)
     endif
-
 
     allocate(tmpgreen%distance( &
       size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) &
@@ -219,6 +222,7 @@ subroutine green_unification ()
           /info(iinfo)%distance%denser
       enddo
     enddo
+
     tmpgreen%distance(size(tmpgreen%distance)) = &
       green(which_green(iinfo))%distance(imax)
 
@@ -229,9 +233,27 @@ subroutine green_unification ()
     allocate(green_common(iinfo)%distance(imax-imin+1))
     green_common(iinfo)%distance =  &
       tmpgreen%distance(imin:imax)
-    green_common(iinfo)%distance(1) = info(iinfo)%distance%start
+    green_common(iinfo)%distance(1) = &
+      (3/4.*info(iinfo)%distance%start+ &
+      green_common(iinfo)%distance(2)/4)
     green_common(iinfo)%distance(size(green_common(iinfo)%distance)) = &
+      (3/4.*info(iinfo)%distance%stop+ &
+      green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
+
+    allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
+    allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
+
+    green_common(iinfo)%start=(green_common(iinfo)%distance)
+    do i =1 , size(green_common(iinfo)%distance)
+      green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
+        green_common(iinfo)%distance(i-1) ) / 2.
+      green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
+        green_common(iinfo)%distance(i+1) ) / 2.
+    enddo
+    green_common(iinfo)%start(1)= info(iinfo)%distance%start
+    green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
       info(iinfo)%distance%stop
+
 
     allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance),size(green)))
     allocate(green_common(iinfo)%dataname(size(green)))
@@ -254,16 +276,24 @@ subroutine green_unification ()
       green_common(iinfo)%dataname(i) = green(i)%dataname
     enddo
 
+    ! auxilary table indekxing elastic part
+    allocate(green_common(iinfo)%elastic( &
+      size(green_common(iinfo)%dataname)  &
+      ))
+    where (green_common(iinfo)%dataname.eq."GE")
+      green_common(iinfo)%elastic= .true.
+    endwhere
+
     if(any(moreverbose%dataname.eq."g")) then
       do i = 1, size(moreverbose)
         if (moreverbose(i)%dataname.eq."g") then
-      do j = 1, size(green_common(iinfo)%distance)
-        write(moreverbose(i)%unit, '(i3,f14.6,100f14.4)'), &
-          j, green_common(iinfo)%distance(j), &
-          green_common(iinfo)%data(j,:)
+          do j = 1, size(green_common(iinfo)%distance)
+            write(moreverbose(i)%unit, '(i3,f14.6,100f14.4)'), &
+              j, green_common(iinfo)%distance(j), &
+              green_common(iinfo)%data(j,:)
+          enddo
+        endif
       enddo
-    endif
-    enddo
     endif
     deallocate(tmpgreen%distance)
   enddo
@@ -286,126 +316,115 @@ subroutine convolve (site ,  denserdist , denseraz)
   type(site_info), intent(in) :: site
   integer , intent (in) , optional :: denserdist , denseraz
 
-  !  real(dp) :: latin , lonin
   integer  ::  ndenser , igreen , idist  , iazimuth , nazimuth
   integer :: imodel
-  real(dp) :: azimuth
+  real(dp) :: azimuth ,dazimuth
   real(dp) :: lat , lon , area  
   real(dp) :: val(size(model)) , ref_p
   integer :: i,j , iok(size(polygon)) , npoints
-  type ne 
-   integer, allocatable, dimension(:):: n, e
-  end type
-  type indeks_info
-    type (ne) :: green
-  end type
-  type(indeks_info), allocatable, dimension(:) :: indeks
 
-  !  real(dp) :: normalize 
-  !  type (result) ,intent(out)  :: results
+  logical :: poly_elastic(size(polygon))
+  real(dp) :: normalize 
 
+  if(.not.allocated(green_common)) then
   call green_unification()
+endif
 
-  !find indexes
-  allocate(indeks(size(green_common)))
-  do i=1,size(indeks)
-    allocate(indeks(i)%green%e(count(green_common(i)%dataname.eq."GE")))
-    do j= 1, size(green_common(i)%dataname)
-      print *,j, green_common(i)%dataname(j).eq."GN"
-    enddo
-  enddo
-
-
-  stop
-
+  poly_elastic=.false.
+  where(polygon%dataname.eq."E")
+    poly_elastic=.true.
+  end where
 
   npoints=0
+  area = 0
   do igreen = 1 ,size(green_common)
     do idist = 1, size(green_common(igreen)%distance)
       nazimuth = &
         max(int(360*sin(d2r(green(igreen)%distance(idist)))),100) * &
         info(1)%azimuth%denser
+      dazimuth=360./nazimuth
 
       do iazimuth  = 1 , nazimuth
         npoints = npoints + 1
-        azimuth = (iazimuth - 1) * 360./nazimuth
+        azimuth = (iazimuth - 1) * dazimuth
 
         ! get lat and lon of point
         call spher_trig &
-          (d2r(site%lat), d2r(site%lon), d2r(green_common(igreen)%distance(idist)) , d2r(azimuth) , lat , lon)
+          (d2r(site%lat), d2r(site%lon), &
+          d2r(green_common(igreen)%distance(idist)) , d2r(azimuth) , lat , lon)
         ! get values of model
         do imodel = 1 , size(model)
           if(model(imodel)%if) then 
-            call get_value (model(imodel) , r2d(lat) , r2d(lon) , val(imodel) , level=1 )
+            call get_value (model(imodel) , r2d(lat) , r2d(lon) , val(imodel) , level=1 , method = info(igreen)%interpolation)
           else if (model(imodel)%if_constant_value)  then
             val(imodel) = model(imodel)%constant_value
           endif
         enddo
 
-    if(any(moreverbose%dataname.eq."p")) then
-        write(moreverbose_unit("p"),'(2f10.4,<size(val)>f15.4)'), &
-          r2d(lat),r2d(lon),val
-      endif
-      do i =1,size(polygon)
-!        print * , polygon(i)%dataname
-        if (polygon(i)%if) then
-          call chkgon ( site%lon, site%lat , polygon(i) , iok(i) )
-        else
-          iok(i)=1
-        endif
-      enddo
-!      val=iok*val
-              
-                    ! calculate area using spherical formulae
-                   if (any(val.ne.0)) then
-!                     print * , "XXXX"
-              !        ! todo !!!!! spher area was changed to work with RADIANS
-              !        call spher_area(green_common(igreen,1) , green_common(igreen,2), dble(360./nazimuth) , area) 
-              
-      !        !!        ! force topography to zero over oceans
-      !        !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
-      !        !
-      !        !!        ! normalization according to Merriam (1992) 
-      !        !!        normalize= 1. / ( 2. * pi * ( 1. - cos ( d2r(dble(1.)) ) ) * d2r(green_common(igreen,1)) *1.e5  )
-      !        !
-      !        !!       ! elastic part
-      !        !!        ! if the cell is not over sea and inverted barometer assumption was not set 
-      !        !!        ! and is not excluded by polygon
-      !        !!        if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-      !        !!          results%e = results%e + (val(1) / 100. -ref_p) * green_common(igreen,7) * area * normalize
-                    endif
-      !        !!  !       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
-      !        !!  !       stop 
-      !        !
-      !        !!        ! newtonian part
-      !        !!        if(.not. iok(1).eq.0) then
-      !        !!         results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
-      !        !
-      !        !!         if (model(2)%if.and.size(model).ge.2) then
-      !        !!            results%dt = results%dt + (val(1)/ 100.-ref_p) * &
-      !        !!              (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
-      !        !!          endif
-      !        !
-      !        !!         results%dh = results%dh + (val(1)/ 100.-ref_p) * &
-      !        !!          (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
-      !        !
-      !        !!         results%dz = results%dz + (val(1)/ 100.-ref_p) * &
-      !        !!          (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
-      !        !!       endif
-      !        !!      endif
-      !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-      !        !!        !todo
-      !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
-      !        !!!        write (moreverbose%unit, '(">")')
-      !        !!!      endif
-    enddo
-    !       if (any(moreverbose%dataname.eq."p")) then
-    !         write(moreverbose_unit("p"), *)
-    !       endif
-  enddo
-  write(log%unit,*)  , "npoints:", npoints
-enddo 
+        do i =1,size(polygon)
+          if (polygon(i)%if) then
+            call chkgon (r2d(lon), r2d(lat) , polygon(i) , iok(i))
+          else
+            iok(i)=1
+          endif
+        enddo
 
+        if(any(moreverbose%dataname.eq."p")) then
+          write(moreverbose_unit("p"),'(2f10.4,<size(val)>f15.4, <size(iok)>i4)'), &
+            r2d(lat),r2d(lon),val, iok
+        endif
+        ! calculate area using spherical formulae
+        area= spher_area( &
+          d2r(green_common(igreen)%start(idist)), &
+          d2r(green_common(igreen)%stop(idist)), &
+          d2r(dazimuth), &
+          alternative_method=.true.) 
+
+        ! normalization according to Merriam (1992) 
+        normalize= 1./ &
+          (2.*pi*(1.-cos(d2r(dble(1.)))) * &
+          d2r(green_common(igreen)%distance(idist))*1.e5)
+        ! elastic part
+        ! if the cell is not over sea and inverted barometer assumption was not set 
+        ! and is not excluded by polygon
+        !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+!          results(1,1) = results(1,1) + &
+!            (val(1) / 100. -ref_p) * &
+!            green_common(igreen,7) * & 
+!            area * normalize
+          result(1,1) = result(1,1)+ &
+            (val(1) / 100. -1000. )  * &
+            green_common(igreen)%data(idist,1) * & 
+            area * normalize
+        !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
+        !!       stop 
+
+        !      ! newtonian part
+        !      if(.not. iok(1).eq.0) then
+        !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
+
+        !       if (model(2)%if.and.size(model).ge.2) then
+        !          results%dt = results%dt + (val(1)/ 100.-ref_p) * &
+        !            (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
+        !        endif
+
+        !       results%dh = results%dh + (val(1)/ 100.-ref_p) * &
+        !        (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
+
+        !       results%dz = results%dz + (val(1)/ 100.-ref_p) * &
+        !        (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
+        !     endif
+        !    endif
+        !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+        !        !!        !todo
+        !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
+        !        !!!        write (moreverbose%unit, '(">")')
+        !        !!!      endif
+      enddo
+    enddo
+!    write(log%unit,*)  , "npoints:", npoints ,"area", area
+print * , result(1,1)
+  enddo 
 end subroutine
 
 !

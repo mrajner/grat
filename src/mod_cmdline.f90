@@ -184,14 +184,4 @@ function moreverbose_unit(dataname)
     endif
   enddo
 end function
-
-! ==============================================================================
-! ==============================================================================
-function find_indexes(n)
-  integer, allocatable, dimension(:) :: find_indexes
-  integer :: n
-  allocate(find_indexes(n))
-  find_indexes=1
-end function
-
 end module

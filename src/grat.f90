@@ -78,70 +78,76 @@ program grat
   ! gather cmd line option decide where to put output
   call intro ( & 
     program_calling = "grat" , &
-    accepted_switches="VSBLGPpoFIDLvhRQ" , &
-    cmdlineargs=.true. &
-    )
+      accepted_switches="VSBLGPpoFIDLvhRQ" , &
+      cmdlineargs=.true. &
+      )
 
-  print *, find_indexes(3)
-  print * ,green(1)%dataname, polygon(1)%dataname
-  stop
 
-  allocate (result(size(site)*max(size(date),1), size(green) ))
+    allocate (result(size(site)*max(size(date),1), size(green) ))
 
-  start=0
-  if (size(date).gt.0) then
-    write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
-    start = 1
-  endif
-  write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
-  do i = 1 ,size(green)
-    write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
-  enddo
-  write (output%unit , *)
-
-  do idate = start , size (date)
-    do isite = 1 , size(site)
-      if (idate.gt.0) then
-        write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date(idate)%mjd, date(idate)%date
-      endif
-
-      write (output%unit, '(a8,30f15.4)'), site(isite)%name, site(isite)%lat, site(isite)%lon
-      print *
-      do i = 1 , size(polygon)
-        call chkgon( site(isite)%lon , site(isite)%lat , polygon(i) , iok)
-      enddo
-
-      do i = 1 , size(model)
-        if(model(i)%if) then
-          select case (model(i)%dataname)
-          case ("LS")
-            if (idate.gt.start) then
-              cycle
-            else
-              call get_variable (model(i))
-            endif
-          case default
-            call get_variable (model(i), date = date(idate)%date)
-          endselect
-        endif
-      enddo
-      call convolve (site(isite))
-      stop ! only 1 time for debug
+    start=0
+    if (size(date).gt.0) then
+      write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
+      start = 1
+    endif
+    write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
+    do i = 1 ,size(green)
+      write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
     enddo
-  enddo
+    write (output%unit , *)
+
+    do idate = start , size (date)
+      do isite = 1 , size(site)
+        if (idate.gt.0) then
+          write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date(idate)%mjd, date(idate)%date
+        endif
+
+        write (output%unit, '(a8,30f15.4)' ,advance='no'), site(isite)%name, site(isite)%lat, site(isite)%lon
+!        print *
+        do i = 1 , size(polygon)
+          call chkgon( site(isite)%lon , site(isite)%lat , polygon(i) , iok)
+        enddo
+
+        do i = 1 , size(model)
+          if(model(i)%if) then
+            select case (model(i)%dataname)
+            case ("LS")
+              if (idate.gt.start) then
+                cycle
+              else
+                call get_variable (model(i))
+              endif
+            case ("T")
+              if (idate.gt.start) then
+                cycle
+              else
+                call get_variable (model(i))
+                !todo
+                ! force topography to zero over oceans
+                !        !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
+              endif
+            case default
+              call get_variable (model(i), date = date(idate)%date)
+            endselect
+          endif
+        enddo
+        result=0.
+        call convolve (site(isite))
+      enddo
+    enddo
 
 
-  !  if (any (moreverbose%dataname.eq."s")) then
-  !    print '(15f13.5)', &
-  !      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
-  !      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
-  !      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
-  !      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
-  !      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
-  !  endif
+    !  if (any (moreverbose%dataname.eq."s")) then
+    !    print '(15f13.5)', &
+    !      results ( maxloc ( results%e  )  ) %e  - results ( minloc ( results%e  ) ) %e  ,  & 
+    !      results ( maxloc ( results%n  )  ) %n  - results ( minloc ( results%n  ) ) %n  ,  & 
+    !      results ( maxloc ( results%dh )  ) %dh - results ( minloc ( results%dh ) ) %dh ,  & 
+    !      results ( maxloc ( results%dz )  ) %dz - results ( minloc ( results%dz ) ) %dz ,  & 
+    !      results ( maxloc ( results%dt )  ) %dt - results ( minloc ( results%dt ) ) %dt
+    !  endif
 
-  ! execution time-stamp
-  call cpu_time(cpu(2))
-  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
-  write(log%unit, form_separator)
-end program 
+    ! execution time-stamp
+    call cpu_time(cpu(2))
+    write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+    write(log%unit, form_separator)
+  end program 

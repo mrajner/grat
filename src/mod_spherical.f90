@@ -10,8 +10,7 @@ contains
 !!   - method 1 (\c alternative_method not given or \c alternative_method .false.)
 !!    - distance from station, segment size in spher distance and angle
 !!   - method 2 (\c alternative_method .true.)
-!!    - distance from station, segment size in spher distance and angle
-!!
+!!    - distance from station start, distance from station end
 !! 
 !! The ilustration explain optional \c method argument
 !! \latexonly
@@ -25,21 +24,21 @@ contains
 !! \warning All input angles in radians, output area on unit sphere or 
 !! in square units of given (optionally) \c radius.
 ! =============================================================================
-subroutine spher_area (distance ,ddistance, azstp,  area, radius, alternative_method )
-  real(dp), intent(out) :: area
+function spher_area (distance ,ddistance, azstp, radius, alternative_method )
+  real(dp) :: spher_area
   real(dp), intent(in)  :: distance,ddistance 
   real(dp), intent(in)  :: azstp
   logical, intent(in), optional :: alternative_method
   real(dp), intent(in), optional :: radius
 
   if (present(alternative_method).and.alternative_method) then
-    area =  (-cos (ddistance) + cos (distance))*(azstp)
+    spher_area =  (-cos (ddistance) + cos (distance))*(azstp)
   else
-    area =  (-cos (distance+ddistance/2.)+cos(distance-ddistance/2.))*(azstp)
+    spher_area =  (-cos (distance+ddistance/2.)+cos(distance-ddistance/2.))*(azstp)
   endif
-  if(present(radius)) area = area * radius**2
+  if(present(radius)) spher_area = spher_area * radius**2
 
-end subroutine
+end function
 
 ! =============================================================================
 !> This soubroutine gives the latitude and longitude of the point at the 
