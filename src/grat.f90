@@ -74,6 +74,7 @@ program grat
   call cpu_time(cpu(1))
 
   ! gather cmd line option decide where to put output
+!  stop
   call intro & 
     (program_calling = "grat" , &
     accepted_switches="VSBLGPpoFIDLvhRQ" , &
