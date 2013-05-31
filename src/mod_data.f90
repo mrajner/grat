@@ -43,7 +43,7 @@ module mod_data
     integer :: ncid
   end type
   type(file) , allocatable, dimension (:) :: model 
-  
+
   private :: dataname
 
 contains
@@ -88,7 +88,7 @@ subroutine parse_model (cmd_line_entry)
       write(log%unit, '(5(a,x))', advance="no") , (trim(model(i)%names(j)), j =1,5)
       model(i)%if=.true.
       write(log%unit, *) 
-      call read_netCDF(model(i))
+      if (model(i)%dataname.ne."ascii") call read_netCDF(model(i))
     else if (is_numeric(model(i)%name)) then
       model(i)%if_constant_value=.true.
       read (model(i)%name , * ) model(i)%constant_value

@@ -38,7 +38,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
 
   select case (cmd_line_entry%switch)
   case ('-V')
-    write(log%unit, form%i3) 'verbose mode' ,trim(log%name)
+    write(log%unit, form%i3) 'verbose mode' 
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       write(log%unit, form_62) 'the log file was set:' ,log%name
     endif
