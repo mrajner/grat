@@ -3,6 +3,21 @@
 
 # mak: clean mod_cmdline.o
 # as: value_check  example_value_check second
+gggg: grat rrrrr
+iiiii: grat rrrrr
+rrrrr:
+	../bin/grat -V -S \
+		j:52.0:21.2 \
+		:55.1:15.3 ,\
+		:48.7:19.6,\
+		:25.6:-1.1,\
+		:-3: -56 \
+		-F /home/mrajner/dat/wghm/dat/WGHM_2.1f6_sumall_200201.nc@WGHM \
+		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2
+
+gggg:
+
+
 al:
 xxx: ddd tmp runtmp
 

@@ -74,7 +74,6 @@ program grat
   call cpu_time(cpu(1))
 
   ! gather cmd line option decide where to put output
-!  stop
   call intro & 
     (program_calling = "grat" , &
     accepted_switches="VSBLGPpoFIDLvhRQ" , &
@@ -113,7 +112,7 @@ program grat
       do i = 1 , size(model)
         if(model(i)%if) then
           select case (model(i)%dataname)
-          case ("LS","RS")
+          case ("LS","RS", "WGHM")
             if (idate.gt.start) then
               cycle
             else
@@ -138,6 +137,7 @@ program grat
     enddo
   enddo
 
+  stop
 
   !  if (any (moreverbose%dataname.eq."s")) then
   !    print '(15f13.5)', &

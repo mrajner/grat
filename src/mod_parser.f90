@@ -451,7 +451,7 @@ subroutine get_index()
   type(index_info) :: index
   integer :: i
 
-  print * , model%dataname
+!  print * , model%dataname
   do i = 1 , size(model)
     select case (model(i)%dataname)
     case ("SP")
