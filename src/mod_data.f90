@@ -181,8 +181,8 @@ subroutine nctime2date (model)
   integer            :: varid ,i , date (6)
   character (len=66) :: dummy
 
-  call check ( nf90_inq_varid (model%ncid, "time" , varid ) )
-  call check (nf90_get_att ( model%ncid , varid , "units" , dummy) )
+  call check (nf90_inq_varid (model%ncid, "time", varid))
+  call check (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
   write(log%unit , form%i4) "Converting time: " , trim(dummy)
