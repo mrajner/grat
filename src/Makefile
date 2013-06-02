@@ -3,17 +3,30 @@
 
 # mak: clean mod_cmdline.o
 # as: value_check  example_value_check second
+sszz: value_check klep
+klep:
+	../bin/value_check \
+		-F /home/mrajner/dat/wghm/dat/WGHM.nc , 10 \
+		-S joze:  52 : 21 \
+		-V \
+		-D 2006:2006:2@M
+
+
+
+
 gggg: grat rrrrr
 iiiii: grat rrrrr
 rrrrr:
 	../bin/grat -V -S \
-		j:52.0:21.2 \
+		joze:52.0:21.2 \
 		:55.1:15.3 ,\
 		:48.7:19.6,\
 		:25.6:-1.1,\
 		:-3: -56 \
-		-F /home/mrajner/dat/wghm/dat/WGHM_2.1f6_sumall_200201.nc@WGHM \
-		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2
+		-F \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
+		-D201010:2011:1@M
 
 gggg:
 
@@ -52,7 +65,7 @@ DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 ST       = $(NCEP_DIR)/air.sig995.2011.nc@ST:air:lon:lat:level:time
-LS      = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
+LS       = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 FNL      = /home/mrajner/meteo/fnl/sfc_hgt/

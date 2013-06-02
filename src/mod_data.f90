@@ -157,7 +157,7 @@ subroutine get_dimension ( model , i )
     if (status /= nf90_noerr ) model%lonrange &
       =[model%lon(1) , model%lon(size(model%lon)) ]
     elseif (i.eq.4 ) then
-    allocate(model%level (length) )
+    allocate(model%level (length))
     status = nf90_get_var  (model%ncid,  varid , model%level)
     elseif (i.eq.5 ) then
     allocate(model%time (length) )
@@ -185,17 +185,19 @@ subroutine nctime2date (model)
   call check (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
-  write(log%unit , form%i4) "Converting time: " , trim(dummy)
+  write(log%unit, form%i4) "Converting time: " , trim(dummy)
   if (dummy.eq. "hours since 1-1-1 00:00:0.0") then
     mjd_start =  mjd([1,1,1,0,0,0])
-    do i = 1 , size(model%time)
-      mjd_= model%time(i) / 24 + mjd_start  - 2
+    do i = 1, size(model%time)
+      mjd_= model%time(i) / 24 + mjd_start - 2
       call invmjd(mjd_,date)
       model%date(i,:) = date
     enddo
   else
     write (log%unit , form%i4 ) "unknown time begining"
   endif
+  print * , model%date
+  stop "D"
 end subroutine
 
 ! =============================================================================
@@ -380,8 +382,6 @@ function bilinear (x , y , aux )
   c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
   bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
 end function
-
-!
 !!! delteme
 !!subroutine invspt(alp,del,b,rlong)
 !!  real alp, del , b ,rlong

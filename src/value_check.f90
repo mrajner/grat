@@ -55,6 +55,7 @@ program value_check
         ! during read_netCDF
         if (allocated(date)) then
           if (size(model(i)%date).gt.1) then
+            print * , "X"
             call get_variable ( model(i), date = date(j)%date)
           endif
         else
