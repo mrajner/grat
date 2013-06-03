@@ -10,6 +10,7 @@ module mod_green
     character (len=255) :: name
     character (len=25) :: dataname
     integer,dimension(2) :: column
+    character(10), dimension(2) :: columndataname
     real(dp),allocatable,dimension(:) :: distance
     real(dp),allocatable,dimension(:) :: data
   end type
@@ -54,9 +55,10 @@ subroutine parse_green (cmd_line_entry)
     write(log%unit, form%i2) trim(cmd_line_entry%field(i)%full)
     green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
     green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
-    do ii=1, 2
+    do ii=1,2
       if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
         read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
+       green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
       endif
     enddo
     call read_green(green(i))
@@ -67,11 +69,12 @@ end subroutine
 !> This subroutine read  green file
 ! =============================================================================
 subroutine read_green (green)
-  use mod_utilities, only: file_exists, skip_header
+  use mod_utilities, only: file_exists, skip_header, r2d
   use iso_fortran_env
   use mod_printing
+  use mod_constants, only:earth
 
-  integer :: lines , fileunit, io_status
+  integer :: lines , fileunit, io_status, i
   real (dp) , allocatable , dimension(:) :: tmp
   type(green_functions) :: green
 
@@ -170,9 +173,21 @@ subroutine read_green (green)
     then
     green%data = green%data * 1000.
   endif
+  
   write(log%unit, form_63) trim(green%name), trim(green%dataname), &
     "columns:",green%column ,&
     "lines:", size(green%distance)
+
+  if (green%columndataname(1).eq."R") then
+    green%distance=(/ (r2d(green%distance(i)), i=1,size(green%distance)) /)
+    write(log%unit, form_63) "conversion: radians --> to degrees"
+  endif
+  if (green%columndataname(2).eq."aplo") then
+    ! need some proof ?
+    green%data=green%data*earth%radius/ (earth%radius*earth%radius)*1e12 * 10
+    write(log%unit, form_63) "conversion: aplo --> to gotic"
+  endif
+  
 end subroutine
 
 ! =============================================================================
@@ -288,8 +303,10 @@ subroutine green_unification ()
       do i = 1, size(moreverbose)
         if (moreverbose(i)%dataname.eq."g") then
           do j = 1, size(green_common(iinfo)%distance)
-            write(moreverbose(i)%unit, '(i3,f14.6,100f14.4)'), &
+            write(moreverbose(i)%unit, '(i3,f14.6,100f14.7)'), &
               j, green_common(iinfo)%distance(j), &
+               green_common(iinfo)%start(j), &
+               green_common(iinfo)%stop(j), &
               green_common(iinfo)%data(j,:)
           enddo
         endif
@@ -306,6 +323,7 @@ end subroutine
 !! \author M. Rajner
 ! =============================================================================
 subroutine convolve (site ,  denserdist , denseraz)
+  use mod_constants
   use mod_site, only : site_info
   use mod_cmdline
   use mod_utilities, only: d2r, r2d
@@ -373,12 +391,15 @@ subroutine convolve (site ,  denserdist , denseraz)
           d2r(green_common(igreen)%start(idist)), &
           d2r(green_common(igreen)%stop(idist)), &
           d2r(dazimuth), &
+          radius=earth%radius, &
           alternative_method=.true.) 
 
         ! normalization according to Merriam (1992) 
         normalize= 1./ &
           (2.*pi*(1.-cos(d2r(dble(1.)))) * &
-          d2r(green_common(igreen)%distance(idist))*1.e5)
+          d2r(green_common(igreen)%distance(idist)) * &
+          1.e5 * &
+          earth%radius )
 
         if (any(green_common(igreen)%dataname.eq."GE")) then
           ! elastic part
@@ -403,7 +424,10 @@ subroutine convolve (site ,  denserdist , denseraz)
                   result(1,1) = result(1,1)+ &
                     (val(1) )  * &
                     green_common(igreen)%data(idist,1) * & 
-                    area / green_common(igreen)%distance(idist) 
+                    area  / d2r(green_common(igreen)%distance(idist)) * &
+                    1./earth%radius /1e12 * &
+                    1e3
+
         endif
 
         !      ! newtonian part
@@ -430,7 +454,7 @@ subroutine convolve (site ,  denserdist , denseraz)
       enddo
     enddo
     !    write(log%unit,*)  , "npoints:", npoints ,"area", area
-        print * , result(1,1)
+        write(output%unit, '(g20.4)') , result(1,1)
   enddo 
 end subroutine
 

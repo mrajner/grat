@@ -175,7 +175,7 @@ subroutine nctime2date (model)
   use netcdf
   use mod_printing
   use mod_constants, only: dp
-  use mod_date, only: mjd, invmjd
+  use mod_date,      only: mjd, invmjd
   type (file)        :: model
   real(dp)           :: mjd_start , mjd_
   integer            :: varid ,i , date (6)
@@ -189,6 +189,9 @@ subroutine nctime2date (model)
   if (dummy.eq. "hours since 1-1-1 00:00:0.0") then
     mjd_start =  mjd([1,1,1,0,0,0])
     do i = 1, size(model%time)
+      ! -2 is necessary to keep it with ncep convention
+      ! this may need (?) change for other data fields
+      ! be carefull
       mjd_= model%time(i) / 24 + mjd_start - 2
       call invmjd(mjd_,date)
       model%date(i,:) = date
@@ -198,6 +201,29 @@ subroutine nctime2date (model)
   endif
 end subroutine
 
+! =============================================================================
+! =============================================================================
+!function hours2date (hours)
+!  use mod_date
+! 
+!  integer :: hours2date(6)
+!  real(dp) hours
+
+!  real(dp) :: jd1, jd0
+!  real(dp) :: mjd1, mjd0
+
+!  jd1 = jd(2011,1,1,0,0,0)
+!  jd0 = jd(1,1,1,0,0,0)
+!  print * , "jd1", jd1, jd0, jd1-jd0
+!  mjd1 = mjd([2011,1,1,0,0,0])
+!  mjd0 = mjd([1,1,1,0,0,0])
+!  print * , "mjd1", mjd1, mjd0, mjd1-mjd0
+!  print * , (int(jd1-jd0+2))*24
+!  hours2date =4 
+
+
+
+!end function
 ! =============================================================================
 !> \brief Get values from netCDF file for specified variables
 ! =============================================================================

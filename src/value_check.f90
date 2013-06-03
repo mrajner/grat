@@ -36,16 +36,21 @@ program value_check
   if (size(date).gt.0) then
     start=1
     ! print header
+    if (output%header) then
     write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
+  endif
   endif
 
   ! print header
-  write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
+  if (output%header) then
+    write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
+  endif
   do i = 1 ,size(model)
-    if (model(i)%if .or. model(i)%if_constant_value ) &
+    if ((model(i)%if .or. model(i)%if_constant_value) .and. output%header ) then
       write (output%unit,'(a15)',advance='no') , trim( model(i)%dataname)
+    endif
   enddo
-  write (output%unit , *)
+  if(output%header) write (output%unit , *)
 
   do j = start , size (date)
     do i = 1 , size(model)
@@ -55,7 +60,6 @@ program value_check
         ! during read_netCDF
         if (allocated(date)) then
           if (size(model(i)%date).gt.1) then
-            print * , "X"
             call get_variable ( model(i), date = date(j)%date)
           endif
         else

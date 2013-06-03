@@ -85,15 +85,21 @@ program grat
   allocate (result(size(site)*max(size(date),1), size(green) ))
 
   start=0
-  if(output%header) then
-    if (size(date).gt.0) then
+  if (size(date).gt.0) then
+    if(output%header) then
       write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
-      start = 1
     endif
+    start = 1
+  endif
+  if(output%header) then
     write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
-    do i = 1 ,size(green)
+  endif
+  do i = 1 ,size(green)
+    if(output%header) then
       write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
-    enddo
+    endif
+  enddo
+  if(output%header) then
     write (output%unit , *)
   endif
 

@@ -2,22 +2,44 @@
 # for example: OBJS  = libgrat.a
 
 # as: value_check  example_value_check second
-sszz: value_check klep
-klep:
-	../bin/value_check \
-		-F /home/mrajner/dat/wghm/dat/WGHM.nc , 10 \
-		-S joze:  52 : 21 \
-		-V \
-		-D 2010:2@M:1@M
-
-iiiii: grat rrrrr
-rrrrr:
-	../bin/grat -V -S \
+iiiii: grat r
+r:
+	../bin/grat  -S \
+		joze:52.0:21 \
+		-F \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		-G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
+		-D2005 
+gnu2:
+	../bin/grat  -S \
+		joze:52.0:21 \
+		-F \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		-G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
+		-D2002:2013:1@M  -L ttt@g > tmp3
+rrrr:
+	../bin/grat  -S \
 		joze:52.0:21.2 \
 		-F \
 		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
 		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
-		-D201010:2011:1@M
+		-D2011:2011:1@M 
+
+gnu:
+	../bin/grat  -S \
+		joze:52.0:21 \
+		-F \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
+		-D2004:2011:1@M  -I 1@DD :1@AD :10@rE  -Lttt@g  > tmp
+
+gn:
+	../bin/grat  -S \
+		joze:52.0:21 \
+		-F \
+		/home/mrajner/dat/ncep_reanalysis/pres.sfc.2006.nc:pres@SP \
+		-G merriam @GE  \
+		-D2006:10@D  
 
 #     :55.1:15.3 ,\
 #     :48.7:19.6,\
