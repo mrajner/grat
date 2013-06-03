@@ -110,9 +110,10 @@ program grat
       !enddo
 
       do i = 1 , size(model)
+
         if(model(i)%if) then
           select case (model(i)%dataname)
-          case ("LS","RS", "WGHM")
+          case ("LS","RS")
             if (idate.gt.start) then
               cycle
             else

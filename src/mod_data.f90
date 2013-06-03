@@ -196,8 +196,6 @@ subroutine nctime2date (model)
   else
     write (log%unit , form%i4 ) "unknown time begining"
   endif
-  print * , model%date
-  stop "D"
 end subroutine
 
 ! =============================================================================
