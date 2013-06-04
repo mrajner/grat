@@ -9,6 +9,7 @@ r:
 		-F \
 		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
 		-G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
+		, /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
 		-D2005 
 gnu2:
 	../bin/grat  -S \
