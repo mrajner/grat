@@ -1,6 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+dx: denorm_spotl_green kran
+denorm_spotl_green: denorm_spotl_green.f90 mod_green.o 
+	ifort $< -o $@ $(OBJS) $(NETCDFLIB)
+
+kran:
+	./denorm_spotl_green
+
 # as: value_check  example_value_check second
 iiiii: grat r
 r:

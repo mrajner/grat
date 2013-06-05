@@ -480,17 +480,17 @@ end subroutine
 !end subroutine
 !
 !
-!subroutine wczytaj_linie_informacyjne
-!!!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
-!!!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
+subroutine wczytaj_linie_informacyjne
+!!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
+!!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
 !!!      linie_informacyjne%deltal = (/ 0.0011, 0.0205, 0.0550, 1.0500, 10.2500, 90.5000  /)
 !!!      linie_informacyjne%deltah = (/ 0.0199, 0.0495, 0.9950, 9.9500, 89.7500, 179.5000 /)
 !!!      linie_informacyjne%delta  = (/ 0.0002, 0.0010, 0.0100, 0.1000, 0.5000 , 1.0000   /)
 !!!      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
-!end subroutine
+end subroutine
 !
-!subroutine plot2green(green_file)
-!  character(len=*),intent (in) :: green_file
+subroutine plot2green(green_file)
+  character(len=*),intent (in) :: green_file
 !!!  integer                          :: ile_linii_komentarza , i, j , jj ,  ile_rekordow , io
 !!!  logical                          :: czy_komentarz=.true.
 !!!  character(len=1)                 :: fine
@@ -560,34 +560,27 @@ end subroutine
 !!!  close(1)
 !!!  close(2)
 !!!  deallocate(values,b,c,d)
-!end subroutine
-!
-!subroutine green2plot(green_file)
-!  character(len=*),intent (in) :: green_file
-!!!  character(len=1) :: fine
-!!!  integer :: ngr, j, M, Nj, i, ii, iii, i_plik
+end subroutine
+
+subroutine denormalize(filein)
+  use mod_printing
+  character(len=*),intent (in) :: filein
+!  character(len=1) :: fine
+  character(len=80) :: header
+  integer :: fileinunit , fileoutunit
+  integer :: ngr, j, M, Nj, i, ii, iii, i_plik
 !!!  real :: deltal, deltah, delta,dist
 !!!  real, dimension(7) :: val
 !!!  real,dimension(3) :: G_t
 !!
-!!! print *,trim(green_file)
-!!
-!!!  open(1,file=trim(green_file),action='read',status='old')
-!!!  open(2,file=trim(green_file)//'.dat_i',action='write')
-!!!  open(3,file=trim(green_file)//'.dat',action='write')
-!!
-!!!  read (1,'(a70)') header
-!!!  write(2,*),'# '//trim(header)
-!!!  write(3,*),'# '//trim(header)
-!!!  write(2,*),'# Przerobione z pliku w formacie spotl - mrajner'
-!!!  write(3,*),'# Przerobione z pliku w formacie spotl - mrajner'
-!!
-!!
-!!!  read (1,'(i1,i3,2i4)') ngr,j,M,Nj
-!!!  rewind(1)
-!!!  read (1,*) header
-!!
-!!
+write(fileoutunit, form%separator)
+write(fileoutunit, form%i3), '# Converted with denormalize (from mod_green)'
+write(fileoutunit, form%i3), '#',trim(filein)
+
+open(newunit = fileinunit ,file=trim(filein),action='read',status='old')
+  read (fileinunit,'(a70)') header
+
+  read (fileinunit,'(i1,i3,2i4)') ngr,j,M,Nj
 !!!  do i=1,M
 !!!    read (1,'(i1,i3,2i4,3f10.4,5x,a1)') ngr,j,M,Nj,deltal, deltah,delta,fine
 !!!    do ii=1,Nj
@@ -602,7 +595,7 @@ end subroutine
 !!!    enddo
 !  enddo
 !!
-!end subroutine
+end subroutine
 !
 !
 !! =============================================================================
@@ -695,7 +688,6 @@ end subroutine
 !!      nring=ntot
 !end subroutine
 !
-!!program denormalizacja
 !!real :: psi, gn , dgndt , dgndz, d2gndz2, ge
 !!character(len=255)::  dummy
 !
@@ -718,21 +710,19 @@ end subroutine
 !!print*, cos(d2r(1.))
 !!  
 !
-!!end program denormalizacja
 !
-!!subroutine denormfactor(psi, val)
-!!  implicit none
-!!  real , intent(in) :: psi
-!!  real,intent(inout) :: val
-!!  real :: pi
-!!  real :: d2r
-!!  real , parameter :: a =6378137.0
-!
-!!pi = 4. * atan (1.0)
-!
-!!val = val / ( 2. * pi * ( 1. - cos ( d2r(1.) ) ) * d2r(psi)  *  a**2 * 1e5 * 1e8 * 1e2 )
-!!val = val * 1e18 * ( a * d2r(psi) )
-!
-!!end subroutine
+subroutine denormfactor(psi, val)
+  real , intent(in) :: psi
+  real,intent(inout) :: val
+  real :: pi
+  real :: d2r
+  real , parameter :: a =6378137.0
+  !
+  !!pi = 4. * atan (1.0)
+  !
+  !!val = val / ( 2. * pi * ( 1. - cos ( d2r(1.) ) ) * d2r(psi)  *  a**2 * 1e5 * 1e8 * 1e2 )
+  !!val = val * 1e18 * ( a * d2r(psi) )
+  !
+end subroutine
 
 end module
