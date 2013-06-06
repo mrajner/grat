@@ -187,18 +187,20 @@ subroutine nctime2date (model)
   allocate (model%date(size(model%time), 6))
   write(log%unit, form%i4) "Converting time: " , trim(dummy)
   if (dummy.eq. "hours since 1-1-1 00:00:0.0") then
-    mjd_start =  mjd([1,1,1,0,0,0])
-    do i = 1, size(model%time)
       ! -2 is necessary to keep it with ncep convention
       ! this may need (?) change for other data fields
       ! be carefull
-      mjd_= model%time(i) / 24 + mjd_start - 2
-      call invmjd(mjd_,date)
-      model%date(i,:) = date
-    enddo
+    mjd_start =  mjd([1,1,1,0,0,0]) - 2
+  else if (dummy.eq. "hours since 1900-01-01 00:00:0.0") then
+    mjd_start =  mjd([1900,1,1,0,0,0])
   else
     write (log%unit , form%i4 ) "unknown time begining"
   endif
+    do i = 1, size(model%time)
+      mjd_= model%time(i) / 24 + mjd_start 
+      call invmjd(mjd_,date)
+      model%date(i,:) = date
+    enddo
 end subroutine
 
 ! =============================================================================

@@ -1,6 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+as: value_check  example_value_check
 dx: denorm_spotl_green kran
 denorm_spotl_green: denorm_spotl_green.f90 mod_green.o 
 	ifort $< -o $@ $(OBJS) $(NETCDFLIB)
@@ -8,7 +9,6 @@ denorm_spotl_green: denorm_spotl_green.f90 mod_green.o
 kran:
 	./denorm_spotl_green
 
-# as: value_check  example_value_check second
 iiiii: grat r
 r:
 	../bin/grat  -S \
@@ -189,9 +189,9 @@ example_value_check:
 		-Szr:52:21 \
 		-V \
 		-I l @I \
-		-D2011:1@D ,20110606 
+		-D2011:1@D ,20110606 \
+		-L @d
 
-second:
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
@@ -221,7 +221,7 @@ docman: doc
 install: installprogs installlib
 
 installprogs: $(PROGS) 
-	@cp -u -v ../bin/*  ~/.local/bin/
+	ln -sf /home/mrajner/src/grat/bin/*  ~/.local/bin/
 	@echo "program grat sucessfully installed"
 
 # Change this path according to your system settings

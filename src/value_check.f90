@@ -103,4 +103,13 @@ program value_check
     enddo
   enddo
 
+  ! todo print to appropriate files
+  if (any(moreverbose%dataname.eq."d")) then
+    do i = 1 , size(model)
+      do  j =1,size(model(i)%time)
+        print '(g0,1x,i4,5i2.2)' , model(i)%time(j), model(i)%date(j,:)
+      enddo
+    enddo
+  endif
+
 end program
