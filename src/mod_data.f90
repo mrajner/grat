@@ -291,6 +291,7 @@ subroutine unpack_netcdf ( model )
   status = nf90_get_att ( model%ncid , varid , "add_offset" , add_offset) 
   if (status /=nf90_noerr) add_offset = 0.
 
+  ! see http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
   model%data = model%data * scale_factor + add_offset
 end subroutine
 !
