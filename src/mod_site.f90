@@ -35,7 +35,9 @@ subroutine parse_site(cmd_line_entry)
 
 
     if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
-      .or.(cmd_line_entry%field(i)%subfield(1)%name.eq. "g" ) ) &
+      .or.&
+      (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
+      ) &
       then
       call parse_GMT_like_boundaries (cmd_line_entry%field(i))
     else if ( &
@@ -53,14 +55,14 @@ subroutine parse_site(cmd_line_entry)
         site(start_index)%lon = mod(site(start_index)%lon,360.)
       if (is_numeric(cmd_line_entry%field(i)%subfield(4)%name)) then
         read (cmd_line_entry%field(i)%subfield(4)%name, * ) &
-        site(start_index)%height
+          site(start_index)%height
       endif
     else if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
-        write(log%unit, form%i3) 'reading from file:', &
-          cmd_line_entry%field(i)%subfield(1)%name
-          call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
-      else
-        call print_warning ("site")
+      write(log%unit, form%i3) 'reading from file:', &
+        cmd_line_entry%field(i)%subfield(1)%name
+      call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
+    else
+      call print_warning ("site")
     endif
   enddo
   call print_site_summary()

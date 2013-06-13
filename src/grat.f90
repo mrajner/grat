@@ -91,14 +91,17 @@ program grat
     endif
     start = 1
   endif
+
   if(output%header) then
     write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
   endif
+
   do i = 1 ,size(green)
     if(output%header) then
       write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
     endif
   enddo
+
   if(output%header) then
     write (output%unit , *)
   endif
@@ -135,7 +138,11 @@ program grat
               !        !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
             endif
           case default
+            if( size(date).eq.0) then
+            call get_variable (model(i))
+          else
             call get_variable (model(i), date = date(idate)%date)
+            endif
           endselect
         endif
       enddo

@@ -135,10 +135,10 @@ subroutine get_dimension ( model , i )
 
   status = nf90_inq_dimid(model%ncid,model%names(i) , dimid )
   if(status /= nf90_noerr) then 
-    write (log%unit , form%i0) trim(model%names(i)),"not found, allocating size 1" 
+    write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating size 1" 
     length=1
   else
-    write (log%unit , form%i0) "ok"
+    write (log%unit , '(a6,1x,a)') "ok"
     call check (nf90_inquire_dimension(model%ncid, dimid , len = length) )
     call check (nf90_inq_varid(model%ncid, model%names(i) , varid))
   endif

@@ -237,6 +237,8 @@ subroutine green_unification ()
           /info(iinfo)%distance%denser
       enddo
     enddo
+    print * ,tmpgreen%distance
+    stop
 
     tmpgreen%distance(size(tmpgreen%distance)) = &
       green(which_green(iinfo))%distance(imax)
