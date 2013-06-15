@@ -237,8 +237,6 @@ subroutine green_unification ()
           /info(iinfo)%distance%denser
       enddo
     enddo
-    print * ,tmpgreen%distance
-    stop
 
     tmpgreen%distance(size(tmpgreen%distance)) = &
       green(which_green(iinfo))%distance(imax)
@@ -293,13 +291,12 @@ subroutine green_unification ()
       green_common(iinfo)%dataname(i) = green(i)%dataname
     enddo
 
-    ! auxilary table indekxing elastic part
-    allocate(green_common(iinfo)%elastic( &
+    ! auxilary table indexing elastic part
       size(green_common(iinfo)%dataname)  &
       ))
-    where (green_common(iinfo)%dataname.eq."GE")
-      green_common(iinfo)%elastic= .true.
-    endwhere
+!    where (green_common(iinfo)%dataname.eq."GE")
+!      green_common(iinfo)%elastic= .true.
+!    endwhere
 
     if(any(moreverbose%dataname.eq."g")) then
       do i = 1, size(moreverbose)
