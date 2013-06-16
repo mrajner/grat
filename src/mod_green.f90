@@ -292,8 +292,9 @@ subroutine green_unification ()
     enddo
 
     ! auxilary table indexing elastic part
-      size(green_common(iinfo)%dataname)  &
-      ))
+!    allocate(green_common(iinfo)%elastic( &
+!      size(green_common(iinfo)%dataname)  &
+!      ))
 !    where (green_common(iinfo)%dataname.eq."GE")
 !      green_common(iinfo)%elastic= .true.
 !    endwhere
