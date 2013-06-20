@@ -343,6 +343,8 @@ subroutine convolve (site ,  denserdist , denseraz)
 
   real(dp) :: normalize 
 
+  real(dp), allocatable, dimension(:) :: azimuths
+
   if(.not.allocated(green_common)) then
     call green_unification()
   endif
@@ -351,10 +353,16 @@ subroutine convolve (site ,  denserdist , denseraz)
   area = 0
   do igreen = 1 ,size(green_common)
     do idist = 1, size(green_common(igreen)%distance)
+      if (allocated(azimuths)) deallocate (azimuths)
       nazimuth = &
-        max(int(360*sin(d2r(green(igreen)%distance(idist)))),100) * &
-        info(1)%azimuth%denser
-      dazimuth=360./nazimuth
+        (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
+        max(int(360*sin(d2r(green_common(igreen)%distance(idist)))),100) * &
+        info(igreen)%azimuth%denser
+      if (nazimuth.eq.0) nazimuth=1
+      dazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
+
+      allocate(azimuths(nazimuth))
+      azimuths = [ (info(igreen)%azimuth%start + i * dazimuth - dazimuth/2 , i =1, nazimuth)] 
 
       do iazimuth  = 1 , nazimuth
         npoints = npoints + 1
@@ -389,72 +397,72 @@ subroutine convolve (site ,  denserdist , denseraz)
         ! calculate area using spherical formulae
         area= spher_area( &
           d2r(green_common(igreen)%start(idist)), &
-          d2r(green_common(igreen)%stop(idist)), &
+         d2r(green_common(igreen)%stop(idist)), &
           d2r(dazimuth), &
           radius=earth%radius, &
           alternative_method=.true.) 
 
-        ! normalization according to Merriam (1992) 
-        normalize= 1./ &
-          (2.*pi*(1.-cos(d2r(dble(1.)))) * &
-          d2r(green_common(igreen)%distance(idist)) * &
-          1.e5 * &
-          earth%radius )
+!        ! normalization according to Merriam (1992) 
+!        normalize= 1./ &
+!          (2.*pi*(1.-cos(d2r(dble(1.)))) * &
+!          d2r(green_common(igreen)%distance(idist)) * &
+!          1.e5 * &
+!          earth%radius )
 
-        if (any(green_common(igreen)%dataname.eq."GE")) then
-          ! elastic part
-          ! if the cell is not over sea and inverted barometer assumption was not set 
-          ! and is not excluded by polygon
-          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-          !        print * ,val
-          !          results(1,1) = results(1,1) + &
-          !            (val(1) / 100. -ref_p) * &
-          !            green_common(igreen,7) * & 
-          !            area * normalize
-          !        result(1,1) = result(1,1)+ &
-          !          (val(1) / 100. -1000. )  * &
-          !          green_common(igreen)%data(idist,1) * & 
-          !          area * normalize
-          !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
-          !!       stop 
+!        if (any(green_common(igreen)%dataname.eq."GE")) then
+!          ! elastic part
+!          ! if the cell is not over sea and inverted barometer assumption was not set 
+!          ! and is not excluded by polygon
+!          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+!          !        print * ,val
+!          !          results(1,1) = results(1,1) + &
+!          !            (val(1) / 100. -ref_p) * &
+!          !            green_common(igreen,7) * & 
+!          !            area * normalize
+!          !        result(1,1) = result(1,1)+ &
+!          !          (val(1) / 100. -1000. )  * &
+!          !          green_common(igreen)%data(idist,1) * & 
+!          !          area * normalize
+!          !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
+!          !!       stop 
 
-          stop
-        endif
-        if (any(green_common(igreen)%dataname.eq."GR")) then
-                  result(1,1) = result(1,1)+ &
-                    (val(1) )  * &
-                    green_common(igreen)%data(idist,1) * & 
-                    area  / d2r(green_common(igreen)%distance(idist)) * &
-                    1./earth%radius /1e12 * &
-                    1e3
+!          stop
+!        endif
+!        if (any(green_common(igreen)%dataname.eq."GR")) then
+!                  result(1,1) = result(1,1)+ &
+!                    (val(1) )  * &
+!                    green_common(igreen)%data(idist,1) * & 
+!                    area  / d2r(green_common(igreen)%distance(idist)) * &
+!                    1./earth%radius /1e12 * &
+!                    1e3
 
-        endif
+!        endif
 
-        !      ! newtonian part
-        !      if(.not. iok(1).eq.0) then
-        !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
+!        !      ! newtonian part
+!        !      if(.not. iok(1).eq.0) then
+!        !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
 
-        !       if (model(2)%if.and.size(model).ge.2) then
-        !          results%dt = results%dt + (val(1)/ 100.-ref_p) * &
-        !            (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
-        !        endif
+!        !       if (model(2)%if.and.size(model).ge.2) then
+!        !          results%dt = results%dt + (val(1)/ 100.-ref_p) * &
+!        !            (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
+!        !        endif
 
-        !       results%dh = results%dh + (val(1)/ 100.-ref_p) * &
-        !        (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
+!        !       results%dh = results%dh + (val(1)/ 100.-ref_p) * &
+!        !        (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
 
-        !       results%dz = results%dz + (val(1)/ 100.-ref_p) * &
-        !        (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
-        !     endif
-        !    endif
-        !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-        !        !!        !todo
-        !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
-        !        !!!        write (moreverbose%unit, '(">")')
-        !        !!!      endif
+!        !       results%dz = results%dz + (val(1)/ 100.-ref_p) * &
+!        !        (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
+!        !     endif
+!        !    endif
+!        !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+!        !        !!        !todo
+!        !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
+!        !        !!!        write (moreverbose%unit, '(">")')
+!        !        !!!      endif
       enddo
     enddo
     !    write(log%unit,*)  , "npoints:", npoints ,"area", area
-        write(output%unit, '(g20.4)') , result(1,1)
+!        write(output%unit, '(g20.4)') , result(1,1)
   enddo 
 end subroutine
 

@@ -313,6 +313,8 @@ subroutine info_defaults(info)
     info%interpolation="n"
     info%distance%start=0.
     info%distance%stop=180.
+    info%azimuth%start=0.
+    info%azimuth%stop=180.
     info%distance%denser=1
     info%distance%step=0
     info%azimuth%denser=1

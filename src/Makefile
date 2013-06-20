@@ -9,7 +9,7 @@
 # kran:
 #   ./denorm_spotl_green
 
-iiiii: grat r
+iiiii: grat rrrr
 r:
 	../bin/grat  -S \
 		joze:52.0:21 \
@@ -30,7 +30,8 @@ rrrr:
 		-F \
 		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
 		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
-		-D2011:2011:1@M 
+		-D2011:2011:1@M \
+		-I 2 @DB : 144@DE : 80@AB 
 
 gnu:
 	../bin/grat  -S \
