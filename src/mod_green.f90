@@ -154,7 +154,6 @@ subroutine read_green (green)
       lines = lines + 1
       read (fileunit , * , iostat = io_status) tmp
       if (io_status == iostat_end) then
-        ! todo why line below causes problems?
         close(fileunit) 
         exit
       endif
@@ -325,7 +324,7 @@ subroutine convolve (site ,  denserdist , denseraz)
   integer  ::  ndenser , igreen , idist  , iazimuth , nazimuth
   integer :: imodel
   real(dp) :: azimuth ,dazimuth
-  real(dp) :: lat , lon , area  
+  real(dp) :: lat , lon , area , tot_area  
   real(dp) :: val(size(model)) , ref_p
   integer :: i,j , iok(size(polygon)) , npoints
 
@@ -338,7 +337,8 @@ subroutine convolve (site ,  denserdist , denseraz)
   endif
 
   npoints = 0
-  area = 0
+    area = 0
+    tot_area=0
   do igreen = 1 ,size(green_common)
     do idist = 1, size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
@@ -399,6 +399,9 @@ subroutine convolve (site ,  denserdist , denseraz)
           radius=earth%radius, &
           alternative_method=.true.) 
 
+        tot_area=tot_area+ area
+
+
         ! normalization according to Merriam (1992) 
         normalize= 1./ &
           (2.*pi*(1.-cos(d2r(dble(1.)))) * &
@@ -406,34 +409,41 @@ subroutine convolve (site ,  denserdist , denseraz)
           1.e5 * &
           earth%radius )
 
-        !        if (any(green_common(igreen)%dataname.eq."GE")) then
-        !          ! elastic part
-        !          ! if the cell is not over sea and inverted barometer assumption was not set 
-        !          ! and is not excluded by polygon
-        !          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-        !          !        print * ,val
-        !          !          results(1,1) = results(1,1) + &
-        !          !            (val(1) / 100. -ref_p) * &
-        !          !            green_common(igreen,7) * & 
-        !          !            area * normalize
-        !          !        result(1,1) = result(1,1)+ &
-        !          !          (val(1) / 100. -1000. )  * &
-        !          !          green_common(igreen)%data(idist,1) * & 
-        !          !          area * normalize
-        !          !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
-        !          !!       stop 
+        if (ind%green%ge.ne.0) then
+          ! if the cell is not over sea and inverted barometer assumption was not set 
+          ! and is not excluded by polygon
+          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+          !        print * ,val
+          !          results(1,1) = results(1,1) + &
+          !            (val(1) / 100. -ref_p) * &
+          !            green_common(igreen,7) * & 
+          !            area * normalize
+          !        result(1,1) = result(1,1)+ &
+          !          (val(1) / 100. -1000. )  * &
+          !          green_common(igreen)%data(idist,1) * & 
+          !          area * normalize
+          !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
+          !!       stop 
 
-        !          stop
-        !        endif
-        !        if (any(green_common(igreen)%dataname.eq."GR")) then
-        !                  result(1,1) = result(1,1)+ &
-        !                    (val(1) )  * &
-        !                    green_common(igreen)%data(idist,1) * & 
-        !                    area  / d2r(green_common(igreen)%distance(idist)) * &
-        !                    1./earth%radius /1e12 * &
-        !                    1e3
+          !          stop
+        endif
 
-        !        endif
+        if (ind%green%gr.ne.0) then
+          result(1,1) = result(1,1)+ &
+            (val(1))  * &
+            green_common(igreen)%data(idist,1) * & 
+            area/d2r(green_common(igreen)%distance(idist)) * &
+            1./earth%radius/1e12 * &
+            1e3
+        endif
+        if (ind%green%gh.ne.0) then
+          result(1,1) = result(1,1)+ &
+            (val(1))  * &
+            green_common(igreen)%data(idist,1) * & 
+            area/d2r(green_common(igreen)%distance(idist)) * &
+            1./earth%radius/1e12 * &
+            1e3 * cos(d2r(azimuth))
+        endif
 
         !        !      ! newtonian part
         !        !      if(.not. iok(1).eq.0) then
@@ -458,8 +468,10 @@ subroutine convolve (site ,  denserdist , denseraz)
         !        !        !!!      endif
       enddo
     enddo
-    !    write(log%unit,*)  , "npoints:", npoints ,"area", area
-    !        write(output%unit, '(g20.4)') , result(1,1)
+!    write(output%unit, *) result(1,1)
+!    write(log%unit,*)  , "npoints:", npoints ,"tot_area", tot_area, tot_area/earth%radius**2
+
+    write(output%unit, '(g20.4)') , result(1,1)
   enddo 
 end subroutine
 

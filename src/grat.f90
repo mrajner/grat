@@ -149,11 +149,9 @@ program grat
       enddo
       result=0.
       call convolve (site(isite))
-
     enddo
   enddo
 
-  stop
 
   !  if (any (moreverbose%dataname.eq."s")) then
   !    print '(15f13.5)', &

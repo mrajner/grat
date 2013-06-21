@@ -10,6 +10,13 @@
 #   ./denorm_spotl_green
 
 # ooo: example_value_check
+sx: grat
+	grat -S   \
+		j   : 52: 21 \
+		-F /home/mrajner/dat/wghm/dat/WGHM.nc @WGHM \
+		-G /home/mrajner/src/gotic2/data/grn1.data@GH:1:3 \
+		-D 2008:2010:1@M \
+		-I 2@DD : 2@DA 
 iiiii: grat rrrr
 r:
 	../bin/grat  -S \
@@ -30,14 +37,14 @@ rrrr:
 		joze:52.0:21.2 \
 		-F \
 		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
-		, $(SP) @ SP , $(SP)\
 		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
 		, /home/mrajner/src/gotic2/data/grn1.data@GH:1:3 \
 		-D2011:2011:1@M \
-		-I 2 @DB : 144@DE : 80@AB \
-		-L b@p, a@g \
+		-I 0 @DB : 90@DE : 0@AB \
+		-L a @p, aux @ a \
 		-P ../polygon/baltyk.poly -V
 
+	#
 gnu:
 	../bin/grat  -S \
 		joze:52.0:21 \

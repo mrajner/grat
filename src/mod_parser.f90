@@ -315,7 +315,7 @@ subroutine info_defaults(info)
     info%distance%start=0.
     info%distance%stop=180.
     info%azimuth%start=0.
-    info%azimuth%stop=180.
+    info%azimuth%stop=360.
     info%distance%denser=1
     info%distance%step=0
     info%azimuth%denser=1
@@ -435,6 +435,7 @@ function dataname(abbreviation)
   if (abbreviation.eq."l")  dataname = "bilinear"
   if (abbreviation.eq."g")  dataname = "green function used"
   if (abbreviation.eq."p")  dataname = "points"
+  if (abbreviation.eq."a")  dataname = "auxiliary"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
 
@@ -446,6 +447,7 @@ end function
 subroutine get_index()
   use mod_polygon
   use mod_data
+  use mod_green
   use mod_cmdline
 
   integer :: i
@@ -466,6 +468,20 @@ subroutine get_index()
       ind%moreverbose%p = i
     case ("g")
       ind%moreverbose%g = i
+    case ("a")
+      ind%moreverbose%a = i
+    endselect
+  enddo
+  do i = 1, size(green)
+    select case (green(i)%dataname)
+    case ("GE")
+      ind%green%ge = i
+    case ("GN")
+      ind%green%gn = i
+    case ("GR")
+      ind%green%gr = i
+    case ("GH")
+      ind%green%gh = i
     endselect
   enddo
   

@@ -60,11 +60,15 @@ module mod_cmdline
     integer(2) :: SP, T, RS
   end type
   type moreverbose_index
-    integer(2) :: p, g
+    integer(2) :: p, g , a
+  end type
+  type green_index
+    integer(2) :: gn , ge , gr, gh
   end type
   type index_info
     type (model_index) :: model
     type (moreverbose_index) :: moreverbose
+    type (green_index) :: green
   end type
   type(index_info) :: ind
 contains
