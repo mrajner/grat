@@ -69,7 +69,7 @@ program grat
 
   implicit none
   real(dp) :: x , y , z , lat ,lon , cpu(2)
-  integer :: isite, i, ii , iii , idate, start , iok
+  integer :: isite, i, ii , iii , idate, start , iok , iresult
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
@@ -83,8 +83,8 @@ program grat
 
   call get_index()
 
-  allocate (result(size(site)*max(size(date),1), size(green) ))
 
+  iresult=0
   start=0
   if (size(date).gt.0) then
     if(output%header) then
@@ -97,11 +97,11 @@ program grat
     write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
   endif
 
-  do i = 1 ,size(green)
-    if(output%header) then
+  if(output%header) then
+    do i = 1 ,size(green)
       write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
-    endif
-  enddo
+    enddo
+  endif
 
   if(output%header) then
     write (output%unit , *)
@@ -140,15 +140,16 @@ program grat
             endif
           case default
             if( size(date).eq.0) then
-            call get_variable (model(i))
-          else
-            call get_variable (model(i), date = date(idate)%date)
+              call get_variable (model(i))
+            else
+              call get_variable (model(i), date = date(idate)%date)
             endif
           endselect
         endif
       enddo
-      result=0.
-      call convolve (site(isite))
+      iresult = iresult + 1
+      call convolve (site(isite) )
+
     enddo
   enddo
 

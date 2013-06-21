@@ -450,12 +450,14 @@ subroutine get_index()
   use mod_green
   use mod_cmdline
 
-  integer :: i
+  integer :: i , aux
 
   do i = 1 , size(model)
     select case (model(i)%dataname)
     case ("SP")
-      ind%model%SP = i
+      ind%model%sp = i
+    case ("WGHM")
+      ind%model%wghm = i
     case ("T")
       ind%model%T = i
     case ("RS")
@@ -475,13 +477,15 @@ subroutine get_index()
   do i = 1, size(green)
     select case (green(i)%dataname)
     case ("GE")
-      ind%green%ge = i
+      ind%green%gn = i 
     case ("GN")
-      ind%green%gn = i
+      ind%green%ge = i
     case ("GR")
       ind%green%gr = i
-    case ("GH")
-      ind%green%gh = i
+    case ("GHN")
+      ind%green%ghn = i
+    case ("GHE")
+      ind%green%ghe = i
     endselect
   enddo
   

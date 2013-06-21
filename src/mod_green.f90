@@ -16,7 +16,17 @@ module mod_green
   end type
   type(green_functions), allocatable , dimension(:) :: green
 
-  real(dp) , allocatable, dimension(:,:) :: result
+!  type result_green_info
+!    integer :: index
+!    character :: name
+!    real(dp) :: val
+!  end type
+!  type result_green
+!    type (result_green_info) :: gr , ghn , ghe, gn ,ge
+!  end type
+!  type(result_green) :: result
+
+  real(dp) , allocatable, dimension(:) :: result
 
   type green_common_info
     real(dp),allocatable,dimension(:) :: distance
@@ -54,13 +64,20 @@ subroutine parse_green (cmd_line_entry)
   do i = 1 , size(cmd_line_entry%field)
     write(log%unit, form%i2) trim(cmd_line_entry%field(i)%full)
     green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
+    if (i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
+      green(i)%name = cmd_line_entry%field(i-1)%subfield(1)%name
+    endif
     green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
     do ii=1,2
+        green(i)%column(ii) =green(i-1)%column(ii)
+        green(i)%columndataname(ii) = green(i-1)%columndataname(ii) 
+        print '(2i5)' , green(i)%column(ii)
       if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
         read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
-       green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
+        green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
       endif
     enddo
+
     call read_green(green(i))
   enddo
 end subroutine
@@ -172,7 +189,7 @@ subroutine read_green (green)
     then
     green%data = green%data * 1000.
   endif
-  
+
   write(log%unit, form_63) trim(green%name), trim(green%dataname), &
     "columns:",green%column ,&
     "lines:", size(green%distance)
@@ -186,7 +203,7 @@ subroutine read_green (green)
     green%data=green%data*earth%radius/ (earth%radius*earth%radius)*1e12 * 10
     write(log%unit, form_63) "conversion: aplo --> to gotic"
   endif
-  
+
 end subroutine
 
 ! =============================================================================
@@ -309,7 +326,7 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve (site ,  denserdist , denseraz)
+subroutine convolve (site)
   use mod_constants
   use mod_site, only : site_info
   use mod_cmdline
@@ -319,7 +336,6 @@ subroutine convolve (site ,  denserdist , denseraz)
   use mod_polygon
   use mod_printing
   type(site_info), intent(in) :: site
-  integer , intent (in) , optional :: denserdist , denseraz
 
   integer  ::  ndenser , igreen , idist  , iazimuth , nazimuth
   integer :: imodel
@@ -328,7 +344,7 @@ subroutine convolve (site ,  denserdist , denseraz)
   real(dp) :: val(size(model)) , ref_p
   integer :: i,j , iok(size(polygon)) , npoints
 
-  real(dp) :: normalize 
+  real(dp) :: normalize , aux
 
   real(dp), allocatable, dimension(:) :: azimuths
 
@@ -336,11 +352,16 @@ subroutine convolve (site ,  denserdist , denseraz)
     call green_unification()
   endif
 
-  npoints = 0
-    area = 0
-    tot_area=0
-  do igreen = 1 ,size(green_common)
-    do idist = 1, size(green_common(igreen)%distance)
+  print *, green%column(1)
+  stop
+  if (.not. allocated(result)) allocate(result(size(green)))
+  npoints  = 0
+  area     = 0
+  tot_area = 0
+  result=0
+
+  do igreen = 1 , size(green_common)
+    do idist = 1 , size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
       nazimuth = &
         (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
@@ -380,11 +401,11 @@ subroutine convolve (site ,  denserdist , denseraz)
 
         !moreverbose p option
         if(ind%moreverbose%p.ne.0) then
-          write(moreverbose(ind%moreverbose%p)%unit , &
-            '(2f10.4,<size(val)>f15.4)', advance ="no"), &
+          write(moreverbose(ind%moreverbose%p)%unit ,      & 
+            '(2f10.4,<size(val)>f15.4)', advance ="no"),   & 
             r2d(lat),r2d(lon),val
           if (size(iok).gt.0) then
-            write(moreverbose(ind%moreverbose%p)%unit , &
+            write(moreverbose(ind%moreverbose%p)%unit ,    & 
               '(<size(iok)>i2)'), iok
           else
             write(moreverbose(ind%moreverbose%p)%unit , *)
@@ -392,12 +413,12 @@ subroutine convolve (site ,  denserdist , denseraz)
         endif
 
         ! calculate area using spherical formulae
-        area= spher_area( &
-          d2r(green_common(igreen)%start(idist)), &
-          d2r(green_common(igreen)%stop(idist)), &
-          d2r(dazimuth), &
-          radius=earth%radius, &
-          alternative_method=.true.) 
+        area = spher_area(                        & 
+          d2r(green_common(igreen)%start(idist)), & 
+          d2r(green_common(igreen)%stop(idist)),  & 
+          d2r(dazimuth),                          & 
+          radius=earth%radius,                    & 
+          alternative_method=.true.)
 
         tot_area=tot_area+ area
 
@@ -428,22 +449,32 @@ subroutine convolve (site ,  denserdist , denseraz)
           !          stop
         endif
 
+
+        aux = (val(ind%model%wghm))  * &
+          area/d2r(green_common(igreen)%distance(idist)) * &
+          1./earth%radius/1e12 * &
+          1e3
         if (ind%green%gr.ne.0) then
-          result(1,1) = result(1,1)+ &
-            (val(1))  * &
-            green_common(igreen)%data(idist,1) * & 
-            area/d2r(green_common(igreen)%distance(idist)) * &
-            1./earth%radius/1e12 * &
-            1e3
+          result(ind%green%gr) = result(ind%green%gr) +  &
+            green_common(igreen)%data(idist,ind%green%gr) * & 
+            aux
         endif
-        if (ind%green%gh.ne.0) then
-          result(1,1) = result(1,1)+ &
-            (val(1))  * &
-            green_common(igreen)%data(idist,1) * & 
-            area/d2r(green_common(igreen)%distance(idist)) * &
-            1./earth%radius/1e12 * &
-            1e3 * cos(d2r(azimuth))
+        if (ind%green%ghn.ne.0) then
+          result(ind%green%ghn) = result(ind%green%ghn) +  &
+            green_common(igreen)%data(idist,ind%green%ghn) * & 
+            aux * cos (d2r(azimuth))
         endif
+        if (ind%green%ghe.ne.0) then
+          result(ind%green%ghe) = result(ind%green%ghe) +  &
+            green_common(igreen)%data(idist,ind%green%ghe) * & 
+            aux * cos (d2r(azimuth))
+        endif
+!        print * , ind%green%ghe ,ind%green%ghn
+        !        if (ind%green%ghn.ne.0) then
+        !          result(ind%green%ghn) = result(ind%green%ghn) +  &
+        !            green_common(igreen)%data(idist,ind%green%ghn-ind%green%extend) * & 
+        !            aux
+        !        endif
 
         !        !      ! newtonian part
         !        !      if(.not. iok(1).eq.0) then
@@ -468,11 +499,12 @@ subroutine convolve (site ,  denserdist , denseraz)
         !        !        !!!      endif
       enddo
     enddo
-!    write(output%unit, *) result(1,1)
-!    write(log%unit,*)  , "npoints:", npoints ,"tot_area", tot_area, tot_area/earth%radius**2
-
-    write(output%unit, '(g20.4)') , result(1,1)
   enddo 
+
+  write (output%unit, '(10en15.4)' ) result
+  !    write(log%unit,*)  , "npoints:", npoints ,"tot_area", tot_area, tot_area/earth%radius**2
+
+  !    write(output%unit, '(g20.4)') , result(1,1)
 end subroutine
 
 !

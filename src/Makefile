@@ -14,9 +14,11 @@ sx: grat
 	grat -S   \
 		j   : 52: 21 \
 		-F /home/mrajner/dat/wghm/dat/WGHM.nc @WGHM \
-		-G /home/mrajner/src/gotic2/data/grn1.data@GH:1:3 \
+		-G  /home/mrajner/src/gotic2/data/grn1.data@GHN:1:3 , @GHE \
+		, /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
+		, rajner@GN:1:2 \
 		-D 2008:2010:1@M \
-		-I 2@DD : 2@DA 
+		-I 0@DD : 0@DA  -L a@g -H
 iiiii: grat rrrr
 r:
 	../bin/grat  -S \

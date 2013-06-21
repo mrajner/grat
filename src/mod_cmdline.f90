@@ -57,16 +57,16 @@ module mod_cmdline
   logical :: inverted_barometer  = .true.  
 
   type model_index
-    integer(2) :: SP, T, RS
+    integer(2) :: SP, T, RS , WGHM
   end type
   type moreverbose_index
     integer(2) :: p, g , a
   end type
   type green_index
-    integer(2) :: gn , ge , gr, gh
+    integer(2) :: gn , ge , gr , ghn , ghe  
   end type
   type index_info
-    type (model_index) :: model
+    type (model_index)       :: model
     type (moreverbose_index) :: moreverbose
     type (green_index) :: green
   end type
