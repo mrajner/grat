@@ -9,6 +9,7 @@
 # kran:
 #   ./denorm_spotl_green
 
+# ooo: example_value_check
 iiiii: grat rrrr
 r:
 	../bin/grat  -S \
@@ -29,9 +30,13 @@ rrrr:
 		joze:52.0:21.2 \
 		-F \
 		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		, $(SP) @ SP , $(SP)\
 		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
+		, /home/mrajner/src/gotic2/data/grn1.data@GH:1:3 \
 		-D2011:2011:1@M \
-		-I 2 @DB : 144@DE : 80@AB 
+		-I 2 @DB : 144@DE : 80@AB \
+		-L b@p, a@g \
+		-P ../polygon/baltyk.poly -V
 
 gnu:
 	../bin/grat  -S \
@@ -182,7 +187,7 @@ example:
 		-H \
 		-I 12.9 @rB : 26@rE: 1@DD : 1@AD : l@I
 
-example_value_check: 
+example_value_check: value_check
 	$(PROGS_DIR)/value_check \
 		-F$(SP) \
 		, 4@PR\

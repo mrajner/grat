@@ -195,7 +195,7 @@ end subroutine
 ! =============================================================================
 subroutine green_unification ()
   use mod_utilities, only: size_ntimes_denser, spline_interpolation
-  use mod_cmdline, only: info, moreverbose
+  use mod_cmdline, only: info, moreverbose, ind
   type(green_functions) :: tmpgreen
   integer :: i , denser , iinfo , imin, imax , j, ii
   integer , allocatable, dimension(:):: which_green , tmp
@@ -291,25 +291,13 @@ subroutine green_unification ()
       green_common(iinfo)%dataname(i) = green(i)%dataname
     enddo
 
-    ! auxilary table indexing elastic part
-!    allocate(green_common(iinfo)%elastic( &
-!      size(green_common(iinfo)%dataname)  &
-!      ))
-!    where (green_common(iinfo)%dataname.eq."GE")
-!      green_common(iinfo)%elastic= .true.
-!    endwhere
-
-    if(any(moreverbose%dataname.eq."g")) then
-      do i = 1, size(moreverbose)
-        if (moreverbose(i)%dataname.eq."g") then
-          do j = 1, size(green_common(iinfo)%distance)
-            write(moreverbose(i)%unit, '(i3,f14.6,100f14.7)'), &
-              j, green_common(iinfo)%distance(j), &
-               green_common(iinfo)%start(j), &
-               green_common(iinfo)%stop(j), &
-              green_common(iinfo)%data(j,:)
-          enddo
-        endif
+    if(ind%moreverbose%g.ne.0) then
+      do j = 1, size(green_common(iinfo)%distance)
+        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6,100f14.7)'), &
+          j, green_common(iinfo)%distance(j), &
+          green_common(iinfo)%start(j), &
+          green_common(iinfo)%stop(j), &
+          green_common(iinfo)%data(j,:)
       enddo
     endif
     deallocate(tmpgreen%distance)
@@ -326,7 +314,7 @@ subroutine convolve (site ,  denserdist , denseraz)
   use mod_constants
   use mod_site, only : site_info
   use mod_cmdline
-  use mod_utilities, only: d2r, r2d
+  use mod_utilities, only: d2r, r2d, datanameunit
   use mod_spherical
   use mod_data
   use mod_polygon
@@ -372,6 +360,7 @@ subroutine convolve (site ,  denserdist , denseraz)
         call spher_trig &
           (d2r(site%lat), d2r(site%lon), &
           d2r(green_common(igreen)%distance(idist)) , d2r(azimuth) , lat , lon)
+
         ! get values of model
         do imodel = 1 , size(model)
           if(model(imodel)%if) then 
@@ -389,80 +378,88 @@ subroutine convolve (site ,  denserdist , denseraz)
           endif
         enddo
 
-        if(any(moreverbose%dataname.eq."p")) then
-          write(moreverbose_unit("p"),'(2f10.4,<size(val)>f15.4, <size(iok)>i4)'), &
-            r2d(lat),r2d(lon),val, iok
+        !moreverbose p option
+        if(ind%moreverbose%p.ne.0) then
+          write(moreverbose(ind%moreverbose%p)%unit , &
+            '(2f10.4,<size(val)>f15.4)', advance ="no"), &
+            r2d(lat),r2d(lon),val
+          if (size(iok).gt.0) then
+            write(moreverbose(ind%moreverbose%p)%unit , &
+              '(<size(iok)>i2)'), iok
+          else
+            write(moreverbose(ind%moreverbose%p)%unit , *)
+          endif
         endif
 
         ! calculate area using spherical formulae
         area= spher_area( &
           d2r(green_common(igreen)%start(idist)), &
-         d2r(green_common(igreen)%stop(idist)), &
+          d2r(green_common(igreen)%stop(idist)), &
           d2r(dazimuth), &
           radius=earth%radius, &
           alternative_method=.true.) 
 
-!        ! normalization according to Merriam (1992) 
-!        normalize= 1./ &
-!          (2.*pi*(1.-cos(d2r(dble(1.)))) * &
-!          d2r(green_common(igreen)%distance(idist)) * &
-!          1.e5 * &
-!          earth%radius )
+        ! normalization according to Merriam (1992) 
+        normalize= 1./ &
+          (2.*pi*(1.-cos(d2r(dble(1.)))) * &
+          d2r(green_common(igreen)%distance(idist)) * &
+          1.e5 * &
+          earth%radius )
 
-!        if (any(green_common(igreen)%dataname.eq."GE")) then
-!          ! elastic part
-!          ! if the cell is not over sea and inverted barometer assumption was not set 
-!          ! and is not excluded by polygon
-!          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-!          !        print * ,val
-!          !          results(1,1) = results(1,1) + &
-!          !            (val(1) / 100. -ref_p) * &
-!          !            green_common(igreen,7) * & 
-!          !            area * normalize
-!          !        result(1,1) = result(1,1)+ &
-!          !          (val(1) / 100. -1000. )  * &
-!          !          green_common(igreen)%data(idist,1) * & 
-!          !          area * normalize
-!          !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
-!          !!       stop 
+        !        if (any(green_common(igreen)%dataname.eq."GE")) then
+        !          ! elastic part
+        !          ! if the cell is not over sea and inverted barometer assumption was not set 
+        !          ! and is not excluded by polygon
+        !          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+        !          !        print * ,val
+        !          !          results(1,1) = results(1,1) + &
+        !          !            (val(1) / 100. -ref_p) * &
+        !          !            green_common(igreen,7) * & 
+        !          !            area * normalize
+        !          !        result(1,1) = result(1,1)+ &
+        !          !          (val(1) / 100. -1000. )  * &
+        !          !          green_common(igreen)%data(idist,1) * & 
+        !          !          area * normalize
+        !          !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
+        !          !!       stop 
 
-!          stop
-!        endif
-!        if (any(green_common(igreen)%dataname.eq."GR")) then
-!                  result(1,1) = result(1,1)+ &
-!                    (val(1) )  * &
-!                    green_common(igreen)%data(idist,1) * & 
-!                    area  / d2r(green_common(igreen)%distance(idist)) * &
-!                    1./earth%radius /1e12 * &
-!                    1e3
+        !          stop
+        !        endif
+        !        if (any(green_common(igreen)%dataname.eq."GR")) then
+        !                  result(1,1) = result(1,1)+ &
+        !                    (val(1) )  * &
+        !                    green_common(igreen)%data(idist,1) * & 
+        !                    area  / d2r(green_common(igreen)%distance(idist)) * &
+        !                    1./earth%radius /1e12 * &
+        !                    1e3
 
-!        endif
+        !        endif
 
-!        !      ! newtonian part
-!        !      if(.not. iok(1).eq.0) then
-!        !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
+        !        !      ! newtonian part
+        !        !      if(.not. iok(1).eq.0) then
+        !        !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
 
-!        !       if (model(2)%if.and.size(model).ge.2) then
-!        !          results%dt = results%dt + (val(1)/ 100.-ref_p) * &
-!        !            (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
-!        !        endif
+        !        !       if (model(2)%if.and.size(model).ge.2) then
+        !        !          results%dt = results%dt + (val(1)/ 100.-ref_p) * &
+        !        !            (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
+        !        !        endif
 
-!        !       results%dh = results%dh + (val(1)/ 100.-ref_p) * &
-!        !        (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
+        !        !       results%dh = results%dh + (val(1)/ 100.-ref_p) * &
+        !        !        (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
 
-!        !       results%dz = results%dz + (val(1)/ 100.-ref_p) * &
-!        !        (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
-!        !     endif
-!        !    endif
-!        !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-!        !        !!        !todo
-!        !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
-!        !        !!!        write (moreverbose%unit, '(">")')
-!        !        !!!      endif
+        !        !       results%dz = results%dz + (val(1)/ 100.-ref_p) * &
+        !        !        (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
+        !        !     endif
+        !        !    endif
+        !        !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+        !        !        !!        !todo
+        !        !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
+        !        !        !!!        write (moreverbose%unit, '(">")')
+        !        !        !!!      endif
       enddo
     enddo
     !    write(log%unit,*)  , "npoints:", npoints ,"area", area
-!        write(output%unit, '(g20.4)') , result(1,1)
+    !        write(output%unit, '(g20.4)') , result(1,1)
   enddo 
 end subroutine
 
@@ -489,120 +486,120 @@ end subroutine
 !
 !
 subroutine wczytaj_linie_informacyjne
-!!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
-!!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
-!!!      linie_informacyjne%deltal = (/ 0.0011, 0.0205, 0.0550, 1.0500, 10.2500, 90.5000  /)
-!!!      linie_informacyjne%deltah = (/ 0.0199, 0.0495, 0.9950, 9.9500, 89.7500, 179.5000 /)
-!!!      linie_informacyjne%delta  = (/ 0.0002, 0.0010, 0.0100, 0.1000, 0.5000 , 1.0000   /)
-!!!      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
+  !!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
+  !!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
+  !!!      linie_informacyjne%deltal = (/ 0.0011, 0.0205, 0.0550, 1.0500, 10.2500, 90.5000  /)
+  !!!      linie_informacyjne%deltah = (/ 0.0199, 0.0495, 0.9950, 9.9500, 89.7500, 179.5000 /)
+  !!!      linie_informacyjne%delta  = (/ 0.0002, 0.0010, 0.0100, 0.1000, 0.5000 , 1.0000   /)
+  !!!      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
 end subroutine
 !
 subroutine plot2green(green_file)
   character(len=*),intent (in) :: green_file
-!!!  integer                          :: ile_linii_komentarza , i, j , jj ,  ile_rekordow , io
-!!!  logical                          :: czy_komentarz=.true.
-!!!  character(len=1)                 :: fine
-!!!  real,dimension(:,:), allocatable :: values
-!!!  real, dimension(7)               :: values_interpolowane=0., values_interpolowane_integrated=0.
-!!!  real,dimension(:), allocatable   :: b,c,d
-!!!  real,dimension(3)                :: G_t
-!!!  real                             :: dist
-!!
-!!!ile_rekordow=0; ile_linii_komentarza=0
-!!!call wczytaj_linie_informacyjne
-!!
-!!
-!!!  open(1, file=trim(green_file)              , action='read'  , status='old')
-!!!  open(2, file=trim(green_file)//'.mrp02.dat', action='write')
-!!
-!!!  do while(czy_komentarz)
-!!!    read(1, *) dummy
-!!!    if( dummy(1:1).eq.'#') then
-!!!      ile_linii_komentarza=ile_linii_komentarza+1
-!!!    else
-!!!      czy_komentarz=.false.
-!!!    endif
-!!!  enddo
-!!!  rewind (1)
-!!!  do i=1, ile_linii_komentarza
-!!!    read (1,*) dummy
-!!!  enddo
-!!!  do while (io.eq.0)
-!!!    read(1,*, iostat=io) dummy
-!!!    ile_rekordow=ile_rekordow+1
-!!!  enddo
-!!!  ile_rekordow=ile_rekordow-1
-!!
-!!!  allocate(values(ile_rekordow,4))
-!!!  allocate(b(ile_rekordow))
-!!!  allocate(c(ile_rekordow))
-!!!  allocate(d(ile_rekordow))
-!!
-!!!  rewind(1)
-!!!  print *, ile_linii_komentarza,ile_rekordow
-!!!  do i=1, ile_linii_komentarza
-!!!    read (1,*) dummy
-!!!  enddo
-!!!  do i=1, ile_rekordow
-!!!    read (1,*) (values(i,j), j=1,4)
-!!  enddo
-!!
-!!
-!!!  write(2,'(a)'), '# program '
-!!!  do i=1,size(linie_informacyjne)
-!!!      write(2, '(i1, i3, 2i4, 3f10.4, 5x, a1)'), linie_informacyjne(i)
-!!!      write(*, '(i1, i3, 2i4, 3f10.4, 5x, a1)'), linie_informacyjne(i)
-!!!      do j= 1, linie_informacyjne(i)%Nj
-!!!         dist = linie_informacyjne(i)%deltal+(j-1)*linie_informacyjne(i)%delta
-!!!!         print * ,dist
-!!!        do jj=2,4
-!!!          call spline(values(:,1), values(:,jj) ,b,c,d,ile_rekordow)
-!!!          values_interpolowane(jj-1)  = ispline(dist , values(:,1), values(:,jj), b, c, d, ile_rekordow)
-!!!          call pointmass2integrated(values_interpolowane(jj-1), dist , linie_informacyjne(i)%delta , K(jj-1), values_interpolowane_integrated(jj-1) )
-!!!!          print*,ile_rekordow, values(1,1), values_interpolowane(jj-1),dist,values_interpolowane_integrated(jj-1)
-!!!!call exit
-!!!        enddo
-!!!        write(2,'(7e13.6)') (values_interpolowane_integrated(jj),jj=1,7)
-!!!      enddo
-!!!  enddo
-!!!  close(1)
-!!!  close(2)
-!!!  deallocate(values,b,c,d)
+  !!!  integer                          :: ile_linii_komentarza , i, j , jj ,  ile_rekordow , io
+  !!!  logical                          :: czy_komentarz=.true.
+  !!!  character(len=1)                 :: fine
+  !!!  real,dimension(:,:), allocatable :: values
+  !!!  real, dimension(7)               :: values_interpolowane=0., values_interpolowane_integrated=0.
+  !!!  real,dimension(:), allocatable   :: b,c,d
+  !!!  real,dimension(3)                :: G_t
+  !!!  real                             :: dist
+  !!
+  !!!ile_rekordow=0; ile_linii_komentarza=0
+  !!!call wczytaj_linie_informacyjne
+  !!
+  !!
+  !!!  open(1, file=trim(green_file)              , action='read'  , status='old')
+  !!!  open(2, file=trim(green_file)//'.mrp02.dat', action='write')
+  !!
+  !!!  do while(czy_komentarz)
+  !!!    read(1, *) dummy
+  !!!    if( dummy(1:1).eq.'#') then
+  !!!      ile_linii_komentarza=ile_linii_komentarza+1
+  !!!    else
+  !!!      czy_komentarz=.false.
+  !!!    endif
+  !!!  enddo
+  !!!  rewind (1)
+  !!!  do i=1, ile_linii_komentarza
+  !!!    read (1,*) dummy
+  !!!  enddo
+  !!!  do while (io.eq.0)
+  !!!    read(1,*, iostat=io) dummy
+  !!!    ile_rekordow=ile_rekordow+1
+  !!!  enddo
+  !!!  ile_rekordow=ile_rekordow-1
+  !!
+  !!!  allocate(values(ile_rekordow,4))
+  !!!  allocate(b(ile_rekordow))
+  !!!  allocate(c(ile_rekordow))
+  !!!  allocate(d(ile_rekordow))
+  !!
+  !!!  rewind(1)
+  !!!  print *, ile_linii_komentarza,ile_rekordow
+  !!!  do i=1, ile_linii_komentarza
+  !!!    read (1,*) dummy
+  !!!  enddo
+  !!!  do i=1, ile_rekordow
+  !!!    read (1,*) (values(i,j), j=1,4)
+  !!  enddo
+  !!
+  !!
+  !!!  write(2,'(a)'), '# program '
+  !!!  do i=1,size(linie_informacyjne)
+  !!!      write(2, '(i1, i3, 2i4, 3f10.4, 5x, a1)'), linie_informacyjne(i)
+  !!!      write(*, '(i1, i3, 2i4, 3f10.4, 5x, a1)'), linie_informacyjne(i)
+  !!!      do j= 1, linie_informacyjne(i)%Nj
+  !!!         dist = linie_informacyjne(i)%deltal+(j-1)*linie_informacyjne(i)%delta
+  !!!!         print * ,dist
+  !!!        do jj=2,4
+  !!!          call spline(values(:,1), values(:,jj) ,b,c,d,ile_rekordow)
+  !!!          values_interpolowane(jj-1)  = ispline(dist , values(:,1), values(:,jj), b, c, d, ile_rekordow)
+  !!!          call pointmass2integrated(values_interpolowane(jj-1), dist , linie_informacyjne(i)%delta , K(jj-1), values_interpolowane_integrated(jj-1) )
+  !!!!          print*,ile_rekordow, values(1,1), values_interpolowane(jj-1),dist,values_interpolowane_integrated(jj-1)
+  !!!!call exit
+  !!!        enddo
+  !!!        write(2,'(7e13.6)') (values_interpolowane_integrated(jj),jj=1,7)
+  !!!      enddo
+  !!!  enddo
+  !!!  close(1)
+  !!!  close(2)
+  !!!  deallocate(values,b,c,d)
 end subroutine
 
 subroutine denormalize(filein)
   use mod_printing
   character(len=*),intent (in) :: filein
-!  character(len=1) :: fine
+  !  character(len=1) :: fine
   character(len=80) :: header
   integer :: fileinunit , fileoutunit
   integer :: ngr, j, M, Nj, i, ii, iii, i_plik
-!!!  real :: deltal, deltah, delta,dist
-!!!  real, dimension(7) :: val
-!!!  real,dimension(3) :: G_t
-!!
-write(fileoutunit, form%separator)
-write(fileoutunit, form%i3), '# Converted with denormalize (from mod_green)'
-write(fileoutunit, form%i3), '#',trim(filein)
+  !!!  real :: deltal, deltah, delta,dist
+  !!!  real, dimension(7) :: val
+  !!!  real,dimension(3) :: G_t
+  !!
+  write(fileoutunit, form%separator)
+  write(fileoutunit, form%i3), '# Converted with denormalize (from mod_green)'
+  write(fileoutunit, form%i3), '#',trim(filein)
 
-open(newunit = fileinunit ,file=trim(filein),action='read',status='old')
+  open(newunit = fileinunit ,file=trim(filein),action='read',status='old')
   read (fileinunit,'(a70)') header
 
   read (fileinunit,'(i1,i3,2i4)') ngr,j,M,Nj
-!!!  do i=1,M
-!!!    read (1,'(i1,i3,2i4,3f10.4,5x,a1)') ngr,j,M,Nj,deltal, deltah,delta,fine
-!!!    do ii=1,Nj
-!!!      read (1,'(<ngr>e13.6)'), (val(iii),iii=1,7)
-!!!      dist=deltal+(ii-1)*delta
-!!!      write (2, '(f10.5,7e)'),dist,val
-!!
-!!!      do iii=1,3  ! dla vert_disp, hor_disp, gravity -- jest taka 
-!!!      call integrated2pointmass(val(iii),dist , delta, K(iii),  G_t(iii))
-!!!      enddo
-!!!      write (3,'(100(e20.11))') dist,(G_t(iii),iii=1,3)
-!!!    enddo
-!  enddo
-!!
+  !!!  do i=1,M
+  !!!    read (1,'(i1,i3,2i4,3f10.4,5x,a1)') ngr,j,M,Nj,deltal, deltah,delta,fine
+  !!!    do ii=1,Nj
+  !!!      read (1,'(<ngr>e13.6)'), (val(iii),iii=1,7)
+  !!!      dist=deltal+(ii-1)*delta
+  !!!      write (2, '(f10.5,7e)'),dist,val
+  !!
+  !!!      do iii=1,3  ! dla vert_disp, hor_disp, gravity -- jest taka 
+  !!!      call integrated2pointmass(val(iii),dist , delta, K(iii),  G_t(iii))
+  !!!      enddo
+  !!!      write (3,'(100(e20.11))') dist,(G_t(iii),iii=1,3)
+  !!!    enddo
+  !  enddo
+  !!
 end subroutine
 !
 !

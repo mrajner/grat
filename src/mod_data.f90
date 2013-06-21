@@ -115,7 +115,7 @@ subroutine read_netCDF (model)
   do i = 2,5
     call get_dimension (model, i)
   enddo
-  if (size (model%time).gt.1) call nctime2date (model)
+  if (size (model%time).ge.1) call nctime2date (model)
 end subroutine
 
 ! =============================================================================

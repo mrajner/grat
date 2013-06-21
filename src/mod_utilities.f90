@@ -395,4 +395,18 @@ integer function count_separator (dummy, separator)
   enddo
 end function
 
+! ==============================================================================
+! ==============================================================================
+function datanameunit (dataname ,datanames,count)
+  integer:: datanameunit
+  character(*), intent(in):: dataname
+  integer , intent (in):: count
+  character(*), intent(in)  :: datanames(count)
+  integer :: i
+
+  datanameunit = 0
+  do i = 1, count
+    if(datanames(i).eq.dataname) datanameunit = i
+  enddo
+end function
 end module

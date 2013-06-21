@@ -4,6 +4,7 @@ module mod_parser
   use mod_printing
 
   implicit none
+
   !----------------------------------------------------
   ! various
   !----------------------------------------------------
@@ -439,31 +440,35 @@ end function
 
 
 ! =============================================================================
+!> This soubroutine stores indexes of specific dataname for data, green
+!! functions, polygon etc.
 ! =============================================================================
 subroutine get_index()
   use mod_polygon
   use mod_data
+  use mod_cmdline
 
-  type model_index
-    integer :: SP, T, RS
-  end type
-  type index_info
-    type (model_index) :: model
-  end type
-  type(index_info) :: index
   integer :: i
 
-!  print * , model%dataname
   do i = 1 , size(model)
     select case (model(i)%dataname)
     case ("SP")
-      index%model%SP = i
+      ind%model%SP = i
     case ("T")
-      index%model%T = i
+      ind%model%T = i
     case ("RS")
-      index%model%RS = i
+      ind%model%RS = i
     endselect
   enddo
+  do i = 1 , size(moreverbose)
+    select case (moreverbose(i)%dataname)
+    case ("p")
+      ind%moreverbose%p = i
+    case ("g")
+      ind%moreverbose%g = i
+    endselect
+  enddo
+  
 end subroutine
 
 end module

@@ -56,6 +56,17 @@ module mod_cmdline
 
   logical :: inverted_barometer  = .true.  
 
+  type model_index
+    integer(2) :: SP, T, RS
+  end type
+  type moreverbose_index
+    integer(2) :: p, g
+  end type
+  type index_info
+    type (model_index) :: model
+    type (moreverbose_index) :: moreverbose
+  end type
+  type(index_info) :: ind
 contains
 ! =============================================================================
 !> This routine collect command line arguments to one matrix depending on
@@ -171,17 +182,4 @@ function check_if_switch_or_minus(dummy)
   if (is_numeric(dummy(2:2))) check_if_switch_or_minus = .false.
 end function
 
-! ==============================================================================
-! ==============================================================================
-function moreverbose_unit(dataname)
-  integer:: moreverbose_unit
-  character(*), intent(in):: dataname
-  integer :: i
-
-  do i = 1, size(moreverbose)
-    if(moreverbose(i)%dataname.eq.dataname) then
-      moreverbose_unit = moreverbose(i)%unit
-    endif
-  enddo
-end function
 end module

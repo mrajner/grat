@@ -65,6 +65,7 @@ program grat
   use mod_site
   use mod_polygon
   use mod_cmdline
+  use mod_utilities, only: datanameunit
 
   implicit none
   real(dp) :: x , y , z , lat ,lon , cpu(2)
@@ -148,6 +149,7 @@ program grat
       enddo
       result=0.
       call convolve (site(isite))
+
     enddo
   enddo
 
