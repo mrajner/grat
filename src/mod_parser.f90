@@ -436,6 +436,7 @@ function dataname(abbreviation)
   if (abbreviation.eq."g")  dataname = "green function used"
   if (abbreviation.eq."p")  dataname = "points"
   if (abbreviation.eq."a")  dataname = "auxiliary"
+  if (abbreviation.eq."d")  dataname = "dates"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
 
@@ -472,14 +473,16 @@ subroutine get_index()
       ind%moreverbose%g = i
     case ("a")
       ind%moreverbose%a = i
+    case ("d")
+      ind%moreverbose%d = i
     endselect
   enddo
   do i = 1, size(green)
     select case (green(i)%dataname)
     case ("GE")
-      ind%green%gn = i 
+      ind%green%ge = i 
     case ("GN")
-      ind%green%ge = i
+      ind%green%gn = i
     case ("GR")
       ind%green%gr = i
     case ("GHN")

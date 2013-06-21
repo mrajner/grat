@@ -26,7 +26,7 @@ module mod_green
 !  end type
 !  type(result_green) :: result
 
-  real(dp) , allocatable, dimension(:) :: result
+  real(dp) , allocatable, dimension(:,:) :: result
 
   type green_common_info
     real(dp),allocatable,dimension(:) :: distance
@@ -65,19 +65,17 @@ subroutine parse_green (cmd_line_entry)
     write(log%unit, form%i2) trim(cmd_line_entry%field(i)%full)
     green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
     if (i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
-      green(i)%name = cmd_line_entry%field(i-1)%subfield(1)%name
+      green(i)%name = green(i-1)%name
     endif
     green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
     do ii=1,2
-        green(i)%column(ii) =green(i-1)%column(ii)
-        green(i)%columndataname(ii) = green(i-1)%columndataname(ii) 
-        print '(2i5)' , green(i)%column(ii)
+      green(i)%column(ii) =green(i-1)%column(ii)
+      green(i)%columndataname(ii) = green(i-1)%columndataname(ii) 
       if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
         read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
         green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
       endif
     enddo
-
     call read_green(green(i))
   enddo
 end subroutine
@@ -326,16 +324,18 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve (site)
+subroutine convolve (site , date)
   use mod_constants
   use mod_site, only : site_info
   use mod_cmdline
   use mod_utilities, only: d2r, r2d, datanameunit
   use mod_spherical
   use mod_data
+  use mod_date, only : dateandmjd
   use mod_polygon
   use mod_printing
   type(site_info), intent(in) :: site
+  type(dateandmjd),intent(in) , optional :: date
 
   integer  ::  ndenser , igreen , idist  , iazimuth , nazimuth
   integer :: imodel
@@ -352,14 +352,12 @@ subroutine convolve (site)
     call green_unification()
   endif
 
-  print *, green%column(1)
-  stop
-  if (.not. allocated(result)) allocate(result(size(green)))
+  if (.not. allocated(result)) allocate(result(size(green),size(green_common)+1))
   npoints  = 0
   area     = 0
   tot_area = 0
-  result=0
 
+  result=0
   do igreen = 1 , size(green_common)
     do idist = 1 , size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
@@ -376,6 +374,7 @@ subroutine convolve (site)
       do iazimuth  = 1 , nazimuth
         npoints = npoints + 1
         azimuth = (iazimuth - 1) * dazimuth
+        azimuth = azimuths(iazimuth)
 
         ! get lat and lon of point
         call spher_trig &
@@ -430,23 +429,26 @@ subroutine convolve (site)
           1.e5 * &
           earth%radius )
 
+        !todo
+        ref_p=1000
         if (ind%green%ge.ne.0) then
           ! if the cell is not over sea and inverted barometer assumption was not set 
           ! and is not excluded by polygon
           !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-          !        print * ,val
-          !          results(1,1) = results(1,1) + &
-          !            (val(1) / 100. -ref_p) * &
-          !            green_common(igreen,7) * & 
-          !            area * normalize
-          !        result(1,1) = result(1,1)+ &
-          !          (val(1) / 100. -1000. )  * &
-          !          green_common(igreen)%data(idist,1) * & 
-          !          area * normalize
+                    result(ind%green%ge,igreen) = result(ind%green%ge,igreen) + & 
+                      (val(ind%model%sp) / 100. -ref_p) * &
+                      green_common(igreen)%data(idist, ind%green%ge) * & 
+                      area * normalize
           !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
           !!       stop 
 
           !          stop
+        endif
+        if (ind%green%gn.ne.0) then
+          result(ind%green%gn,igreen) = result(ind%green%gn,igreen) + & 
+            (val(ind%model%sp) / 100. -ref_p) * &
+            green_common(igreen)%data(idist, ind%green%gn) * & 
+            area * normalize
         endif
 
 
@@ -455,27 +457,20 @@ subroutine convolve (site)
           1./earth%radius/1e12 * &
           1e3
         if (ind%green%gr.ne.0) then
-          result(ind%green%gr) = result(ind%green%gr) +  &
+          result(ind%green%gr,igreen) = result(ind%green%gr,igreen) +  &
             green_common(igreen)%data(idist,ind%green%gr) * & 
             aux
         endif
         if (ind%green%ghn.ne.0) then
-          result(ind%green%ghn) = result(ind%green%ghn) +  &
+          result(ind%green%ghn,igreen) = result(ind%green%ghn,igreen) +  &
             green_common(igreen)%data(idist,ind%green%ghn) * & 
-            aux * cos (d2r(azimuth))
+            aux * - cos (d2r(azimuth))
         endif
         if (ind%green%ghe.ne.0) then
-          result(ind%green%ghe) = result(ind%green%ghe) +  &
+          result(ind%green%ghe,igreen) = result(ind%green%ghe,igreen) +  &
             green_common(igreen)%data(idist,ind%green%ghe) * & 
-            aux * cos (d2r(azimuth))
+            aux * - sin (d2r(azimuth))
         endif
-!        print * , ind%green%ghe ,ind%green%ghn
-        !        if (ind%green%ghn.ne.0) then
-        !          result(ind%green%ghn) = result(ind%green%ghn) +  &
-        !            green_common(igreen)%data(idist,ind%green%ghn-ind%green%extend) * & 
-        !            aux
-        !        endif
-
         !        !      ! newtonian part
         !        !      if(.not. iok(1).eq.0) then
         !        !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
@@ -499,9 +494,23 @@ subroutine convolve (site)
         !        !        !!!      endif
       enddo
     enddo
+    if (present(date)) then
+      write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+    endif
+    if (size(info).gt.1) then
+      write (output%unit, '(i2)' , advance = "no" ) igreen
+    endif
+    write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result(:, igreen)
   enddo 
 
-  write (output%unit, '(10en15.4)' ) result
+  if (igreen-1.eq. size(green_common) .and. igreen.gt.2) then
+    if (present(date)) then
+      write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+    endif
+    write (output%unit, '(a2)' , advance = "no" ) "T"
+    write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, (sum(result(i, 1:igreen-1)), i =1,size(result,1))
+  endif
+
   !    write(log%unit,*)  , "npoints:", npoints ,"tot_area", tot_area, tot_area/earth%radius**2
 
   !    write(output%unit, '(g20.4)') , result(1,1)

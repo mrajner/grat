@@ -60,7 +60,7 @@ module mod_cmdline
     integer(2) :: SP, T, RS , WGHM
   end type
   type moreverbose_index
-    integer(2) :: p, g , a
+    integer(2) :: p, g , a , d
   end type
   type green_index
     integer(2) :: gn , ge , gr , ghn , ghe  

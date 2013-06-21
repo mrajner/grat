@@ -64,7 +64,7 @@ subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
   saz = sin (azimuth)
   caz = cos (azimuth)
   cb = cd*ct + sd*st*caz
-  !  todo !if(abs(cb).gt.1) cb = cb/abs(cb)
+  !if(abs(cb).gt.1) cb = cb/abs(cb)
   sb = sqrt(1.-cb**2)
   latout = pi/2. - acos(cb)
   lonout = lonin + atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb)

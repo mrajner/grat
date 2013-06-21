@@ -92,9 +92,12 @@ program grat
     endif
     start = 1
   endif
+  if (size(info).gt.1) then
+    if(output%header) write (output%unit , '(a2)' , advance = "no" ) "#i"
+    endif
 
   if(output%header) then
-    write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
+    write (output%unit , '(a8,30a15)', advance ="no"  ) "#name", "lat" , "lon" , "h"
   endif
 
   if(output%header) then
@@ -109,12 +112,7 @@ program grat
 
   do idate = start , size (date)
     do isite = 1 , size(site)
-      if (idate.gt.0) then
-        write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date(idate)%mjd, date(idate)%date
-      endif
 
-      write (output%unit, '(a8,30f15.4)' ,advance='no'), site(isite)%name, site(isite)%lat, site(isite)%lon
-      !!        print *
       !do i = 1 , size(polygon)
       !  call chkgon( site(isite)%lon , site(isite)%lat , polygon(i) , iok)
       !enddo
@@ -148,7 +146,11 @@ program grat
         endif
       enddo
       iresult = iresult + 1
-      call convolve (site(isite) )
+      if (idate.gt.0) then
+        call convolve (site(isite) , date = date(idate))
+      else
+        call convolve (site(isite))
+      endif
 
     enddo
   enddo

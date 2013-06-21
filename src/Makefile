@@ -10,15 +10,18 @@
 #   ./denorm_spotl_green
 
 # ooo: example_value_check
-sx: grat
-	grat -S   \
-		j   : 52: 21 \
-		-F /home/mrajner/dat/wghm/dat/WGHM.nc @WGHM \
-		-G  /home/mrajner/src/gotic2/data/grn1.data@GHN:1:3 , @GHE \
-		, /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
-		, rajner@GN:1:2 \
-		-D 2008:2010:1@M \
-		-I 0@DD : 0@DA  -L a@g -H
+sx: grat oo
+	grat \
+		-S j : 52:21   \
+		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
+		-G merriam @GE ,\
+		   merriam @GN \
+			 -D 2009:1@M :1@D  -H -o tmp
+oo: value_check
+	value_check \
+		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
+		-S j :52:21 \
+     -D 2009:200904  -H -o tmp2
 iiiii: grat rrrr
 r:
 	../bin/grat  -S \
@@ -204,7 +207,7 @@ example_value_check: value_check
 		-V \
 		-I l @I \
 		-D2011:1@D ,20110606 \
-		-L @d
+		-L tmp@d -H
 
 
 libgrat.a: $(OBJS)

@@ -22,12 +22,7 @@ program value_check
     accepted_switches="VFoShvIDLPR" , &
     cmdlineargs=.true.)
 
-  if (.not.allocated(info)) then
-    interpolation="n"
-  else
-    interpolation = info(1)%interpolation
-  endif
-
+  call get_index()
 
   write(log%unit, form_separator) 
   allocate (val (size(model)))
@@ -76,9 +71,8 @@ program value_check
 
 
       ! if this point should not be used (polygon) leave as zero
-      !      
       if (allocated(polygon).and.polygon(1)%if) then
-        call chkgon( site(i)%lon , site(i)%lat , polygon(1) , iok)
+        call chkgon( site(i)%lon, site(i)%lat, polygon(1), iok)
       else
         iok=1
       endif
@@ -90,7 +84,7 @@ program value_check
           if (model(ii)%if) then 
             if (iok.eq.1) then
               call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                method=interpolation)
+                method=info(1)%interpolation)
             else
               val (imodel) = 0
             endif
@@ -99,15 +93,15 @@ program value_check
           endif
         endif
       enddo
-      write (output%unit , '(a8,30f15.4)') , site(i)%name, site(i)%lat, site(i)%lon, val
+      write (output%unit , '(a8,2f15.4,20en15.4)') , site(i)%name, site(i)%lat, site(i)%lon, val
     enddo
   enddo
 
   ! todo print to appropriate files
-  if (any(moreverbose%dataname.eq."d")) then
+  if (ind%moreverbose%d.ne.0) then
     do i = 1 , size(model)
       do  j =1,size(model(i)%time)
-        print '(g0,1x,i4,5i2.2)' , model(i)%time(j), model(i)%date(j,:)
+        write (moreverbose(ind%moreverbose%d)%unit ,  '(g0,1x,i4,5i2.2)')  model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif
