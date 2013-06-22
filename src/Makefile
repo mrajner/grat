@@ -14,7 +14,7 @@ sx: grat
 	grat \
 		-S j : 0:0   \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @ SP :pres, 10\
-		-G merriam @GE -L@g,@p -I  0@DB: 1@DE : 1@DS : 30 @AS -V
+		-G merriam @GE -La@g,@p -I  6@DB: 10@DE : 5@DS : 90 @AS -V
 oo: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\

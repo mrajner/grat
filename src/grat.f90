@@ -83,7 +83,6 @@ program grat
 
   call get_index()
 
-
   iresult=0
   start=0
   if (size(date).gt.0) then
@@ -118,7 +117,6 @@ program grat
       !enddo
 
       do i = 1 , size(model)
-
         if(model(i)%if) then
           select case (model(i)%dataname)
           case ("LS","RS")

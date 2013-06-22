@@ -227,9 +227,9 @@ end subroutine
 
 !end function
 ! =============================================================================
-!> \brief Get values from netCDF file for specified variables
+!> \brief Get variable from netCDF file for specified variables
 ! =============================================================================
-subroutine get_variable(model , date)
+subroutine get_variable(model, date)
   use netcdf
   use mod_printing
   type (file), intent(inout) :: model
@@ -324,28 +324,29 @@ end subroutine check
 !! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
 ! =============================================================================
-subroutine get_value( model, lat , lon , val ,level, method )
+subroutine get_value(model, lat, lon, val, level, method)
   use mod_constants , only: dp 
   use mod_cmdline
+  use mod_utilities, only: r2d
 
   type(file) , intent (in) :: model
   real(dp) , intent (in) :: lat,lon
   real(dp) , intent(out) ::  val 
-  character(1), optional , intent(in) :: method
+  character(1), optional, intent(in) :: method
   integer , optional , intent(in) :: level
-  integer :: i ,j , ilevel =1 
-  integer  :: ilon, ilat , ilon2 , ilat2
+  integer :: i, j, ilevel = 1 
+  integer  :: ilon, ilat, ilon2, ilat2
   real(dp), dimension(4,3) :: array_aux 
 
   if (present(level)) ilevel=level
   ! check if inside model range
-  if (   lat.lt.min(model%latrange(1), model%latrange(2))  &
+  if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
     .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
-    .or.lon.lt.min(model%latrange(1), model%latrange(2)) &
-    .or. (lon.gt.max(model%latrange(1), model%latrange(2)) &
-    .and.   lon.gt.max(model%latrange(1), model%latrange(2))) &
+    .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
+    .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
     ) then
     val = sqrt(-1.)
+    return
   endif
   if (model%if_constant_value) then
     val = model%constant_value
@@ -366,13 +367,11 @@ subroutine get_value( model, lat , lon , val ,level, method )
       array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
       array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
 
-      do i=1,size(moreverbose)
-        if (moreverbose(i)%dataname.eq."l") then
-          write(moreverbose(i)%unit ,  '(3f15.4," l")') , &
-            (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
-          write(moreverbose(i)%unit ,  '(">")')
-        endif
-      enddo
+      if (ind%moreverbose%l.ne.0) then
+        write(moreverbose(ind%moreverbose%l)%unit ,  '(3f15.4," l")') , &
+          (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
+        write(moreverbose(ind%moreverbose%l)%unit ,  '(">")')
+      endif
       val = bilinear ( lon , lat , array_aux )
       return
     endif

@@ -51,11 +51,12 @@ end function
 !! \date 2013-03-06
 !! \warning all values in radians
 ! =============================================================================
-subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
+subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout, domain)
   real(dp) , intent(in)  :: distance 
   real(dp) , intent(in)  :: latin , lonin , azimuth
   real(dp) , intent(out) :: latout, lonout 
   real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
+  logical, intent(in), optional :: domain
 
   ct  = cos (pi/2.-latin)
   st  = sin (pi/2.-latin)
@@ -68,6 +69,11 @@ subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout)
   sb = sqrt(1.-cb**2)
   latout = pi/2. - acos(cb)
   lonout = lonin + atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb)
+  if (present(domain).and.domain) then
+    if (lonout.lt.0) then
+    lonout=lonout+2*pi
+  endif
+  endif
 end subroutine
 
 ! =============================================================================

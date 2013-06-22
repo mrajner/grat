@@ -402,7 +402,7 @@ subroutine convolve (site , date)
         ! get lat and lon of point
         call spher_trig &
           (d2r(site%lat), d2r(site%lon), &
-          d2r(green_common(igreen)%distance(idist)) , d2r(azimuth) , lat , lon)
+          d2r(green_common(igreen)%distance(idist)), d2r(azimuth), lat, lon, domain=.true.)
 
         ! get values of model
         do imodel = 1 , size(model)
@@ -437,8 +437,9 @@ subroutine convolve (site , date)
         !moreverbose p option
         if(ind%moreverbose%p.ne.0) then
           write(moreverbose(ind%moreverbose%p)%unit ,      & 
-            '(a8,8f12.3,<size(val)>en12.3)', advance ="no"),   & 
-            site%name, site%lat, site%lon,green_common(igreen)%distance(idist),  azimuth, r2d(lat),r2d(lon),area, tot_area,val
+            '(a8,6f12.3,2en12.3,<size(val)>en12.3)', advance ="no"),   & 
+            site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, &
+            r2d(lat),r2d(lon),area, tot_area,val
           if (size(iok).gt.0) then
             write(moreverbose(ind%moreverbose%p)%unit ,    & 
               '(<size(iok)>i2)'), iok
