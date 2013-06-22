@@ -221,68 +221,88 @@ subroutine green_unification ()
   allocate (which_green(size(info)))
   allocate (tmp(size(green)))
   do iinfo=1,size(info)
-    do i = 1, size(green)
-      tmp(i)= count( &
-        green(i)%distance.le.info(iinfo)%distance%stop &
-        .and.green(i)%distance.ge.info(iinfo)%distance%start &
-        ) 
-    enddo
-    which_green(iinfo) = maxloc(tmp,1)
-
-    imin=minloc( & 
-      abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start),1)-1 
-    imax=minloc( &
-      abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop),1)+1
-
-    if (imin.lt.1) imin = 1
-    if( imax.gt.size(green(which_green(iinfo))%distance)) then
-      imax = size(green(which_green(iinfo))%distance)
-    endif
-
-    allocate(tmpgreen%distance( &
-      size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) &
-      ))
-    do ii = 1, imax - imin
-      do j = 1, info(iinfo)%distance%denser
-        tmpgreen%distance((ii-1)*info(iinfo)%distance%denser+j) =  &
-          green(which_green(iinfo))%distance(imin+ii-1) &
-          +(j-1)*(green(which_green(iinfo))%distance(imin+ii) &
-          -green(which_green(iinfo))%distance(imin+ii-1)) &
-          /info(iinfo)%distance%denser
+    if (info(iinfo)%distance%step.eq.0) then
+      do i = 1, size(green)
+        tmp(i)= count(                                         & 
+          green(i)%distance.le.info(iinfo)%distance%stop       & 
+          .and.green(i)%distance.ge.info(iinfo)%distance%start & 
+          ) 
       enddo
-    enddo
+      which_green(iinfo) = maxloc(tmp,1)
 
-    tmpgreen%distance(size(tmpgreen%distance)) = &
-      green(which_green(iinfo))%distance(imax)
+      imin=minloc( & 
+        abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start),1)-1 
+      imax=minloc( &
+        abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop),1)+1
 
-    imin = count(tmpgreen%distance.le.info(iinfo)%distance%start) 
-    imax = size(tmpgreen%distance) - &
-      count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
+      if (imin.lt.1) imin = 1
+      if( imax.gt.size(green(which_green(iinfo))%distance)) then
+        imax = size(green(which_green(iinfo))%distance)
+      endif
 
-    allocate(green_common(iinfo)%distance(imax-imin+1))
-    green_common(iinfo)%distance =  &
-      tmpgreen%distance(imin:imax)
-    green_common(iinfo)%distance(1) = &
-      (3/4.*info(iinfo)%distance%start+ &
-      green_common(iinfo)%distance(2)/4)
-    green_common(iinfo)%distance(size(green_common(iinfo)%distance)) = &
-      (3/4.*info(iinfo)%distance%stop+ &
-      green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
+      allocate(tmpgreen%distance(                                   & 
+        size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) & 
+        ))
+      do ii = 1, imax - imin
+        do j = 1, info(iinfo)%distance%denser
+          tmpgreen%distance((ii-1)*info(iinfo)%distance%denser+j) = & 
+            green(which_green(iinfo))%distance(imin+ii-1)           & 
+            +(j-1)*(green(which_green(iinfo))%distance(imin+ii)     & 
+            -green(which_green(iinfo))%distance(imin+ii-1))         & 
+            /info(iinfo)%distance%denser
+        enddo
+      enddo
 
-    allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
-    allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
+      tmpgreen%distance(size(tmpgreen%distance)) = & 
+        green(which_green(iinfo))%distance(imax)
 
-    green_common(iinfo)%start=(green_common(iinfo)%distance)
-    do i =1 , size(green_common(iinfo)%distance)
-      green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
-        green_common(iinfo)%distance(i-1) ) / 2.
-      green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
-        green_common(iinfo)%distance(i+1) ) / 2.
-    enddo
-    green_common(iinfo)%start(1)= info(iinfo)%distance%start
-    green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
-      info(iinfo)%distance%stop
+      imin = count(tmpgreen%distance.le.info(iinfo)%distance%start) 
+      imax = size(tmpgreen%distance) - &
+        count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
 
+      allocate(green_common(iinfo)%distance(imax-imin+1))
+      green_common(iinfo)%distance =       & 
+        tmpgreen%distance(imin:imax)
+      green_common(iinfo)%distance(1) =    & 
+        (3/4.*info(iinfo)%distance%start+  & 
+        green_common(iinfo)%distance(2)/4)
+      green_common(iinfo)%distance(size(green_common(iinfo)%distance)) =      & 
+        (3/4.*info(iinfo)%distance%stop+                                      & 
+        green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
+
+      allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
+      allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
+
+      green_common(iinfo)%start=(green_common(iinfo)%distance)
+      do i =1 , size(green_common(iinfo)%distance)
+        green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
+          green_common(iinfo)%distance(i-1) ) / 2.
+        green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
+          green_common(iinfo)%distance(i+1) ) / 2.
+      enddo
+
+      green_common(iinfo)%start(1)= info(iinfo)%distance%start
+      green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
+        info(iinfo)%distance%stop
+      deallocate(tmpgreen%distance)
+    else
+      allocate(green_common(iinfo)%distance( &
+       ceiling( &
+       (info(iinfo)%distance%stop - info(iinfo)%distance%start) &
+       /info(iinfo)%distance%step) &
+        ))
+      allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
+      allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
+ 
+       green_common(iinfo)%start = &
+        [(info(iinfo)%distance%start + &
+        (i-1)*info(iinfo)%distance%step, &
+        i=1,size(green_common(iinfo)%distance)) ]
+      green_common(iinfo)%stop = green_common(iinfo)%start(2:) 
+      green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = info(iinfo)%distance%stop
+      green_common(iinfo)%distance = &
+      (green_common(iinfo)%stop + green_common(iinfo)%start)/2
+    endif
 
     allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance),size(green)))
     allocate(green_common(iinfo)%dataname(size(green)))
@@ -314,7 +334,6 @@ subroutine green_unification ()
           green_common(iinfo)%data(j,:)
       enddo
     endif
-    deallocate(tmpgreen%distance)
   enddo
 end subroutine
 
@@ -345,7 +364,6 @@ subroutine convolve (site , date)
   integer :: i,j , iok(size(polygon)) , npoints
 
   real(dp) :: normalize , aux
-
   real(dp), allocatable, dimension(:) :: azimuths
 
   if(.not.allocated(green_common)) then
@@ -360,16 +378,21 @@ subroutine convolve (site , date)
   result=0
   do igreen = 1 , size(green_common)
     do idist = 1 , size(green_common(igreen)%distance)
-      if (allocated(azimuths)) deallocate (azimuths)
-      nazimuth = &
-        (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
-        max(int(360*sin(d2r(green_common(igreen)%distance(idist)))),100) * &
-        info(igreen)%azimuth%denser
-      if (nazimuth.eq.0) nazimuth=1
-      dazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
+      if (info(igreen)%azimuth%step.eq.0) then
+        if (allocated(azimuths)) deallocate (azimuths)
+        nazimuth = &
+          (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
+          max(int(360*sin(d2r(green_common(igreen)%distance(idist)))),100) * &
+          info(igreen)%azimuth%denser
+        if (nazimuth.eq.0) nazimuth=1
+        dazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
+      else
+        dazimuth = info(igreen)%azimuth%step
+        nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
+      endif
 
       allocate(azimuths(nazimuth))
-      azimuths = [ (info(igreen)%azimuth%start + i * dazimuth - dazimuth/2 , i =1, nazimuth)] 
+      azimuths = [ (info(igreen)%azimuth%start + (i-1) * dazimuth , i =1, nazimuth)] 
 
       do iazimuth  = 1 , nazimuth
         npoints = npoints + 1
@@ -384,7 +407,9 @@ subroutine convolve (site , date)
         ! get values of model
         do imodel = 1 , size(model)
           if(model(imodel)%if) then 
-            call get_value (model(imodel) , r2d(lat) , r2d(lon) , val(imodel) , level=1 , method = info(igreen)%interpolation)
+            call get_value (                                  & 
+              model(imodel), r2d(lat), r2d(lon), val(imodel), & 
+              level=1, method = info(igreen)%interpolation)
           else if (model(imodel)%if_constant_value)  then
             val(imodel) = model(imodel)%constant_value
           endif
@@ -398,18 +423,6 @@ subroutine convolve (site , date)
           endif
         enddo
 
-        !moreverbose p option
-        if(ind%moreverbose%p.ne.0) then
-          write(moreverbose(ind%moreverbose%p)%unit ,      & 
-            '(2f10.4,<size(val)>f15.4)', advance ="no"),   & 
-            r2d(lat),r2d(lon),val
-          if (size(iok).gt.0) then
-            write(moreverbose(ind%moreverbose%p)%unit ,    & 
-              '(<size(iok)>i2)'), iok
-          else
-            write(moreverbose(ind%moreverbose%p)%unit , *)
-          endif
-        endif
 
         ! calculate area using spherical formulae
         area = spher_area(                        & 
@@ -420,6 +433,19 @@ subroutine convolve (site , date)
           alternative_method=.true.)
 
         tot_area=tot_area+ area
+
+        !moreverbose p option
+        if(ind%moreverbose%p.ne.0) then
+          write(moreverbose(ind%moreverbose%p)%unit ,      & 
+            '(a8,8f12.3,<size(val)>en12.3)', advance ="no"),   & 
+            site%name, site%lat, site%lon,green_common(igreen)%distance(idist),  azimuth, r2d(lat),r2d(lon),area, tot_area,val
+          if (size(iok).gt.0) then
+            write(moreverbose(ind%moreverbose%p)%unit ,    & 
+              '(<size(iok)>i2)'), iok
+          else
+            write(moreverbose(ind%moreverbose%p)%unit , *)
+          endif
+        endif
 
 
         ! normalization according to Merriam (1992) 
@@ -435,10 +461,10 @@ subroutine convolve (site , date)
           ! if the cell is not over sea and inverted barometer assumption was not set 
           ! and is not excluded by polygon
           !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-                    result(ind%green%ge,igreen) = result(ind%green%ge,igreen) + & 
-                      (val(ind%model%sp) / 100. -ref_p) * &
-                      green_common(igreen)%data(idist, ind%green%ge) * & 
-                      area * normalize
+          result(ind%green%ge,igreen) = result(ind%green%ge,igreen) + & 
+            (val(ind%model%sp) / 100. -ref_p) * &
+            green_common(igreen)%data(idist, ind%green%ge) * & 
+            area * normalize
           !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
           !!       stop 
 

@@ -10,13 +10,11 @@
 #   ./denorm_spotl_green
 
 # ooo: example_value_check
-sx: grat oo
+sx: grat 
 	grat \
-		-S j : 52:21   \
-		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
-		-G merriam @GE ,\
-		   merriam @GN \
-			 -D 2009:1@M :1@D  -H -o tmp
+		-S j : 0:0   \
+		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @ SP :pres, 10\
+		-G merriam @GE -L@g,@p -I  0@DB: 1@DE : 1@DS : 30 @AS -V
 oo: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\

@@ -270,6 +270,8 @@ subroutine parse_info (cmd_line_entry)
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
         case ("AD")
           read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
+        case ("AS")
+          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
         endselect
       else 
         select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -318,6 +320,7 @@ subroutine info_defaults(info)
     info%azimuth%stop=360.
     info%distance%denser=1
     info%distance%step=0
+    info%azimuth%step=0
     info%azimuth%denser=1
 
 end subroutine

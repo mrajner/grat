@@ -12,10 +12,11 @@ set -o nounset                              # Treat unset variables as an error
 # make sure the grat command can be found in your executables path
 
   grat \
-    -S JOZE,52.1,21.1,110 \
-    -F ../data/ncep_reanalysis/pres.sfc.2011.nc:pres \
-    -G rajner \
-    -D 201101,2012
+    -S JOZE:52.1:21.1:110, 3:3:3 \
+    -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc@SP:pres \
+    , ~/data/wghm/dat/WGHM.nc @ WGHM \
+    -G rajner@GN : 1 : 2 \
+    -D 201101:1@D -V
 
     # specify the station: name,lat[decDeg],lon[decDeg],height[m]
 
