@@ -35,6 +35,7 @@ module mod_cmdline
   type moreverbose_info
     character(60) :: name
     character(30):: dataname
+    logical  :: sparse=.false.
     integer :: unit
   end type
   type(moreverbose_info), allocatable , dimension(:) :: moreverbose

@@ -365,6 +365,7 @@ subroutine convolve (site , date)
 
   real(dp) :: normalize , aux
   real(dp), allocatable, dimension(:) :: azimuths
+  logical :: header_p = .true.
 
   if(.not.allocated(green_common)) then
     call green_unification()
@@ -378,8 +379,8 @@ subroutine convolve (site , date)
   result=0
   do igreen = 1 , size(green_common)
     do idist = 1 , size(green_common(igreen)%distance)
-      if (info(igreen)%azimuth%step.eq.0) then
         if (allocated(azimuths)) deallocate (azimuths)
+      if (info(igreen)%azimuth%step.eq.0) then
         nazimuth = &
           (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
           max(int(360*sin(d2r(green_common(igreen)%distance(idist)))),100) * &
@@ -436,18 +437,32 @@ subroutine convolve (site , date)
 
         !moreverbose p option
         if(ind%moreverbose%p.ne.0) then
-          write(moreverbose(ind%moreverbose%p)%unit ,      & 
-            '(a8,6f12.3,2en12.3,<size(val)>en12.3)', advance ="no"),   & 
-            site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, &
-            r2d(lat),r2d(lon),area, tot_area,val
-          if (size(iok).gt.0) then
-            write(moreverbose(ind%moreverbose%p)%unit ,    & 
-              '(<size(iok)>i2)'), iok
-          else
-            write(moreverbose(ind%moreverbose%p)%unit , *)
+          if (.not..false.) then
+            if (header_p) then
+              write(moreverbose(ind%moreverbose%p)%unit, &
+                '(a8,8a12,<size(model)>a12)' , advance='no' ) &
+                "#name", "lat", "lon", "distance", "azimuth", "lat", "lon", &
+                "area", "totarea", (trim(model(i)%dataname), i=lbound(model,1),ubound(model,1)) 
+              if (size(iok).gt.0) then
+                write(moreverbose(ind%moreverbose%p)%unit ,    & 
+                  '(<size(iok)>(a3,i1))'), ("ok",i, i =1,ubound(iok,1))
+              else
+                write(moreverbose(ind%moreverbose%p)%unit , *)
+              endif
+            endif
+            write(moreverbose(ind%moreverbose%p)%unit ,      & 
+              '(a8,6f12.3,2en12.3,<size(val)>en12.3)', advance ="no"),   & 
+              site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, &
+              r2d(lat),r2d(lon),area, tot_area,val
+            if (size(iok).gt.0) then
+              write(moreverbose(ind%moreverbose%p)%unit ,    & 
+                '(<size(iok)>i4)'), iok
+            else
+              write(moreverbose(ind%moreverbose%p)%unit , *)
+            endif
           endif
+          header_p=.false.
         endif
-
 
         ! normalization according to Merriam (1992) 
         normalize= 1./ &
@@ -466,10 +481,6 @@ subroutine convolve (site , date)
             (val(ind%model%sp) / 100. -ref_p) * &
             green_common(igreen)%data(idist, ind%green%ge) * & 
             area * normalize
-          !!       print*, results%e , inverted_barometer , .not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0) ,val(4)
-          !!       stop 
-
-          !          stop
         endif
         if (ind%green%gn.ne.0) then
           result(ind%green%gn,igreen) = result(ind%green%gn,igreen) + & 
@@ -477,7 +488,6 @@ subroutine convolve (site , date)
             green_common(igreen)%data(idist, ind%green%gn) * & 
             area * normalize
         endif
-
 
         aux = (val(ind%model%wghm))  * &
           area/d2r(green_common(igreen)%distance(idist)) * &
