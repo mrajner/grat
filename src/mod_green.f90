@@ -435,6 +435,78 @@ subroutine convolve (site , date)
 
         tot_area=tot_area+ area
 
+
+!        if 
+        ! normalization according to Merriam (1992) 
+        normalize= 1./ &
+          (2.*pi*(1.-cos(d2r(dble(1.)))) * &
+          d2r(green_common(igreen)%distance(idist)) * &
+          1.e5 * &
+          earth%radius )
+
+        !todo
+        ref_p=1000
+        if (ind%green%ge.ne.0) then
+          ! if the cell is not over sea and inverted barometer assumption was not set 
+          ! and is not excluded by polygon
+          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
+          result(ind%green%ge,igreen) = result(ind%green%ge,igreen) + & 
+            (val(ind%model%sp) / 100. -ref_p) * &
+            green_common(igreen)%data(idist, ind%green%ge) * & 
+            area * normalize
+        endif
+        if (ind%green%gn.ne.0) then
+          result(ind%green%gn,igreen) = result(ind%green%gn,igreen) + & 
+            (val(ind%model%sp) / 100. -ref_p) * &
+            green_common(igreen)%data(idist, ind%green%gn) * & 
+            area * normalize
+        endif
+
+
+        !        !       if (model(2)%if.and.size(model).ge.2) then
+        !        !          results%dt = results%dt + (val(1)/ 100.-ref_p) * &
+        !        !            (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
+        !        !        endif
+
+        !        !       results%dh = results%dh + (val(1)/ 100.-ref_p) * &
+        !        !        (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
+
+        !        !       results%dz = results%dz + (val(1)/ 100.-ref_p) * &
+        !        !        (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
+        !        !     endif
+        !        !    endif
+        !        !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
+        !        !        !!        !todo
+        !        !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
+        !        !        !!!        write (moreverbose%unit, '(">")')
+        !        !        !!!      endif
+        ! surface loads from EWT
+        if ( &
+          ind%green%gr.ne.0 &
+          .or.ind%green%ghn.ne.0 &
+          .or.ind%green%ghe.ne.0 &
+          ) then
+          aux = (val(ind%model%ewt))  * &
+            area/d2r(green_common(igreen)%distance(idist)) * &
+            1./earth%radius/1e12 * &
+            1e3
+          if (ind%green%gr.ne.0) then
+            result(ind%green%gr,igreen) = result(ind%green%gr,igreen) +  &
+              green_common(igreen)%data(idist,ind%green%gr) * & 
+              aux
+          endif
+          if (ind%green%ghn.ne.0) then
+            result(ind%green%ghn,igreen) = result(ind%green%ghn,igreen) +  &
+              green_common(igreen)%data(idist,ind%green%ghn) * & 
+              aux * - cos (d2r(azimuth))
+          endif
+          if (ind%green%ghe.ne.0) then
+            result(ind%green%ghe,igreen) = result(ind%green%ghe,igreen) +  &
+              green_common(igreen)%data(idist,ind%green%ghe) * & 
+              aux * - sin (d2r(azimuth))
+          endif
+        endif
+
         !moreverbose p option
         if(ind%moreverbose%p.ne.0) then
           if (header_p.and. output%header) then
@@ -469,75 +541,16 @@ subroutine convolve (site , date)
             endif
           endif
         endif
-        if(ind%moreverbose%d.ne.0) then
 
-        ! normalization according to Merriam (1992) 
-        normalize= 1./ &
-          (2.*pi*(1.-cos(d2r(dble(1.)))) * &
-          d2r(green_common(igreen)%distance(idist)) * &
-          1.e5 * &
-          earth%radius )
-
-        !todo
-        ref_p=1000
-        if (ind%green%ge.ne.0) then
-          ! if the cell is not over sea and inverted barometer assumption was not set 
-          ! and is not excluded by polygon
-          !      if ((.not.((val(4).eq.0.and.inverted_barometer).or. iok(2).eq.0)).or.size(model).lt.4) then
-          result(ind%green%ge,igreen) = result(ind%green%ge,igreen) + & 
-            (val(ind%model%sp) / 100. -ref_p) * &
-            green_common(igreen)%data(idist, ind%green%ge) * & 
-            area * normalize
+        ! moreverbose result
+        if(ind%moreverbose%r.ne.0) then
         endif
-        if (ind%green%gn.ne.0) then
-          result(ind%green%gn,igreen) = result(ind%green%gn,igreen) + & 
-            (val(ind%model%sp) / 100. -ref_p) * &
-            green_common(igreen)%data(idist, ind%green%gn) * & 
-            area * normalize
+        if(ind%moreverbose%a.ne.0) then
+          call printmoreverbose (site%lat, site%lon, azimuth, dazimuth ,green_common(igreen)%distance(idist), dble(1.))
         endif
-
-        aux = (val(ind%model%wghm))  * &
-          area/d2r(green_common(igreen)%distance(idist)) * &
-          1./earth%radius/1e12 * &
-          1e3
-        if (ind%green%gr.ne.0) then
-          result(ind%green%gr,igreen) = result(ind%green%gr,igreen) +  &
-            green_common(igreen)%data(idist,ind%green%gr) * & 
-            aux
-        endif
-        if (ind%green%ghn.ne.0) then
-          result(ind%green%ghn,igreen) = result(ind%green%ghn,igreen) +  &
-            green_common(igreen)%data(idist,ind%green%ghn) * & 
-            aux * - cos (d2r(azimuth))
-        endif
-        if (ind%green%ghe.ne.0) then
-          result(ind%green%ghe,igreen) = result(ind%green%ghe,igreen) +  &
-            green_common(igreen)%data(idist,ind%green%ghe) * & 
-            aux * - sin (d2r(azimuth))
-        endif
-        !        !      ! newtonian part
-        !        !      if(.not. iok(1).eq.0) then
-        !        !       results%n = results%n   + (val(1)/ 100.-ref_p) * green_common(igreen,3) * area * normalize
-
-        !        !       if (model(2)%if.and.size(model).ge.2) then
-        !        !          results%dt = results%dt + (val(1)/ 100.-ref_p) * &
-        !        !            (green_common(igreen,4)*(val(2)- atmosphere%temperature%standard) ) * area * normalize
-        !        !        endif
-
-        !        !       results%dh = results%dh + (val(1)/ 100.-ref_p) * &
-        !        !        (green_common(igreen,5)*(site%height/1000.) ) * area * normalize
-
-        !        !       results%dz = results%dz + (val(1)/ 100.-ref_p) * &
-        !        !        (green_common(igreen,6)*(val(3)/1000.) ) * area * normalize
-        !        !     endif
-        !        !    endif
-        !        !        !!!      if (moreverbose%if.and. moreverbose%names(1).eq."g") then
-        !        !        !!        !todo
-        !        !        !!!        call convolve_moreverbose (site%lat,site%lon , azimuth , dble(360./ nazimuth) , green_common(igreen,1), green_common(igreen,1))
-        !        !        !!!        write (moreverbose%unit, '(">")')
-        !        !        !!!      endif
       enddo
     enddo
+
     if (present(date)) then
       write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
     endif
@@ -563,22 +576,22 @@ end subroutine
 !!!> \todo site height from model 
 !!
 
-!subroutine convolve_moreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
-!  use mod_cmdline , only : moreverbose
-!  use mod_utilities, only: spher_trig
-! 
-!  real(dp), intent(in) :: azimuth ,azstep, latin, lonin
-!  real(dp) :: distance, lat , lon , distancestep
-!
-!!  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth - azstep/2. , lat , lon)
-!!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!!  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth + azstep/2. , lat , lon)
-!!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!!  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth + azstep/2. , lat , lon)
-!!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!!  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
-!!  write(moreverbose%unit, '(2f12.6)') , lat , lon
-!end subroutine
+subroutine printmoreverbose (latin , lonin , azimuth , azstep ,  distance , distancestep)
+  use mod_spherical, only : spher_trig
+  use mod_cmdline, only: moreverbose, ind
+
+  real(dp), intent(in) :: azimuth ,azstep, latin, lonin
+  real(dp) :: distance, lat , lon , distancestep
+
+  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth - azstep/2. , lat , lon , domain = .true.)
+  write(moreverbose(ind%moreverbose%a)%unit, '(2f12.6)') , lat , lon
+  !  call spher_trig ( latin , lonin , distance - distancestep/2. , azimuth + azstep/2. , lat , lon)
+  !  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  !  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth + azstep/2. , lat , lon)
+  !  write(moreverbose%unit, '(2f12.6)') , lat , lon
+  !  call spher_trig ( latin , lonin , distance + distancestep/2. , azimuth - azstep/2. , lat , lon)
+  !  write(moreverbose%unit, '(2f12.6)') , lat , lon
+end subroutine
 !
 !
 subroutine wczytaj_linie_informacyjne

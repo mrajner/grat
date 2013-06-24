@@ -458,8 +458,8 @@ subroutine get_index()
     select case (model(i)%dataname)
     case ("SP")
       ind%model%sp = i
-    case ("WGHM")
-      ind%model%wghm = i
+    case ("EWT")
+      ind%model%ewt = i
     case ("T")
       ind%model%T = i
     case ("RS")

@@ -178,10 +178,10 @@ subroutine nctime2date (model)
   use mod_date,      only: mjd, invmjd
   type (file)        :: model
   real(dp)           :: mjd_start , mjd_
-  integer            :: varid ,i , date (6)
+  integer            :: varid ,i , date (6) , status
   character (len=66) :: dummy
 
-  call check (nf90_inq_varid (model%ncid, "time", varid))
+  call check(nf90_inq_varid (model%ncid, "time", varid))
   call check (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))

@@ -9,12 +9,14 @@
 # kran:
 #   ./denorm_spotl_green
 
+i:value_check
+	value_check -F /home/mrajner/dat/refpres/refpres0p5.nc@SP:pres -Sj:52:21
 # ooo: example_value_check
 sx: grat 
 	grat \
 		-S j : 0:0   \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @ SP :pres, 10\
-		-G merriam @GE -L,@r:s , @r -I  6@DB: 10@DE : 5@DS : 90 @AS -V
+		-G merriam @GHE -H -L,@r:s , @r , @ a  -I  6@DB: 10@DE : 5@DS : 90 @AS -V
 oo: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
@@ -25,21 +27,21 @@ r:
 	../bin/grat  -S \
 		joze:52.0:21 \
 		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
 		-G /home/mrajner/dat/green/green_ce_aplo.dat@G  R:1@R:2@aplo \
 		-D200201
 gnu2:
 	../bin/grat  -S \
 		joze:52.0:21 \
 		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
 		-G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
 		-D2002:2013:1@M  -L ttt@g > tmp3
 rrrr:
 	../bin/grat  -S \
 		joze:52.0:21.2 \
 		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
 		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
 		, /home/mrajner/src/gotic2/data/grn1.data@GH:1:3 \
 		-D2011:2011:1@M \
@@ -52,7 +54,7 @@ gnu:
 	../bin/grat  -S \
 		joze:52.0:21 \
 		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@WGHM \
+		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
 		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
 		-D2004:2011:1@M  -I 1@DD :1@AD :10@rE  -Lttt@g  > tmp
 
