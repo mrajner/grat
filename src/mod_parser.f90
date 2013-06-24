@@ -227,6 +227,9 @@ subroutine parse_moreverbose (cmd_line_entry)
     endif
     write (log%unit , form_62), trim(moreverbose(i)%name) , &
       "<-", dataname(moreverbose(i)%dataname)
+    if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
+      moreverbose(i)%sparse=.true.
+    endif
   enddo
 end subroutine
 
@@ -250,62 +253,55 @@ subroutine parse_info (cmd_line_entry)
 
   if (present(cmd_line_entry)) then
 
-  allocate (info(size(cmd_line_entry%field)))
-  do i = 1 , size(cmd_line_entry%field)
-    write(log%unit, form%i2) , "Range:" , i
-    call info_defaults(info(i))
-    do j = 1 , size(cmd_line_entry%field(i)%subfield)
-      if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
-        select case (cmd_line_entry%field(i)%subfield(j)%dataname)
-        case ("DB")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
-        case ("DE")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
-        case ("AB")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
-        case ("AE")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
-        case ("DS")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
-        case ("DD")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
-        case ("AD")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
-        case ("AS")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
-        endselect
-      else 
-        select case (cmd_line_entry%field(i)%subfield(j)%dataname)
-        case ("I")
-          read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
-        endselect
-      end if
+    allocate (info(size(cmd_line_entry%field)))
+    do i = 1 , size(cmd_line_entry%field)
+      write(log%unit, form%i2) , "Range:" , i
+      call info_defaults(info(i))
+      do j = 1 , size(cmd_line_entry%field(i)%subfield)
+        if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
+          select case (cmd_line_entry%field(i)%subfield(j)%dataname)
+          case ("DB")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
+          case ("DE")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
+          case ("AB")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
+          case ("AE")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
+          case ("DS")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
+          case ("DD")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
+          case ("AD")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
+          case ("AS")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
+          endselect
+        else 
+          select case (cmd_line_entry%field(i)%subfield(j)%dataname)
+          case ("I")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
+          endselect
+        end if
+      enddo
+
+      if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
+      write(log%unit, &
+        "("//form%t3//" &
+        'DB:',f7.2, & 
+        '|DE:',f8.3, &
+        '|I:',a, &
+        '|DD:',i2, &
+        '|DS:',f6.2, &
+        )") , &
+        info(i)%distance%start, info(i)%distance%stop, &
+        info(i)%interpolation, info(i)%distance%denser, &
+        info(i)%distance%step
     enddo
-    !    if (i.gt.1) then
-    !      if (info(i)%distance%start.lt.info(i-1)%distance%stop) then
-    !        info(i-1)%distance%stop = info(i)%distance%start
-    !      endif
-    !      if (info(i)%distance%stop.lt.info(i)%distance%start) then
-    !        info(i)%distance%stop = info(i)%distance%start
-    !      endif
-    !    endif
-    if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
-    write(log%unit, &
-      "("//form%t3//" &
-      'DB:',f7.2, & 
-      '|DE:',f8.3, &
-      '|I:',a, &
-      '|DD:',i2, &
-      '|DS:',f6.2, &
-      )") , &
-      info(i)%distance%start, info(i)%distance%stop, &
-      info(i)%interpolation, info(i)%distance%denser, &
-      info(i)%distance%step
-  enddo
-else
-  allocate(info(1))
-  call info_defaults(info(1))
-endif
+  else
+    allocate(info(1))
+    call info_defaults(info(1))
+  endif
 end subroutine
 
 ! =============================================================================
@@ -314,15 +310,15 @@ subroutine info_defaults(info)
   use mod_cmdline, only: info_info
   type(info_info),intent(inout) :: info
 
-    info%interpolation="n"
-    info%distance%start=0.
-    info%distance%stop=180.
-    info%azimuth%start=0.
-    info%azimuth%stop=360.
-    info%distance%denser=1
-    info%distance%step=0
-    info%azimuth%step=0
-    info%azimuth%denser=1
+  info%interpolation="n"
+  info%distance%start=0.
+  info%distance%stop=180.
+  info%azimuth%start=0.
+  info%azimuth%stop=360.
+  info%distance%denser=1
+  info%distance%step=0
+  info%azimuth%step=0
+  info%azimuth%denser=1
 
 end subroutine
 
@@ -439,6 +435,7 @@ function dataname(abbreviation)
   if (abbreviation.eq."l")  dataname = "bilinear"
   if (abbreviation.eq."g")  dataname = "green function used"
   if (abbreviation.eq."p")  dataname = "points"
+  if (abbreviation.eq."r")  dataname = "results"
   if (abbreviation.eq."a")  dataname = "auxiliary"
   if (abbreviation.eq."d")  dataname = "dates"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
@@ -479,7 +476,9 @@ subroutine get_index()
       ind%moreverbose%a = i
     case ("d")
       ind%moreverbose%d = i
-    endselect
+    case ("r")
+      ind%moreverbose%r = i
+    end select
   enddo
   do i = 1, size(green)
     select case (green(i)%dataname)
@@ -495,7 +494,7 @@ subroutine get_index()
       ind%green%ghe = i
     endselect
   enddo
-  
+
 end subroutine
 
 end module

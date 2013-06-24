@@ -14,7 +14,7 @@ sx: grat
 	grat \
 		-S j : 0:0   \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @ SP :pres, 10\
-		-G merriam @GE -La@g,@p -I  6@DB: 10@DE : 5@DS : 90 @AS -V
+		-G merriam @GE -L,@r:s , @r -I  6@DB: 10@DE : 5@DS : 90 @AS -V
 oo: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
@@ -225,7 +225,7 @@ docpdf: doc
 	evince ../doc/latex/refman.pdf &
 
 dochtml: doc
-	firefox ../doc/html/index.html &
+	firefox ../doc/html/.html &
 
 docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
