@@ -208,6 +208,23 @@ subroutine nctime2date (model)
   enddo
 end subroutine
 
+
+! =============================================================================
+!> get time index
+! =============================================================================
+function get_time_index(model,date)
+  integer :: get_time_index
+  type (file), intent(in) :: model
+  integer , intent(in) ,dimension(6) ::date
+  integer :: i
+
+  get_time_index=0
+  do i = 1 , size(model%date(:,1))
+    if (all(model%date(i,1:6) .eq. date(1:6))) then
+     get_time_index=i
+    endif
+  enddo 
+end function
 ! =============================================================================
 !> \brief Get variable from netCDF file for specified variables
 ! =============================================================================
@@ -236,11 +253,7 @@ subroutine get_variable(model, date, huge)
     size (model%level)))
 
   if (size(date).gt.0 .and. present(date)) then                       
-    do i = 1 , size(model%date(:,1))
-      if (all(model%date(i,1:6) .eq. date(1:6))) then
-        index_time = i
-      endif
-    enddo 
+    index_time = get_time_index(model, date)
     if (index_time.eq.0) then
       write(log%unit,form_61) "Cannot find date:", date, &
         "var:", trim(model%names(1)), "file:" , model%name
@@ -308,7 +321,7 @@ end subroutine check
 !! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
 ! =============================================================================
-subroutine get_value(model, lat, lon, val, level, method, huge)
+subroutine get_value(model, lat, lon, val, level, method, huge, date)
   use mod_constants , only: dp 
   use mod_cmdline
   use mod_utilities, only: r2d
@@ -325,6 +338,7 @@ subroutine get_value(model, lat, lon, val, level, method, huge)
   real(dp), dimension(4,3) :: array_aux 
   real(dp) :: scale_factor, add_offset
   character (10), intent(in), optional::huge
+  integer, intent(in), optional::date(6)
 
   if (present(level)) ilevel=level
 
@@ -351,7 +365,7 @@ subroutine get_value(model, lat, lon, val, level, method, huge)
   if (present(huge)) then
     if (huge.eq."huge") then
       call check ( nf90_inq_varid ( model%ncid , model%names(1) , varid ) )
-      call check (nf90_get_var (model%ncid , varid , val , start = [ilon,ilat,ilevel] ))
+      call check (nf90_get_var (model%ncid , varid, val, start = [ilon,ilat,get_time_index(model,date)] ))
       call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
       if (status==nf90_noerr) val = val *scale_factor + add_offset
       return

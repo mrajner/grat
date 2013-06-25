@@ -82,7 +82,7 @@ program value_check
           if (model(ii)%if) then 
             if (iok.eq.1) then
               call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                method=info(1)%interpolation, huge=model(ii)%dataname)
+                method=info(1)%interpolation, huge=model(ii)%dataname, date=date(j)%date)
             else
               val (imodel) = 0
             endif
