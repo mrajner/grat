@@ -33,7 +33,7 @@ module mod_data
 
     real (dp), dimension(2) :: latrange , lonrange
 
-    logical :: if_constant_value
+    logical :: if_constant_value  !, if_time, if_level
     real(dp):: constant_value
 
     ! 4 dimension - lat , lon , level , mjd
@@ -74,7 +74,11 @@ subroutine parse_model (cmd_line_entry)
     if (model(i)%dataname.eq." ") model(i)%dataname="NN"
 
     if (model(i)%name.eq."") then
-      call print_warning ("model")
+      if (i.gt.1) then
+        model(i)%name=model(i-1)%name
+      else
+        call print_warning ("model")
+      endif
     endif
     if ( file_exists (model(i)%name) ) then
       do j =2 , size (cmd_line_entry%field(i)%subfield)
@@ -123,7 +127,7 @@ end subroutine
 !! \author Marcin Rajner
 !! \date 2013.05.24
 ! =============================================================================
-subroutine get_dimension ( model , i )
+subroutine get_dimension (model , i)
   use netcdf
   use mod_printing
   type(file) :: model
@@ -135,7 +139,7 @@ subroutine get_dimension ( model , i )
 
   status = nf90_inq_dimid(model%ncid,model%names(i) , dimid )
   if(status /= nf90_noerr) then 
-    write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating size 1" 
+    write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
     length=1
   else
     write (log%unit , '(a6,1x,a)') "ok"
@@ -149,14 +153,14 @@ subroutine get_dimension ( model , i )
       "actual_range" , model%latrange) 
     if (status /= nf90_noerr ) model%latrange &
       =[model%lat(1), model%lat(size(model%lat)) ]
-    elseif (i.eq.2 ) then
-    allocate(model%lon (length) )
+  else if (i.eq.2 ) then
+    allocate(model%lon (length))
     call check(nf90_get_var  (model%ncid,  varid , model%lon))
     status = nf90_get_att ( model%ncid ,varid , &
       "actual_range" , model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
       =[model%lon(1) , model%lon(size(model%lon)) ]
-    elseif (i.eq.4 ) then
+  else if (i.eq.4 ) then
     allocate(model%level (length))
     status = nf90_get_var  (model%ncid,  varid , model%level)
     elseif (i.eq.5 ) then
@@ -181,119 +185,99 @@ subroutine nctime2date (model)
   integer            :: varid ,i , date (6) , status
   character (len=66) :: dummy
 
-  call check(nf90_inq_varid (model%ncid, "time", varid))
+  status = nf90_inq_varid (model%ncid, "time", varid)
+  if (status /=nf90_noerr) return
   call check (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
   write(log%unit, form%i4) "Converting time: " , trim(dummy)
   if (dummy.eq. "hours since 1-1-1 00:00:0.0") then
-      ! -2 is necessary to keep it with ncep convention
-      ! this may need (?) change for other data fields
-      ! be carefull
+    ! -2 is necessary to keep it with ncep convention
+    ! this may need (?) change for other data fields
+    ! be carefull
     mjd_start =  mjd([1,1,1,0,0,0]) - 2
   else if (dummy.eq. "hours since 1900-01-01 00:00:0.0") then
     mjd_start =  mjd([1900,1,1,0,0,0])
   else
     write (log%unit , form%i4 ) "unknown time begining"
   endif
-    do i = 1, size(model%time)
-      mjd_= model%time(i) / 24 + mjd_start 
-      call invmjd(mjd_,date)
-      model%date(i,:) = date
-    enddo
+  do i = 1, size(model%time)
+    mjd_= model%time(i) / 24 + mjd_start 
+    call invmjd(mjd_,date)
+    model%date(i,:) = date
+  enddo
 end subroutine
 
 ! =============================================================================
-! =============================================================================
-!function hours2date (hours)
-!  use mod_date
-! 
-!  integer :: hours2date(6)
-!  real(dp) hours
-
-!  real(dp) :: jd1, jd0
-!  real(dp) :: mjd1, mjd0
-
-!  jd1 = jd(2011,1,1,0,0,0)
-!  jd0 = jd(1,1,1,0,0,0)
-!  print * , "jd1", jd1, jd0, jd1-jd0
-!  mjd1 = mjd([2011,1,1,0,0,0])
-!  mjd0 = mjd([1,1,1,0,0,0])
-!  print * , "mjd1", mjd1, mjd0, mjd1-mjd0
-!  print * , (int(jd1-jd0+2))*24
-!  hours2date =4 
-
-
-
-!end function
-! =============================================================================
 !> \brief Get variable from netCDF file for specified variables
 ! =============================================================================
-subroutine get_variable(model, date)
+subroutine get_variable(model, date, huge)
   use netcdf
   use mod_printing
   type (file), intent(inout) :: model
   integer , optional , intent(in) ,dimension(6) ::date
-  integer :: varid
+  integer :: varid ,status
   integer :: start(3)
   integer :: index_time, i , j
+  character(10), intent(in), optional :: huge
+  real (dp) :: scale_factor, add_offset
+
+  if (present(huge)) then
+    if (huge.eq."huge") then
+      return
+    endif
+  endif
 
   index_time = 0
-  ! write (log%unit , form_61) "Getting var id:" , trim(model%names(1))
   call check ( nf90_inq_varid ( model%ncid , model%names(1) ,  varid ) )
   if (allocated(model%data)) deallocate(model%data)
+  model%level=3
   allocate (model%data (size(model%lon), size(model%lat), &
     size (model%level)))
 
   if (size(date).gt.0 .and. present(date)) then                       
-    outer: do i = 1 , size(model%date(:,1))
-    do j = 1 , 6
-      if (model%date(i,j) .eq. date(j)) then
-        if (j.eq.6) then 
-          index_time = i
-          exit outer
-        endif
-      else
-        exit
+    do i = 1 , size(model%date(:,1))
+      if (all(model%date(i,1:6) .eq. date(1:6))) then
+        index_time = i
       endif
-    enddo
-  enddo outer
-  if (index_time.eq.0 ) then
-    write(log%unit,form_61) "Cannot find date:", date, &
-      "var:", trim(model%names(1)), "file:" , model%name
-    model%data= sqrt(-1.)
-    return
+    enddo 
+    if (index_time.eq.0) then
+      write(log%unit,form_61) "Cannot find date:", date, &
+        "var:", trim(model%names(1)), "file:" , model%name
+      model%data= sqrt(-1.)
+      return
+    endif
+  else
+    index_time = 1
   endif
-else
-  index_time = 1
-endif
-start = [ 1,1,index_time]
-call check (nf90_get_var (model%ncid , varid , model%data , start = start ))
-call unpack_netcdf(model)
+  start = [1,1,index_time]
+  call check (nf90_get_var (model%ncid , varid , model%data , start = start ))
+  call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
+  if (status == nf90_noerr) model%data = model%data *scale_factor + add_offset
 end subroutine
 
 ! =============================================================================
 !> \brief Unpack variable 
 !!
 !! from \cite netcdf
+!! see http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
 ! =============================================================================
-subroutine unpack_netcdf ( model )
+subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
   use netcdf
-  use mod_constants, only : dp ,sp
-  type(file) :: model
-  integer :: varid , status
-  real(dp):: scale_factor , add_offset
+  integer, intent(in) :: ncid
+  character(*) , intent(in)::varname
+  integer :: varid 
+  integer, intent(out) :: status
+  real(dp), intent(out) :: scale_factor , add_offset
 
-  call check(nf90_inq_varid(model%ncid, model%names(1) , varid))
-  status = nf90_get_att ( model%ncid , varid , "scale_factor" , scale_factor) 
-  if (status /=nf90_noerr) scale_factor = 1.
+  call check(nf90_inq_varid(ncid, varname , varid))
+  status = nf90_get_att (ncid, varid , "scale_factor" , scale_factor) 
+  if (status /=nf90_noerr) return
 
-  status = nf90_get_att ( model%ncid , varid , "add_offset" , add_offset) 
-  if (status /=nf90_noerr) add_offset = 0.
-
-  ! see http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
-  model%data = model%data * scale_factor + add_offset
+  status = nf90_get_att (ncid , varid , "add_offset" , add_offset) 
+  if (status /=nf90_noerr) return
 end subroutine
+
 !
 ! =============================================================================
 !> Check the return code from netCDF manipulation
@@ -324,22 +308,29 @@ end subroutine check
 !! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
 ! =============================================================================
-subroutine get_value(model, lat, lon, val, level, method)
+subroutine get_value(model, lat, lon, val, level, method, huge)
   use mod_constants , only: dp 
   use mod_cmdline
   use mod_utilities, only: r2d
+  use netcdf
 
   type(file) , intent (in) :: model
-  real(dp) , intent (in) :: lat,lon
+  real(dp) , intent (in) :: lat
+  real(dp)  :: lon
   real(dp) , intent(out) ::  val 
   character(1), optional, intent(in) :: method
   integer , optional , intent(in) :: level
   integer :: i, j, ilevel = 1 
-  integer  :: ilon, ilat, ilon2, ilat2
+  integer  :: ilon, ilat, ilon2, ilat2 , varid ,status
   real(dp), dimension(4,3) :: array_aux 
+  real(dp) :: scale_factor, add_offset
+  character (10), intent(in), optional::huge
 
   if (present(level)) ilevel=level
+
   ! check if inside model range
+  if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360 
+  if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
   if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
     .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
     .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
@@ -355,6 +346,17 @@ subroutine get_value(model, lat, lon, val, level, method)
 
   ilat = minloc(abs(model%lat-lat),1)
   ilon = minloc(abs(model%lon-lon),1)
+
+  ! do not look into data array - get value directly 
+  if (present(huge)) then
+    if (huge.eq."huge") then
+      call check ( nf90_inq_varid ( model%ncid , model%names(1) , varid ) )
+      call check (nf90_get_var (model%ncid , varid , val , start = [ilon,ilat,ilevel] ))
+      call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
+      if (status==nf90_noerr) val = val *scale_factor + add_offset
+      return
+    endif
+  endif
 
   if (present(method) .and. method .eq. "l" ) then
     ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))

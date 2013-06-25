@@ -54,11 +54,9 @@ program value_check
         ! for 'static' data files get_variable was performed
         ! during read_netCDF
         if (allocated(date)) then
-          if (size(model(i)%date).gt.1) then
-            call get_variable ( model(i), date = date(j)%date)
-          endif
+           call get_variable (model(i), date = date(j)%date , huge= model(i)%dataname)
         else
-          call get_variable (model(i))
+          call get_variable (model(i) , huge = model(i)%dataname)
         endif
       endif
     enddo
@@ -84,11 +82,11 @@ program value_check
           if (model(ii)%if) then 
             if (iok.eq.1) then
               call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                method=info(1)%interpolation)
+                method=info(1)%interpolation, huge=model(ii)%dataname)
             else
               val (imodel) = 0
             endif
-            elseif (model(ii)%if_constant_value) then
+          else if (model(ii)%if_constant_value) then
             val(imodel) = model(ii)%constant_value
           endif
         endif
