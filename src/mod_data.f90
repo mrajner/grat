@@ -196,10 +196,20 @@ subroutine nctime2date (model)
     ! this may need (?) change for other data fields
     ! be carefull
     mjd_start =  mjd([1,1,1,0,0,0]) - 2
-  else if (dummy.eq. "hours since 1900-01-01 00:00:0.0") then
-    mjd_start =  mjd([1900,1,1,0,0,0])
-  else
-    write (log%unit , form%i4 ) "unknown time begining"
+  else if (index(dummy,"hours since").eq.1) then
+    do i=1,2
+      dummy = dummy(index(dummy, ' ')+1:)
+    enddo
+!      dummy(index(dummy, '-'))=' '
+
+    print * ,dummy
+    stop
+    !  else if (dummy.eq. "hours since 1900-01-01 00:00:0.0") then
+    !    mjd_start =  mjd([1900,1,1,0,0,0])
+    !  else if (dummy.eq. "hours since 1800-1-1 00:00:0.0") then
+    !    mjd_start =  mjd([1800,1,1,0,0,0])
+    !  else
+    !    write (log%unit , form%i4 ) "unknown time begining"
   endif
   do i = 1, size(model%time)
     mjd_= model%time(i) / 24 + mjd_start 
@@ -221,7 +231,7 @@ function get_time_index(model,date)
   get_time_index=0
   do i = 1 , size(model%date(:,1))
     if (all(model%date(i,1:6) .eq. date(1:6))) then
-     get_time_index=i
+      get_time_index=i
     endif
   enddo 
 end function

@@ -10,7 +10,7 @@
 #   ./denorm_spotl_green
 
 i:value_check
-	value_check -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2006.nc@huge:pres -Sj:52:21 -V -D 20060102 : 20060105
+	value_check -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@:pres -Sj:52:21 -V -D 2010
 #   value_check -F /home/mrajner/dat/refpres/refpres0p5.nc@SP:rp -Sj:52:21 -V -D 
 # ooo: example_value_check
 sx: grat 
