@@ -186,7 +186,7 @@ subroutine nctime2date (model)
   use netcdf
   use mod_printing
   use mod_constants, only: dp
-  use mod_date,      only: mjd, invmjd
+  use mod_mjd,      only: mjd, invmjd
   type (file)        :: model
   real(dp)           :: mjd_start , mjd_
   integer            :: varid ,i, ind(2) , date (6) , status
@@ -292,7 +292,7 @@ subroutine get_variable(model, date, huge)
   index_time = 0
   status =  nf90_inq_varid ( model%ncid , model%names(1) ,  varid )
   if (allocated(model%data)) deallocate(model%data)
-  model%level=3
+!  model%level=1
   allocate (model%data (size(model%lon), size(model%lat), &
     size (model%level)))
 

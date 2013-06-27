@@ -405,24 +405,24 @@ subroutine convolve (site , date)
           (d2r(site%lat), d2r(site%lon), &
           d2r(green_common(igreen)%distance(idist)), d2r(azimuth), lat, lon, domain=.true.)
 
-        ! get values of model
-        do imodel = 1 , size(model)
-          if(model(imodel)%if) then 
-            call get_value (                                  & 
-              model(imodel), r2d(lat), r2d(lon), val(imodel), & 
-              level=1, method = info(igreen)%interpolation)
-          else if (model(imodel)%if_constant_value)  then
-            val(imodel) = model(imodel)%constant_value
-          endif
-        enddo
+!        ! get values of model
+!        do imodel = 1 , size(model)
+!          if(model(imodel)%if) then 
+!            call get_value (                                  & 
+!              model(imodel), r2d(lat), r2d(lon), val(imodel), & 
+!              level=1, method = info(igreen)%interpolation)
+!          else if (model(imodel)%if_constant_value)  then
+!            val(imodel) = model(imodel)%constant_value
+!          endif
+!        enddo
 
-        do i =1,size(polygon)
-          if (polygon(i)%if) then
-            call chkgon (r2d(lon), r2d(lat) , polygon(i) , iok(i))
-          else
-            iok(i)=1
-          endif
-        enddo
+!        do i =1,size(polygon)
+!          if (polygon(i)%if) then
+!            call chkgon (r2d(lon), r2d(lat) , polygon(i) , iok(i))
+!          else
+!            iok(i)=1
+!          endif
+!        enddo
 
 
         ! calculate area using spherical formulae
@@ -455,6 +455,7 @@ subroutine convolve (site , date)
             green_common(igreen)%data(idist, ind%green%ge) * & 
             area * normalize
         endif
+
         if (ind%green%gn.ne.0) then
           result(ind%green%gn,igreen) = result(ind%green%gn,igreen) + & 
             (val(ind%model%sp) / 100. -ref_p) * &

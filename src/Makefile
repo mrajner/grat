@@ -8,9 +8,12 @@
 
 # kran:
 #   ./denorm_spotl_green
+#
 
-i:value_check
-	value_check -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@:prs -Sj:52:21 -V -D 2010
+# i:value_check
+#   value_check -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc@:pres \
+#   , /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@:pres \
+#   -Sm -V 
 #   value_check -F /home/mrajner/dat/refpres/refpres0p5.nc@SP:rp -Sj:52:21 -V -D 
 # ooo: example_value_check
 sx: grat 
@@ -121,15 +124,16 @@ RS = 101300@RS
 SRCS  = mod_constants.f90 \
 				mod_utilities.f90 \
 				mod_printing.f90  \
-				mod_cmdline.f90   \
-				mod_site.f90      \
-				mod_date.f90      \
-				mod_spherical.f90 \
-				mod_green.f90     \
-				mod_polygon.f90   \
-				mod_data.f90      \
-				mod_aggf.f90      \
-				mod_parser.f90
+         mod_cmdline.f90   \
+         mod_site.f90      \
+         mod_spherical.f90 \
+				 mod_mjd.f90 \
+         mod_green.f90     \
+         mod_polygon.f90   \
+         mod_data.f90      \
+         mod_date.f90      \
+         mod_aggf.f90      \
+         mod_parser.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -143,11 +147,17 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
+flw: mod_constants.o mod_utilities.o mod_printing.o mod_cmdline.o mod_site.o mod_spherical.o \
+	mod_mjd.o mod_aggf.o mod_polygon.o mod_data.o mod_date.o  value_check grat all
+
+
 mod_utilities.o: mod_constants.o
 mod_aggf.o: mod_constants.o mod_utilities.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o
+mod_data.o: mod_mjd.o
+mod_date.o:mod_data.o
 
 
 # mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90
