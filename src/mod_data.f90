@@ -140,6 +140,7 @@ subroutine get_dimension (model , i)
   status = nf90_inq_dimid(model%ncid,model%names(i) , dimid )
   if(status /= nf90_noerr) then 
     write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
+    call nc_info(model)
     length=1
   else
     write (log%unit , '(a6,1x,a)') "ok"
@@ -182,7 +183,7 @@ subroutine nctime2date (model)
   use mod_date,      only: mjd, invmjd
   type (file)        :: model
   real(dp)           :: mjd_start , mjd_
-  integer            :: varid ,i , date (6) , status
+  integer            :: varid ,i, ind(2) , date (6) , status
   character (len=66) :: dummy
 
   status = nf90_inq_varid (model%ncid, "time", varid)
@@ -200,16 +201,21 @@ subroutine nctime2date (model)
     do i=1,2
       dummy = dummy(index(dummy, ' ')+1:)
     enddo
-!      dummy(index(dummy, '-'))=' '
-
-    print * ,dummy
-    stop
+    do 
+      ind=[index(dummy,'-'), index(dummy,':')]
+      do i=1,2
+        if (ind(i).ne.0) dummy = dummy(1:ind(i)-1)//" "//dummy(ind(i)+i:)
+      enddo
+      if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0) exit
+    enddo
+    read(dummy,*) date
+    mjd_start = mjd (date)
     !  else if (dummy.eq. "hours since 1900-01-01 00:00:0.0") then
     !    mjd_start =  mjd([1900,1,1,0,0,0])
     !  else if (dummy.eq. "hours since 1800-1-1 00:00:0.0") then
     !    mjd_start =  mjd([1800,1,1,0,0,0])
-    !  else
-    !    write (log%unit , form%i4 ) "unknown time begining"
+  else
+    write (log%unit , form%i4 ) "unknown time begining"
   endif
   do i = 1, size(model%time)
     mjd_= model%time(i) / 24 + mjd_start 
@@ -235,6 +241,28 @@ function get_time_index(model,date)
     endif
   enddo 
 end function
+
+! =============================================================================
+! =============================================================================
+subroutine nc_info(model)
+  use netcdf
+  use mod_printing
+  type (file), intent(in) :: model
+  integer :: ndims , nvars, i
+  integer, allocatable, dimension(:) :: varids
+  character(10), allocatable, dimension(:) :: name
+
+  call check (nf90_inquire(model%ncid, ndims , nvars))
+  allocate(varids(nvars))
+  allocate(name(nvars))
+
+  call check (nf90_inq_varids(model%ncid, nvars, varids))
+  do i=1, nvars
+    call check(nf90_inquire_variable(model%ncid, varids(i), name(i)))
+  enddo
+  write(log%unit, form%i5 ) (trim(name(i))//",", i =1,nvars)
+end subroutine
+
 ! =============================================================================
 !> \brief Get variable from netCDF file for specified variables
 ! =============================================================================
@@ -256,7 +284,7 @@ subroutine get_variable(model, date, huge)
   endif
 
   index_time = 0
-  call check ( nf90_inq_varid ( model%ncid , model%names(1) ,  varid ) )
+  status =  nf90_inq_varid ( model%ncid , model%names(1) ,  varid )
   if (allocated(model%data)) deallocate(model%data)
   model%level=3
   allocate (model%data (size(model%lon), size(model%lat), &
@@ -265,7 +293,7 @@ subroutine get_variable(model, date, huge)
   if (size(date).gt.0 .and. present(date)) then                       
     index_time = get_time_index(model, date)
     if (index_time.eq.0) then
-      write(log%unit,form_61) "Cannot find date:", date, &
+      write(log%unit,form%i3) "Cannot find date:", date, &
         "var:", trim(model%names(1)), "file:" , model%name
       model%data= sqrt(-1.)
       return
