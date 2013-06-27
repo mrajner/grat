@@ -10,11 +10,11 @@
 #   ./denorm_spotl_green
 #
 
-# i:value_check
-#   value_check -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc@:pres \
-#   , /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@:pres \
-#   -Sm -V 
-#   value_check -F /home/mrajner/dat/refpres/refpres0p5.nc@SP:rp -Sj:52:21 -V -D 
+i:value_check
+	value_check -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc@:pres \
+	, /home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc@:pres \
+	, /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@:pres \
+	-Sm:30:60 -V 
 # ooo: example_value_check
 sx: grat 
 	grat \
@@ -153,7 +153,7 @@ flw: mod_constants.o mod_utilities.o mod_printing.o mod_cmdline.o mod_site.o mod
 
 mod_utilities.o: mod_constants.o
 mod_aggf.o: mod_constants.o mod_utilities.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o
 mod_data.o: mod_mjd.o

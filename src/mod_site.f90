@@ -95,6 +95,7 @@ end subroutine
 subroutine parse_GMT_like_boundaries (field)
   use mod_utilities, only : is_numeric
   use mod_cmdline, only : field_info
+  use mod_data, only : model
   type(field_info),intent(in) :: field
 
   real(dp) :: limits (4) , resolution (2) 
@@ -115,6 +116,24 @@ subroutine parse_GMT_like_boundaries (field)
     else
       if (text.eq."g" ) then
         limits=[0. , 359.9999 , -90 , 90. ]
+        exit
+      else if (text.eq."m") then
+      do ii = 1, size (model)
+        if (model(i)%if) then
+          if ((ii.eq.1) .or. &
+            (ii.gt.1 .and. (minval(model(ii)%lonrange).lt.limits(1))) &
+            ) limits(1) = minval(model(ii)%lonrange)
+          if ((ii.eq.1) .or. &
+            (ii.gt.1 .and. (maxval(model(ii)%lonrange).gt.limits(2))) &
+            ) limits(2) = maxval(model(ii)%lonrange)
+          if ((ii.eq.1) .or. &
+            (ii.gt.1 .and. (minval(model(ii)%latrange).lt.limits(3))) &
+            ) limits(3) = minval(model(ii)%latrange)
+          if ((ii.eq.1) .or. &
+            (ii.gt.1 .and. (maxval(model(ii)%latrange).gt.limits(4))) &
+            ) limits(4) = maxval(model(ii)%latrange)
+        endif
+      enddo
         exit
       endif
     endif

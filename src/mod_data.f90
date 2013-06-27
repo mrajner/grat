@@ -26,7 +26,7 @@ module mod_data
     logical :: if =.false.
 
     ! boundary of model e , w ,s ,n
-    real(dp):: limits(4)
+!    real(dp):: limits(4)
 
     real(dp), allocatable, dimension(:) :: lat , lon , time ,level
     integer , allocatable, dimension(:,:) :: date
@@ -167,6 +167,11 @@ subroutine get_dimension (model , i)
       "actual_range" , model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
       =[model%lon(1) , model%lon(size(model%lon)) ]
+    if(index(model%name,"ncep_reanalysis").ne.0) then
+      where (model%lonrange.gt."357.4") 
+        model%lonrange=360
+      end where
+    endif
   else if (i.eq.4 ) then
     allocate(model%level (length))
     status = nf90_get_var  (model%ncid,  varid , model%level)
@@ -291,8 +296,9 @@ subroutine get_variable(model, date, huge)
 
   index_time = 0
   status =  nf90_inq_varid ( model%ncid , model%names(1) ,  varid )
+  if (status /= nf90_noerr) call nc_info(model)
   if (allocated(model%data)) deallocate(model%data)
-!  model%level=1
+  !  model%level=1
   allocate (model%data (size(model%lon), size(model%lat), &
     size (model%level)))
 
