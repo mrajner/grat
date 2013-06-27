@@ -37,6 +37,8 @@ subroutine parse_site(cmd_line_entry)
     if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
       .or.&
       (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
+      .or.&
+      (cmd_line_entry%field(i)%subfield(1)%name.eq. "m" )  &
       ) &
       then
       call parse_GMT_like_boundaries (cmd_line_entry%field(i))

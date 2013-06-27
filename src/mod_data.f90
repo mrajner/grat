@@ -136,8 +136,14 @@ subroutine get_dimension (model , i)
   integer :: length , status
 
   write (log%unit , form%i4, advance='no') "Getting dim:",trim(model%names(i)), ".."
-
-  status = nf90_inq_dimid(model%ncid,model%names(i) , dimid )
+  status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
+  if (status /=nf90_noerr) then
+    if(model%names(i).eq."lon") then
+      status = nf90_inq_dimid(model%ncid,"longitude", dimid)
+    else if(model%names(i).eq."lat") then
+      status = nf90_inq_dimid(model%ncid,"latitude", dimid)
+    endif
+  endif
   if(status /= nf90_noerr) then 
     write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
     call nc_info(model)
