@@ -499,6 +499,8 @@ subroutine get_index()
       ind%green%ghn = i
     case ("GHE")
       ind%green%ghe = i
+    case ("GG")
+      ind%green%gg = i
     endselect
   enddo
   do i = 1, size(polygon)

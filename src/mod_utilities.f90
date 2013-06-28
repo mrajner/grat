@@ -409,4 +409,24 @@ function datanameunit (dataname ,datanames,count)
     if(datanames(i).eq.dataname) datanameunit = i
   enddo
 end function
+
+! ==============================================================================
+!  p = rho h g 
+! converts mm of EWT to Pascal
+! inverted: converts Pascal to mm EWT
+! ==============================================================================
+function mmwater2pascal(mmwater, inverted)
+  use mod_constants, only: density, earth
+  real(dp) :: mmwater2pascal
+  real(dp), intent(in) :: mmwater
+  logical, optional, intent(in) :: inverted
+
+  
+  if (present(inverted).and.inverted) then
+    mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water) 
+  else
+    mmwater2pascal=density%water * mmwater /1000 * earth%gravity%mean
+  endif
+
+end function
 end module

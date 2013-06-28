@@ -22,9 +22,12 @@
 sx: grat 
 	grat -S   \
 		0j: 52:21 \
-		-F /home/mrajner/dat/wghm/dat/WGHM.nc @EWT \
-		-G /home/mrajner/dat/green/green_ce_aplo.dat @GR : 1@R :2 @aplo \
-		-H  -D2002  -L a@a  -I 1 @DD : 1 @ AD # -I 5 @DS : 80 @AS :0@DB: 10@DE
+		-F $(SP)  \
+		-G \
+		 /home/mrajner/src/eterna34/oceload/prem@GG : 1:3 \
+		, m @GE \
+		-V \
+		-H  -Dm:m -o tmp # -I 5 @DS : 80 @AS :0@DB: 10@DE
 
 #   grat \
 #     -S j : 52 : 21   \
@@ -116,7 +119,7 @@ al: grat example
 FC = ifort
 
 # compiler flags
-FLAGS =   # -O2  -CB    # -g -traceback -heap-arrays
+FLAGS =   # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff  

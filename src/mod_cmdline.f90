@@ -67,7 +67,14 @@ module mod_cmdline
     integer(2) :: p, g , a , d, l, n, r , s
   end type
   type green_index
-    integer(2) :: gn , ge , gr , ghn , ghe  
+    integer(2) :: & 
+      gn = 0,     & ! green newtonian - with SP in Pa
+      ge,         & ! green elastic - with SP in Pa
+      gr,         & ! green radial - with EWT in mm
+      ghn,        & ! green horizontal - with SP in Pa
+      ghe,        & ! green horizontal - with SP in Pa
+      gg            ! green gravimetric - with SP in Pa 
+                    !(like elastic but uses green not normalized according to Merriam)
   end type
   type index_info
     type (model_index)       :: model

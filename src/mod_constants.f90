@@ -100,4 +100,15 @@ module mod_constants
     mass        = 1.99e30                   & ! kg
     )
 
+  !---------------------------------------
+  ! densities
+  !---------------------------------------
+  type density_info
+    real(dp)      :: water
+  end type
+  type(density_info), parameter :: &
+    density = density_info ( &
+    water = 1000 & ! kg m-3
+    )
+
 end module mod_constants
