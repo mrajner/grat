@@ -58,7 +58,10 @@ module mod_cmdline
   logical :: inverted_barometer  = .true.  
 
   type model_index
-    integer(2) :: SP, T, RS , EWT
+    integer(2) :: sp, t, rsp , ewt , h , ls
+  end type
+  type poly_index
+    integer(2) :: e, n
   end type
   type moreverbose_index
     integer(2) :: p, g , a , d, l, n, r , s
@@ -70,6 +73,7 @@ module mod_cmdline
     type (model_index)       :: model
     type (moreverbose_index) :: moreverbose
     type (green_index) :: green
+    type (poly_index) :: polygon
   end type
   type(index_info) :: ind
 contains

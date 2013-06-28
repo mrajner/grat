@@ -10,18 +10,32 @@
 #   ./denorm_spotl_green
 #
 
-i:value_check
-	value_check \
-		-F /home/mrajner/dat/erainterim/data.nc:sp, \
-		/home/mrajner/dat/erainterim/data01.nc:sp , 10 \
-		-S j : 51.5 :21.5 -V
+# i:value_check
+#   value_check \
+#     -F /home/mrajner/dat/erainterim/data.nc:sp, \
+#     /home/mrajner/dat/erainterim/data01.nc:sp , 10 \
+#     -S j : 51.5 :21.5 -V
 
-# ooo: example_value_check
+ RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
+# RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
+# RSP = 101300@RSP
 sx: grat 
-	grat \
-		-S j : 0:0   \
-		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @ SP :pres, 10@EWT\
-		-G merriam @GN , /home/mrajner/src/gotic2/data/grn1.data@GR :1:2  -L  @s  -H -V
+	grat -S   \
+		0j: 52:21 \
+		-F /home/mrajner/dat/wghm/dat/WGHM.nc @EWT \
+		-G /home/mrajner/dat/green/green_ce_aplo.dat @GR : 1@R :2 @aplo \
+		-H  -D2002  -L a@a  -I 1 @DD : 1 @ AD # -I 5 @DS : 80 @AS :0@DB: 10@DE
+
+#   grat \
+#     -S j : 52 : 21   \
+#     -F  /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @SP :pres , $(RSP) , $(LS) \
+#     , 1000 @EWT \
+#     -BI  \
+#     -G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1:2@aplo , m@GN, m @GE   -H -V \
+#     -P ../polygon/baltyk.poly:- \
+#     -Dm  -L@s , p@p:s
+
+
 oo: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
@@ -33,7 +47,7 @@ r:
 		joze:52.0:21 \
 		-F \
 		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
-		-G /home/mrajner/dat/green/green_ce_aplo.dat@G  R:1@R:2@aplo \
+		-G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
 		-D200201
 gnu2:
 	../bin/grat  -S \
@@ -112,15 +126,12 @@ DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 ST       = $(NCEP_DIR)/air.sig995.2011.nc@ST:air:lon:lat:level:time
-LS       = $(DAT_DIR)/landsea/landseaR0-50-0-70I0.2-0.2.grd@LS:z:x:y
+	LS       := $(DAT_DIR)/landsea/landseaRdI0.2-0.2.grd@LS:z:x:y
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
 fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 #todo vienna
-RS = /home/mrajner/src/grat/data/refpres/vienna_p0.grd@RS
-RS = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RS:pres  
-RS = 101300@RS
 
 SRCS  = mod_constants.f90 \
 				mod_utilities.f90 \
@@ -148,20 +159,14 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-# mod_utilities.o: mod_constants.o
-# mod_aggf.o: mod_constants.o mod_utilities.o
-# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-# mod_green.o: mod_data.o mod_polygon.o mod_date.o
-# mod_data.o: mod_mjd.o
-# mod_date.o:mod_data.o
+mod_utilities.o: mod_constants.o
+mod_aggf.o: mod_constants.o mod_utilities.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o
+mod_data.o: mod_mjd.o
+mod_date.o:mod_data.o
 
-
-# mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90
-#   
-# E:
-#   mod_polygon.o: mod_cmdline.o
-#   mod_green.o: mod_cmdline.o
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
@@ -235,7 +240,7 @@ docpdf: doc
 	evince ../doc/latex/refman.pdf &
 
 dochtml: doc
-	firefox ../doc/html/.html &
+	firefox ../doc/html/index.html &
 
 docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3

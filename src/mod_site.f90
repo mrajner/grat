@@ -63,6 +63,20 @@ subroutine parse_site(cmd_line_entry)
       write(log%unit, form%i3) 'reading from file:', &
         cmd_line_entry%field(i)%subfield(1)%name
       call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
+    ! this is shortcut for Józefosław -Sj
+    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."j") then
+      call more_sites (1,start_index)
+      site(start_index)%name = "joze_a"
+      site(start_index)%lat  = 52
+      site(start_index)%lon  = 21
+      site(start_index)%height  = 110
+      ! and point on Baltic Sea
+    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."b") then
+      call more_sites (1,start_index)
+      site(start_index)%name = "balt_a"
+      site(start_index)%lat  = 57
+      site(start_index)%lon  = 21
+      site(start_index)%height  = 110
     else
       call print_warning ("site")
     endif

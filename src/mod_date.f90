@@ -43,13 +43,11 @@ subroutine parse_date (cmd_line_entry)
     call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
-      do i = 1, size (model)
-        if (model(i)%if) then
-          if ((i.eq.1) .or. (i.gt.1 .and. mjd(model(i)%date(lbound(model(i)%date,1),1:6)).lt.mjd(start))) then
-            start = model(i)%date(lbound(model(i)%date,1),1:6)
-          endif
-        endif
-      enddo
+      if ( size(model(1)%date) .eq. 0) then
+        stop "NO dates in first model. -Dm is forbidden"
+      else
+        start = model(1)%date(lbound(model(1)%date,1),1:6)
+      endif
     endif
     stop = start
 
@@ -90,13 +88,7 @@ subroutine parse_date (cmd_line_entry)
     endif
 
     if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
-      do i = 1, size (model)
-        if (model(i)%if) then
-          if ((i.eq.1) .or. (i.gt.1 .and. mjd(model(i)%date(ubound(model(i)%date,1),1:6)).gt.mjd(stop))) then
-            stop = model(i)%date(ubound(model(i)%date,1),1:6)
-          endif
-        endif
-      enddo
+      stop = model(1)%date(ubound(model(1)%date,1),1:6)
     endif
 
     write (log%unit , '('//form%t3//',a,x,i4,5(1x,i2.2))')  "start date:" , start

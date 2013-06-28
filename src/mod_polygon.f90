@@ -50,23 +50,26 @@ subroutine parse_polygon (cmd_line_entry)
   endif
 
   allocate(polygon(size(cmd_line_entry%field)))
-  do i  =1 , size(cmd_line_entry%field)
+  do i=1, size(cmd_line_entry%field)
   polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+  if(i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
+    polygon(i)%name= polygon(i-1)%name
+  endif
   polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
   write(log%unit, form%i2), 'polygon file:' , polygon(i)%name
-    if (file_exists((polygon(i)%name))) then
-      polygon(i)%if=.true.
-      if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
+  if (file_exists((polygon(i)%name))) then
+    polygon(i)%if=.true.
+    if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
       .or.cmd_line_entry%field(i)%subfield(2)%name.eq."-" ) then
-        polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
-        write(log%unit, form%i3) , "global override:", polygon(i)%pm
-      endif
-      call read_polygon (polygon(i))
-    else
-      write(log%unit, form%i3), 'file do not exist. Polygon file was IGNORED'
+      polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
+      write(log%unit, form%i3) , "global override:", polygon(i)%pm
     endif
+    call read_polygon (polygon(i))
+  else
+    write(log%unit, form%i3), 'file do not exist. Polygon file was IGNORED'
+  endif
 enddo
-   
+
 end subroutine
 ! ==============================================================================
 !> Reads polygon data

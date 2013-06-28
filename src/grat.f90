@@ -118,13 +118,13 @@ program grat
       do i = 1 , size(model)
         if(model(i)%if) then
           select case (model(i)%dataname)
-          case ("LS","RS")
+          case ("LS","RSP")
             if (idate.gt.start) then
               cycle
             else
               call get_variable (model(i))
             endif
-          case ("T")
+!          case ("H")
             if (idate.gt.start) then
               cycle
             else

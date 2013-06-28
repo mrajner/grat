@@ -52,6 +52,8 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ("-B")
     if (cmd_line_entry%field(1)%subfield(1)%name.eq."N" ) &
       inverted_barometer = .false.
+    write(log%unit, form%i3) "inverted barometer assumption [T/F]:", &
+      inverted_barometer
   case ('-D')
     call parse_date(cmd_line_entry)
   case ('-F')
@@ -462,9 +464,11 @@ subroutine get_index()
     case ("EWT")
       ind%model%ewt = i
     case ("T")
-      ind%model%T = i
-    case ("RS")
-      ind%model%RS = i
+      ind%model%t = i
+    case ("RSP")
+      ind%model%rsp = i
+    case ("LS")
+      ind%model%ls = i
     endselect
   enddo
   do i = 1 , size(moreverbose)
@@ -495,6 +499,17 @@ subroutine get_index()
       ind%green%ghn = i
     case ("GHE")
       ind%green%ghe = i
+    endselect
+  enddo
+  do i = 1, size(polygon)
+    select case (polygon(i)%dataname)
+    case ("E")
+      ind%polygon%e = i
+    case ("N")
+      ind%polygon%n = i
+    case ("")
+      ind%polygon%n = i
+      ind%polygon%e = i
     endselect
   enddo
 
