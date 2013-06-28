@@ -10,17 +10,25 @@ program polygon_check
 
 
   implicit none
-  integer i , j
-  integer , allocatable , dimension (:) :: iok 
+  integer(2) :: i , j
+  integer(2) , allocatable , dimension (:) :: iok 
 
   call intro  ( &
-    program_calling = "polygon_check" ,  &
-      accepted_switches = "VfABLPoShvIiR" , &
-      cmdlineargs=.true. &
+    program_calling   = "polygon_check" ,  &
+    accepted_switches = "VfABLPoShvIiR" , &
+    cmdlineargs       = .true. &
       )
 
     allocate(iok(size(polygon)))
 
+    if (output%header) then
+      write (output%unit , '(a8,1x,2a10)' , advance="no" ) "name", "lat", "lon"
+      if (allocated(polygon)) then
+        write (output%unit, '(<size(iok)>(2x,a1,i1))' ) , ("p",i,i=1,size(iok))
+      else
+        write(output%unit, *)
+      endif
+    endif
     do i=1 , size (site)
       write (output%unit , '(a8,1x,2f10.5)' , advance="no" ) site(i)%name, site(i)%lon, site(i)%lat   
       if (allocated(polygon)) then

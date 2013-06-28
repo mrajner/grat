@@ -11,16 +11,17 @@
 #
 
 i:value_check
-	value_check -F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc@:pres \
-	, /home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc@:pres \
-	, /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@:pres \
-	-Sm:30:60 -V 
+	value_check \
+		-F /home/mrajner/dat/erainterim/data.nc:sp, \
+		/home/mrajner/dat/erainterim/data01.nc:sp , 10 \
+		-S j : 51.5 :21.5 -V
+
 # ooo: example_value_check
 sx: grat 
 	grat \
 		-S j : 0:0   \
-		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @ SP :pres, 10\
-		-G merriam @GHE -H -L,@r:s , @r , @ a  -I  6@DB: 10@DE : 5@DS : 90 @AS -V
+		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @ SP :pres, 10@EWT\
+		-G merriam @GN , /home/mrajner/src/gotic2/data/grn1.data@GR :1:2  -L  @s  -H -V
 oo: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
@@ -147,17 +148,13 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-flw: mod_constants.o mod_utilities.o mod_printing.o mod_cmdline.o mod_site.o mod_spherical.o \
-	mod_mjd.o mod_aggf.o mod_polygon.o mod_data.o mod_date.o  value_check grat all
-
-
-mod_utilities.o: mod_constants.o
-mod_aggf.o: mod_constants.o mod_utilities.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o
-mod_data.o: mod_mjd.o
-mod_date.o:mod_data.o
+# mod_utilities.o: mod_constants.o
+# mod_aggf.o: mod_constants.o mod_utilities.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o mod_date.o
+# mod_data.o: mod_mjd.o
+# mod_date.o:mod_data.o
 
 
 # mod_cmdline.o: mod_green.o mod_polygon.o mod_cmdline.f90

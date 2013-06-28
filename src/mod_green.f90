@@ -407,13 +407,6 @@ subroutine convolve (site , date)
 
 !        ! get values of model
 !        do imodel = 1 , size(model)
-!          if(model(imodel)%if) then 
-!            call get_value (                                  & 
-!              model(imodel), r2d(lat), r2d(lon), val(imodel), & 
-!              level=1, method = info(igreen)%interpolation)
-!          else if (model(imodel)%if_constant_value)  then
-!            val(imodel) = model(imodel)%constant_value
-!          endif
 !        enddo
 
 !        do i =1,size(polygon)
@@ -487,6 +480,10 @@ subroutine convolve (site , date)
           .or.ind%green%ghn.ne.0 &
           .or.ind%green%ghe.ne.0 &
           ) then
+
+          call get_value (                                  & 
+            model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), & 
+            level=1, method = info(igreen)%interpolation)
           aux = (val(ind%model%ewt))  * &
             area/d2r(green_common(igreen)%distance(idist)) * &
             1./earth%radius/1e12 * &
@@ -569,7 +566,10 @@ subroutine convolve (site , date)
     write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, (sum(result(i, 1:igreen-1)), i =1,size(result,1))
   endif
 
-  !    write(log%unit,*)  , "npoints:", npoints ,"tot_area", tot_area, tot_area/earth%radius**2
+  if (ind%moreverbose%s.ne.0) then
+  if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(a8)' ) "npoints"
+  write(moreverbose(ind%moreverbose%s)%unit,'(i8)')  , npoints , tot_area, tot_area/earth%radius**2
+endif
 
   !    write(output%unit, '(g20.4)') , result(1,1)
 end subroutine

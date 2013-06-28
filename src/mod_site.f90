@@ -8,8 +8,8 @@ module mod_site
   ! site information
   !---------------------------------------------------
   type site_info 
-    character(:), allocatable :: name
-    real(dp)                  :: lat,lon,height
+    character(:),allocatable :: name
+    real(dp)                 :: lat,lon,height
   end type
 
   type(site_info) , allocatable , dimension(:) :: site
@@ -117,24 +117,6 @@ subroutine parse_GMT_like_boundaries (field)
       if (text.eq."g" ) then
         limits=[0. , 359.9999 , -90 , 90. ]
         exit
-      else if (text.eq."m") then
-      do ii = 1, size (model)
-        if (model(i)%if) then
-          if ((ii.eq.1) .or. &
-            (ii.gt.1 .and. (minval(model(ii)%lonrange).lt.limits(1))) &
-            ) limits(1) = minval(model(ii)%lonrange)
-          if ((ii.eq.1) .or. &
-            (ii.gt.1 .and. (maxval(model(ii)%lonrange).gt.limits(2))) &
-            ) limits(2) = maxval(model(ii)%lonrange)
-          if ((ii.eq.1) .or. &
-            (ii.gt.1 .and. (minval(model(ii)%latrange).lt.limits(3))) &
-            ) limits(3) = minval(model(ii)%latrange)
-          if ((ii.eq.1) .or. &
-            (ii.gt.1 .and. (maxval(model(ii)%latrange).gt.limits(4))) &
-            ) limits(4) = maxval(model(ii)%latrange)
-        endif
-      enddo
-        exit
       endif
     endif
     text=text(index(text,"/")+1:)
@@ -171,25 +153,45 @@ subroutine parse_GMT_like_boundaries (field)
       read (field%subfield(3)%name, * ) resolution(2)
     endif
   endif
+  if (text.eq."m" ) then
+    limits = [ &
+      minval(model(1)%lon), &
+      maxval(model(1)%lon), &
+      minval(model(1)%lat), &
+      maxval(model(1)%lat) &
+      ]
+    if (size(field%subfield).eq.1) then
+      call more_sites (size(model(1)%lon) * size(model(1)%lat) , start_index)
+      
+      do i =1, size(model(1)%lon)
+        do ii =1, size(model(1)%lat)
+          site(start_index -1 + (i-1) * size(model(1)%lat) + ii)%lon = model(1)%lon(i)
+          site(start_index -1 + (i-1) * size(model(1)%lat) + ii)%lat =  model(1)%lat(ii)
+          site(start_index -1 + (i-1) * size(model(1)%lat) + ii)%name = "model"
+        enddo
+      enddo
+      return
+    endif
+  endif
 
-  range_lon=limits(2) - limits(1)
+  range_lon = limits(2) - limits(1)
   if (range_lon.lt.0) range_lon = range_lon + 360.
-  range_lat=limits(4) - limits(3)
-  n_lon = floor ( range_lon / resolution(1)) + 1
-  n_lat = floor ( range_lat / resolution(2)) + 1  
-  call more_sites ( n_lon * n_lat , start_index )
+  range_lat = limits(4) - limits(3)
+  n_lon = floor (range_lon / resolution(1)) + 1
+  n_lat = floor (range_lat / resolution(2)) + 1  
+  call more_sites (n_lon * n_lat , start_index)
 
   do i = 1 , n_lon
     lon = limits (1) + (i-1) * resolution(1)
     if (lon.ge.360.) lon = lon - 360. 
     do ii = 1 , n_lat
       lat = limits (3) + (ii-1) * resolution (2)
-      site( start_index -1 +  (i-1) * n_lat + ii  )%lon = lon
-      site( start_index -1 + (i-1) * n_lat + ii  )%lat = lat
-      site( start_index -1 + (i-1) * n_lat + ii  )%height = 0
-      site( start_index -1 + (i-1) * n_lat + ii  )%name = "auto"
+      site(start_index -1 + (i-1) * n_lat + ii)%lon = lon
+      site(start_index -1 + (i-1) * n_lat + ii)%lat = lat
+      site(start_index -1 + (i-1) * n_lat + ii)%name = "auto"
     enddo
   enddo
+  site%height = 0
 end subroutine
 
 ! =============================================================================

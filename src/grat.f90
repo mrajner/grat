@@ -80,7 +80,6 @@ program grat
     accepted_switches="VSBLGPpoFIDLvhRQ" , &
     cmdlineargs=.true. &
     )
-
   call get_index()
 
   iresult=0

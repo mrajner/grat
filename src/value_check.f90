@@ -15,7 +15,7 @@ program value_check
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
-  integer :: i,ii ,j ,start , imodel, iok 
+  integer(2) :: i,ii ,j ,start , imodel, iok 
   character(1) :: interpolation
 
   call intro (program_calling = "value_check", &
@@ -74,20 +74,15 @@ program value_check
       else
         iok=1
       endif
-
       imodel = 0
       do ii = 1 , size (model)
         if (model(ii)%if .or. model(ii)%if_constant_value) then
           imodel = imodel + 1
-          if (model(ii)%if) then 
-            if (iok.eq.1) then
-              call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                method=info(1)%interpolation, huge=model(ii)%dataname, date=date(j)%date)
-            else
-              val (imodel) = 0
-            endif
-          else if (model(ii)%if_constant_value) then
-            val(imodel) = model(ii)%constant_value
+          if (iok.eq.1) then
+            call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
+              method=info(1)%interpolation, huge=model(ii)%dataname, date=date(j)%date)
+          else
+            val (imodel) = 0
           endif
         endif
       enddo
@@ -95,7 +90,6 @@ program value_check
     enddo
   enddo
 
-  ! todo print to appropriate files
   if (ind%moreverbose%d.ne.0) then
     do i = 1 , size(model)
       do  j =1,size(model(i)%time)

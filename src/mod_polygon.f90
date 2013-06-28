@@ -162,7 +162,7 @@ end subroutine
 subroutine chkgon (rlong , rlat , polygon , iok)
   real(dp),intent (in) :: rlong, rlat
   integer :: i ,ii , ianyok
-  integer , intent (out) :: iok
+  integer(2) , intent (out) :: iok
   real(dp) :: rlong2
   type(polygon_info) , intent (in) :: polygon
 

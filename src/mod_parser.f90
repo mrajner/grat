@@ -438,6 +438,7 @@ function dataname(abbreviation)
   if (abbreviation.eq."r")  dataname = "results"
   if (abbreviation.eq."a")  dataname = "auxiliary"
   if (abbreviation.eq."d")  dataname = "dates"
+  if (abbreviation.eq."s")  dataname = "summary"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
 
@@ -478,6 +479,8 @@ subroutine get_index()
       ind%moreverbose%d = i
     case ("r")
       ind%moreverbose%r = i
+    case ("s")
+      ind%moreverbose%s = i
     end select
   enddo
   do i = 1, size(green)

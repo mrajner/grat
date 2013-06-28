@@ -97,6 +97,8 @@ subroutine parse_model (cmd_line_entry)
       model(i)%if_constant_value=.true.
       read (model(i)%name , * ) model(i)%constant_value
       write(log%unit, form%i3), 'constant value was set: ' , model(i)%constant_value
+      model(i)%lonrange=[  0,360]
+      model(i)%latrange=[-90, 90]
     else
       call print_warning ("model")
       stop
@@ -139,10 +141,14 @@ subroutine get_dimension (model , i)
   status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
   if (status /=nf90_noerr) then
     if(model%names(i).eq."lon") then
+      model%names(i)="longitude"
+      write(log%unit, '(a)', advance='no') "longitude"
       status = nf90_inq_dimid(model%ncid,"longitude", dimid)
     else if(model%names(i).eq."lat") then
-      status = nf90_inq_dimid(model%ncid,"latitude", dimid)
+      model%names(i)="latitude"
+      write(log%unit, '(a)', advance='no') "latitude"
     endif
+  status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
   endif
   if(status /= nf90_noerr) then 
     write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
@@ -167,11 +173,11 @@ subroutine get_dimension (model , i)
       "actual_range" , model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
       =[model%lon(1) , model%lon(size(model%lon)) ]
-    if(index(model%name,"ncep_reanalysis").ne.0) then
-      where (model%lonrange.gt."357.4") 
-        model%lonrange=360
-      end where
-    endif
+    !if(index(model%name,"ncep_reanalysis").ne.0) then
+    where (model%lonrange.ge.357.5) 
+      model%lonrange=360
+    end where
+    !endif
   else if (i.eq.4 ) then
     allocate(model%level (length))
     status = nf90_get_var  (model%ncid,  varid , model%level)
@@ -391,6 +397,7 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
   integer, intent(in), optional::date(6)
 
   if (present(level)) ilevel=level
+
 
   ! check if inside model range
   if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360 
