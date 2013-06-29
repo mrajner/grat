@@ -68,13 +68,17 @@ module mod_cmdline
   end type
   type green_index
     integer(2) :: & 
-      gn = 0,     & ! green newtonian - with SP in Pa
-      ge,         & ! green elastic - with SP in Pa
-      gr,         & ! green radial - with EWT in mm
-      ghn,        & ! green horizontal - with SP in Pa
-      ghe,        & ! green horizontal - with SP in Pa
-      gg            ! green gravimetric - with SP in Pa 
-                    !(like elastic but uses green not normalized according to Merriam)
+      gn = 0,     & ! green newtonian   - with SP  in Pa
+      ge,         & ! green elastic     - with SP  in Pa
+      gr,         & ! green radial      - with EWT in mm
+      ghn,        & ! green horizontal  - with EWT in mm
+      ghe,        & ! green horizontal  - with EWT in mm
+      gg,         & ! green gravimetric - with SP  in Pa
+                    ! (like elastic but uses green not normalized according to Merriam)
+      gndt,       & ! first derivative respect to temperature
+      gndh,       & ! first derivative respect to station height
+      gndz,       & ! first derivative respect to column height
+      gndz2         ! second derivative respect to column height
   end type
   type index_info
     type (model_index)       :: model

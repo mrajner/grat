@@ -10,24 +10,23 @@
 #   ./denorm_spotl_green
 #
 
-# i:value_check
-#   value_check \
-#     -F /home/mrajner/dat/erainterim/data.nc:sp, \
-#     /home/mrajner/dat/erainterim/data01.nc:sp , 10 \
-#     -S j : 51.5 :21.5 -V
+i:value_check
+	value_check \
+		-F /home/mrajner/dat/erainterim/data.nc:sp, \
+		/home/mrajner/dat/erainterim/data01.nc:sp , 10 \
+		-S g:6:1 -V
 
  RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 # RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
 # RSP = 101300@RSP
 sx: grat 
-	grat -S   \
-		0j: 52:21 \
+	grat -S j  \
 		-F $(SP)  \
 		-G \
 		 /home/mrajner/src/eterna34/oceload/prem@GG : 1:3 \
 		, m @GE \
 		-V \
-		-H  -Dm:m -o tmp # -I 5 @DS : 80 @AS :0@DB: 10@DE
+		-H -Dm -tmp # -I 5 @DS : 80 @AS :0@DB: 10@DE
 
 #   grat \
 #     -S j : 52 : 21   \
@@ -128,7 +127,7 @@ NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff
 DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
-ST       = $(NCEP_DIR)/air.sig995.2011.nc@ST:air:lon:lat:level:time
+T       = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
 	LS       := $(DAT_DIR)/landsea/landseaRdI0.2-0.2.grd@LS:z:x:y
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt

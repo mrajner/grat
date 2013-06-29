@@ -420,7 +420,7 @@ subroutine convolve (site , date)
 
         tot_area=tot_area+ area
 
-        ! get ls
+        ! get LS
         if (ind%model%ls.ne.0) then
           call get_value ( & 
             model(ind%model%ls), r2d(lat), r2d(lon), val(ind%model%ls), & 
@@ -428,10 +428,10 @@ subroutine convolve (site , date)
         endif
 
         ! GE, GN, ...
-        if ( &
-          ind%green%gn.ne.0 &
-          .or.ind%green%ge.ne.0 &
-          .or.ind%green%gg.ne.0 &
+        if (                    & 
+          ind%green%gn.ne.0     & 
+          .or.ind%green%ge.ne.0 & 
+          .or.ind%green%gg.ne.0 & 
           ) then
 
 
@@ -441,8 +441,7 @@ subroutine convolve (site , date)
             d2r(green_common(igreen)%distance(idist)) * &
             1.e5 * &
             earth%radius**2 * &
-            ! Pa into hPa
-          100 ) 
+            100) ! Pa into hPa
 
           ! get SP (and RP if given)
           if (ind%model%sp.ne.0) then
@@ -488,12 +487,22 @@ subroutine convolve (site , date)
           endif
 
           if ((ind%polygon%n.ne.0.and.iok(ind%polygon%n).ne.0).or.(ind%polygon%n.eq.0)) then 
+            ! GN
             if (ind%green%gn.ne.0) then
               result(ind%green%gn) = result(ind%green%gn) + & 
                 val(ind%model%sp) *                                       & 
                 green_common(igreen)%data(idist, ind%green%gn) *          & 
                 area * normalize
             endif
+
+            ! GNdt
+            if (ind%green%gndt.ne.0) then
+              result(ind%green%gndt) = result(ind%green%gndt) +    & 
+                val(ind%model%sp) *                                & 
+                green_common(igreen)%data(idist, ind%green%gndt) * & 
+                area * normalize
+            endif
+
           endif
         endif
 
@@ -579,7 +588,7 @@ subroutine convolve (site , date)
           call printmoreverbose (                                      & 
             d2r(site%lat), d2r(site%lon), d2r(azimuth), d2r(dazimuth), & 
             d2r(green_common(igreen)%start(idist)),                    & 
-            d2r(green_common(igreen)%stop(idist) )                     & 
+            d2r(green_common(igreen)%stop(idist))                      & 
             )
         endif
       enddo
