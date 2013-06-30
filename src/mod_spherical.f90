@@ -26,9 +26,9 @@ contains
 ! =============================================================================
 function spher_area (distance ,ddistance, azstp, radius, alternative_method )
   real(dp) :: spher_area
-  real(dp), intent(in)  :: distance,ddistance 
+  real(dp), intent(in)  :: distance, ddistance 
   real(dp), intent(in)  :: azstp
-  logical, intent(in), optional :: alternative_method
+  logical,  intent(in), optional :: alternative_method
   real(dp), intent(in), optional :: radius
 
   if (present(alternative_method).and.alternative_method) then

@@ -3,14 +3,13 @@
 
 # as: value_check  example_value_check
 dx: denorm_spotl_green kran
-denorm_spotl_green: denorm_spotl_green.f90 mod_green.o 
+denorm_spotl_green: denorm_spotl_green.f90 $(OBJS)
 	ifort $< -o $@ $(OBJS) $(NETCDFLIB)
 
 kran:
 	 ./denorm_spotl_green \
-		 -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii, \
-		  /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii \
-		 -V
+		 -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii \
+		 | tee tmp
 
 
 # i:value_check
@@ -171,6 +170,7 @@ mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o
 mod_data.o: mod_mjd.o
 mod_date.o:mod_data.o
+mod_mjd.o: mod_constants.o
 
 
 PROGS_DIR=../bin

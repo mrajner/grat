@@ -192,7 +192,7 @@ subroutine read_green (green)
   endif
   if (green%columndataname(2).eq."aplo") then
     ! need some proof ?
-    green%data=green%data*earth%radius/ (earth%radius*earth%radius)*1e12 * 10
+    green%data=green%data  / (earth%radius)*1e12 * earth%gravity%mean
     write(log%unit, form_63) "conversion: aplo --> to gotic"
   endif
 
@@ -630,39 +630,6 @@ subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, dista
   write(moreverbose(ind%moreverbose%a)%unit, '(">")')
 end subroutine
 
-subroutine denormalize(filein)
-  use mod_printing
-  character(len=*),intent (in) :: filein
-  character(len=80) :: header
-  integer :: fileinunit , fileoutunit
-  integer :: ngr, j, M, Nj, i, ii, iii, i_plik
-  !!!  real :: deltal, deltah, delta,dist
-  !!!  real, dimension(7) :: val
-  !!!  real,dimension(3) :: G_t
-  !!
-  write(fileoutunit, form%separator)
-  write(fileoutunit, form%i3), '# Converted with denormalize (from mod_green)'
-  write(fileoutunit, form%i3), '#',trim(filein)
-
-  open(newunit = fileinunit ,file=trim(filein),action='read',status='old')
-  read (fileinunit,'(a70)') header
-
-  read (fileinunit,'(i1,i3,2i4)') ngr,j,M,Nj
-  !!!  do i=1,M
-  !!!    read (1,'(i1,i3,2i4,3f10.4,5x,a1)') ngr,j,M,Nj,deltal, deltah,delta,fine
-  !!!    do ii=1,Nj
-  !!!      read (1,'(<ngr>e13.6)'), (val(iii),iii=1,7)
-  !!!      dist=deltal+(ii-1)*delta
-  !!!      write (2, '(f10.5,7e)'),dist,val
-  !!
-  !!!      do iii=1,3  ! dla vert_disp, hor_disp, gravity -- jest taka 
-  !!!      call integrated2pointmass(val(iii),dist , delta, K(iii),  G_t(iii))
-  !!!      enddo
-  !!!      write (3,'(100(e20.11))') dist,(G_t(iii),iii=1,3)
-  !!!    enddo
-  !  enddo
-  !!
-end subroutine
 
 !! =============================================================================
 !!> 
