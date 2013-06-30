@@ -513,27 +513,28 @@ subroutine convolve (site , date)
           .or.ind%green%ghe.ne.0 &
           ) then
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
+            if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.val(ind%model%ls).eq.0)) then
             call get_value (                                  & 
               model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), & 
               level=1, method = info(igreen)%interpolation)
             aux = (val(ind%model%ewt))  *                      & 
               area/d2r(green_common(igreen)%distance(idist)) * & 
-              1./earth%radius/1e12
-            if (ind%green%gr.ne.0) then
-              if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.val(ind%model%ls).eq.0)) then
+              1./earth%radius/1e12* 1e3 ! m -> mm
+              if (ind%green%gr.ne.0) then
                 result(ind%green%gr) = result(ind%green%gr) +     & 
                   green_common(igreen)%data(idist,ind%green%gr) * & 
-                  aux * 1e3 ! m -> mm
-              endif
-              if (ind%green%ghn.ne.0) then
-                result(ind%green%ghn) = result(ind%green%ghn) +    & 
-                  green_common(igreen)%data(idist,ind%green%ghn) * & 
-                  aux * - cos (d2r(azimuth))
-              endif
-              if (ind%green%ghe.ne.0) then
-                result(ind%green%ghe) = result(ind%green%ghe) +    & 
-                  green_common(igreen)%data(idist,ind%green%ghe) * & 
-                  aux * - sin (d2r(azimuth))
+                  aux 
+
+                if (ind%green%ghn.ne.0) then
+                  result(ind%green%ghn) = result(ind%green%ghn) +    & 
+                    green_common(igreen)%data(idist,ind%green%ghn) * & 
+                    aux * - cos (d2r(azimuth))
+                endif
+                if (ind%green%ghe.ne.0) then
+                  result(ind%green%ghe) = result(ind%green%ghe) +    & 
+                    green_common(igreen)%data(idist,ind%green%ghe) * & 
+                    aux * - sin (d2r(azimuth))
+                endif
               endif
             endif
           endif
