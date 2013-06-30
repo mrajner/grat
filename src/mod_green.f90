@@ -629,94 +629,10 @@ subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, dista
   write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
   write(moreverbose(ind%moreverbose%a)%unit, '(">")')
 end subroutine
-!
-!
-subroutine wczytaj_linie_informacyjne
-  !!     do i=1,size(linie_informacyjne);        linie_informacyjne(i)%j_l = i;      enddo
-  !!      linie_informacyjne%Nj     = (/ 95    , 30    , 95    , 90    , 160    , 90       /)
-  !!!      linie_informacyjne%deltal = (/ 0.0011, 0.0205, 0.0550, 1.0500, 10.2500, 90.5000  /)
-  !!!      linie_informacyjne%deltah = (/ 0.0199, 0.0495, 0.9950, 9.9500, 89.7500, 179.5000 /)
-  !!!      linie_informacyjne%delta  = (/ 0.0002, 0.0010, 0.0100, 0.1000, 0.5000 , 1.0000   /)
-  !!!      linie_informacyjne%fine_l = (/ 'F'   , 'F'   , 'F'   , 'F'   , 'C'    , 'C'      /)
-end subroutine
-!
-subroutine plot2green(green_file)
-  character(len=*),intent (in) :: green_file
-  !!!  integer                          :: ile_linii_komentarza , i, j , jj ,  ile_rekordow , io
-  !!!  logical                          :: czy_komentarz=.true.
-  !!!  character(len=1)                 :: fine
-  !!!  real,dimension(:,:), allocatable :: values
-  !!!  real, dimension(7)               :: values_interpolowane=0., values_interpolowane_integrated=0.
-  !!!  real,dimension(:), allocatable   :: b,c,d
-  !!!  real,dimension(3)                :: G_t
-  !!!  real                             :: dist
-  !!
-  !!!ile_rekordow=0; ile_linii_komentarza=0
-  !!!call wczytaj_linie_informacyjne
-  !!
-  !!
-  !!!  open(1, file=trim(green_file)              , action='read'  , status='old')
-  !!!  open(2, file=trim(green_file)//'.mrp02.dat', action='write')
-  !!
-  !!!  do while(czy_komentarz)
-  !!!    read(1, *) dummy
-  !!!    if( dummy(1:1).eq.'#') then
-  !!!      ile_linii_komentarza=ile_linii_komentarza+1
-  !!!    else
-  !!!      czy_komentarz=.false.
-  !!!    endif
-  !!!  enddo
-  !!!  rewind (1)
-  !!!  do i=1, ile_linii_komentarza
-  !!!    read (1,*) dummy
-  !!!  enddo
-  !!!  do while (io.eq.0)
-  !!!    read(1,*, iostat=io) dummy
-  !!!    ile_rekordow=ile_rekordow+1
-  !!!  enddo
-  !!!  ile_rekordow=ile_rekordow-1
-  !!
-  !!!  allocate(values(ile_rekordow,4))
-  !!!  allocate(b(ile_rekordow))
-  !!!  allocate(c(ile_rekordow))
-  !!!  allocate(d(ile_rekordow))
-  !!
-  !!!  rewind(1)
-  !!!  print *, ile_linii_komentarza,ile_rekordow
-  !!!  do i=1, ile_linii_komentarza
-  !!!    read (1,*) dummy
-  !!!  enddo
-  !!!  do i=1, ile_rekordow
-  !!!    read (1,*) (values(i,j), j=1,4)
-  !!  enddo
-  !!
-  !!
-  !!!  write(2,'(a)'), '# program '
-  !!!  do i=1,size(linie_informacyjne)
-  !!!      write(2, '(i1, i3, 2i4, 3f10.4, 5x, a1)'), linie_informacyjne(i)
-  !!!      write(*, '(i1, i3, 2i4, 3f10.4, 5x, a1)'), linie_informacyjne(i)
-  !!!      do j= 1, linie_informacyjne(i)%Nj
-  !!!         dist = linie_informacyjne(i)%deltal+(j-1)*linie_informacyjne(i)%delta
-  !!!!         print * ,dist
-  !!!        do jj=2,4
-  !!!          call spline(values(:,1), values(:,jj) ,b,c,d,ile_rekordow)
-  !!!          values_interpolowane(jj-1)  = ispline(dist , values(:,1), values(:,jj), b, c, d, ile_rekordow)
-  !!!          call pointmass2integrated(values_interpolowane(jj-1), dist , linie_informacyjne(i)%delta , K(jj-1), values_interpolowane_integrated(jj-1) )
-  !!!!          print*,ile_rekordow, values(1,1), values_interpolowane(jj-1),dist,values_interpolowane_integrated(jj-1)
-  !!!!call exit
-  !!!        enddo
-  !!!        write(2,'(7e13.6)') (values_interpolowane_integrated(jj),jj=1,7)
-  !!!      enddo
-  !!!  enddo
-  !!!  close(1)
-  !!!  close(2)
-  !!!  deallocate(values,b,c,d)
-end subroutine
 
 subroutine denormalize(filein)
   use mod_printing
   character(len=*),intent (in) :: filein
-  !  character(len=1) :: fine
   character(len=80) :: header
   integer :: fileinunit , fileoutunit
   integer :: ngr, j, M, Nj, i, ii, iii, i_plik
@@ -747,8 +663,7 @@ subroutine denormalize(filein)
   !  enddo
   !!
 end subroutine
-!
-!
+
 !! =============================================================================
 !!> 
 !!! chapter 4.1 of spotl manual \cite Agnew12
@@ -779,101 +694,5 @@ end subroutine
 !!!  G_prim_t = G_t / ( ( 10.**K * a ) / ( a**2 * ( 2 *  sin (d2r(dist) /2  ) / d2r(dist)  ) ) )  
 !!!  G_integrated = G_prim_t  * ( 4 *  cos( d2r(dist) / 2. ) * sin( d2r(delta) /4. ) )
 !!!end subroutine
-!!
-!!subroutine ignewt_(del,stp,grav_new)
-!! width stp (ie, the interval [del-stp/2,del+stp/2],
-!! del and stp both being in radians
-!!  the height correction is included in the green functions,
-!! the station height in meters being passed as ht in the common block
-!! stloc
-!!
-!!!  $$$$$$calls only system routines
-!!
-!!implicit none
-!!!      real ::  eps,eps1,eps2,s,gt,c1
-!!!      real :: del,stp,g,g2,em ,plc
-!!!      real , intent(out) :: grav_new
-!!
-!!!         eps = wysokosc_stacji/a
-!!!         eps1=1.+eps
-!!!         eps2=eps*eps
-!!!         g2 = gn/(eps1*eps1)
-!!!        g = 9.7803327*(1+.005279*ct*ct) - 3.08e-6*wysokosc_stacji
-!!
-!!!   em = gn/g
-!!!   plc = 4*a*em
-!!!      if(eps.ne.0) then
-!!!        s=sin(d2r(del+stp/2)/2.d0)
-!!!        gt=(2.d0*eps1*s**2-eps)/sqrt(4*eps1*s**2+eps2)
-!!!        s=sin(d2r(del-stp/2)/2.d0)
-!!!        grav_new=gt-(2.d0*eps1*s**2-eps)/sqrt(4*eps1*s**2+eps2)
-!!!        grav_new=-g2*grav_new
-!!!      endif
-!!!      if(eps.eq.0) then
-!!!        grav_new=-g2*(sin(( d2r ( del+stp/2 ) )/2.d0)-sin(( d2r(del-stp/2) )/2.d0))
-!!!      endif
-!!!      return
-!!!      end subroutine
-!!
-!!
-!!
-!subroutine getgrf(num,ntot,ngr,fingrd)
-!      character*80 grname
-!      character*1 fingrd
-!      integer llu,ngr,ntot,num
-!         llu =  71
-!         open(unit=llu,file='~/src/spotl/green/gr.gbaver.wef.p01.ce',status='old',action='read')
-!!         open(unit=llu,file='~/src/spotl/working/tmpgr',status='old',access='sequential',form="formatted")
-!!         open(unit=llu,file='~/dr/merriam/green.dat_zmienione_kolumny.mrp02.dat',status='old',access='sequential',form="formatted")
-!!   read(llu,'(a)') grname
-!!      endif
-!!      read(llu,102) ngreen,num,ntot,ngr,beg,end,spc,fingrd
-!!      fingrd='L' ! IB , tmp
-!! 102  format(i1,i3,2i4,3f10.4,5x,a)
-!!      read(llu,104) ((grfn(ii,j),j=1,7),ii=1,ngr)
-!! 104  format(7e13.6)
-!!      rin(num) = beg
-!!      rout(num) = end
-!!      rsz(num) = spc
-!!     statgr(num) = fingrd
-!!      nring=ntot
-!end subroutine
-!
-!!real :: psi, gn , dgndt , dgndz, d2gndz2, ge
-!!character(len=255)::  dummy
-!
-!
-!!print *, 'sta'
-!!open( unit=11, file='./green.dat'               , action='read'  )
-!!open( unit=12, file='./green_denormalizacja.dat', action='write' )
-!
-!!read (11,*) dummy
-!
-!!do 
-!!  read (11,*, iostat=io) , psi, gn , dgndt , dgndz, d2gndz2, ge
-!!  if (.not.io.eq.0)  exit
-!
-!!  call denormfactor(psi, ge)
-!!  
-!!  write( 12 , '(2f15.5,3e20.10,e15.7)' ), psi, gn, dgndt, dgndz, d2gndz2, ge
-!!  write( * , '(2f15.5,3e20.10,e15.7)' ), psi, gn, dgndt, dgndz, d2gndz2, ge
-!!enddo
-!!print*, cos(d2r(1.))
-!!  
-!
-!
-subroutine denormfactor(psi, val)
-  real , intent(in) :: psi
-  real,intent(inout) :: val
-  real :: pi
-  real :: d2r
-  real , parameter :: a =6378137.0
-  !
-  !!pi = 4. * atan (1.0)
-  !
-  !!val = val / ( 2. * pi * ( 1. - cos ( d2r(1.) ) ) * d2r(psi)  *  a**2 * 1e5 * 1e8 * 1e2 )
-  !!val = val * 1e18 * ( a * d2r(psi) )
-  !
-end subroutine
 
 end module

@@ -15,9 +15,12 @@ program value_check
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
-  integer(2) :: i,ii ,j ,start , imodel, iok 
+  real (dp) :: cpu(2)
+  integer    :: i,ii ,j ,start , imodel
+  integer(2) :: iok 
   character(1) :: interpolation
 
+  call cpu_time(cpu(1))
   call intro (program_calling = "value_check", &
     accepted_switches="VFoShvIDLPR" , &
     cmdlineargs=.true.)
@@ -62,6 +65,7 @@ program value_check
     enddo
 
     do i = 1 , size(site)
+
       ! add time stamp if -D option was specified
       if (j.gt.0) then
         write (output%unit , '(f15.3,x,i4.4,5(i2.2))' , advance = "no" ) date(j)%mjd , date(j)%date
@@ -98,4 +102,7 @@ program value_check
     enddo
   endif
 
+  call cpu_time(cpu(2))
+!  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+!  write(log%unit, form_separator)
 end program
