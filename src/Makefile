@@ -24,9 +24,15 @@ sx: grat
 	grat -Sj  \
 		-F $(SP), $(RSP)  \
 		-G \
-		/home/mrajner/src/gotic2/data/grn1.data@GE : 1 : 4 @f2m \
-		-V \
-		-H -Dm -tmp # -I 5 @DS : 80 @AS :0@DB: 10@DE
+		/home/mrajner/dat/green/green_prem_otl_guo.dat@GE : 1 : 4 @f2m \
+		-L @g \
+		-H -Dm -tmp |head # -I 5 @DS : 80 @AS :0@DB: 10@DE
+#   grat -Sj  \
+#     -F $(SP), $(RSP)  \
+#     -G \
+#     /home/mrajner/dat/green/green_prem_atm_guo.dat@GE : 1 : 4 @f2m \
+#      \
+#     -H -Dm -tmp -La@g # -I 5 @DS : 80 @AS :0@DB: 10@DE
 
 #   grat \
 #     -S j : 52 : 21   \
