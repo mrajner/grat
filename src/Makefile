@@ -25,8 +25,7 @@ sx: grat
 		-F $(SP), $(RSP)  \
 		-G \
 		/home/mrajner/dat/green/green_prem_otl_guo.dat@GE : 1 : 4 @f2m \
-		-L @g \
-		-H -Dm -tmp |head # -I 5 @DS : 80 @AS :0@DB: 10@DE
+		-H -Dm -o tmp:tee  # -I 5 @DS : 80 @AS :0@DB: 10@DE
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \
 #     -G \

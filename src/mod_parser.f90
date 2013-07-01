@@ -70,6 +70,9 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
+      output%tee=.true.
+    endif
     write(log%unit, form_62), 'output file was set: ' , trim(output%name)
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit , file = output%name , action = "write" )
