@@ -2,14 +2,13 @@
 # for example: OBJS  = libgrat.a
 
 # as: value_check  example_value_check
-dx: denorm_spotl_green kran
-denorm_spotl_green: denorm_spotl_green.f90 $(OBJS)
-	ifort $< -o $@ $(OBJS) $(NETCDFLIB)
-
-kran:
-	 ./denorm_spotl_green \
-		 -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii \
-		 | tee tmp
+# dx: denorm_spotl_green kran
+# denorm_spotl_green: denorm_spotl_green.f90 $(OBJS)
+#   ifort $< -o $@ $(OBJS) $(NETCDFLIB)
+# kran:
+#    ./denorm_spotl_green \
+#      -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii \
+#      | tee tmp
 
 
 # i:value_check
@@ -22,11 +21,10 @@ kran:
 # RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
 # RSP = 101300@RSP
 sx: grat 
-	grat -S j  \
-		-F $(SP)  \
+	grat -Sj  \
+		-F $(SP), $(RSP)  \
 		-G \
-		 /home/mrajner/src/eterna34/oceload/prem@GG : 1:3 \
-		, m @GE \
+		/home/mrajner/src/gotic2/data/grn1.data@GE : 1 : 4 @f2m \
 		-V \
 		-H -Dm -tmp # -I 5 @DS : 80 @AS :0@DB: 10@DE
 

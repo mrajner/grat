@@ -78,10 +78,10 @@ end subroutine
 !> This subroutine read  green file
 ! =============================================================================
 subroutine read_green (green)
-  use mod_utilities, only: file_exists, skip_header, r2d
+  use mod_utilities, only: file_exists, skip_header, r2d , d2r
   use iso_fortran_env
   use mod_printing
-  use mod_constants, only:earth
+  use mod_constants, only:earth , pi
 
   integer :: lines , fileunit, io_status, i
   real (dp) , allocatable , dimension(:) :: tmp
@@ -190,10 +190,15 @@ subroutine read_green (green)
     green%distance=(/ (r2d(green%distance(i)), i=1,size(green%distance)) /)
     write(log%unit, form_63) "conversion: radians --> to degrees"
   endif
-  if (green%columndataname(2).eq."aplo") then
+  if (green%columndataname(2).eq."a2f") then
     ! need some proof ?
     green%data=green%data  / (earth%radius)*1e12 * earth%gravity%mean
-    write(log%unit, form_63) "conversion: aplo --> to gotic"
+    write(log%unit, form_63) "conversion: aplo --> to farrell"
+  endif
+  if (green%columndataname(2).eq."f2m") then
+    green%data= &
+      -green%data * earth%gravity%mean * 1e8 * 1e5 * 1e-18 * earth%radius * 2 * pi * (1.- cos(d2r(dble(1))))
+    write(log%unit, form_63) "conversion: farrell --> to merriam"
   endif
 
 end subroutine
