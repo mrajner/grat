@@ -602,10 +602,16 @@ subroutine convolve (site , date)
   enddo 
 
   ! results to output
-  if (present(date)) then
-    write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+  !TODO
+  stop "TOTO"
+  if (output%tee) then
+    do i =1,2
+      if (present(date)) then
+        write (i, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+      endif
+      write (i, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
+    enddo
   endif
-  write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
 
   ! summury: -L@s
   if (ind%moreverbose%s.ne.0) then
