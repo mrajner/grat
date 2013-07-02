@@ -10,9 +10,6 @@
 #      -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii  \
 #      -G m @GN
 		 
-af: example_aggf
-
-
 # i:value_check
 #   value_check \
 #     -F /home/mrajner/dat/erainterim/data.nc:sp, \
