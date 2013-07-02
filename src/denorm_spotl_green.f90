@@ -16,7 +16,7 @@ program denorm
 
   call intro & 
     (program_calling = "denorm" , &
-    accepted_switches="dd" , &
+    accepted_switches="GSF" , &
     cmdlineargs=.true. &
     )
 
@@ -56,9 +56,10 @@ program denorm
   enddo
 
   ! integrated
-  dstep=10
-  do i = 1,180
-    print * , i , spher_area(d2r(dble(i)), d2r(dble(dstep)), dble(2*pi)) , sin(d2r(dble(i))) *2*pi * d2r(dble(dstep))
-  enddo
+!  dstep=10
+!  do i = 1,180
+!    print * , i , spher_area(d2r(dble(i)), &
+!   d2r(dble(dstep)), dble(2*pi)) , sin(d2r(dble(i))) *2*pi * d2r(dble(dstep))
+!  enddo
 
 end program

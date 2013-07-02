@@ -40,8 +40,32 @@ program example_aggf
 
 !  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 
+
+  print *, "... green_newtonian_compute ()"
+  call green_newtonian_compute()
+
 contains 
  
+! =============================================================================
+!> compute green newtonian function
+! =============================================================================
+subroutine green_newtonian_compute()
+  use mod_green
+  use mod_utilities, only :d2r
+  type(green_functions) :: green_tmp
+  integer :: i, j, iun
+  real(dp):: heights (7)
+  heights = [ 0 , -1000, -100 , -10 , 10 ,100 ,1000]
+
+  open(newunit=iun, file="green_newtonian.dat", action = 'write')
+  call  read_green(green_tmp)
+  do i =1, size(green_tmp%distance)
+    write(iun, '(f12.6,<size(heights)>en19.7)') , green_tmp%distance(i) , &
+      (green_newtonian(d2r(green_tmp%distance(i)), height=heights(j), normalize=.true.), j =1 , size(heights))
+  enddo
+
+end subroutine
+
 ! =============================================================================
 !> Reproduces data to Fig.~3 in \cite Warburton77
 !!

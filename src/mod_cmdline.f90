@@ -70,6 +70,7 @@ module mod_cmdline
     integer(2) :: & 
       gn = 0,     & ! green newtonian   - with SP  in Pa
       ge,         & ! green elastic     - with SP  in Pa
+      gegdt,      & ! green elastic     - first derivative of gravity part respect to temp (see Guo et al., 2004)
       gr,         & ! green radial      - with EWT in mm
       ghn,        & ! green horizontal  - with EWT in mm
       ghe,        & ! green horizontal  - with EWT in mm

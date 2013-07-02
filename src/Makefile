@@ -3,12 +3,14 @@
 
 # as: value_check  example_value_check
 # dx: denorm_spotl_green kran
-# denorm_spotl_green: denorm_spotl_green.f90 $(OBJS)
+# denorm_spotl_green: denorm_spotl_green.f90 mod_green.o
 #   ifort $< -o $@ $(OBJS) $(NETCDFLIB)
 # kran:
 #    ./denorm_spotl_green \
-#      -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii \
-#      | tee tmp
+#      -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii  \
+#      -G m @GN
+		 
+af: example_aggf
 
 
 # i:value_check
@@ -22,10 +24,7 @@
 # RSP = 101300@RSP
 sx: grat 
 	grat -Sj  \
-		-F $(SP), $(RSP)  \
-		-G \
-		/home/mrajner/dat/green/green_prem_otl_guo.dat@GE : 1 : 4 @f2m \
-		-H -Dm -o tmp:tee  # -I 5 @DS : 80 @AS :0@DB: 10@DE
+	-G
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \
 #     -G \

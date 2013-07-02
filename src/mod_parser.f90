@@ -494,6 +494,8 @@ subroutine get_index()
     select case (green(i)%dataname)
     case ("GE")
       ind%green%ge = i 
+    case ("GEGdt")
+      ind%green%gegdt = i 
     case ("GN")
       ind%green%gn = i
     case ("GR")

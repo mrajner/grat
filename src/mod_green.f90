@@ -433,28 +433,29 @@ subroutine convolve (site , date)
         endif
 
         ! GE, GN, ...
-        if (                    & 
-          ind%green%gn.ne.0     & 
-          .or.ind%green%ge.ne.0 & 
-          .or.ind%green%gg.ne.0 & 
+        if (                       & 
+          ind%green%gn.ne.0        & 
+          .or.ind%green%ge.ne.0    & 
+          .or.ind%green%gg.ne.0    & 
+          .or.ind%green%gegdt.ne.0 & 
           ) then
 
 
           ! normalization according to Merriam (1992) 
           normalize= 1./ &
-            (2.*pi*(1.-cos(d2r(dble(1.)))) * &
-            d2r(green_common(igreen)%distance(idist)) * &
-            1.e5 * &
-            earth%radius**2 * &
+            (2.*pi*(1.-cos(d2r(dble(1.)))) *            & 
+            d2r(green_common(igreen)%distance(idist)) * & 
+            1.e5 *                                      & 
+            earth%radius**2 *                           & 
             100) ! Pa into hPa
 
           ! get SP (and RP if given)
           if (ind%model%sp.ne.0) then
-            call get_value ( & 
+            call get_value (                                              & 
               model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
               level=1, method = info(igreen)%interpolation)
             if (ind%model%rsp.ne.0) then
-              call get_value ( & 
+              call get_value (                                                & 
                 model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
                 level=1, method = info(igreen)%interpolation)
               val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
@@ -474,17 +475,27 @@ subroutine convolve (site , date)
               if (ind%green%ge.ne.0) then
                 ! if the cell is not over sea and inverted barometer assumption was not set 
                 ! and is not excluded by polygon
-                result(ind%green%ge) = result(ind%green%ge) + & 
-                  val(ind%model%sp) * &
+                result(ind%green%ge) = result(ind%green%ge) +      & 
+                  val(ind%model%sp) *                              & 
                   green_common(igreen)%data(idist, ind%green%ge) * & 
                   area * normalize
               endif
+
+              ! GEGdt pressure part from Guo2004
+              if (ind%green%gegdt.ne.0) then
+                result(ind%green%gegdt) = result(ind%green%gegdt) +   & 
+                  val(ind%model%sp) *                                 & 
+                  val(ind%model%t) * 1e-4 *                           & 
+                  green_common(igreen)%data(idist, ind%green%gegdt) * & 
+                  area * normalize
+              endif
+
               ! GG
               if (ind%green%gg.ne.0) then
                 aux = mmwater2pascal(val(ind%model%sp),inverted=.true.) * & 
-                  area/d2r(green_common(igreen)%distance(idist)) * & 
-                  1./earth%radius/1e18 
-                result(ind%green%gg) = result(ind%green%gg) + & 
+                  area/d2r(green_common(igreen)%distance(idist)) *        & 
+                  1./earth%radius/1e18
+                result(ind%green%gg) = result(ind%green%gg) +      & 
                   green_common(igreen)%data(idist, ind%green%gg) * & 
                   aux * 1e8 ! m s-2 -> microGal
               endif
@@ -494,9 +505,9 @@ subroutine convolve (site , date)
           if ((ind%polygon%n.ne.0.and.iok(ind%polygon%n).ne.0).or.(ind%polygon%n.eq.0)) then 
             ! GN
             if (ind%green%gn.ne.0) then
-              result(ind%green%gn) = result(ind%green%gn) + & 
-                val(ind%model%sp) *                                       & 
-                green_common(igreen)%data(idist, ind%green%gn) *          & 
+              result(ind%green%gn) = result(ind%green%gn) +      & 
+                val(ind%model%sp) *                              & 
+                green_common(igreen)%data(idist, ind%green%gn) * & 
                 area * normalize
             endif
 
@@ -602,16 +613,10 @@ subroutine convolve (site , date)
   enddo 
 
   ! results to output
-  !TODO
-  stop "TOTO"
-  if (output%tee) then
-    do i =1,2
-      if (present(date)) then
-        write (i, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
-      endif
-      write (i, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
-    enddo
-  endif
+    if (present(date)) then
+      write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+    endif
+    write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
 
   ! summury: -L@s
   if (ind%moreverbose%s.ne.0) then
@@ -642,36 +647,37 @@ subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, dista
   write(moreverbose(ind%moreverbose%a)%unit, '(">")')
 end subroutine
 
+! =============================================================================
+!! \date 2013-07-02
+!! \author M. Rajner
+!! \warning input spherical distance in radian
+!! see \cite spotl manual
+! =============================================================================
+real(dp) function green_newtonian(psi, height, normalize)
+  use mod_constants, only: earth, gravity
+  real(dp) :: psi
+  real(dp), optional :: height
+  logical, optional :: normalize
 
-!! =============================================================================
-!!> 
-!!! chapter 4.1 of spotl manual \cite Agnew12
-!!! 
-!!! \date 2013-03-15
-!!! \author M. Rajner
-!! =============================================================================
-!!subroutine integrated2pointmass(G_integrated,dist, delta, K, G_t)
-!!  use mod_utilities, only: d2r 
-!!  real(dp), intent (in) :: G_integrated, dist,delta
-!!  integer , intent(in) :: K
-!!  real(dp), intent(out) :: G_t
-!!  real :: G_prim_t
-!
-!!  G_prim_t = G_integrated  / ( 4 *  cos( d2r(dist) / 2. ) * sin( d2r(delta) /4. ) )
-!!  G_t = G_prim_t * ( ( 10.**K * a ) / ( a**2 * ( 2 *  sin (d2r(dist) /2  )/ d2r(dist)  ) ) )  
-!  !/ ( 10.**K * a * d2r(dist) )
-!!end subroutine
-!
-!!subroutine pointmass2integrated(G_t,dist, delta, K, G_integrated)
-!!!  ! rozdział 4.1 spotlman
-!!!  implicit none
-!!!  real, intent (in) :: G_t, dist,delta
-!!!  integer , intent(in) :: K
-!!!  real, intent(out) :: G_integrated
-!!!  real :: G_prim_t
-!!
-!!!  G_prim_t = G_t / ( ( 10.**K * a ) / ( a**2 * ( 2 *  sin (d2r(dist) /2  ) / d2r(dist)  ) ) )  
-!!!  G_integrated = G_prim_t  * ( 4 *  cos( d2r(dist) / 2. ) * sin( d2r(delta) /4. ) )
-!!!end subroutine
+  real(dp) :: eps
 
+  if (present(height)) then
+    eps = height / earth%radius
+  else
+    eps = 0
+  endif
+
+  green_newtonian =                                   & 
+    - gravity%constant                                & 
+    /earth%radius**2                                  & 
+    *(eps + 2 * (sin(psi/2))**2 )                     & 
+    /((4*(1+eps)* (sin(psi/2))**2 + eps**2)**(3./2.))
+
+  if (present(normalize)) then
+    if (normalize) then
+    green_newtonian = green_newtonian &
+      *psi * 1e18 * earth%radius
+  endif
+  endif
+end function
 end module

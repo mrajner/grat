@@ -156,4 +156,5 @@ program grat
   call cpu_time(cpu(2))
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
+
 end program 
