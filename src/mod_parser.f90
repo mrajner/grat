@@ -54,6 +54,9 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
       inverted_barometer = .false.
     write(log%unit, form%i3) "inverted barometer assumption [T/F]:", &
       inverted_barometer
+  case ("-O")
+      ocean_conserve_mass = .true.
+    write(log%unit, form%i3) "conservation ocean mass"
   case ('-D')
     call parse_date(cmd_line_entry)
   case ('-F')
@@ -175,6 +178,7 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
   do i =1 , size(cmd_line)
     call parse_option(cmd_line(i))
   enddo
+  call get_index()
 end subroutine
 
 ! =============================================================================
@@ -488,6 +492,8 @@ subroutine get_index()
       ind%moreverbose%r = i
     case ("s")
       ind%moreverbose%s = i
+    case ("o")
+      ind%moreverbose%o = i
     end select
   enddo
   do i = 1, size(green)

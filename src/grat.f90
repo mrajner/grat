@@ -69,7 +69,7 @@ program grat
 
   implicit none
   real(dp) :: x , y , z , lat ,lon , cpu(2)
-  integer :: isite, i, ii , iii , idate, start , iok , iresult
+  integer :: isite, i, ii , iii , idate, start , iok 
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
@@ -77,12 +77,10 @@ program grat
   ! gather cmd line option decide where to put output
   call intro & 
     (program_calling = "grat" , &
-    accepted_switches="VSBLGPpoFIDLvhRQ" , &
+    accepted_switches="VSBLGPpoFIDLvhRQO" , &
     cmdlineargs=.true. &
     )
-  call get_index()
 
-  iresult=0
   start=0
   if (size(date).gt.0) then
     if(output%header) then
@@ -142,7 +140,15 @@ program grat
           endselect
         endif
       enddo
-      iresult = iresult + 1
+
+      ! if ocean mass should be conserved (-O)
+      if (ocean_conserve_mass) then
+        if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
+          call conserve_mass(model(ind%model%sp), model(ind%model%ls))
+      endif
+      endif
+
+      ! perform convolution
       if (idate.gt.0) then
         call convolve (site(isite) , date = date(idate))
       else

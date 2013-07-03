@@ -25,9 +25,6 @@ module mod_data
     ! if file was determined
     logical :: if =.false.
 
-    ! boundary of model e , w ,s ,n
-!    real(dp):: limits(4)
-
     real(dp), allocatable, dimension(:) :: lat , lon , time ,level
     integer , allocatable, dimension(:,:) :: date
 
@@ -574,4 +571,45 @@ end function
 !  call check( nf90_close(ncid) )
 !end subroutine
 !
+
+! =============================================================================
+!> If inverted barometer is set then averaga all pressure above the oceans
+!
+! working only for regular grid!
+! =============================================================================
+subroutine conserve_mass (model, landseamask)
+  use mod_utilities, only: d2r
+  use mod_cmdline,   only: ind, moreverbose
+  type (file) :: model, landseamask
+  real(dp) ::  val, valls , total_area, ocean_area, valarea
+  integer :: ilat, ilon , iun
+
+! print* ,  model%name , model%lonrange , size(model%lon)
+! print* ,  landseamask%name , landseamask%lonrange , size(landseamask%lon)
+
+ total_area = 0
+ ocean_area  = 0
+ valarea     = 0
+
+ do ilat = 1, size(model%lat)
+   do ilon =1,size(model%lon)
+     total_area = total_area + cos(d2r(model%lat(ilat)))
+     call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
+     if (valls.eq.0) then
+       ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
+       valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+       call get_value(model, model%lat(ilat), model%lon(ilon), val)
+       model%data(ilon,ilat,1) = -9999
+     endif
+   enddo
+ enddo
+ where (model%data.eq.-9999)
+   model%data=valarea/ ocean_area
+ end where
+
+ if (ind%moreverbose%o.ne.0) then
+   write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valarea/ ocean_area
+ endif
+
+end subroutine
 end module

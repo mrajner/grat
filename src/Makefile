@@ -20,8 +20,11 @@
 # RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
 # RSP = 101300@RSP
 sx: grat 
-	grat -Sj  \
-	-G
+	grat \
+		-F $(SP) , $(LS)\
+		-Sj  \
+		-G@GE  -H -Dm:1@D:12 -V -O -BN -Ltmp@o
+
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \
 #     -G \
@@ -162,14 +165,14 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-mod_utilities.o: mod_constants.o
-mod_aggf.o: mod_constants.o mod_utilities.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o
-mod_data.o: mod_mjd.o
-mod_date.o:mod_data.o
-mod_mjd.o: mod_constants.o
+# mod_utilities.o: mod_constants.o
+# mod_aggf.o: mod_constants.o mod_utilities.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o mod_date.o
+# mod_data.o: mod_mjd.o
+# mod_date.o:mod_data.o
+# mod_mjd.o: mod_constants.o
 
 
 PROGS_DIR=../bin
