@@ -145,7 +145,7 @@ program grat
       if (ocean_conserve_mass) then
         if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
           call conserve_mass(model(ind%model%sp), model(ind%model%ls))
-      endif
+        endif
       endif
 
       ! perform convolution
@@ -154,11 +154,18 @@ program grat
       else
         call convolve (site(isite))
       endif
+      if (output%unit.ne.output_unit) then 
+        open (unit=output_unit, carriagecontrol='fortran')
+        write(output_unit,'(a)' , advance='no' ) "."
+      endif
 
     enddo
   enddo
 
   ! execution time-stamp
+  if (output%unit.ne.output_unit) then 
+    write(output_unit,*)
+  endif
   call cpu_time(cpu(2))
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)

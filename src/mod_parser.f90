@@ -448,6 +448,7 @@ function dataname(abbreviation)
   if (abbreviation.eq."a")  dataname = "auxiliary"
   if (abbreviation.eq."d")  dataname = "dates"
   if (abbreviation.eq."s")  dataname = "summary"
+  if (abbreviation.eq."o")  dataname = "ocean conserve mass"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
 

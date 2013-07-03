@@ -344,6 +344,7 @@ end subroutine
 ! =============================================================================
 subroutine convolve (site , date)
   use mod_constants
+  use iso_fortran_env
   use mod_site, only : site_info
   use mod_cmdline
   use mod_utilities, only: d2r, r2d, datanameunit, mmwater2pascal
@@ -613,10 +614,10 @@ subroutine convolve (site , date)
   enddo 
 
   ! results to output
-    if (present(date)) then
-      write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
-    endif
-    write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
+  if (present(date)) then
+    write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+  endif
+  write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
 
   ! summury: -L@s
   if (ind%moreverbose%s.ne.0) then
@@ -625,9 +626,13 @@ subroutine convolve (site , date)
     write(moreverbose(ind%moreverbose%s)%unit,'(a8,i8,2en12.2)') &
       site%name, npoints , tot_area, tot_area/earth%radius**2
   endif
-
 end subroutine
 
+! =============================================================================
+!> returns lat and lon of spherical trapezoid
+!! \date 2013.07.03
+!! \author Marcin Rajner
+! =============================================================================
 subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, distancestop)
   use mod_spherical, only : spher_trig
   use mod_cmdline,   only : moreverbose, ind
@@ -675,9 +680,9 @@ real(dp) function green_newtonian(psi, height, normalize)
 
   if (present(normalize)) then
     if (normalize) then
-    green_newtonian = green_newtonian &
-      *psi * 1e18 * earth%radius
-  endif
+      green_newtonian = green_newtonian &
+        *psi * 1e18 * earth%radius
+    endif
   endif
 end function
 end module

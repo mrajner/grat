@@ -23,7 +23,7 @@ sx: grat
 	grat \
 		-F $(SP) , $(LS)\
 		-Sj  \
-		-G@GE  -H -Dm:1@D:12 -V -O -BN -Ltmp@o
+		-G@GE  -H -Dm:1@M:12 -V -O -BN  -o tmp -L tmpo@o , aaa@p
 
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \
@@ -132,7 +132,7 @@ DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 T       = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
-	LS       := $(DAT_DIR)/landsea/landseaRdI0.2-0.2.grd@LS:z:x:y
+LS      = $(DAT_DIR)/landsea/landseaRdI0.2-0.2.grd@LS:z:x:y
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
@@ -165,14 +165,14 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-# mod_utilities.o: mod_constants.o
-# mod_aggf.o: mod_constants.o mod_utilities.o
-# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-# mod_green.o: mod_data.o mod_polygon.o mod_date.o
-# mod_data.o: mod_mjd.o
-# mod_date.o:mod_data.o
-# mod_mjd.o: mod_constants.o
+mod_utilities.o: mod_constants.o
+mod_aggf.o: mod_constants.o mod_utilities.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o
+mod_data.o: mod_mjd.o
+mod_date.o:mod_data.o
+mod_mjd.o: mod_constants.o
 
 
 PROGS_DIR=../bin
