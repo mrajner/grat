@@ -10,11 +10,11 @@
 #      -F /home/mrajner/src/spotl/green/gr.gbaver.wef.p01.ce@ascii  \
 #      -G m @GN
 		 
-# i:value_check
-#   value_check \
-#     -F /home/mrajner/dat/erainterim/data.nc:sp, \
-#     /home/mrajner/dat/erainterim/data01.nc:sp , 10 \
-#     -S g:10 -V
+i:value_check
+	value_check \
+		-F /home/mrajner/dat/erainterim/data.nc:sp, \
+		/home/mrajner/dat/erainterim/data01.nc:sp , 10 \
+		-S g:4  -otmp
 
  RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 # RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
@@ -23,7 +23,7 @@ sx: grat
 	grat \
 		-F $(SP) , $(LS)\
 		-Sj  \
-		-G@GE  -H -Dm:1@M:12 -V -O -BN  -o tmp -L tmpo@o , aaa@p
+		-G@GE  -H -Dm:1@M:120 -V -BN  -o tmp -L tmpo@o , aaa@p
 
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \

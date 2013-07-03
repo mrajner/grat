@@ -16,11 +16,13 @@ program value_check
   implicit none
   real (dp) , allocatable , dimension(:) :: val
   real (dp) :: cpu(2)
-  integer    :: i,ii ,j ,start , imodel
+  integer    :: i,ii ,j ,start , imodel, iprogress = 0
   integer(2) :: iok 
   character(1) :: interpolation
 
   call cpu_time(cpu(1))
+
+
   call intro (program_calling = "value_check", &
     accepted_switches="VFoShvIDLPR" , &
     cmdlineargs=.true.)
@@ -28,6 +30,10 @@ program value_check
   call get_index()
 
   write(log%unit, form_separator) 
+
+  ! for progress bar
+  open (unit=output_unit, carriagecontrol='fortran')
+
   allocate (val (size(model)))
 
   start =0 
@@ -65,6 +71,7 @@ program value_check
     enddo
 
     do i = 1 , size(site)
+      iprogress = iprogress + 1
 
       ! add time stamp if -D option was specified
       if (j.gt.0) then
@@ -91,18 +98,22 @@ program value_check
         endif
       enddo
       write (output%unit , '(a8,2f15.4,20en15.4)') , site(i)%name, site(i)%lat, site(i)%lon, val
+      if (output%unit.ne.output_unit) then 
+        call progress(100*iprogress/(max(size(date),1)*max(size(site),1)))
+      endif
     enddo
   enddo
 
   if (ind%moreverbose%d.ne.0) then
     do i = 1 , size(model)
       do  j =1,size(model(i)%time)
-        write (moreverbose(ind%moreverbose%d)%unit ,  '(g0,1x,i4,5i2.2)')  model(i)%time(j), model(i)%date(j,:)
+      write (moreverbose(ind%moreverbose%d)%unit ,  '(g0,1x,i4,5i2.2)')  model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif
 
   call cpu_time(cpu(2))
-!  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
-!  write(log%unit, form_separator)
+  if (output%unit.ne.output_unit) close(output_unit)
+  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+  write(log%unit, form_separator)
 end program

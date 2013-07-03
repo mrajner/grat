@@ -65,4 +65,15 @@ subroutine print_warning (warn , unit)
   endif
 end subroutine
 
+subroutine progress(j)
+  implicit none
+  integer(kind=4)::j,k
+  character(len=27)::bar="???% |                    |"
+  write(unit=bar(1:3),fmt="(i3)") j
+  do k=1, j/5
+    bar(6+k:6+k)="*"
+  enddo
+  write(unit=6,fmt="(a1,a1,a27)") '+',char(13), bar
+  return
+end subroutine progress
 end module mod_printing
