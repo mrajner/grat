@@ -413,23 +413,17 @@ end function
 !> \brief Bouger plate computation
 !!
 ! ==============================================================================
-real(dp) function bouger ( R_opt )
-  real(dp), optional :: R_opt !< height of point above the cylinder
-  real(dp) :: aux
-  real(dp) :: R
-  real(dp) ::  h = 8.84 ! scale height of standard atmosphere
+real(dp) function bouger ( R )
+  real(dp), optional :: R !< height of point above the cylinder
+  real(dp) ::  h = 8.84   ! scale height of standard atmosphere
 
-  aux = 1
-
-  if (present( R_opt ) ) then
-    R = R_opt
-    aux = h  + R  - sqrt(  R**2  + (h/2. ) ** 2 )
-    bouger = 2 * pi * gravity%constant  * aux 
+  if (present( R ) ) then
+    bouger = h  + R  - sqrt(R**2  + (h/2.)**2)
   else
-    aux = h
-    bouger = 2 * pi * gravity%constant * aux
-    return
+    bouger = h
   endif
+  bouger = 2 * pi * gravity%constant * bouger
+  return
 end function
 
 ! ==============================================================================

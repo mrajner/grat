@@ -53,6 +53,7 @@ module mod_cmdline
   type info_info
     type (range):: distance,azimuth
     character (1) :: interpolation
+    logical :: distance_fractional_psi = .false.
   end type
   type(info_info), dimension(:), allocatable:: info
 
@@ -66,7 +67,7 @@ module mod_cmdline
     integer(2) :: e, n
   end type
   type moreverbose_index
-    integer(2) :: p, g , a , d, l, n, r , s, o
+    integer(2) :: p, g , a , d, l, n, r , s, o, b
   end type
   type green_index
     integer(2) :: & 

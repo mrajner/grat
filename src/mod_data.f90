@@ -531,7 +531,7 @@ function dataname(abbreviation)
   dataname="unknown"
   if (abbreviation.eq."LS") dataname = "Land-sea mask"
   if (abbreviation.eq."SP") dataname = "Surface pressure"
-  if (abbreviation.eq."SP") dataname = "Surface temperature"
+  if (abbreviation.eq."ST") dataname = "Surface temperature"
   if (abbreviation.eq."RS") dataname = "Reference surface pressure"
   if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function

@@ -279,6 +279,9 @@ subroutine parse_info (cmd_line_entry)
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
           case ("DS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
+          case ("DFP")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
+            info(i)%distance_fractional_psi=.true.
           case ("DD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
           case ("AD")
@@ -290,6 +293,8 @@ subroutine parse_info (cmd_line_entry)
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
           case ("I")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
+          case ("DFP")
+            info(i)%distance_fractional_psi=.true.
           endselect
         end if
       enddo
@@ -302,10 +307,11 @@ subroutine parse_info (cmd_line_entry)
         '|I:',a, &
         '|DD:',i2, &
         '|DS:',f6.2, &
+        '|DFP:',l, &
         )") , &
         info(i)%distance%start, info(i)%distance%stop, &
         info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step
+        info(i)%distance%step, info(i)%distance_fractional_psi
     enddo
   else
     allocate(info(1))
@@ -449,6 +455,7 @@ function dataname(abbreviation)
   if (abbreviation.eq."d")  dataname = "dates"
   if (abbreviation.eq."s")  dataname = "summary"
   if (abbreviation.eq."o")  dataname = "ocean conserve mass"
+  if (abbreviation.eq."b")  dataname = "progress bar"
   !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
 
@@ -495,6 +502,8 @@ subroutine get_index()
       ind%moreverbose%s = i
     case ("o")
       ind%moreverbose%o = i
+    case ("b")
+      ind%moreverbose%b = i
     end select
   enddo
   do i = 1, size(green)

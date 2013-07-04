@@ -38,7 +38,7 @@ program example_aggf
 !  print *, "...compare_tabulated_green_functions ()"
 !  call compare_tabulated_green_functions ()
 
-!  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
+  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 
 
   print *, "... green_newtonian_compute ()"
@@ -55,7 +55,7 @@ subroutine green_newtonian_compute()
   type(green_functions) :: green_tmp
   integer :: i, j, iun
   real(dp):: heights (7)
-  heights = [ 0 , -1000, -100 , -10 , 10 ,100 ,1000]
+  heights = [ 0., -10., -100. , -1000. , -10000., -20000., -100000.]
 
   open(newunit=iun, file="green_newtonian.dat", action = 'write')
   call  read_green(green_tmp)
@@ -92,7 +92,7 @@ subroutine simple_atmospheric_model (filename)
   endif
 
     do R = 0. , 25*8
-    write (file_unit,  * ), R, bouger (R_opt = R) * 1e8, & !conversion to microGal
+    write (file_unit,  * ), R, bouger (R = R) * 1e8, & !conversion to microGal
       simple_def(R) * 1e8
   enddo
 

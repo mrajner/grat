@@ -284,6 +284,9 @@ subroutine green_unification ()
       green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
         info(iinfo)%distance%stop
       deallocate(tmpgreen%distance)
+      !todo distance as fractional part of spherical distance
+    else if (info(iinfo)%distance_fractional_psi) then
+      stop "Not supported yet"
     else
       allocate(green_common(iinfo)%distance( &
         ceiling( &
@@ -669,19 +672,19 @@ real(dp) function green_newtonian(psi, height, normalize)
   if (present(height)) then
     eps = height / earth%radius
   else
-    eps = 0
+    eps = 0.
   endif
 
   green_newtonian =                                   & 
     - gravity%constant                                & 
     /earth%radius**2                                  & 
-    *(eps + 2 * (sin(psi/2))**2 )                     & 
-    /((4*(1+eps)* (sin(psi/2))**2 + eps**2)**(3./2.))
+    *(eps + 2. * (sin(psi/2.))**2 )                     & 
+    /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.))
 
   if (present(normalize)) then
     if (normalize) then
       green_newtonian = green_newtonian &
-        *psi * 1e18 * earth%radius
+        *psi * 1.e18 * earth%radius
     endif
   endif
 end function
