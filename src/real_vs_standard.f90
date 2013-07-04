@@ -6,35 +6,18 @@
 ! ==============================================================================
 program real_vs_standard
 !  use mod_constants, only :dp
-  use mod_cmdline
-  use mod_data,      only : read_netCDF , get_variable , get_value
+  use mod_parser
+  use mod_data
 !  use mod_aggf,      only : geop2geom
-!  
-!  implicit none
-!  real(dp) :: x , y , z , lat ,lon ,val(0:100) !tmp variables
-!  integer :: i , j, ii, iii
-
-  ! program starts here with time stamp
-!  call cpu_time(cpu_start)
-
-  ! gather cmd line option decide where to put output
-  ! todo specific for current program
-!  call intro (program_calling="real_vs_standard")
   
-   !read models into memory
-!  do i =1 , size(model)
-!    if (model(i)%if) call read_netCDF ( model(i) )
-!  enddo
+  call cpu_time(cpu_start)
 
-   
-!  allocate (result(size(site)*max(size(dates),1)))
-!  iii=0
-!  do j = 1 , max(size (dates),1)
-!    if(size(dates).gt.0)  write(output%unit, '(i4,5(i2.2))', advance ="no") dates(j)%date
-!  
-!    do ii = 1 , min(2,size(model))
-!      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
-!    enddo
+  call intro (program_calling="real_vs_standard")
+  
+
+    do ii = 1 , min(2,size(model))
+      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
+    enddo
 !
 !
 !
@@ -62,6 +45,4 @@ program real_vs_standard
 !    call get_value(model(2),lat,lon, val(i), level = i, method=1)
 !  enddo
 !  print  '(2f10.2)', lat , lon , (val(i),geop2geom(val(i)/1000)*1000., i=0,size(model(2)%level))
-!
-!
 end program
