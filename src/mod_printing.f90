@@ -65,15 +65,21 @@ subroutine print_warning (warn , unit)
   endif
 end subroutine
 
-subroutine progress(j)
+subroutine progress(j, time)
+  use mod_constants, only:dp
   implicit none
   integer(kind=4)::j,k
   character(len=27)::bar="???% |                    |"
+  real(dp) , optional :: time
   write(unit=bar(1:3),fmt="(i3)") j
   do k=1, j/5
     bar(6+k:6+k)="*"
   enddo
-  write(unit=6,fmt="(a1,a1,a27)") '+',char(13), bar
+  if (present(time)) then
+    write(unit=6,fmt="(a1,a1,a27,f10.1,a1)") '+',char(13), bar, time, "s"
+  else
+    write(unit=6,fmt="(a1,a1,a27)") '+',char(13), bar
+  endif
   return
 end subroutine progress
 end module mod_printing

@@ -69,14 +69,12 @@ program grat
   use mod_printing
 
   implicit none
-  real(dp) :: x , y , z , lat ,lon , cpu(2)
+  real(dp) :: x, y, z, lat, lon, cpu(2)
   integer :: isite, i, ii , iii , idate, start , iok  , iprogress = 0
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
 
-  ! for progress bar
-  open (unit=output_unit, carriagecontrol='fortran')
 
   ! gather cmd line option decide where to put output
   call intro & 
@@ -85,7 +83,11 @@ program grat
     cmdlineargs=.true. &
     )
 
+  ! for progress bar
+  if (output%unit.ne.output_unit) open (unit=output_unit, carriagecontrol='fortran')
+
   start=0
+
   if (size(date).gt.0) then
     if(output%header) then
       write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
@@ -161,14 +163,18 @@ program grat
       endif
       if (output%unit.ne.output_unit) then 
         call progress(100*iprogress/(max(size(date),1)*max(size(site),1)))
+        call progress(100*iprogress/(max(size(date),1)*max(size(site),1)))
       endif
 
     enddo
   enddo
 
   ! execution time-stamp
-  if (output%unit.ne.output_unit) close(output_unit) 
   call cpu_time(cpu(2))
+  if (output%unit.ne.output_unit) then 
+    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
+  endif
+  if (output%unit.ne.output_unit) close(output_unit) 
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
 

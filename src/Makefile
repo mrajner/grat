@@ -23,7 +23,8 @@ sx: grat
 	grat \
 		-F $(SP) , $(LS)\
 		-Sj  \
-		-G@GE  -H -Dm  -BI   -L s@s -V -I  40 @DS :50@AS 
+		-G@GE  -H -Dm:m  -BI   -L s@s -V -I  40 @DS :50@AS \
+		-o tmp
 
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \

@@ -75,12 +75,13 @@ end subroutine
 ! =============================================================================
 subroutine simple_atmospheric_model (filename)
   use, intrinsic:: iso_fortran_env
-  use mod_constants, only:dp
+  use mod_constants
   use mod_aggf, only:simple_def, bouger
 
   real(dp) :: R ! km
   integer :: file_unit
   character(*) , intent (in) , optional:: filename
+  real(dp) :: h =9.
 
   write(*,*), "simple_atmospheric_model ---> ",filename
   if (present (filename)) then
@@ -92,8 +93,8 @@ subroutine simple_atmospheric_model (filename)
   endif
 
     do R = 0. , 25*8
-    write (file_unit,  * ), R, bouger (R = R) * 1e8, & !conversion to microGal
-      simple_def(R) * 1e8
+    write (file_unit,  * ), R,-100*bouger(h=h,R=R)/(earth%gravity%mean*h)  * 1e8, & !conversion to microGal
+      -simple_def(R) * 1e8
   enddo
 
 end subroutine

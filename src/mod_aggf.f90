@@ -413,12 +413,14 @@ end function
 !> \brief Bouger plate computation
 !!
 ! ==============================================================================
-real(dp) function bouger ( R )
-  real(dp), optional :: R !< height of point above the cylinder
-  real(dp) ::  h = 8.84   ! scale height of standard atmosphere
+real(dp) function bouger (h, R )
+  real(dp), intent(in), optional :: R !< height of point above the cylinder
+  real(dp), intent(in) ::  h 
+
+
 
   if (present( R ) ) then
-    bouger = h  + R  - sqrt(R**2  + (h/2.)**2)
+    bouger = h + R - sqrt(R**2+H**2)
   else
     bouger = h
   endif
@@ -438,9 +440,10 @@ function simple_def (R)
   real(dp) :: simple_def
 
   delta = 0.22e-11 * R 
-  simple_def = earth%gravity%mean / R0 * &
+  simple_def = earth%gravity%mean / earth%radius *1000 * &
     delta * ( 2. - 3./2. * earth%density%crust / earth%density%mean &
-    -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) ) * 1000
+!    -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) 
+) * 1000
 end function
 
 end module
