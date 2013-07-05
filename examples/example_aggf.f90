@@ -38,11 +38,13 @@ program example_aggf
 !  print *, "...compare_tabulated_green_functions ()"
 !  call compare_tabulated_green_functions ()
 
-  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
+!  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 
 
-  print *, "... green_newtonian_compute ()"
-  call green_newtonian_compute()
+!  print *, "... green_newtonian_compute ()"
+!  call green_newtonian_compute()
+
+  call admit_niebauer()
 
 contains 
  
@@ -598,5 +600,27 @@ subroutine aggf_thin_layer (filename)
     write(*,*) table(i,1:2) , GN_thin_layer (table (i,1))
   enddo
 end subroutine
+
+
+subroutine admit_niebauer()
+  use mod_constants
+  use mod_utilities
+  real(dp) :: a
+  real(dp) :: theta
+  real(dp) :: b , f
+  integer::iun
+
+  open (newunit=iun, file="admit_niebauer.dat", action = 'write')
+
+  
+  f=earth%radius/9500
+  do theta=0.5 , 180, 0.01
+  b= 2*f*sin(d2r(theta/2))
+  a= 2*pi * gravity%constant / earth%gravity%mean* &
+    (1 - b/(2*f) -1/b + 2/f)
+  write(iun, *) , theta , a *1e10
+enddo
+end subroutine
+
 
 end program 

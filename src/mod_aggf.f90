@@ -299,7 +299,8 @@ end subroutine
 real(dp) function geop2geom (geopotential_height)
   real (dp) :: geopotential_height
 
-  geop2geom = geopotential_height * (R0 / ( R0 + geopotential_height ) )
+  geop2geom = geopotential_height * &
+    (earth%radius / ( earth%radius + geopotential_height ) )
 end function
 
 ! =============================================================================

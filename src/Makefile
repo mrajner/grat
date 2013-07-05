@@ -3,11 +3,12 @@
 
 # as: value_check  example_value_check
 		 
-# i:value_check
-#   value_check \
-#     -F /home/mrajner/dat/erainterim/data.nc:sp, \
-#     /home/mrajner/dat/erainterim/data01.nc:sp , 10 \
-#     -S g:4  -otmp
+i:value_check
+	value_check \
+		-F \
+		 /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
+		, /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
+		-S j -Dm:1@D -V
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 # RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  

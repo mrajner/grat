@@ -32,7 +32,7 @@ program value_check
   write(log%unit, form_separator) 
 
   ! for progress bar
-  open (unit=output_unit, carriagecontrol='fortran')
+  if (output%unit.ne.output_unit) open (unit=output_unit, carriagecontrol='fortran')
 
   allocate (val (size(model)))
 
@@ -113,7 +113,10 @@ program value_check
   endif
 
   call cpu_time(cpu(2))
-  if (output%unit.ne.output_unit) close(output_unit)
+  if (output%unit.ne.output_unit) then 
+    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
+   close(output_unit) 
+  endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
 end program

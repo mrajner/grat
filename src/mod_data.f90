@@ -19,6 +19,7 @@ module mod_data
 
     ! varname,lonname,latname,levelname,timename
     character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
+    character(len=10) :: datanames(5)=" "
 
     character(len=15) :: dataname
 
@@ -34,12 +35,12 @@ module mod_data
     real(dp):: constant_value
 
     ! 4 dimension - lat , lon , level , mjd
-    real(dp) , allocatable , dimension (:,:,:) :: data
+    real(dp) , allocatable , dimension(:,:,:) :: data
 
     ! netcdf identifiers
     integer :: ncid
   end type
-  type(file) , allocatable, dimension (:) :: model 
+  type(file) , allocatable, dimension(:) :: model 
 
   private :: dataname
 
@@ -77,6 +78,11 @@ subroutine parse_model (cmd_line_entry)
         call print_warning ("model")
       endif
     endif
+    do j = 2, size(cmd_line_entry%field(i)%subfield)
+      if (cmd_line_entry%field(i)%subfield(j)%dataname.ne."") then
+        model(i)%datanames(j-1)=cmd_line_entry%field(i)%subfield(j)%dataname
+      endif
+    enddo
     if ( file_exists (model(i)%name) ) then
       do j =2 , size (cmd_line_entry%field(i)%subfield)
         if (cmd_line_entry%field(i)%subfield(j)%name.ne."") then
@@ -94,6 +100,10 @@ subroutine parse_model (cmd_line_entry)
       model(i)%if_constant_value=.true.
       read (model(i)%name , * ) model(i)%constant_value
       write(log%unit, form%i3), 'constant value was set: ' , model(i)%constant_value
+      if (trim(model(i)%datanames(1)).ne."") then
+         model(i)%constant_value = variable_modifer (model(i)%constant_value, model(i)%datanames(1))
+      endif
+      write(log%unit, form%i3), 'constant value was re-set: ' , model(i)%constant_value
       model(i)%lonrange=[  0,360]
       model(i)%latrange=[-90, 90]
     else
@@ -102,6 +112,19 @@ subroutine parse_model (cmd_line_entry)
     endif
   enddo
 end subroutine
+function variable_modifer(val, modifer)
+  use mod_aggf, only: geop2geom
+  real(dp) :: variable_modifer
+  real(dp), intent(in) :: val
+  character(*), intent(in) :: modifer
+
+  select case (modifer)
+  case ("g2h")
+  variable_modifer=geop2geom(val)
+case default
+  variable_modifer=val
+end select
+end function
 
 ! =============================================================================
 !> Read netCDF file into memory
@@ -145,7 +168,7 @@ subroutine get_dimension (model , i)
       model%names(i)="latitude"
       write(log%unit, '(a)', advance='no') "latitude"
     endif
-  status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
+    status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
   endif
   if(status /= nf90_noerr) then 
     write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
@@ -287,7 +310,7 @@ subroutine get_variable(model, date, huge)
   integer , optional , intent(in) ,dimension(6) ::date
   integer :: varid ,status
   integer :: start(3)
-  integer :: index_time, i , j
+  integer :: index_time, i , j , k
   character(10), intent(in), optional :: huge
   real (dp) :: scale_factor, add_offset
 
@@ -319,7 +342,18 @@ subroutine get_variable(model, date, huge)
   start = [1,1,index_time]
   call check (nf90_get_var (model%ncid , varid , model%data , start = start ))
   call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
+
   if (status == nf90_noerr) model%data = model%data *scale_factor + add_offset
+
+  if (trim(model%datanames(1)).ne."") then
+    do i =1, size(model%data,1)
+      do j =1, size(model%data,2)
+        do k =1, size(model%data,3)
+          model%data(i,j,k) = variable_modifer (model%data(i,j,k), model%datanames(1))
+        enddo
+      enddo
+    enddo
+  endif
 end subroutine
 
 ! =============================================================================
@@ -584,32 +618,32 @@ subroutine conserve_mass (model, landseamask)
   real(dp) ::  val, valls , total_area, ocean_area, valarea
   integer :: ilat, ilon , iun
 
-! print* ,  model%name , model%lonrange , size(model%lon)
-! print* ,  landseamask%name , landseamask%lonrange , size(landseamask%lon)
+  ! print* ,  model%name , model%lonrange , size(model%lon)
+  ! print* ,  landseamask%name , landseamask%lonrange , size(landseamask%lon)
 
- total_area = 0
- ocean_area  = 0
- valarea     = 0
+  total_area = 0
+  ocean_area  = 0
+  valarea     = 0
 
- do ilat = 1, size(model%lat)
-   do ilon =1,size(model%lon)
-     total_area = total_area + cos(d2r(model%lat(ilat)))
-     call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
-     if (valls.eq.0) then
-       ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
-       valarea    = valarea + val * cos(d2r(model%lat(ilat)))
-       call get_value(model, model%lat(ilat), model%lon(ilon), val)
-       model%data(ilon,ilat,1) = -9999
-     endif
-   enddo
- enddo
- where (model%data.eq.-9999)
-   model%data=valarea/ ocean_area
- end where
+  do ilat = 1, size(model%lat)
+    do ilon =1,size(model%lon)
+      total_area = total_area + cos(d2r(model%lat(ilat)))
+      call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
+      if (valls.eq.0) then
+        ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
+        valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+        call get_value(model, model%lat(ilat), model%lon(ilon), val)
+        model%data(ilon,ilat,1) = -9999
+      endif
+    enddo
+  enddo
+  where (model%data.eq.-9999)
+    model%data=valarea/ ocean_area
+  end where
 
- if (ind%moreverbose%o.ne.0) then
-   write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valarea/ ocean_area
- endif
+  if (ind%moreverbose%o.ne.0) then
+    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valarea/ ocean_area
+  endif
 
 end subroutine
 end module
