@@ -3,30 +3,30 @@
 
 # as: value_check  example_value_check
 
-atmp: atmp.f90 mod_utilities.o
-	$(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
-	./atmp
+# atmp: atmp.f90 mod_utilities.o
+#   $(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
+#   ./atmp
 
 		 
-i:value_check
-	value_check \
-		-F \
-		 /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
-		, /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
-		-S j -Dm:1@D -V
+# i:value_check
+#   value_check \
+#     -F \
+#      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
+#     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
+#     -S j -Dm:1@D -V
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 # RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
 # RSP = 101300@RSP
-wl: ../bin/real_vs_standard
-	./$<
+# wl: ../bin/real_vs_standard
+#   ./$<
 
 sx: grat 
 	grat \
 		-F $(SP) , $(LS)\
 		-Sj  \
-		-G@GE  -H -Dm:m  -BI   -L s@s -V -I  40 @DS :50@AS \
-		-o tmp
+		-G@GE  -H -Dm  -BI   -L s@s -V -I  40 @DS :50@AS \
+		- tmp
 
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \
@@ -162,7 +162,7 @@ mod_aggf.o: mod_constants.o mod_utilities.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o
-mod_data.o: mod_mjd.o
+mod_data.o: mod_mjd.o mod_aggf.o
 mod_date.o:mod_data.o
 mod_mjd.o: mod_constants.o
 

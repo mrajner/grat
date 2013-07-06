@@ -41,34 +41,14 @@ program example_aggf
 !  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 
 
-!  print *, "... green_newtonian_compute ()"
-!  call green_newtonian_compute()
+  print *, "... green_newtonian_compute ()"
+  call green_newtonian_compute()
 
 !  call admit_niebauer()
 
-call newtonian_olsson()
 
 contains 
  
-! =============================================================================
-!> compute green newtonian function
-! =============================================================================
-subroutine green_newtonian_compute()
-  use mod_green
-  use mod_utilities, only :d2r
-  type(green_functions) :: green_tmp
-  integer :: i, j, iun
-  real(dp):: heights (7)
-  heights = [ 0., -10., -100. , -1000. , -10000., -20000., -100000.]
-
-  open(newunit=iun, file="green_newtonian.dat", action = 'write')
-  call  read_green(green_tmp)
-  do i =1, size(green_tmp%distance)
-    write(iun, '(f12.6,<size(heights)>en19.7)') , green_tmp%distance(i) , &
-      (green_newtonian(d2r(green_tmp%distance(i)), height=heights(j), normalize=.true.), j =1 , size(heights))
-  enddo
-
-end subroutine
 
 ! =============================================================================
 !> Reproduces data to Fig.~3 in \cite Warburton77
@@ -603,7 +583,6 @@ subroutine aggf_thin_layer (filename)
   enddo
 end subroutine
 
-
 subroutine admit_niebauer()
   use mod_constants
   use mod_utilities
@@ -623,43 +602,35 @@ subroutine admit_niebauer()
 enddo
 end subroutine
 
-subroutine newtonian_olsson()
-  use mod_utilities
-  real(dp) :: theta 
-  integer::iun, n , i , j
-  real (dp) , allocatable , dimension(:) :: x , h
+! =============================================================================
+!> compute green newtonian function
+! =============================================================================
+subroutine green_newtonian_compute()
+  use mod_green
+  use mod_utilities, only : logspace , d2r
+  integer:: iun , n , i , j
+  real (dp) , allocatable , dimension(:) :: psi , h
 
   iun = 6
-  open (newunit=iun, file="olssone.dat", action = 'write')
-  
-  n = 9 * 10
-  allocate(x(n))
-  x = logspace(real(1e-6,dp) , real(1e2,dp),n) 
 
-  allocate(h(5))
-  h = [ 0. , 1. , 10. , 100., 1000.]
+  n = 9 * 200
+  allocate(psi(n))
+  psi = logspace(real(1e-6,dp) , real(180,dp),n) 
 
-  write(iun, '(<size(h)+1>en12.2)') , (x(i), &
-    (newtonian_olsson_aux(d2r(x(i)), h= h(j)), j=1,size(h)) , &
-    i=1,size(x))
+  allocate(h(11))
+  h = [ 0. , 1. , 10. , 100., 1000. , 10000., -1. -10. , -100., -1000., -10000]
+
+ open (newunit=iun, file="green_newtonian_olsson.dat", action = 'write')
+  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
+    (green_newtonian_olsson(d2r(psi(i)), h= h(j)), j=1,size(h)) , &
+    i=1,size(psi))
+
+ open(newunit=iun, file="green_newtonian_spotl.dat", action = 'write')
+  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
+    (green_newtonian_spotl(d2r(psi(i)), height= h(j), normalize=.true.), j=1,size(h)) , &
+    i=1,size(psi))
+
+
 end subroutine
-
-!> \warning all values in radians
-function newtonian_olsson_aux(psi , h)
-  use mod_constants
-  real(dp) :: newtonian_olsson_aux
-  real(dp), intent (in) :: psi
-  real(dp), intent (in) , optional :: h
-  real(dp) :: t
-  if (present(h)) then
-    t = earth%radius/(earth%radius +h)
-  else
-    t = 1
-  endif
-
-  newtonian_olsson_aux=gravity%constant / earth%radius**2 * t**2 * &
-    (1. - t * cos (psi) ) / &
-    ( (1-2*t*cos(psi) +t**2 )**(3./2.) )
-end function
 
   end program 

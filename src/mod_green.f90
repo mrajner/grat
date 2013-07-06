@@ -588,7 +588,7 @@ subroutine convolve (site , date)
             )                                            & 
             ) then
             write(moreverbose(ind%moreverbose%p)%unit ,                                     & 
-              '(a8,6f12.6,2en12.2,<size(result)>en12.2,a)', advance = 'no'),                & 
+              '(a8,6en12.2,2en12.2,<size(result)>en12.2,a)', advance = 'no'),                & 
               site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, & 
               r2d(lat),r2d(lon), area, tot_area, result
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
@@ -661,7 +661,7 @@ end subroutine
 !! \warning input spherical distance in radian
 !! see \cite spotl manual
 ! =============================================================================
-real(dp) function green_newtonian(psi, height, normalize)
+real(dp) function green_newtonian_spotl(psi, height, normalize)
   use mod_constants, only: earth, gravity
   real(dp) :: psi
   real(dp), optional :: height
@@ -675,7 +675,7 @@ real(dp) function green_newtonian(psi, height, normalize)
     eps = 0.
   endif
 
-  green_newtonian =                                   & 
+  green_newtonian_spotl =                                   & 
     - gravity%constant                                & 
     /earth%radius**2                                  & 
     *(eps + 2. * (sin(psi/2.))**2 )                     & 
@@ -683,9 +683,33 @@ real(dp) function green_newtonian(psi, height, normalize)
 
   if (present(normalize)) then
     if (normalize) then
-      green_newtonian = green_newtonian &
+      green_newtonian_spotl = green_newtonian_spotl &
         *psi * 1.e18 * earth%radius
     endif
   endif
+end function
+
+! =============================================================================
+!! \date 2013-07-06
+!! \author M. Rajner
+!! \warning input spherical distance in radian
+!! see \cite Olsson et al., 2009
+! =============================================================================
+function green_newtonian_olsson(psi , h)
+  use mod_constants
+  real(dp) :: green_newtonian_olsson
+  real(dp), intent (in) :: psi
+  real(dp), intent (in) , optional :: h
+  real(dp) :: t
+  if (present(h)) then
+    t = earth%radius/(earth%radius +h)
+  else
+    t = 1
+  endif
+
+  green_newtonian_olsson = gravity%constant / earth%radius**2 * t**2 * &
+    (1. - t * cos (psi) ) / &
+    ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) * &
+    -psi * 1.e18 * earth%radius
 end function
 end module
