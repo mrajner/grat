@@ -427,6 +427,33 @@ function mmwater2pascal(mmwater, inverted)
   else
     mmwater2pascal=density%water * mmwater /1000 * earth%gravity%mean
   endif
+end function
 
+function linspace(xmin, xmax, n)
+  real(dp), intent(in) :: xmin, xmax
+  real(dp), dimension(:), allocatable :: linspace
+  integer, intent(in), optional :: n
+  integer :: i
+  if (present(n)) then
+    allocate(linspace(n))
+  else
+    allocate(linspace(10))
+  endif
+  do i=1,size(linspace)
+    linspace(i) = xmin + (xmax-xmin)  * real(i-1,dp)/ real(size(linspace)-1,dp)
+  end do
+end function
+
+function logspace(xmin, xmax, n)
+  real(dp), intent(in) :: xmin, xmax
+  real(dp), dimension(:), allocatable :: logspace
+  integer, intent(in), optional :: n
+  integer :: i
+  if (present(n)) then
+    allocate(logspace(n))
+  else
+    allocate(logspace(10))
+  endif
+  logspace = 10._dp** linspace(log10(xmin), log10(xmax), n = n)
 end function
 end module

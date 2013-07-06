@@ -44,7 +44,9 @@ program example_aggf
 !  print *, "... green_newtonian_compute ()"
 !  call green_newtonian_compute()
 
-  call admit_niebauer()
+!  call admit_niebauer()
+
+call newtonian_olsson()
 
 contains 
  
@@ -611,7 +613,6 @@ subroutine admit_niebauer()
   integer::iun
 
   open (newunit=iun, file="admit_niebauer.dat", action = 'write')
-
   
   f=earth%radius/9500
   do theta=0.5 , 180, 0.01
@@ -622,5 +623,43 @@ subroutine admit_niebauer()
 enddo
 end subroutine
 
+subroutine newtonian_olsson()
+  use mod_utilities
+  real(dp) :: theta 
+  integer::iun, n , i , j
+  real (dp) , allocatable , dimension(:) :: x , h
 
-end program 
+  iun = 6
+  open (newunit=iun, file="olssone.dat", action = 'write')
+  
+  n = 9 * 10
+  allocate(x(n))
+  x = logspace(real(1e-6,dp) , real(1e2,dp),n) 
+
+  allocate(h(5))
+  h = [ 0. , 1. , 10. , 100., 1000.]
+
+  write(iun, '(<size(h)+1>en12.2)') , (x(i), &
+    (newtonian_olsson_aux(d2r(x(i)), h= h(j)), j=1,size(h)) , &
+    i=1,size(x))
+end subroutine
+
+!> \warning all values in radians
+function newtonian_olsson_aux(psi , h)
+  use mod_constants
+  real(dp) :: newtonian_olsson_aux
+  real(dp), intent (in) :: psi
+  real(dp), intent (in) , optional :: h
+  real(dp) :: t
+  if (present(h)) then
+    t = earth%radius/(earth%radius +h)
+  else
+    t = 1
+  endif
+
+  newtonian_olsson_aux=gravity%constant / earth%radius**2 * t**2 * &
+    (1. - t * cos (psi) ) / &
+    ( (1-2*t*cos(psi) +t**2 )**(3./2.) )
+end function
+
+  end program 

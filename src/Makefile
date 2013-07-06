@@ -2,6 +2,11 @@
 # for example: OBJS  = libgrat.a
 
 # as: value_check  example_value_check
+
+atmp: atmp.f90 mod_utilities.o
+	$(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
+	./atmp
+
 		 
 i:value_check
 	value_check \
@@ -99,17 +104,6 @@ gggg:
 al:
 xxx: ddd tmp runtmp
 
-tmp: tmp.f90 ddd
-	$(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB)
-runtmp:
-	./tmp \
-		-S j:4:4:2 \
-		-D2011 \
-		-f $(SP)  \
-		, gfg:xx \
-		-G rajner \
-		, merriam :2 :4\
-		-V 
 
 al: grat example
 

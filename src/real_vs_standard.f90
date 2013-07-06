@@ -12,12 +12,12 @@ program real_vs_standard
   
   call cpu_time(cpu_start)
 
-  call intro (program_calling="real_vs_standard")
+!  call intro (program_calling="real_vs_standard")
   
 
-    do ii = 1 , min(2,size(model))
-      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
-    enddo
+!    do ii = 1 , min(2,size(model))
+!      if (model(ii)%if) call get_variable ( model(ii) , date = dates(j)%date)
+!    enddo
 !
 !
 !
