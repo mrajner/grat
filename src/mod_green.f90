@@ -676,7 +676,7 @@ real(dp) function green_newtonian_spotl(psi, height, normalize)
   endif
 
   green_newtonian_spotl =                                   & 
-    - gravity%constant                                & 
+     gravity%constant                                & 
     /earth%radius**2                                  & 
     *(eps + 2. * (sin(psi/2.))**2 )                     & 
     /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.))
@@ -684,7 +684,8 @@ real(dp) function green_newtonian_spotl(psi, height, normalize)
   if (present(normalize)) then
     if (normalize) then
       green_newtonian_spotl = green_newtonian_spotl &
-        *psi * 1.e18 * earth%radius
+        *psi * 1.e18 * earth%radius 
+!        * - 1 ! different convention
     endif
   endif
 end function
@@ -710,6 +711,6 @@ function green_newtonian_olsson(psi , h)
   green_newtonian_olsson = gravity%constant / earth%radius**2 * t**2 * &
     (1. - t * cos (psi) ) / &
     ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) * &
-    -psi * 1.e18 * earth%radius
+    psi * 1.e18 * earth%radius 
 end function
 end module

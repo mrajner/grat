@@ -166,6 +166,7 @@ mod_data.o: mod_mjd.o mod_aggf.o
 mod_date.o:mod_data.o
 mod_mjd.o: mod_constants.o
 
+../examples/example_aggf: $(OBJS)
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))

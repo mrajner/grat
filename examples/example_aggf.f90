@@ -41,7 +41,7 @@ program example_aggf
 !  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 
 
-  print *, "... green_newtonian_compute ()"
+  print *, "...green_newtonian_compute ()"
   call green_newtonian_compute()
 
 !  call admit_niebauer()
@@ -613,7 +613,7 @@ subroutine green_newtonian_compute()
 
   iun = 6
 
-  n = 9 * 200
+  n = 9 * 50
   allocate(psi(n))
   psi = logspace(real(1e-6,dp) , real(180,dp),n) 
 

@@ -15,5 +15,7 @@ spotl us 1:8 w l lw 1  , \
 spotl us 1:9 w l lw 1  , \
 spotl us 1:10 w l lw 1 , \
 spotl us 1:11 w l lw 1 , \
-spotl us 1:12 w l lw 1 
+spotl us 1:12 w l lw 1 , \
+"merriam.dat.10hpa" us 4:10 w l lw 4
+
 pause -1
