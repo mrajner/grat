@@ -210,11 +210,12 @@ function standard_density ( height , t_zero ,fels_type )
   real(dp) :: standard_density 
   real(dp) :: p ,t
 
-  call standard_pressure    (height , p , t_zero = t_zero, fels_type=fels_type)
   call standard_temperature (height , t , t_zero = t_zero, fels_type=fels_type)
 
   ! pressure in hPa --> Pa
-  standard_density = 100 * p / ( R_air * t )
+  standard_density = 100 * &
+    standard_pressure(height , t_zero = t_zero, fels_type=fels_type) &
+    / ( R_air * t )
 end function
 
 ! =============================================================================
@@ -223,16 +224,19 @@ end function
 !! See \cite US1976 or  \cite Huang05 for details.
 !! Uses formulae 5 from \cite Huang05.
 !! Simplified method if optional argument if_simplificated = .true.
+!!
+!! \warning pressure in Pa, height in meters
 ! =============================================================================
-subroutine standard_pressure (height, pressure , &
-    p_zero , t_zero , h_zero,  if_simplificated ,fels_type , inverted)
+function standard_pressure ( &
+    height,  &
+    p_zero , t_zero , h_zero,  method ,fels_type , inverted)
   implicit none
   real(dp) , intent(in)            :: height
   real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
-  character(len = 22) , optional :: fels_type
-  logical         , intent(in) , optional :: if_simplificated
-  logical         , intent(in) , optional :: inverted
-  real(dp), intent(out) :: pressure
+  character(len = 22), intent(in) , optional :: fels_type
+  character(*), intent(in) , optional :: method
+  logical, intent(in) , optional :: inverted
+  real(dp) :: standard_pressure
   real(dp) ::  lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
 
   sfc_temperature = atmosphere%temperature%standard
@@ -250,30 +254,36 @@ subroutine standard_pressure (height, pressure , &
   if (present(p_zero)) sfc_pressure = p_zero
   if (present(t_zero)) sfc_temperature = t_zero
 
-  lambda = R_air * sfc_temperature / sfc_gravity
 
-  if (present (if_simplificated) .and. if_simplificated ) then
-    ! use simplified formulae 
-    alpha = -6.5 
-    pressure = sfc_pressure  &
-      * ( 1 + alpha / sfc_temperature * (height-sfc_height)) &
-      ** ( -sfc_gravity / (R_air * alpha / 1000. ) )
+  if (present (method)) then
+    select case (method)
+    case("berg")
+      ! use Berg formulae
+      standard_pressure = sfc_pressure *(1-0.0000226 * ( height -sfc_height))**(5.225)
+    case ("simple")
+      alpha = -6.5 
+      standard_pressure = sfc_pressure  &
+        * ( 1 + alpha / sfc_temperature * (height-sfc_height)) &
+        ** ( -sfc_gravity / (R_air * alpha / 1000. ) )
+    case default
+      stop "Method not known"
+    endselect
   else
     ! use precise formulae
-    pressure = sfc_pressure * exp ( -1000. * (height -sfc_height) / lambda ) 
+    lambda = R_air * sfc_temperature / sfc_gravity
+    standard_pressure = sfc_pressure * exp ( - (height -sfc_height) / lambda ) 
   endif 
+
   if (present(inverted).and.inverted) then
-    pressure = sfc_pressure  / ( exp ( -1000. * (height-sfc_height) / lambda ) )
+    standard_pressure = sfc_pressure  / ( exp ( -1000. * (height-sfc_height) / lambda ) )
   endif
 
 
   !todo incorporate this
-
   !  Zdunkowski and Bott
   !  p(z) = p0 (T0-gamm z )/T0
 
-
-end subroutine
+end function
 
 ! =============================================================================
 !> \brief Compute gravity acceleration of the Earth
@@ -329,32 +339,32 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
 
   ! Read into memory the parameters of temparature height profiles
   ! for standard atmosphere 
-  z = (/11.0 , 20.1 , 32.1 , 47.4 , 51.4 , 71.7 , 85.7, 100.0, 200.0, 300.0/)
-  c = (/-6.5,   0.0,   1.0,   2.75,  0.0,  -2.75, -1.97,  0.0,   0.0,   0.0/)
-  d = (/ 0.3,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0/)
+  z = (/11.0 , 20.1 , 32.1 , 47.4  , 51.4 , 71.7  , 85.7  , 100.0 , 200.0 , 300.0 /)
+  c = (/-6.5 ,  0.0 ,  1.0 ,  2.75 ,  0.0 , -2.75 , -1.97 ,   0.0 ,   0.0 ,   0.0 /)
+  d = (/ 0.3 ,  1.0 ,  1.0 ,  1.0  ,  1.0 ,  1.0  ,  1.0  ,   1.0 ,   1.0 ,   1.0 /)
   t = atmosphere%temperature%standard
 
   if ( present (fels_type)) then
     if (fels_type .eq. "US1976" ) then
       elseif (fels_type .eq. "tropical" ) then
-      z=(/ 2.0  , 3.0, 16.5 , 21.5 , 45.0 , 51.0, 70.0 , 100.0 , 200.0 , 300.0 /)
-      c=(/-6.0 , -4.0, -6.7  , 4.0  , 2.2  , 1.0, -2.8  , -0.27  , 0.0   , 0.0 /)
-      d=(/ 0.5  , 0.5 , 0.3  , 0.5  , 1.0  , 1.0 , 1.0   , 1.0   , 1.0   , 1.0 /)
+      z=(/ 2.0 ,  3.0 , 16.5 , 21.5 , 45.0 , 51.0 , 70.0 , 100.0  , 200.0 , 300.0 /)
+      c=(/-6.0 , -4.0 , -6.7 ,  4.0 ,  2.2 ,  1.0 , -2.8 ,  -0.27 ,   0.0 ,   0.0 /)
+      d=(/ 0.5 ,  0.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,   1.0  ,   1.0 ,   1.0 /)
       t=300.0
       elseif (fels_type .eq. "subtropical_summer" ) then
-      z = (/ 1.5  , 6.5  , 13.0 , 18.0 , 26.0 , 36.0  , 48.0 ,  50.0 ,  70.0 , 100.0  /)
-      c = (/-4.0 , -6.0  , -6.5  , 0.0  , 1.2  , 2.2  ,  2.5  ,  0.0   ,-3.0   ,-0.025/)
-      d = (/ 0.5  , 1.0   , 0.5  , 0.5  , 1.0  , 1.0   , 2.5   , 0.5   , 1.0   , 1.0  /)
+      z = (/ 1.5 ,  6.5 , 13.0 , 18.0 , 26.0 , 36.0 , 48.0 , 50.0 , 70.0 , 100.0   /)
+      c = (/-4.0 , -6.0 , -6.5 ,  0.0 ,  1.2 ,  2.2 ,  2.5 ,  0.0 , -3.0 ,  -0.025 /)
+      d = (/ 0.5 ,  1.0 ,  0.5 ,  0.5 ,  1.0 ,  1.0 ,  2.5 ,  0.5 ,  1.0 ,   1.0   /)
       t = 294.0
       elseif (fels_type .eq. "subtropical_winter" ) then
-      z = (/ 3.0  ,10.0  , 19.0 , 25.0 , 32.0 , 44.5  , 50.0 ,  71.0 ,  98.0 , 200.0 /)
-      c = (/-3.5 , -6.0  , -0.5  , 0.0  , 0.4  , 3.2  ,  1.6  , -1.8   , 0.7   , 0.0 /)
-      d = (/ 0.5  , 0.5   , 1.0  , 1.0  , 1.0  , 1.0   , 1.0   , 1.0   , 1.0   , 1.0 /)
+      z = (/ 3.0 , 10.0 , 19.0 , 25.0 , 32.0 , 44.5 , 50.0 , 71.0 , 98.0 , 200.0 /)
+      c = (/-3.5 , -6.0 , -0.5 ,  0.0 ,  0.4 ,  3.2 ,  1.6 , -1.8 ,  0.7 ,   0.0 /)
+      d = (/ 0.5 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
       t = 272.2
       elseif (fels_type .eq. "subarctic_summer" ) then
-      z = (/  4.7 , 10.0 , 23.0 , 31.8 , 44.0 , 50.2  , 69.2 , 100.0 , 200.0 , 300.0 /)
-      c = (/ -5.3 , -7.0 ,  0.0 ,  1.4 ,  3.0 , 0.7  , -3.3  , -0.2   , 0.0 ,   0.0 /)
-      d = (/  0.5 ,  0.3 ,  1.0 ,  1.0 ,  2.0 , 1.0   , 1.5   , 1.0   , 1.0 ,   1.0 /)
+      z = (/ 4.7 , 10.0 , 23.0 , 31.8 , 44.0 , 50.2 , 69.2 , 100.0 , 200.0 , 300.0 /)
+      c = (/-5.3 , -7.0 ,  0.0 ,  1.4 ,  3.0 ,  0.7 , -3.3 ,  -0.2 ,   0.0 ,   0.0 /)
+      d = (/ 0.5 ,  0.3 ,  1.0 ,  1.0 ,  2.0 ,  1.0 ,  1.5 ,   1.0 ,   1.0 ,   1.0 /)
       t = 287.0
       elseif (fels_type .eq. "subarctic_winter" ) then
       z = (/  1.0 ,  3.2 ,  8.5 , 15.5 , 25.0 , 30.0 , 35.0 , 50.0 , 70.0 , 100.0 /)
@@ -418,8 +428,6 @@ real(dp) function bouger (h, R )
   real(dp), intent(in), optional :: R !< height of point above the cylinder
   real(dp), intent(in) ::  h 
 
-
-
   if (present( R ) ) then
     bouger = h + R - sqrt(R**2+H**2)
   else
@@ -443,8 +451,8 @@ function simple_def (R)
   delta = 0.22e-11 * R 
   simple_def = earth%gravity%mean / earth%radius *1000 * &
     delta * ( 2. - 3./2. * earth%density%crust / earth%density%mean &
-!    -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) 
-) * 1000
+    -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) &
+    ) * 1000
 end function
 
 end module

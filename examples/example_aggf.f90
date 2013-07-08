@@ -610,6 +610,7 @@ subroutine green_newtonian_compute()
   use mod_utilities, only : logspace , d2r
   integer:: iun , n , i , j
   real (dp) , allocatable , dimension(:) :: psi , h
+  character(12) , allocatable , dimension(:) :: column_name
 
   iun = 6
 
@@ -618,14 +619,20 @@ subroutine green_newtonian_compute()
   psi = logspace(real(1e-6,dp) , real(180,dp),n) 
 
   allocate(h(11))
-  h = [ 0. , 1. , 10. , 100., 1000. , 10000., -1. -10. , -100., -1000., -10000]
+  h = [ 0. , 1. , 10. , 100., 1000. , 10000., -1., -10. , -100., -1000., -10000]
+
+  allocate(column_name(size(h)))
+  write(column_name, '(f0.0)' ) (h(i),i=1,11)
 
  open (newunit=iun, file="green_newtonian_olsson.dat", action = 'write')
+ write(iun, '(a12,<size(h)>a12)') "psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
   write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
     (green_newtonian_olsson(d2r(psi(i)), h= h(j)), j=1,size(h)) , &
     i=1,size(psi))
 
  open(newunit=iun, file="green_newtonian_spotl.dat", action = 'write')
+ write(iun, '(a12,<size(h)>a12)') "psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
+
   write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
     (green_newtonian_spotl(d2r(psi(i)), height= h(j), normalize=.true.), j=1,size(h)) , &
     i=1,size(psi))

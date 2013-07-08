@@ -3,9 +3,9 @@
 
 # as: value_check  example_value_check
 
-# atmp: atmp.f90 mod_utilities.o
-#   $(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
-#   ./atmp
+atmp: atmp.f90 mod_utilities.o mod_aggf.o
+	$(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
+	./atmp
 
 		 
 # i:value_check
