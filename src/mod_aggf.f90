@@ -7,16 +7,7 @@
 !! AGGF and standard atmosphere parameters
 ! ==============================================================================
 module mod_aggf
-
-  use mod_constants
   implicit none
-  private
-
-  public:: &
-    read_tabulated_green , standard_pressure ,                & 
-    standard_temperature , bouger            , simple_def   , & 
-    standard_density     , standard_gravity  , compute_aggf , & 
-    compute_aggfdt       , GN_thin_layer     , geop2geom
 
 contains
 
@@ -33,33 +24,33 @@ contains
 !! \author M. Rajner
 !! \date 2013-03-19
 ! ==============================================================================
-subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
-  real(dp) , intent (in) :: psi
-  real(dp) , intent (in) , optional :: delta_
-  logical , intent (in) , optional :: aggf
-  real(dp) , intent (out) :: aggfdt
-  real(dp) :: deltat , aux , h_
+!subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
+!  real(dp) , intent (in) :: psi
+!  real(dp) , intent (in) , optional :: delta_
+!  logical , intent (in) , optional :: aggf
+!  real(dp) , intent (out) :: aggfdt
+!  real(dp) :: deltat , aux , h_
 
-  deltat = 10. ! Default value
-  if (present(delta_))  deltat = delta_
-  if (present(aggf) .and. aggf ) then
-    h_ = 0.001 ! default if we compute dggfdh using this routine
-    if (present(delta_))  h_ = deltat
-    call compute_aggf ( psi , aux , h = + h_ )
-    aggfdt = aux
-    call compute_aggf (psi, aux, h= -h_)
-    aggfdt = aggfdt - aux
-    aggfdt = aggfdt / ( 2. * h_ )
-  else
-    call compute_aggf (psi, aux, &
-      t_zero = atmosphere%temperature%standard + deltat )
-    aggfdt = aux
-    call compute_aggf (psi, aux,&
-      t_zero = atmosphere%temperature%standard - deltat )
-    aggfdt = aggfdt - aux
-    aggfdt = aggfdt / ( 2. * deltat)
-  endif
-end subroutine
+!  deltat = 10. ! Default value
+!  if (present(delta_))  deltat = delta_
+!  if (present(aggf) .and. aggf ) then
+!    h_ = 0.001 ! default if we compute dggfdh using this routine
+!    if (present(delta_))  h_ = deltat
+!    call compute_aggf ( psi , aux , h = + h_ )
+!    aggfdt = aux
+!    call compute_aggf (psi, aux, h= -h_)
+!    aggfdt = aggfdt - aux
+!    aggfdt = aggfdt / ( 2. * h_ )
+!  else
+!    call compute_aggf (psi, aux, &
+!      t_zero = atmosphere%temperature%standard + deltat )
+!   aggfdt = aux
+!    call compute_aggf (psi, aux,&
+!      t_zero = atmosphere%temperature%standard - deltat )
+!    aggfdt = aggfdt - aux
+!    aggfdt = aggfdt / ( 2. * deltat)
+!  endif
+!end subroutine
 
 ! ==============================================================================
 !> Read AGGF
@@ -73,6 +64,7 @@ end subroutine
 ! ==============================================================================
 subroutine read_tabulated_green ( table , author )
   use mod_utilities, only: skip_header , count_records_to_read
+  use mod_constants, only: dp
   real(dp), intent (inout),dimension(:,:), allocatable :: table
   character ( len = * ) , intent (in)                  :: author
   integer                                              :: i , j
@@ -115,8 +107,11 @@ end subroutine
 !> This subroutine computes the value of atmospheric gravity green functions
 !! (AGGF) on the basis of spherical distance (psi)
 ! ==============================================================================
-subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
+function aggf (psi , hmin , hmax , dh , if_normalization, &
     t_zero , h ,  first_derivative_h , first_derivative_z , fels_type )
+
+  use mod_constants, only: dp, pi, earth, gravity, atmosphere
+
   implicit none
   real(dp), intent(in)          :: psi       ! spherical distance from site   [degree]
   real(dp), intent(in),optional :: hmin ,  & ! minimum height, starting point [km]     (default=0)
@@ -126,7 +121,7 @@ subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
     h         ! station height                 [km]     (default=0)
   logical, intent(in), optional :: if_normalization , first_derivative_h , first_derivative_z
   character (len=*) , intent(in), optional  :: fels_type 
-  real(dp), intent(out)         :: aggf_val
+  real(dp) :: aggf
   real(dp)                      :: r , z , psir , dA , dz , rho , h_min , h_max , h_station , J_aux
 
   h_min = 0.
@@ -142,14 +137,15 @@ subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
 
   psir = psi * pi / 180.
 
-  dA = 2 * pi * r0**2 * ( 1 - cos (1. *pi/180.) )
+  
+  dA = 2 * pi * earth%radius**2 * ( 1 - cos (1. *pi/180.) )
 
 
-  aggf_val=0.
+  aggf = 0.
   do z = h_min , h_max , dz
 
-    r = ( ( r0 + z )**2 + (r0 + h_station)**2 & 
-      - 2.*(r0 + h_station ) *(r0+z)*cos(psir) )**(0.5)
+    r = ( ( earth%radius + z )**2 + (earth%radius + h_station)**2 & 
+      - 2.*(earth%radius + h_station ) *(earth%radius+z)*cos(psir) )**(0.5)
     rho =  standard_density ( z , t_zero = t_zero , fels_type = fels_type )
 
     ! first derivative (respective to station height)
@@ -157,42 +153,42 @@ subroutine compute_aggf (psi , aggf_val , hmin , hmax , dh , if_normalization, &
     if ( present ( first_derivative_h) .and. first_derivative_h ) then
 
       ! see equation 22, 23 in \cite Huang05
-      !J_aux =  (( r0 + z )**2)*(1.-3.*((cos(psir))**2)) -2.*(r0 + h_station )**2  &
-      !  + 4.*(r0+h_station)*(r0+z)*cos(psir)
-      ! aggf_val =  aggf_val -  rho * (  J_aux  /  r**5  ) * dz 
+      !J_aux =  (( earth%radius + z )**2)*(1.-3.*((cos(psir))**2)) -2.*(earth%radius + h_station )**2  &
+      !  + 4.*(earth%radius+h_station)*(earth%radius+z)*cos(psir)
+      ! aggf =  aggf -  rho * (  J_aux  /  r**5  ) * dz 
 
       ! direct derivative of equation 20 \cite Huang05      
-      J_aux = (2.* (r0 ) - 2 * (r0 +z )*cos(psir)) / (2. * r)
-      J_aux =  -r - 3 * J_aux * ((r0+z)*cos(psir) - r0)
-      aggf_val =  aggf_val +  rho * (  J_aux  /  r**4  ) * dz 
+      J_aux = (2.* (earth%radius ) - 2 * (earth%radius +z )*cos(psir)) / (2. * r)
+      J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
+      aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
     else
       ! first derivative (respective to column height)
       ! according to equation 26 in \cite Huang05
       ! micro Gal / hPa / km
       if ( present ( first_derivative_z) .and. first_derivative_z ) then
         if (z.eq.h_min) then
-          aggf_val = aggf_val  &
-            + rho*( ((r0 + z)*cos(psir) - ( r0 + h_station ) ) / ( r**3 ) ) 
+          aggf = aggf  &
+            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
         endif
       else
         ! aggf GN
         ! micro Gal / hPa
-        aggf_val = aggf_val  &
-          + rho * ( ( (r0 + z ) * cos ( psir ) - ( r0 + h_station ) ) / ( r**3 ) ) * dz
+        aggf = aggf  &
+          + rho * ( ( (earth%radius + z ) * cos ( psir ) - ( earth%radius + h_station ) ) / ( r**3 ) ) * dz
       endif
     endif
   enddo
 
-  aggf_val = -gravity%constant * dA * aggf_val * 1e8 * 1000 
+  aggf = -gravity%constant * dA * aggf * 1e8 * 1000 
 
   ! if you put the optional parameter \c if_normalization=.false.
   ! this block will be skipped
   ! by default the normalization is applied according to \cite Merriam92
   if ( (.not.present(if_normalization)) .or. (if_normalization)) then
-    aggf_val= psir * aggf_val * 1e5  / atmosphere%pressure%standard
+    aggf= psir * aggf * 1e5  / atmosphere%pressure%standard
   endif
 
-end subroutine 
+end function
 
 ! ==============================================================================
 !> Compute air density for given altitude for standard atmosphere
@@ -200,9 +196,11 @@ end subroutine
 !! using formulae 12 in \cite Huang05
 !! \date 2013-03-18
 !! \author M. Rajner
+!! height in meter
 ! ==============================================================================
 function standard_density ( height , t_zero ,fels_type )
-  real(dp) , intent(in)  ::  height ! height [km]
+  use mod_constants, only: dp , R_air
+  real(dp) , intent(in)  ::  height 
   real(dp) , intent(in), optional  :: t_zero 
   character(len = 22) , optional :: fels_type
   ! surface temperature is set to this value, 
@@ -210,16 +208,13 @@ function standard_density ( height , t_zero ,fels_type )
   real(dp) :: standard_density 
   real(dp) :: p ,t
 
-  call standard_temperature (height , t , t_zero = t_zero, fels_type=fels_type)
-
-  ! pressure in hPa --> Pa
-  standard_density = 100 * &
-    standard_pressure(height , t_zero = t_zero, fels_type=fels_type) &
-    / ( R_air * t )
+  t = standard_temperature (height , t_zero = t_zero, fels_type=fels_type)
+  p = standard_pressure(height , t_zero = t_zero, fels_type=fels_type)
+  standard_density = p  / ( R_air * t )
 end function
 
 ! =============================================================================
-!> \brief Computes pressure [hPa] for specific height
+!> \brief Computes pressure [Pa] for specific height
 !!
 !! See \cite US1976 or  \cite Huang05 for details.
 !! Uses formulae 5 from \cite Huang05.
@@ -230,6 +225,7 @@ end function
 function standard_pressure ( &
     height,  &
     p_zero , t_zero , h_zero,  method ,fels_type , inverted)
+  use mod_constants, only: dp, earth, atmosphere, R_air
   implicit none
   real(dp) , intent(in)            :: height
   real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
@@ -246,9 +242,9 @@ function standard_pressure ( &
 
   if (present(h_zero)) then
     sfc_height = h_zero
-    call standard_temperature (sfc_height , sfc_temperature )
-    call standard_temperature (sfc_height , sfc_temperature )
-    call standard_gravity (sfc_height , sfc_gravity )
+    sfc_temperature = standard_temperature (sfc_height)
+    sfc_temperature = standard_temperature (sfc_height)
+    sfc_gravity     = standard_gravity (sfc_height)
   endif
 
   if (present(p_zero)) sfc_pressure = p_zero
@@ -290,14 +286,15 @@ end function
 !! for the specific height using formula
 !! 
 !! see \cite US1976 
+!! height in meters
 ! =============================================================================
-subroutine standard_gravity ( height , g )
-  implicit none
+function standard_gravity (height)
+  use mod_constants, only: dp, earth
   real(dp), intent(in)  :: height
-  real(dp), intent(out) :: g
+  real(dp) :: standard_gravity
 
-  g= earth%gravity%mean * ( r0 / ( r0 + height ) )**2
-end subroutine
+  standard_gravity = earth%gravity%mean * ( earth%radius / ( earth%radius + height))**2
+end function
 
 
 ! =============================================================================
@@ -307,6 +304,8 @@ end subroutine
 !! \date 2013-03-19
 ! =============================================================================
 real(dp) function geop2geom (geopotential_height)
+  use mod_constants, only: dp, earth
+
   real (dp) :: geopotential_height
 
   geop2geom = geopotential_height * &
@@ -328,9 +327,11 @@ end function
 !! \li subarctic_summer
 !! \li subarctic_winter
 ! ==============================================================================
-subroutine standard_temperature ( height , temperature , t_zero , fels_type )
+function standard_temperature ( height, t_zero , fels_type )
+  use mod_constants, only: dp , earth, atmosphere
+  
   real(dp) , intent(in)  :: height
-  real(dp) , intent(out) :: temperature
+  real(dp)  :: standard_temperature
   real(dp) , intent(in), optional  :: t_zero
   character (len=*) , intent(in), optional  :: fels_type 
   real(dp) :: aux , cn , t
@@ -382,7 +383,7 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
   endif
 
   do i=1,10
-    if (height.le.z(i)) then
+    if (height/1000..le.z(i)) then
       indeks=i
       exit
     endif
@@ -395,10 +396,10 @@ subroutine standard_temperature ( height , temperature , t_zero , fels_type )
     else
       cn = c(i+1)
     endif
-    aux = aux + d(i) * ( cn - c(i) )  * dlog ( dcosh ( (height - z(i)) / d(i) ) / dcosh (z(i)/d(i)) ) 
+    aux = aux + d(i) * ( cn - c(i) )  * dlog ( dcosh ( (height/1000. - z(i)) / d(i) ) / dcosh (z(i)/d(i)) ) 
   enddo
-  temperature = t + c(1) * height/2. + aux/2.
-end subroutine
+  standard_temperature = t + c(1) * (height/1000.)/2. + aux/2.
+end function
 
 ! ==============================================================================
 !> Compute AGGF GN for thin layer
@@ -410,6 +411,7 @@ end subroutine
 !! \date 2013-03-19
 ! ==============================================================================
 function GN_thin_layer (psi)
+  use mod_constants, only: dp
   use mod_utilities, only : d2r
   real(dp) , intent(in) :: psi
   real(dp) :: psir
@@ -425,6 +427,7 @@ end function
 !!
 ! ==============================================================================
 real(dp) function bouger (h, R )
+  use mod_constants, only: dp, gravity, pi
   real(dp), intent(in), optional :: R !< height of point above the cylinder
   real(dp), intent(in) ::  h 
 
@@ -445,6 +448,7 @@ end function
 !! \author M. Rajner 
 ! ==============================================================================
 function simple_def (R)
+  use mod_constants, only: dp, earth
   real(dp) :: R ,delta
   real(dp) :: simple_def
 

@@ -44,7 +44,7 @@ module mod_constants
   type(atmosphere_data) , parameter ::      & 
     atmosphere  = atmosphere_data (         & 
     pressure    = pressure_data (           & 
-    standard    = 1013.25                   & ! hPa (not Pascal!)
+    standard    = 101325                    & ! Pa (not hectoPascal!)
     ),                                      & 
     temperature = temperature_data (        & 
     standard    = 288.15                    & ! K (15 degC)
