@@ -77,6 +77,13 @@ subroutine parse_site(cmd_line_entry)
       site(start_index)%lat    = 57
       site(start_index)%lon    = 21
       site(start_index)%height = 110
+      ! and point on Rysy
+    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."r") then
+      call more_sites (1,start_index)
+      site(start_index)%name   = "rysy_a"
+      site(start_index)%lat    = 49.17944
+      site(start_index)%lon    = 20.088333
+      site(start_index)%height = 2499
     else
       call print_warning ("site")
     endif
