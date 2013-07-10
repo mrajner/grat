@@ -66,7 +66,7 @@ subroutine parse_polygon (cmd_line_entry)
     endif
     call read_polygon (polygon(i))
   else
-    write(log%unit, form%i3), 'file do not exist. Polygon file was IGNORED'
+    stop 'file do not exist. Polygon file PROBLEM'
   endif
 enddo
 

@@ -5,14 +5,6 @@ module mod_parser
 
   implicit none
 
-  !----------------------------------------------------
-  ! various
-  !----------------------------------------------------
-  !  character (len = 2) :: method = "2D"  !< computation method
-
-
-  ! todo --- make @ like for models
-  !  character(len=5) :: green_names(5) = [ "GN   ", "GN/dt", "GN/dh","GN/dz","GE   "]
 
 contains
 ! =============================================================================
@@ -25,6 +17,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   use mod_data,    only: parse_model
   use mod_green,   only: parse_green
   use mod_cmdline
+  use mod_utilities, only: file_exists
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: program_calling, accepted_switches
@@ -55,8 +48,14 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     write(log%unit, form%i3) "inverted barometer assumption [T/F]:", &
       inverted_barometer
   case ("-O")
+    if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."C")) then
       ocean_conserve_mass = .true.
-    write(log%unit, form%i3) "conservation ocean mass"
+      write(log%unit, form%i3) "conservation ocean mass"
+    endif
+    if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."I")) then
+      inverted_landsea_mask = .true.
+      write(log%unit, form%i3) "inverted landsea mask"
+    endif
   case ('-D')
     call parse_date(cmd_line_entry)
   case ('-F')
@@ -76,7 +75,13 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
       output%tee=.true.
     endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
+      output%noclobber=.true.
+    endif
     write(log%unit, form_62), 'output file was set: ' , trim(output%name)
+    if (file_exists(output%name).and.output%noclobber) then
+      stop "I will not overwrite with -o : nc (noclobber) ... sorry"
+    endif
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit , file = output%name , action = "write" )
     endif

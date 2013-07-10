@@ -57,8 +57,9 @@ module mod_cmdline
   end type
   type(info_info), dimension(:), allocatable:: info
 
-  logical :: inverted_barometer  = .true.  
-  logical :: ocean_conserve_mass = .false.  
+  logical :: inverted_barometer    = .true.  
+  logical :: ocean_conserve_mass   = .false.  
+  logical :: inverted_landsea_mask = .false.  
 
   type model_index
     integer(2) :: sp, t, rsp , ewt , h , ls

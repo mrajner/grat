@@ -148,11 +148,16 @@ program grat
         endif
       enddo
 
-      ! if ocean mass should be conserved (-O)
+      ! if ocean mass should be conserved (-O @C)
       if (ocean_conserve_mass) then
         if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
           call conserve_mass(model(ind%model%sp), model(ind%model%ls))
         endif
+      endif
+
+      ! if ocean land mask should be inverted
+      if (inverted_landsea_mask) then
+        model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
       endif
 
       ! perform convolution
