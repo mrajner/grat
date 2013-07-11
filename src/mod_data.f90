@@ -611,15 +611,16 @@ end function
 !
 ! working only for regular grid!
 ! =============================================================================
-subroutine conserve_mass (model, landseamask)
+subroutine conserve_mass (model, landseamask , inverted_landsea_mask )
   use mod_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
+  use mod_printing
+  use mod_polygon
   type (file) :: model, landseamask
+  logical, intent(in):: inverted_landsea_mask
   real(dp) ::  val, valls , total_area, ocean_area, valarea
   integer :: ilat, ilon , iun
-
-  ! print* ,  model%name , model%lonrange , size(model%lon)
-  ! print* ,  landseamask%name , landseamask%lonrange , size(landseamask%lon)
+  integer(2) :: iok
 
   total_area = 0
   ocean_area  = 0
@@ -629,10 +630,15 @@ subroutine conserve_mass (model, landseamask)
     do ilon =1,size(model%lon)
       total_area = total_area + cos(d2r(model%lat(ilat)))
       call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
-      if (valls.eq.0) then
+      if (ind%polygon%e.ne.0) then
+        call chkgon ( model%lon(ilon), model%lat(ilat) , polygon(ind%polygon%e) , iok)
+        if (iok.eq.0) cycle
+      endif
+      if ((valls.eq.0.and..not.inverted_landsea_mask) &
+        .or.(valls.eq.1 .and. inverted_landsea_mask)) then
+        call get_value(model, model%lat(ilat), model%lon(ilon), val)
         ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
         valarea    = valarea + val * cos(d2r(model%lat(ilat)))
-        call get_value(model, model%lat(ilat), model%lon(ilon), val)
         model%data(ilon,ilat,1) = -9999
       endif
     enddo
@@ -642,8 +648,12 @@ subroutine conserve_mass (model, landseamask)
   end where
 
   if (ind%moreverbose%o.ne.0) then
+    if (output%header)  then
+      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "oceanarea[%]",  "mean_val"
+    endif
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valarea/ ocean_area
   endif
+
 
 end subroutine
 end module

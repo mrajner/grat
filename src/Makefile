@@ -16,6 +16,8 @@
 #     -S j -Dm:1@D -V
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
+LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
+
 # RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
 # RSP = 101300@RSP
 # wl: ../bin/real_vs_standard
@@ -25,33 +27,33 @@ sx: grat
 	grat \
 		-F $(SP) , $(LS) , $(RSP) \
 		-Sj  \
-		-G@GE  -H -Dm:1@D  -BI  -V \
-		-tmp:c -La@p:s -I50@DS:90@AS \
-		-P ../polygon/baltyk.poly:- \
-		-O C:I
+		-G@GE   -Dm   -V \
+		-L@s, p@p , @o -H  \
+		-P ../polygon/baltyk.poly:+ \
+		-O C  -I2.5 @DB :2@DD 
 
 #   grat -Sj  \
-#     -F $(SP), $(RSP)  \
-#     -G \
-#     /home/mrajner/dat/green/green_prem_atm_guo.dat@GE : 1 : 4 @f2m \
-#      \
-#     -H -Dm -tmp -La@g # -I 5 @DS : 80 @AS :0@DB: 10@DE
+	#     -F $(SP), $(RSP)  \
+	#     -G \
+	#     /home/mrajner/dat/green/green_prem_atm_guo.dat@GE : 1 : 4 @f2m \
+	#      \
+	#     -H -Dm -tmp -La@g # -I 5 @DS : 80 @AS :0@DB: 10@DE
 
 #   grat \
-#     -S j : 52 : 21   \
-#     -F  /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @SP :pres , $(RSP) , $(LS) \
-#     , 1000 @EWT \
-#     -BI  \
-#     -G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1:2@aplo , m@GN, m @GE   -H -V \
-#     -P ../polygon/baltyk.poly:- \
-#     -Dm  -L@s , p@p:s
+	#     -S j : 52 : 21   \
+	#     -F  /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @SP :pres , $(RSP) , $(LS) \
+	#     , 1000 @EWT \
+	#     -BI  \
+	#     -G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1:2@aplo , m@GN, m @GE   -H -V \
+	#     -P ../polygon/baltyk.poly:- \
+	#     -Dm  -L@s , p@p:s
 
 
 oo: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
 		-S j :52:21 \
-     -D 2009:200904  -H -o tmp2
+		-D 2009:200904  -H -o tmp2
 iiiii: grat rrrr
 r:
 	../bin/grat  -S \
@@ -79,7 +81,7 @@ rrrr:
 		-L a @p, aux @ a \
 		-P ../polygon/baltyk.poly -V
 
-	#
+#
 gnu:
 	../bin/grat  -S \
 		joze:52.0:21 \
@@ -97,10 +99,10 @@ gn:
 		-D2006:10@D  
 
 #     :55.1:15.3 ,\
-#     :48.7:19.6,\
-#     :25.6:-1.1,\
-#     :-3: -56 \
-gggg:
+	#     :48.7:19.6,\
+	#     :25.6:-1.1,\
+	#     :-3: -56 \
+	gggg:
 
 
 al:
@@ -129,23 +131,23 @@ T       = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
 LS      = $(DAT_DIR)/landsea/landseaRdI0.2-0.2.grd@LS:z:x:y
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
-FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
-fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
-#todo vienna
+	FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
+	fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+	#todo vienna
 
 SRCS  = mod_constants.f90 \
 				mod_utilities.f90 \
 				mod_printing.f90  \
-         mod_cmdline.f90   \
-         mod_site.f90      \
-         mod_spherical.f90 \
-				 mod_mjd.f90 \
-         mod_green.f90     \
-         mod_polygon.f90   \
-         mod_data.f90      \
-         mod_date.f90      \
-         mod_aggf.f90      \
-         mod_parser.f90
+				mod_cmdline.f90   \
+				mod_site.f90      \
+				mod_spherical.f90 \
+				mod_mjd.f90 \
+				mod_green.f90     \
+				mod_polygon.f90   \
+				mod_data.f90      \
+				mod_date.f90      \
+				mod_aggf.f90      \
+				mod_parser.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -164,7 +166,7 @@ mod_aggf.o: mod_constants.o mod_utilities.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o
-mod_data.o: mod_mjd.o mod_aggf.o
+mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
 mod_date.o:mod_data.o
 mod_mjd.o: mod_constants.o
 
