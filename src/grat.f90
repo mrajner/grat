@@ -90,16 +90,16 @@ program grat
 
   if (size(date).gt.0) then
     if(output%header) then
-      write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
+      write (output%unit , '(a15,x,a14)' , advance = "no" ) "mjd" , "date"
     endif
     start = 1
   endif
   if (size(info).gt.1) then
-    if(output%header) write (output%unit , '(a2)' , advance = "no" ) "#i"
+    if(output%header) write (output%unit , '(a2)' , advance = "no" ) "i"
     endif
 
   if(output%header) then
-    write (output%unit , '(a8,30a15)', advance ="no"  ) "#name", "lat" , "lon" , "h"
+    write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon" , "h"
   endif
 
   if(output%header) then

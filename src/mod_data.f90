@@ -618,12 +618,9 @@ subroutine conserve_mass (model, landseamask)
   real(dp) ::  val, valls , total_area, ocean_area, valarea
   integer :: ilat, ilon , iun
 
-  ! print* ,  model%name , model%lonrange , size(model%lon)
-  ! print* ,  landseamask%name , landseamask%lonrange , size(landseamask%lon)
-
   total_area = 0
-  ocean_area  = 0
-  valarea     = 0
+  ocean_area = 0
+  valarea    = 0
 
   do ilat = 1, size(model%lat)
     do ilon =1,size(model%lon)

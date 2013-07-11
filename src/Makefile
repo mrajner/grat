@@ -24,11 +24,9 @@ RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 sx: grat 
 	grat \
 		-F $(SP) , $(LS) , $(RSP) \
-		-Sj  \
-		-G@GE  -H -Dm:1@D  -BI  -V \
-		-tmp:c -La@p:s -I50@DS:90@AS \
-		-P ../polygon/baltyk.poly:- \
-		-O C:I
+		-Sr:54:20  \
+		-G@GE  -H -D20110229  \
+		-P ../polygon/baltyk.poly -OC
 
 #   grat -Sj  \
 #     -F $(SP), $(RSP)  \
