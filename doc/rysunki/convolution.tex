@@ -82,19 +82,19 @@
               node [color1,auto,midway,font=\LARGE]{$\mathbf{\rm d \boldsymbol\psi}$}
               arc (\a+\da:\a:\startradius)
               %        \path
-              (start) ++(\a+\da/2:\startradius)
-              ++(\a+\da/2:\endradius/2-\startradius/2)
-              circle (2mm)
-              node(centroid-\thekomorkaa){}
-            ;
-            \draw[paletka,color1,ultra thick,latex-latex]
-              (centroid-\thekomorkaa.center) -- (start)
-              node[midway ,auto,font=\LARGE]{$\boldsymbol\psi$}
-            ;
-          \fi
+                (start) ++(\a+\da/2:\startradius)
+                ++(\a+\da/2:\endradius/2-\startradius/2)
+                circle (2mm)
+                node(centroid-\thekomorkaa){}
+              ;
+              \draw[paletka,color1,ultra thick,latex-latex]
+                (centroid-\thekomorkaa.center) -- (start)
+                node[midway ,auto,font=\LARGE]{$\boldsymbol\psi$}
+              ;
+            \fi
+          }
         }
-      }
-    \end{scope}
-  \end{tikzpicture}%
-\end{standaloneframe}
- \end{document}
+      \end{scope}
+    \end{tikzpicture}%
+  \end{standaloneframe}
+\end{document}

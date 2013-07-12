@@ -96,8 +96,7 @@ program grat
   endif
   if (size(info).gt.1) then
     if(output%header) write (output%unit , '(a2)' , advance = "no" ) "i"
-    endif
-
+  endif
   if(output%header) then
     write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon" , "h"
   endif
@@ -116,10 +115,6 @@ program grat
     do isite = 1 , size(site)
       iprogress = iprogress + 1
 
-      !do i = 1 , size(polygon)
-      !  call chkgon( site(isite)%lon , site(isite)%lat , polygon(i) , iok)
-      !enddo
-
       do i = 1 , size(model)
         if(model(i)%if) then
           select case (model(i)%dataname)
@@ -129,11 +124,16 @@ program grat
             else
               call get_variable (model(i))
             endif
-!          case ("H")
+            !          case ("H")
             if (idate.gt.start) then
               cycle
             else
               call get_variable (model(i))
+              ! if ocean land mask should be inverted
+              if (inverted_landsea_mask) then
+                model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
+              endif
+
               !todo
               ! force topography to zero over oceans
               !        !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
@@ -148,17 +148,15 @@ program grat
         endif
       enddo
 
+
       ! if ocean mass should be conserved (-O @C)
       if (ocean_conserve_mass) then
         if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
-          call conserve_mass(model(ind%model%sp), model(ind%model%ls))
+          call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
+            inverted_landsea_mask = inverted_landsea_mask)
         endif
       endif
 
-      ! if ocean land mask should be inverted
-      if (inverted_landsea_mask) then
-        model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
-      endif
 
       ! perform convolution
       if (idate.gt.0) then
@@ -178,7 +176,7 @@ program grat
   call cpu_time(cpu(2))
   if (output%unit.ne.output_unit) then 
     call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
-   close(output_unit) 
+    close(output_unit) 
   endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)

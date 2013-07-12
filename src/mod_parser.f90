@@ -80,7 +80,8 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     endif
     write(log%unit, form_62), 'output file was set: ' , trim(output%name)
     if (file_exists(output%name).and.output%noclobber) then
-      stop "I will not overwrite with -o : nc (noclobber) ... sorry"
+      write(log%unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
+      stop
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit , file = output%name , action = "write" )

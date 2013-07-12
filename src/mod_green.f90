@@ -362,7 +362,7 @@ subroutine convolve (site , date)
   integer  ::  ndenser , igreen , idist  , iazimuth , nazimuth
   integer :: imodel
   real(dp) :: azimuth ,dazimuth
-  real(dp) :: lat , lon , area , tot_area  
+  real(dp) :: lat , lon , area , tot_area , tot_area_used
   real(dp) :: val(size(model)) , ref_p
   integer :: i, j, npoints
   integer(2) :: iok(size(polygon))
@@ -376,9 +376,10 @@ subroutine convolve (site , date)
   endif
 
   if (.not. allocated(result)) allocate(result(size(green)))
-  npoints  = 0
-  area     = 0
-  tot_area = 0
+  npoints       = 0
+  area          = 0
+  tot_area      = 0
+  tot_area_used = 0
 
   result=0
   do igreen = 1 , size(green_common)
@@ -436,6 +437,10 @@ subroutine convolve (site , date)
             level=1, method = info(igreen)%interpolation)
         endif
 
+        if (iok(1).eq.1 & .and. val(ind%model%ls).eq.1) then
+          tot_area_used = tot_area_used +area
+        endif
+
         ! GE, GN, ...
         if (                       & 
           ind%green%gn.ne.0        & 
@@ -485,7 +490,7 @@ subroutine convolve (site , date)
                   area * normalize
               endif
 
-              ! GEGdt pressure part from Guo2004
+              ! GEGdt pressure part from Guo 2004
               if (ind%green%gegdt.ne.0) then
                 result(ind%green%gegdt) = result(ind%green%gegdt) +   & 
                   val(ind%model%sp) *                                 & 
@@ -592,6 +597,11 @@ subroutine convolve (site , date)
               site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, & 
               r2d(lat),r2d(lon), area, tot_area, result
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
+              do i=1,size(val)
+            call get_value (                                              & 
+              model(i), r2d(lat), r2d(lon), val(i), & 
+              level=1, method = info(igreen)%interpolation)
+            enddo
               write(moreverbose(ind%moreverbose%p)%unit,     & 
                 '(<size(model)>en12.2)' , advance='no' ) val
             endif
@@ -624,10 +634,10 @@ subroutine convolve (site , date)
 
   ! summury: -L@s
   if (ind%moreverbose%s.ne.0) then
-    if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8,2a12)' ) &
-      "station", "npoints" ,"area" ,"area/R2"
-    write(moreverbose(ind%moreverbose%s)%unit,'(a8,i8,2en12.2)') &
-      site%name, npoints , tot_area, tot_area/earth%radius**2
+    if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8,3a12)' ) &
+      "station", "npoints" ,"area" ,"area/R2", "t_area_used"
+    write(moreverbose(ind%moreverbose%s)%unit,'(a8,i8,3en12.2)') &
+      site%name, npoints , tot_area, tot_area/earth%radius**2, tot_area_used
   endif
 end subroutine
 
@@ -645,7 +655,7 @@ subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, dista
   real(dp) ::  lat , lon , distancestart ,distancestop
 
   call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) , r2d(latin), r2d(lonin)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
   call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
   write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
   call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
