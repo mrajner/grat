@@ -94,7 +94,8 @@ subroutine read_green (green)
     .and.  .not. green%name.eq."rajner" )) then
     green%name="merriam"
   endif
-  if (green%name.eq."merriam") then
+  if (green%name.eq."merriam".or. &
+    green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat") then
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]
@@ -113,7 +114,8 @@ subroutine read_green (green)
     else
       green%column=[1,2]
     endif
-  else if (green%name.eq."huang") then
+  else if (green%name.eq."huang" .or. &
+   green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" ) then
     green%name="/home/mrajner/src/grat/dat/huang_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]
@@ -127,7 +129,8 @@ subroutine read_green (green)
       (green%dataname.eq."GNdz") then
       green%column=[1,5]
     endif
-  else if (green%name.eq."rajner") then
+  else if (green%name.eq."rajner" .or. &
+  green%name.eq."/home/mrajner/src/grat/dat/rajner_green.dat") then
     green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]
@@ -525,9 +528,9 @@ subroutine convolve (site , date)
               result(ind%green%gndt) = result(ind%green%gndt) +    & 
                 val(ind%model%sp) *                                & 
                 green_common(igreen)%data(idist, ind%green%gndt) * & 
+                val(ind%model%t) *                                 & 
                 area * normalize
             endif
-
           endif
         endif
 

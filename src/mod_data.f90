@@ -113,14 +113,15 @@ subroutine parse_model (cmd_line_entry)
   enddo
 end subroutine
 function variable_modifer(val, modifer)
-  use mod_atmosphere, only: geop2geom
+  !todo
+!  use mod_atmosphere, only: geop2geom
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
   character(*), intent(in) :: modifer
 
-  select case (modifer)
+select case (modifer)
   case ("g2h")
-  variable_modifer=geop2geom(val)
+!  variable_modifer=geop2geom(val)
 case default
   variable_modifer=val
 end select

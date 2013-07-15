@@ -25,15 +25,14 @@ LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 
 sx: grat 
 	grat \
-		-F $(SP) , $(LS) , $(RSP) \
+		-F $(SP) , $(T) \
 		-Sr:54:20  \
-		-G@GE  -H -D20110229  \
-		-P ../polygon/baltyk.poly -OC \
+		-G@GE, @GNdt, @GN  -H -D20110229  \
+		-P ../polygon/baltyk.poly@E \
 		-Sj  \
-		-G@GE   -Dm   -V \
+   -Dm   -V \
 		-L@s, p@p , @o -H  \
-		-P ../polygon/baltyk.poly:+ \
-		-O C  -I2.5 @DB :2@DD 
+	 -I2.5 @DB :2@DD 
 
 #   grat -Sj  \
 	#     -F $(SP), $(RSP)  \
@@ -149,10 +148,11 @@ SRCS  = mod_constants.f90  \
 				mod_polygon.f90    \
 				mod_data.f90       \
 				mod_date.f90       \
-				mod_atmosphere.f90 \
-				mod_aggf.f90       \
 				mod_parser.f90
 
+#         mod_atmosphere.f90 \
+#         mod_aggf.f90       \
+#
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
 						 polygon_check.f90      \
@@ -166,15 +166,13 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 mod_atmosphere.o mod_utilities.o: mod_constants.o
-mod_aggf.o: mod_constants.o mod_utilities.o
+# mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o
-mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
+# mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
 mod_date.o:mod_data.o
 mod_mjd.o: mod_constants.o
-mod_aggf.o: mod_atmosphere.o
-
 
 ../examples/example_aggf: $(OBJS)
 

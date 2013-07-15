@@ -449,9 +449,6 @@ function dataname(abbreviation)
   character(len=2) :: abbreviation
 
   dataname="unknown"
-  !  if (abbreviation.eq."LS") dataname = "Land-sea mask"
-  !  if (abbreviation.eq."SP") dataname = "Surface pressure"
-  !  if (abbreviation.eq."RS") dataname = "Reference surface pressure"
   if (abbreviation.eq."n")  dataname = "nearest"
   if (abbreviation.eq."l")  dataname = "bilinear"
   if (abbreviation.eq."g")  dataname = "green function used"
@@ -462,7 +459,6 @@ function dataname(abbreviation)
   if (abbreviation.eq."s")  dataname = "summary"
   if (abbreviation.eq."o")  dataname = "ocean conserve mass"
   if (abbreviation.eq."b")  dataname = "progress bar"
-  !  if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
 
 
@@ -528,17 +524,17 @@ subroutine get_index()
       ind%green%ghe = i
     case ("GG")
       ind%green%gg = i
+    case ("GNdt")
+      ind%green%gndt = i
     endselect
   enddo
   do i = 1, size(polygon)
     select case (polygon(i)%dataname)
-    case ("E")
+    case ("E","")
+      ! assume polygon is for elastic part
       ind%polygon%e = i
     case ("N")
       ind%polygon%n = i
-    case ("")
-      ind%polygon%n = i
-      ind%polygon%e = i
     endselect
   enddo
 
