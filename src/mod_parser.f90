@@ -126,7 +126,8 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
     call exit
   endif
 
-  call collect_args()
+  call get_command_cleaned(dummy)
+  call collect_args(dummy)
 
   if (any(cmd_line%switch.eq.'-h') &
     .and.if_accepted_switch("-h",accepted_switches)) &

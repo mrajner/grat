@@ -12,14 +12,14 @@ program example_aggf
 !  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 !  call green_newtonian_compute()
 !  call admit_niebauer()
+!  call aggf_thin_layer ("tmp")
 
 !  call aggf_resp_hmax ()
 !  call aggf_resp_dz ()
 !  call aggf_resp_t ()
 !  call aggf_resp_h ()
 !  call aggfdt_resp_dt ()
-!  call compute_tabulated_green_functions ()
-   call aggf_thin_layer ()
+  call compute_tabulated_green_functions ()
 !  call aggf_resp_fels_profiles ()
 !  call compare_tabulated_green_functions ()
 
@@ -130,47 +130,55 @@ end subroutine
 !  close(file_unit)
 !end subroutine
 
-!! ============================================================================
-!!> Compute AGGF and derivatives
-!!!
-!!! \author M. Rajner
-!!! \date 2013-03-18
-!! ============================================================================
-!subroutine compute_tabulated_green_functions ()
-!  use mod_constants, only:dp
-!  use mod_aggf !, only: read_tabulated_green , compute_aggf, compute_aggfdt
-!  integer :: i , file_unit
-!  real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
-!  real(dp), dimension(:,:), allocatable :: table , results 
+! ============================================================================
+!> Compute AGGF and derivatives
+!!
+!! \author M. Rajner
+!! \date 2013-03-18
+! ============================================================================
+subroutine compute_tabulated_green_functions ()
+  use mod_constants, only:dp
+  use mod_aggf , only: aggf
+  use mod_green, only: green, read_green
+  use mod_utilities, only: d2r
+  integer :: i , file_unit
+  real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
+  real(dp), dimension(:,:), allocatable :: table , results 
 
-!  ! Get the spherical distances from Merriam92
-!  call read_tabulated_green ( table , author = "merriam")
+  ! Get the spherical distances from Merriam92
+  allocate(green(1))
+  green(1)%name="merriam"
+  green(1)%column=[1,2]
+  call read_green(green(1))
 
-!  open  ( newunit = file_unit, &
-!          file    = '../dat/rajner_green.dat', &
-!          action  = 'write' &
-!        )
+  open (                                 & 
+    newunit = file_unit,                 & 
+    file    = '../dat/rajner_green.dat', & 
+    action  = 'write'                    & 
+    )
+  file_unit=6
 
-!  ! print header
-!  write ( file_unit,*) '# This is set of AGGF computed using module ', &
-!  'aggf from grat software'
-!  write ( file_unit,*) '# Normalization according to Merriam92'
-!  write ( file_unit,*) '# Marcin Rajner'
-!  write ( file_unit,*) '# For detail see www.geo.republika.pl'
-!  write ( file_unit,'(10(a23))')  '#psi[deg]', &
-!    'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' , &
-!    'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
+  ! print header
+  write ( file_unit,*) '# This is set of AGGF computed using module ', & 
+    'aggf from grat software'
+  write ( file_unit,*) '# Normalization according to Merriam92'
+  write ( file_unit,*) '# Marcin Rajner'
+  write ( file_unit,*) '# For detail see www.geo.republika.pl'
+  write ( file_unit,'(10(a23))')  '#psi[deg]',                         & 
+    'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
+    'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
 
-!  do i= 1, size(table(:,1))
-!    call compute_aggf   ( table(i,1) , val_aggf   )
-!    call compute_aggfdt ( table(i,1) , val_aggfdt )
-!    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
-!    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
-!    write ( file_unit, '(10(e23.5))' ) &
-!      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-!  enddo
-!  close(file_unit)
-!end subroutine
+
+  do i= 1, 6 ! size(green(1)%distance)
+    !    call compute_aggfdt ( table(i,1) , val_aggfdt )
+    !    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
+    !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
+    !    write ( file_unit, '(10(e23.5))' ) &
+    !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
+    write(file_unit, *) , green(1)%data(i), green(1)%distance(i), aggf(d2r(green(1)%distance(i)))
+  enddo
+  close(file_unit)
+end subroutine
 
 !! ============================================================================
 !!> Compare different vertical temperature profiles impact on AGGF
@@ -228,13 +236,13 @@ subroutine compare_fels_profiles ()
 
   ! All possible optional arguments for standard_temperature
   fels_types = (/ "US1976"             , "tropical",   &
-                  "subtropical_summer" , "subtropical_winter" , &
-                  "subarctic_summer"   , "subarctic_winter"    /)
+    "subtropical_summer" , "subtropical_winter" , &
+    "subarctic_summer"   , "subarctic_winter"    /)
 
   open  ( newunit = file_unit, &
-          file    = '/home/mrajner/src/grat/examples/compare_fels_profiles.dat' , &
-          action  = 'write' &
-        )
+    file    = '/home/mrajner/src/grat/examples/compare_fels_profiles.dat' , &
+    action  = 'write' &
+    )
 
   ! Print header
   write ( file_unit , '(100(a20))' ) &
@@ -249,7 +257,7 @@ subroutine compare_fels_profiles ()
     enddo
     write ( file_unit , * )
   enddo
- close(file_unit)
+  close(file_unit)
 end subroutine
 
 !! ============================================================================
@@ -450,11 +458,11 @@ subroutine standard1976(filename)
   do height=0.,68000. , 1000
     ! print results to file
     write( file_unit,'(5f15.5, e12.3)'), & 
-    height/1000.,                        & 
-    standard_temperature(height),        & 
-    standard_gravity(height),            & 
-    standard_pressure(height)/100.,      &  ! --> hPa
-    standard_density (height)
+      height/1000.,                        & 
+      standard_temperature(height),        & 
+      standard_gravity(height),            & 
+      standard_pressure(height)/100.,      &  ! --> hPa
+      standard_density (height)
   enddo
   close( file_unit )
 end subroutine
@@ -538,25 +546,30 @@ end subroutine
 
 subroutine aggf_thin_layer (filename)
   use, intrinsic:: iso_fortran_env
-  use mod_constants, only : dp 
+  use mod_constants, only : dp , pi
   use mod_aggf, only : read_tabulated_green, GN_thin_layer
+  use mod_utilities, only: d2r
+  use mod_green
+
   integer :: file_unit , i
   real(dp) , dimension (:,:), allocatable :: table
   character(*) , intent (in) , optional:: filename
 
+  allocate (green(1))
+  green(1)%name="merriam"
+  green(1)%column=[1, 2]
+  call read_green(green(1))
+
   write(*,*), "aggf_thin_layer ---> ",filename
   if (present (filename)) then
-    open ( newunit = file_unit , &
+    open (newunit = file_unit , &
       file =filename , &
       action  = 'write' )
   else
     file_unit = output_unit
   endif
-
-  ! read spherical distances from Merriam
-  call read_tabulated_green (table, "merriam")
-  do i = 1 , size (table (:,1))
-    write(*,*) table(i,1:2) , GN_thin_layer (table (i,1))
+  do i = 1 , size (green(1)%distance)
+    write(file_unit,*) green(1)%distance(i) ,green(1)%data(i) ,  GN_thin_layer (d2r(green(1)%distance(i)))
   enddo
 end subroutine
 

@@ -75,7 +75,6 @@ program grat
   ! program starts here with time stamp
   call cpu_time(cpu(1))
 
-
   ! gather cmd line option decide where to put output
   call intro & 
     (program_calling = "grat" , &

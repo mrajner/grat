@@ -14,6 +14,8 @@
 #      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
 #     -S j -Dm:1@D -V
+fdsdf: mod_aggf.o
+	make -C ../examples/
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
@@ -144,15 +146,14 @@ SRCS  = mod_constants.f90  \
 				mod_site.f90       \
 				mod_spherical.f90  \
 				mod_mjd.f90        \
+				mod_atmosphere.f90 \
+				mod_aggf.f90       \
 				mod_green.f90      \
 				mod_polygon.f90    \
 				mod_data.f90       \
 				mod_date.f90       \
 				mod_parser.f90
 
-#         mod_atmosphere.f90 \
-#         mod_aggf.f90       \
-#
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
 						 polygon_check.f90      \
@@ -167,12 +168,12 @@ OBJS = $(SRCS:.f90=.o)
 # module dependencies
 mod_atmosphere.o mod_utilities.o: mod_constants.o
 # mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o
-# mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
-mod_date.o:mod_data.o
-mod_mjd.o: mod_constants.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o mod_date.o
+#  mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
+# mod_date.o:mod_data.o
+# mod_mjd.o: mod_constants.o
 
 ../examples/example_aggf: $(OBJS)
 

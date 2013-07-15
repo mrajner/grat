@@ -30,7 +30,7 @@ module mod_cmdline
   end type
   type(cmd_line_arg) , allocatable , dimension(:) :: cmd_line
 
-  private :: check_if_switch_or_minus , get_command_cleaned
+  private :: check_if_switch_or_minus 
 
   type moreverbose_info
     character(60) :: name
@@ -100,13 +100,12 @@ contains
 !! \date 2013.05.21
 !! \author Marcin Rajner
 ! =============================================================================
-subroutine collect_args ()
+subroutine collect_args (dummy)
   use mod_utilities, only: ntokens, count_separator
-  character(455) :: dummy , dummy_aux ,dummy_aux2
+  character(*) :: dummy 
+  character(455) :: dummy_aux ,dummy_aux2
   integer :: i, j, n
   integer :: indeks_space,indeks_comma, indeks_at , indeks_colon
-
-  call get_command_cleaned(dummy)
 
   allocate(cmd_line(ntokens(dummy)))
   do i=1, ntokens(dummy)

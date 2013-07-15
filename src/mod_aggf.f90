@@ -106,91 +106,92 @@ end subroutine
 ! ==============================================================================
 !> This subroutine computes the value of atmospheric gravity green functions
 !! (AGGF) on the basis of spherical distance (psi)
+!! \author Marcin Rajner
+!! \date 2013.07.15
+!! \warning psi in radians h in meter
 ! ==============================================================================
-function aggf (psi , hmin , hmax , dh , if_normalization, &
-    t_zero , h ,  first_derivative_h , first_derivative_z , fels_type )
+function aggf (psi, zmin, zmax, dz, if_normalization, &
+    t_zero, h,  first_derivative_h, first_derivative_z, fels_type)
 
-  use mod_constants, only: dp, pi, earth, gravity, atmosphere
-  use mod_atmosphere, only:standard_density
+  use mod_constants,  only: dp, pi, earth, gravity, atmosphere
+  use mod_utilities, only: d2r
+  use mod_atmosphere, only: standard_density
 
-  implicit none
   real(dp), intent(in)          :: psi       ! spherical distance from site   [degree]
-  real(dp), intent(in),optional :: hmin ,  & ! minimum height, starting point [km]     (default=0)
-    hmax ,  & ! maximum height. eding point    [km]     (default=60)
-    dh ,    & ! integration step               [km]     (default=0.0001 -> 10 cm)
+  real(dp), intent(in),optional :: & 
+    zmin ,  & ! minimum height, starting point [m]     (default=0)
+    zmax ,  & ! maximum height. eding point    [m]     (default=60000)
+    dz ,    & ! integration step               [m]     (default=0.1 -> 10 cm)
     t_zero, & ! temperature at the surface     [K]      (default=288.15=t0)
-    h         ! station height                 [km]     (default=0)
+    h         ! station height                 [m]     (default=0)
   logical, intent(in), optional :: if_normalization , first_derivative_h , first_derivative_z
   character (len=*) , intent(in), optional  :: fels_type 
   real(dp) :: aggf
-  real(dp)                      :: r , z , psir , dA , dz , rho , h_min , h_max , h_station , J_aux
+  real(dp) :: zmin_, zmax_, dz_ , h_
+  real(dp) :: dA, z , rho , r
 
-  h_min = 0.
-  h_max = 60.
-  dz    = 0.0001 
-  h_station = 0.
+  zmin_ =     0.
+  zmax_ = 60000.
+  dz_   =     0.01
+  h_    =     0.
 
-  if ( present(hmin) ) h_min    = hmin
-  if ( present(hmax) ) h_max    = hmax
-  if ( present(  dh) )    dz    = dh
-  if ( present(   h) ) h_station = h
+  !todo!!!!!!!!!!!
+  dz_=50.01
 
-
-  psir = psi * pi / 180.
+  if (present(zmin)) zmin_ = zmin
+  if (present(zmax)) zmax_ = zmax
+  if (present(  dz))   dz_ = dz
+  if (present(   h))    h_ = h
 
   
-  dA = 2 * pi * earth%radius**2 * ( 1 - cos (1. *pi/180.) )
-
-
+  dA = 2 * pi * earth%radius**2 * ( 1 - cos (d2r(dble(1.))) )
   aggf = 0.
-  do z = h_min , h_max , dz
+  do z = zmin_, zmax_, dz_
 
-    r = ( ( earth%radius + z )**2 + (earth%radius + h_station)**2 & 
-      - 2.*(earth%radius + h_station ) *(earth%radius+z)*cos(psir) )**(0.5)
+    r = ( ( earth%radius + z )**2 + (earth%radius + h_)**2 & 
+      - 2.*(earth%radius + h_) *(earth%radius+z)*cos(psi) )**(0.5)
     rho =  standard_density ( z , t_zero = t_zero , fels_type = fels_type )
 
     ! first derivative (respective to station height)
     ! micro Gal height / km
     if ( present ( first_derivative_h) .and. first_derivative_h ) then
 
-      ! see equation 22, 23 in \cite Huang05
-      !J_aux =  (( earth%radius + z )**2)*(1.-3.*((cos(psir))**2)) -2.*(earth%radius + h_station )**2  &
-      !  + 4.*(earth%radius+h_station)*(earth%radius+z)*cos(psir)
-      ! aggf =  aggf -  rho * (  J_aux  /  r**5  ) * dz 
+!      ! see equation 22, 23 in \cite Huang05
+!      !J_aux =  (( earth%radius + z )**2)*(1.-3.*((cos(psir))**2)) -2.*(earth%radius + h_station )**2  &
+!      !  + 4.*(earth%radius+h_station)*(earth%radius+z)*cos(psir)
+!      ! aggf =  aggf -  rho * (  J_aux  /  r**5  ) * dz 
 
-      ! direct derivative of equation 20 \cite Huang05      
-      J_aux = (2.* (earth%radius ) - 2 * (earth%radius +z )*cos(psir)) / (2. * r)
-      J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
-      aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
+!      ! direct derivative of equation 20 \cite Huang05      
+!      J_aux = (2.* (earth%radius ) - 2 * (earth%radius +z )*cos(psir)) / (2. * r)
+!      J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
+!      aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
     else
-      ! first derivative (respective to column height)
-      ! according to equation 26 in \cite Huang05
-      ! micro Gal / hPa / km
+!      ! first derivative (respective to column height)
+!      ! according to equation 26 in \cite Huang05
+!      ! micro Gal / hPa / km
       if ( present ( first_derivative_z) .and. first_derivative_z ) then
-        if (z.eq.h_min) then
-          aggf = aggf  &
-            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
-        endif
+!        if (z.eq.h_min) then
+!          aggf = aggf  &
+!            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
+!        endif
       else
         ! aggf GN
-        ! micro Gal / hPa
+        ! micro Gal / hPa !!!todo
         aggf = aggf  &
-          + rho * ( ( (earth%radius + z ) * cos ( psir ) - ( earth%radius + h_station ) ) / ( r**3 ) ) * dz
+          + rho * ( ( (earth%radius + z ) * cos ( psi ) - ( earth%radius + h_) ) / ( r**3 ) ) * dz_
       endif
     endif
   enddo
 
-  aggf = -gravity%constant * dA * aggf * 1e8 * 1000 
+  aggf = -gravity%constant * dA * aggf * 1e6
 
   ! if you put the optional parameter \c if_normalization=.false.
   ! this block will be skipped
   ! by default the normalization is applied according to \cite Merriam92
   if ( (.not.present(if_normalization)) .or. (if_normalization)) then
-    aggf= psir * aggf * 1e5  / atmosphere%pressure%standard
+    aggf= psi * aggf * 1e5   ! ??? todo / atmosphere%pressure%standard
   endif
-
 end function
-
 
 ! ==============================================================================
 !> Compute AGGF GN for thin layer
@@ -200,16 +201,15 @@ end function
 !! See eq p. 491 in \cite Merriam92
 !! \author M. Rajner
 !! \date 2013-03-19
+!! \warning psi in radian
+!! \todo explanaition ?? 
 ! ==============================================================================
 function GN_thin_layer (psi)
   use mod_constants, only: dp
-  use mod_utilities, only : d2r
-  real(dp) , intent(in) :: psi
-  real(dp) :: psir
+  real(dp), intent(in) :: psi
   real(dp) :: GN_thin_layer
 
-  psir = d2r(psi)
-  GN_thin_layer = 1.627 * psir / sin ( psir / 2. )
+  GN_thin_layer = 1.627 * psi / sin ( psi / 2. )
 end function
 
 
