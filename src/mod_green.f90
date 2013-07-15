@@ -726,4 +726,35 @@ function green_newtonian_olsson(psi , h)
     ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) * &
     psi * 1.e18 * earth%radius 
 end function
+
+! =============================================================================
+!! \date 2013-07-06
+!! \author M. Rajner
+!! \warning input spherical distance in radian
+! =============================================================================
+function green_newtonian (psi, h, z)
+  use mod_constants
+  real(dp) :: green_newtonian
+  real(dp), intent (in) :: psi
+  real(dp), intent (in) , optional :: h
+  real(dp), intent (in) , optional :: z
+  real(dp) :: h_, z_
+  if (present(h)) then
+    h_=h
+  else
+    h_=0.
+  endif
+  if (present(z)) then
+    z_=z
+  else
+    z_=0.
+  endif
+
+  green_newtonian =                                              & 
+    gravity%constant                                             & 
+    *  ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
+    / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
+    -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) & 
+    * psi * 1.e18 * earth%radius
+end function
 end module

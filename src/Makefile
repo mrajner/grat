@@ -14,7 +14,7 @@
 #      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
 #     -S j -Dm:1@D -V
-fdsdf: mod_aggf.o
+fdsdf: mod_aggf.o mod_green.o
 	make -C ../examples/
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
@@ -175,7 +175,7 @@ mod_atmosphere.o mod_utilities.o: mod_constants.o
 # mod_date.o:mod_data.o
 # mod_mjd.o: mod_constants.o
 
-../examples/example_aggf: $(OBJS)
+../examples/example_aggf: mod_green.o $(OBJS)
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))

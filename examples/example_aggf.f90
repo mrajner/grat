@@ -10,7 +10,7 @@ program example_aggf
 !  call standard1976 ('standard1976.dat')
 !  call compare_fels_profiles ()
 !  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
-!  call green_newtonian_compute()
+  call green_newtonian_compute()
 !  call admit_niebauer()
 !  call aggf_thin_layer ("tmp")
 
@@ -627,6 +627,12 @@ subroutine green_newtonian_compute()
     (green_newtonian_spotl(d2r(psi(i)), height= h(j), normalize=.true.), j=1,size(h)) , &
     i=1,size(psi))
 
+  open(newunit=iun, file="green_newtonian.dat", action = 'write')
+  write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
+
+  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
+    (green_newtonian(d2r(psi(i)), h= h(j)), j=1,size(h)) , &
+    i=1,size(psi))
 
 end subroutine
 
