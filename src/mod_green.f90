@@ -672,72 +672,60 @@ end subroutine
 !! \date 2013-07-02
 !! \author M. Rajner
 !! \warning input spherical distance in radian
-!! see \cite spotl manual
-! =============================================================================
-real(dp) function green_newtonian_spotl(psi, height, normalize)
-  use mod_constants, only: earth, gravity
-  real(dp) :: psi
-  real(dp), optional :: height
-  logical, optional :: normalize
+!! 
+!! method:
+!!   defaulta see equation in Rajnerdr
+!!   spotl    see \cite spotl manual
+!!    olssson see \cite olsson2009
+!! =============================================================================
 
-  real(dp) :: eps
+!  real(dp) :: eps
 
-  if (present(height)) then
-    eps = height / earth%radius
-  else
-    eps = 0.
-  endif
+!  if (present(height)) then
+!    eps = height / earth%radius
+!  else
+!    eps = 0.
+!  endif
 
-  green_newtonian_spotl =                                   & 
-     gravity%constant                                & 
-    /earth%radius**2                                  & 
-    *(eps + 2. * (sin(psi/2.))**2 )                     & 
-    /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.))
+!  green_newtonian_spotl =                                   & 
+!     gravity%constant                                & 
+!    /earth%radius**2                                  & 
+!    *(eps + 2. * (sin(psi/2.))**2 )                     & 
+!    /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.))
 
-  if (present(normalize)) then
-    if (normalize) then
-      green_newtonian_spotl = green_newtonian_spotl &
-        *psi * 1.e18 * earth%radius 
-!        * - 1 ! different convention
-    endif
-  endif
-end function
+!  if (present(normalize)) then
+!    if (normalize) then
+!      green_newtonian_spotl = green_newtonian_spotl &
+!        *psi * 1.e18 * earth%radius 
+!    endif
+!  endif
+!end function
 
-! =============================================================================
-!! \date 2013-07-06
-!! \author M. Rajner
-!! \warning input spherical distance in radian
-!! see \cite Olsson et al., 2009
-! =============================================================================
-function green_newtonian_olsson(psi , h)
-  use mod_constants
-  real(dp) :: green_newtonian_olsson
-  real(dp), intent (in) :: psi
-  real(dp), intent (in) , optional :: h
-  real(dp) :: t
-  if (present(h)) then
-    t = earth%radius/(earth%radius +h)
-  else
-    t = 1
-  endif
+!function green_newtonian_olsson(psi , h)
+!  use mod_constants
+!  real(dp) :: green_newtonian_olsson
+!  real(dp), intent (in) :: psi
+!  real(dp), intent (in) , optional :: h
+!  real(dp) :: t
+!  if (present(h)) then
+!    t = earth%radius/(earth%radius +h)
+!  else
+!    t = 1
+!  endif
 
-  green_newtonian_olsson = gravity%constant / earth%radius**2 * t**2 * &
-    (1. - t * cos (psi) ) / &
-    ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) * &
-    psi * 1.e18 * earth%radius 
-end function
+!  green_newtonian_olsson = gravity%constant / earth%radius**2 * t**2 * &
+!    (1. - t * cos (psi) ) / &
+!    ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) * &
+!    psi * 1.e18 * earth%radius 
+!end function
 
-! =============================================================================
-!! \date 2013-07-06
-!! \author M. Rajner
-!! \warning input spherical distance in radian
-! =============================================================================
-function green_newtonian (psi, h, z)
-  use mod_constants
+function green_newtonian (psi, h, z, method)
+  use mod_constants, only : earth, gravity
   real(dp) :: green_newtonian
   real(dp), intent (in) :: psi
   real(dp), intent (in) , optional :: h
   real(dp), intent (in) , optional :: z
+  character(*), optional:: method
   real(dp) :: h_, z_
   if (present(h)) then
     h_=h

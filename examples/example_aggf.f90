@@ -7,10 +7,10 @@
 program example_aggf
   implicit none
 
-!  call standard1976 ('standard1976.dat')
-!  call compare_fels_profiles ()
-!  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
-  call green_newtonian_compute()
+  call standard1976 ('standard1976.dat')
+  call compare_fels_profiles ('compare_fels_profiles.dat')
+  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
+  call green_newtonian_compute(["green_newtonian_olsson.dat","green_newtonian_spotl.dat","green_newtonian.dat"])
 !  call admit_niebauer()
 !  call aggf_thin_layer ("tmp")
 
@@ -19,7 +19,7 @@ program example_aggf
 !  call aggf_resp_t ()
 !  call aggf_resp_h ()
 !  call aggfdt_resp_dt ()
-  call compute_tabulated_green_functions ()
+!  call compute_tabulated_green_functions ()
 !  call aggf_resp_fels_profiles ()
 !  call compare_tabulated_green_functions ()
 
@@ -39,6 +39,7 @@ contains
 ! =============================================================================
 subroutine simple_atmospheric_model (filename)
   use, intrinsic:: iso_fortran_env
+  use mod_utilities, only: file_exists
   use mod_constants
   use mod_aggf, only:simple_def, bouger
 
@@ -47,8 +48,8 @@ subroutine simple_atmospheric_model (filename)
   character(*) , intent (in) , optional:: filename
   real(dp) :: h =9.
 
-  write(*,*), "simple_atmospheric_model ---> ",filename
   if (present (filename)) then
+    if (file_exists(filename)) return
     open ( newunit = file_unit , &
       file =filename , &
       action  = 'write' )
@@ -56,7 +57,9 @@ subroutine simple_atmospheric_model (filename)
     file_unit = output_unit
   endif
 
-    do R = 0. , 25*8
+  write(*,*), "simple_atmospheric_model ---> ",filename
+
+  do R = 0. , 25*8
     write (file_unit,  * ), R,-100*bouger(h=h,R=R)/(earth%gravity%mean*h)  * 1e8, & !conversion to microGal
       -simple_def(R) * 1e8
   enddo
@@ -227,22 +230,31 @@ end subroutine
 !!! \author M. Rajner
 !!! \date 2013-03-19
 !! ============================================================================
-subroutine compare_fels_profiles ()
+subroutine compare_fels_profiles (filename)
+  use iso_fortran_env
+  use mod_utilities, only: file_exists
   use mod_constants, only: dp
   use mod_atmosphere, only : standard_temperature
   character (len=255) ,dimension (6) :: fels_types
   real (dp) :: height , temperature
   integer :: i , file_unit , i_height
+  character(*), intent (in),optional:: filename
 
   ! All possible optional arguments for standard_temperature
   fels_types = (/ "US1976"             , "tropical",   &
     "subtropical_summer" , "subtropical_winter" , &
     "subarctic_summer"   , "subarctic_winter"    /)
 
-  open  ( newunit = file_unit, &
-    file    = '/home/mrajner/src/grat/examples/compare_fels_profiles.dat' , &
-    action  = 'write' &
-    )
+  if (present (filename)) then
+    if (file_exists(filename)) return
+    open ( newunit = file_unit , &
+      file =filename , &
+      action  = 'write' )
+  else
+    file_unit = output_unit
+  endif
+
+  print * , "compare_fels_profiles --->", filename
 
   ! Print header
   write ( file_unit , '(100(a20))' ) &
@@ -436,6 +448,7 @@ end subroutine
 ! ============================================================================
 subroutine standard1976(filename)
   use, intrinsic :: iso_fortran_env
+  use mod_utilities, only: file_exists
   use mod_constants, only : dp
   use mod_atmosphere, only: &
     standard_temperature, standard_pressure , &
@@ -445,6 +458,7 @@ subroutine standard1976(filename)
   real(dp) :: height
 
   if (present (filename)) then
+    if (file_exists(filename)) return
     open ( newunit = file_unit , &
       file =filename , &
       action  = 'write' )
@@ -452,6 +466,7 @@ subroutine standard1976(filename)
     file_unit = output_unit
   endif
 
+  print * , "standard atmosphere --->", filename
   ! print header
   write ( file_unit , '(6(a15))' ) &
     'height', 'T' , 'g' , 'p', 'rho'
@@ -595,12 +610,15 @@ end subroutine
 ! =============================================================================
 !> compute green newtonian function
 ! =============================================================================
-subroutine green_newtonian_compute()
+subroutine green_newtonian_compute(filenames)
+  use mod_utilities, only: file_exists
   use mod_green
   use mod_utilities, only : logspace , d2r
-  integer:: iun , n , i , j
+  integer:: iun , n , i , j , k
   real (dp) , allocatable , dimension(:) :: psi , h
   character(12) , allocatable , dimension(:) :: column_name
+  character(*) ,  optional :: filenames(3)
+  character(20) :: method
 
   iun = 6
 
@@ -614,26 +632,22 @@ subroutine green_newtonian_compute()
   allocate(column_name(size(h)))
   write(column_name, '(f0.0)' ) (h(i),i=1,11)
 
-  open (newunit=iun, file="green_newtonian_olsson.dat", action = 'write')
-  write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
-  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
-    (green_newtonian_olsson(d2r(psi(i)), h= h(j)), j=1,size(h)) , &
-    i=1,size(psi))
+  do k =1,3
+!    if (file_exists(trim(filenames(i)))) return
+    print *, "green_newtonian_compute ---> " , trim(filenames(k))
+    open (newunit=iun, file=filenames(k), action = 'write')
 
-  open(newunit=iun, file="green_newtonian_spotl.dat", action = 'write')
-  write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
-
-  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
-    (green_newtonian_spotl(d2r(psi(i)), height= h(j), normalize=.true.), j=1,size(h)) , &
-    i=1,size(psi))
-
-  open(newunit=iun, file="green_newtonian.dat", action = 'write')
-  write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
+    iun=6
+  method = filenames(k)(17:index(filenames(k),".")-1)
+    write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
+    close(iun)
+  enddo
 
   write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
-    (green_newtonian(d2r(psi(i)), h= h(j)), j=1,size(h)) , &
+    (green_newtonian(d2r(psi(i)), h= h(j)), j=1,size(h), method ="a") , &
     i=1,size(psi))
+
 
 end subroutine
 
-  end program 
+end program 
