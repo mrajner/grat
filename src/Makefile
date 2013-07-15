@@ -138,18 +138,19 @@ H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 	fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
 	#todo vienna
 
-SRCS  = mod_constants.f90 \
-				mod_utilities.f90 \
-				mod_printing.f90  \
-				mod_cmdline.f90   \
-				mod_site.f90      \
-				mod_spherical.f90 \
-				mod_mjd.f90 \
-				mod_green.f90     \
-				mod_polygon.f90   \
-				mod_data.f90      \
-				mod_date.f90      \
-				mod_aggf.f90      \
+SRCS  = mod_constants.f90  \
+				mod_utilities.f90  \
+				mod_printing.f90   \
+				mod_cmdline.f90    \
+				mod_site.f90       \
+				mod_spherical.f90  \
+				mod_mjd.f90        \
+				mod_green.f90      \
+				mod_polygon.f90    \
+				mod_data.f90       \
+				mod_date.f90       \
+				mod_atmosphere.f90 \
+				mod_aggf.f90       \
 				mod_parser.f90
 
 PROGSSRCS =  grat.f90               \
@@ -164,7 +165,7 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-mod_utilities.o: mod_constants.o
+mod_atmosphere.o mod_utilities.o: mod_constants.o
 mod_aggf.o: mod_constants.o mod_utilities.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
@@ -172,6 +173,8 @@ mod_green.o: mod_data.o mod_polygon.o mod_date.o
 mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
 mod_date.o:mod_data.o
 mod_mjd.o: mod_constants.o
+mod_aggf.o: mod_atmosphere.o
+
 
 ../examples/example_aggf: $(OBJS)
 

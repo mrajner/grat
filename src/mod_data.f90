@@ -113,7 +113,7 @@ subroutine parse_model (cmd_line_entry)
   enddo
 end subroutine
 function variable_modifer(val, modifer)
-  use mod_aggf, only: geop2geom
+  use mod_atmosphere, only: geop2geom
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
   character(*), intent(in) :: modifer

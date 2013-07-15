@@ -7,61 +7,61 @@
 program example_aggf
   implicit none
 
-  call standard1976 ('standard1976.dat')
+!  call standard1976 ('standard1976.dat')
+!  call compare_fels_profiles ()
+!  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
+!  call green_newtonian_compute()
+!  call admit_niebauer()
 
 !  call aggf_resp_hmax ()
 !  call aggf_resp_dz ()
 !  call aggf_resp_t ()
 !  call aggf_resp_h ()
 !  call aggfdt_resp_dt ()
-!  call compare_fels_profiles ()
 !  call compute_tabulated_green_functions ()
-!   call aggf_thin_layer ()
+   call aggf_thin_layer ()
 !  call aggf_resp_fels_profiles ()
 !  call compare_tabulated_green_functions ()
-!  call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
 
 
-  call green_newtonian_compute()
 
-!  call admit_niebauer()
 
 
 contains 
  
 
-!! =============================================================================
-!!> Reproduces data to Fig.~3 in \cite Warburton77
-!!!
-!!! \date 2013-03-18
-!!! \author M. Rajner
-!!!
-!! =============================================================================
-!subroutine simple_atmospheric_model (filename)
-!  use, intrinsic:: iso_fortran_env
-!  use mod_constants
-!  use mod_aggf, only:simple_def, bouger
+! =============================================================================
+!> Reproduces data to Fig.~3 in \cite Warburton77
+!!
+!! \date 2013-03-18
+!! \author M. Rajner
+!!
+! =============================================================================
+subroutine simple_atmospheric_model (filename)
+  use, intrinsic:: iso_fortran_env
+  use mod_constants
+  use mod_aggf, only:simple_def, bouger
 
-!  real(dp) :: R ! km
-!  integer :: file_unit
-!  character(*) , intent (in) , optional:: filename
-!  real(dp) :: h =9.
+  real(dp) :: R ! km
+  integer :: file_unit
+  character(*) , intent (in) , optional:: filename
+  real(dp) :: h =9.
 
-!  write(*,*), "simple_atmospheric_model ---> ",filename
-!  if (present (filename)) then
-!    open ( newunit = file_unit , &
-!      file =filename , &
-!      action  = 'write' )
-!  else
-!    file_unit = output_unit
-!  endif
+  write(*,*), "simple_atmospheric_model ---> ",filename
+  if (present (filename)) then
+    open ( newunit = file_unit , &
+      file =filename , &
+      action  = 'write' )
+  else
+    file_unit = output_unit
+  endif
 
-!    do R = 0. , 25*8
-!    write (file_unit,  * ), R,-100*bouger(h=h,R=R)/(earth%gravity%mean*h)  * 1e8, & !conversion to microGal
-!      -simple_def(R) * 1e8
-!  enddo
+    do R = 0. , 25*8
+    write (file_unit,  * ), R,-100*bouger(h=h,R=R)/(earth%gravity%mean*h)  * 1e8, & !conversion to microGal
+      -simple_def(R) * 1e8
+  enddo
 
-!end subroutine
+end subroutine
 
 !! =============================================================================
 !!> Compare tabulated green functions from different authors
@@ -219,39 +219,38 @@ contains
 !!! \author M. Rajner
 !!! \date 2013-03-19
 !! ============================================================================
-!subroutine compare_fels_profiles ()
-!  use mod_constants, only: dp
-!  use mod_aggf, only : standard_temperature
-!  character (len=255) ,dimension (6) :: fels_types
-!  real (dp) :: height , temperature
-!  integer :: i , file_unit , i_height
+subroutine compare_fels_profiles ()
+  use mod_constants, only: dp
+  use mod_atmosphere, only : standard_temperature
+  character (len=255) ,dimension (6) :: fels_types
+  real (dp) :: height , temperature
+  integer :: i , file_unit , i_height
 
-!  ! All possible optional arguments for standard_temperature
-!  fels_types = (/ "US1976"             , "tropical",   &
-!                  "subtropical_summer" , "subtropical_winter" , &
-!                  "subarctic_summer"   , "subarctic_winter"    /)
+  ! All possible optional arguments for standard_temperature
+  fels_types = (/ "US1976"             , "tropical",   &
+                  "subtropical_summer" , "subtropical_winter" , &
+                  "subarctic_summer"   , "subarctic_winter"    /)
 
-!  open  ( newunit = file_unit, &
-!          file    = '../examples/compare_fels_profiles.dat' , &
-!          action  = 'write' &
-!        )
+  open  ( newunit = file_unit, &
+          file    = '/home/mrajner/src/grat/examples/compare_fels_profiles.dat' , &
+          action  = 'write' &
+        )
 
-!  ! Print header
-!  write ( file_unit , '(100(a20))' ) &
-!    'height', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
+  ! Print header
+  write ( file_unit , '(100(a20))' ) &
+    'height', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
 
-!  ! Print results
-!  do i_height = 0 , 70 , 1
-!    height=dble(i_height)
-!    write ( file_unit , '(f20.3$)' ) , height
-!    do i = 1 , size (fels_types)
-!      call standard_temperature (height, temperature, fels_type=fels_types(i))
-!      write ( file_unit , '(f20.3$)' ),  temperature 
-!    enddo
-!    write ( file_unit , * )
-!  enddo
-!  close(file_unit)
-!end subroutine
+  ! Print results
+  do i_height = 0 , 70 , 1
+    height=dble(i_height)
+    write ( file_unit , '(f20.3$)' ) , height
+    do i = 1 , size (fels_types)
+      write ( file_unit , '(f20.3$)' ),  standard_temperature (height, fels_type=fels_types(i))
+    enddo
+    write ( file_unit , * )
+  enddo
+ close(file_unit)
+end subroutine
 
 !! ============================================================================
 !!> Computes AGGF for different site height (h)
@@ -430,7 +429,7 @@ contains
 subroutine standard1976(filename)
   use, intrinsic :: iso_fortran_env
   use mod_constants, only : dp
-  use mod_aggf, only: &
+  use mod_atmosphere, only: &
     standard_temperature, standard_pressure , &
     standard_gravity,     standard_density
   integer :: file_unit
@@ -537,29 +536,29 @@ end subroutine
 !  table (0 : count_heights ) = heights ( 0 : count_heights )
 !end subroutine
 
-!subroutine aggf_thin_layer (filename)
-!  use, intrinsic:: iso_fortran_env
-!  use mod_constants, only : dp 
-!  use mod_aggf, only : read_tabulated_green, GN_thin_layer
-!  integer :: file_unit , i
-!  real(dp) , dimension (:,:), allocatable :: table
-!  character(*) , intent (in) , optional:: filename
+subroutine aggf_thin_layer (filename)
+  use, intrinsic:: iso_fortran_env
+  use mod_constants, only : dp 
+  use mod_aggf, only : read_tabulated_green, GN_thin_layer
+  integer :: file_unit , i
+  real(dp) , dimension (:,:), allocatable :: table
+  character(*) , intent (in) , optional:: filename
 
-!  write(*,*), "aggf_thin_layer ---> ",filename
-!  if (present (filename)) then
-!    open ( newunit = file_unit , &
-!      file =filename , &
-!      action  = 'write' )
-!  else
-!    file_unit = output_unit
-!  endif
+  write(*,*), "aggf_thin_layer ---> ",filename
+  if (present (filename)) then
+    open ( newunit = file_unit , &
+      file =filename , &
+      action  = 'write' )
+  else
+    file_unit = output_unit
+  endif
 
-!  ! read spherical distances from Merriam
-!  call read_tabulated_green (table, "merriam")
-!  do i = 1 , size (table (:,1))
-!    write(*,*) table(i,1:2) , GN_thin_layer (table (i,1))
-!  enddo
-!end subroutine
+  ! read spherical distances from Merriam
+  call read_tabulated_green (table, "merriam")
+  do i = 1 , size (table (:,1))
+    write(*,*) table(i,1:2) , GN_thin_layer (table (i,1))
+  enddo
+end subroutine
 
 subroutine admit_niebauer()
   use mod_constants
