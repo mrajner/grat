@@ -459,6 +459,7 @@ function dataname(abbreviation)
   if (abbreviation.eq."d")  dataname = "dates"
   if (abbreviation.eq."s")  dataname = "summary"
   if (abbreviation.eq."o")  dataname = "ocean conserve mass"
+  if (abbreviation.eq."t")  dataname = "total mass"
   if (abbreviation.eq."b")  dataname = "progress bar"
 end function
 
@@ -505,6 +506,8 @@ subroutine get_index()
       ind%moreverbose%s = i
     case ("o")
       ind%moreverbose%o = i
+    case ("t")
+      ind%moreverbose%t = i
     case ("b")
       ind%moreverbose%b = i
     end select

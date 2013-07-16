@@ -68,7 +68,7 @@ module mod_cmdline
     integer(2) :: e, n
   end type
   type moreverbose_index
-    integer(2) :: p, g , a , d, l, n, r , s, o, b
+    integer(2) :: p, g , t, a , d, l, n, r , s, o, b 
   end type
   type green_index
     integer(2) :: & 

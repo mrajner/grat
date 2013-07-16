@@ -194,17 +194,34 @@ subroutine read_green (green)
     write(log%unit, form_63) "conversion: radians --> to degrees"
   endif
   if (green%columndataname(2).eq."a2f") then
-    ! need some proof ?
     green%data=green%data  / (earth%radius)*1e12 * earth%gravity%mean
     write(log%unit, form_63) "conversion: aplo --> to farrell"
   endif
   if (green%columndataname(2).eq."f2m") then
     green%data= &
-      -green%data * earth%gravity%mean * 1e8 * 1e5 * 1e-18 * earth%radius * 2 * pi * (1.- cos(d2r(dble(1))))
+      -green%data * green_normalization("f2m")
     write(log%unit, form_63) "conversion: farrell --> to merriam"
   endif
 
 end subroutine
+
+function green_normalization(method, psi)
+  use mod_constants, only:pi, earth, gravity
+  use mod_utilities, only: d2r
+  real(dp):: green_normalization
+  character(*) :: method
+  real(dp), optional :: psi
+
+  if (method.eq."f2m") then
+    green_normalization = &
+      ! -->" * 1e8 * 1e5 * 1e-18 n * 1e2" 
+    1e-3 &
+      / earth%gravity%mean  * earth%radius * 2 * pi * (1.- cos(d2r(dble(1.))))
+  else if (method.eq."m") then
+    green_normalization =  &
+  1./earth%mass *  psi *1e15 * earth%radius**4 * 2 * pi * (1.- cos(d2r(dble(1.))))
+  endif
+end function
 
 ! =============================================================================
 !> Unification:
@@ -504,9 +521,9 @@ subroutine convolve (site , date)
 
               ! GG
               if (ind%green%gg.ne.0) then
-                aux = mmwater2pascal(val(ind%model%sp),inverted=.true.) * & 
-                  area/d2r(green_common(igreen)%distance(idist)) *        & 
-                  1./earth%radius/1e18
+                aux = mmwater2pascal(val(ind%model%sp), inverted=.true.)  & 
+                  * area/ (d2r(green_common(igreen)%distance(idist)) *        & 
+                  earth%radius*1e18)
                 result(ind%green%gg) = result(ind%green%gg) +      & 
                   green_common(igreen)%data(idist, ind%green%gg) * & 
                   aux * 1e8 ! m s-2 -> microGal
@@ -542,12 +559,12 @@ subroutine convolve (site , date)
           ) then
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
             if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.val(ind%model%ls).eq.0)) then
-            call get_value (                                  & 
-              model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), & 
-              level=1, method = info(igreen)%interpolation)
-            aux = (val(ind%model%ewt))  *                      & 
-              area/d2r(green_common(igreen)%distance(idist)) * & 
-              1./earth%radius/1e12* 1e3 ! m -> mm
+              call get_value (                                  & 
+                model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), & 
+                level=1, method = info(igreen)%interpolation)
+              aux = (val(ind%model%ewt))  *                      & 
+                area/d2r(green_common(igreen)%distance(idist)) * & 
+                1./earth%radius/1e12* 1e3 ! m -> mm
               if (ind%green%gr.ne.0) then
                 result(ind%green%gr) = result(ind%green%gr) +     & 
                   green_common(igreen)%data(idist,ind%green%gr) * & 
@@ -601,10 +618,10 @@ subroutine convolve (site , date)
               r2d(lat),r2d(lon), area, tot_area, result
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               do i=1,size(val)
-            call get_value (                                              & 
-              model(i), r2d(lat), r2d(lon), val(i), & 
-              level=1, method = info(igreen)%interpolation)
-            enddo
+                call get_value (                                              & 
+                  model(i), r2d(lat), r2d(lon), val(i), & 
+                  level=1, method = info(igreen)%interpolation)
+              enddo
               write(moreverbose(ind%moreverbose%p)%unit,     & 
                 '(<size(model)>en12.2)' , advance='no' ) val
             endif
@@ -631,11 +648,11 @@ subroutine convolve (site , date)
 
   ! results to output
   if (present(date)) then
-    write (output%unit, '(f15.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+    write (output%unit, '(f12.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
   endif
   write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
 
-  ! summury: -L@s
+  ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then
     if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8,3a12)' ) &
       "station", "npoints" ,"area" ,"area/R2", "t_area_used"
@@ -678,55 +695,14 @@ end subroutine
 !!   spotl    see \cite spotl manual
 !!    olssson see \cite olsson2009
 !! =============================================================================
-
-!  real(dp) :: eps
-
-!  if (present(height)) then
-!    eps = height / earth%radius
-!  else
-!    eps = 0.
-!  endif
-
-!  green_newtonian_spotl =                                   & 
-!     gravity%constant                                & 
-!    /earth%radius**2                                  & 
-!    *(eps + 2. * (sin(psi/2.))**2 )                     & 
-!    /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.))
-
-!  if (present(normalize)) then
-!    if (normalize) then
-!      green_newtonian_spotl = green_newtonian_spotl &
-!        *psi * 1.e18 * earth%radius 
-!    endif
-!  endif
-!end function
-
-!function green_newtonian_olsson(psi , h)
-!  use mod_constants
-!  real(dp) :: green_newtonian_olsson
-!  real(dp), intent (in) :: psi
-!  real(dp), intent (in) , optional :: h
-!  real(dp) :: t
-!  if (present(h)) then
-!    t = earth%radius/(earth%radius +h)
-!  else
-!    t = 1
-!  endif
-
-!  green_newtonian_olsson = gravity%constant / earth%radius**2 * t**2 * &
-!    (1. - t * cos (psi) ) / &
-!    ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) * &
-!    psi * 1.e18 * earth%radius 
-!end function
-
 function green_newtonian (psi, h, z, method)
   use mod_constants, only : earth, gravity
   real(dp) :: green_newtonian
   real(dp), intent (in) :: psi
   real(dp), intent (in) , optional :: h
   real(dp), intent (in) , optional :: z
-  character(*), optional:: method
-  real(dp) :: h_, z_
+  character(*), optional :: method
+  real(dp) :: h_, z_ , eps, t
   if (present(h)) then
     h_=h
   else
@@ -737,12 +713,36 @@ function green_newtonian (psi, h, z, method)
   else
     z_=0.
   endif
+  if (present(method) &
+    .and. (method.eq."spotl" .or. method.eq."olsson")) then
+    if(method.eq."spotl") then
+      eps = h_/ earth%radius
+      green_newtonian =                                   & 
+        1 &
+        /earth%radius**2                                  & 
+        *(eps + 2. * (sin(psi/2.))**2 )                     & 
+        /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.))
+    else if (method.eq."olsson") then
+      t = earth%radius/(earth%radius +h_)
 
-  green_newtonian =                                              & 
-    gravity%constant                                             & 
-    *  ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
-    / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
-    -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) & 
+      green_newtonian = &
+        1 / earth%radius**2 * t**2 * &
+        (1. - t * cos (psi) ) / &
+        ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) 
+    endif
+  else
+    green_newtonian =                                   & 
+      ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
+      / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
+      -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) 
+
+    green_newtonian = green_newtonian * green_normalization("m", psi=psi)
+    return
+  endif
+
+  green_newtonian =              & 
+    green_newtonian              & 
+    * gravity%constant           & 
     * psi * 1.e18 * earth%radius
 end function
 end module

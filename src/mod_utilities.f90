@@ -271,14 +271,21 @@ end subroutine
 !!
 !! \author Taken from www
 !! \date 2013-03-19
+!! 
+!! \date 2013.07.16 added exception e.g /home/...
 ! =============================================================================
 function is_numeric(string)
-  logical :: is_numeric
+  logical :: is_numeric  
   character(len=*), intent(in) :: string
   real :: x
   integer :: e
-  read(string,*,iostat=e) x
-  is_numeric = e == 0
+  if (string(1:1).eq."/") then
+    is_numeric=.false. 
+  else 
+    read(string,*,iostat=e) x
+    is_numeric = e == 0
+  endif
+
 end function 
 
 
@@ -421,7 +428,7 @@ function mmwater2pascal(mmwater, inverted)
   real(dp), intent(in) :: mmwater
   logical, optional, intent(in) :: inverted
 
-  
+
   if (present(inverted).and.inverted) then
     mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water) 
   else

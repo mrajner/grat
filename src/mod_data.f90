@@ -620,15 +620,15 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
   use mod_mjd
   type (file) :: model, landseamask
   logical, intent(in):: inverted_landsea_mask
-  real(dp) ::  val, valls , total_area, ocean_area, valarea
-  integer :: ilat, ilon , iun
+  real(dp) ::  val, valls , total_area, ocean_area, valoceanarea
+  integer :: ilat, ilon 
   integer(2) :: iok
   integer, intent(in),optional :: date(6)
 
 
   total_area = 0
   ocean_area = 0
-  valarea    = 0
+  valoceanarea    = 0
 
   do ilat = 1, size(model%lat)
     do ilon =1,size(model%lon)
@@ -642,13 +642,13 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
         .or.(valls.eq.1 .and. inverted_landsea_mask)) then
         call get_value(model, model%lat(ilat), model%lon(ilon), val)
         ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
-        valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+        valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
         model%data(ilon,ilat,1) = -9999
       endif
     enddo
   enddo
   where (model%data.eq.-9999)
-    model%data=valarea/ ocean_area
+    model%data=valoceanarea/ ocean_area
   end where
 
   if (ind%moreverbose%o.ne.0) then
@@ -661,9 +661,47 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
       if (present(date)) then
         write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
       endif
-    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valarea/ ocean_area
+    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valoceanarea/ ocean_area
   endif
-
-
 end subroutine
+
+! =============================================================================
+!> Mean pressure all over the model area
+!
+! working only for regular grid!
+! =============================================================================
+subroutine total_mass (model, date)
+  use mod_utilities, only: d2r
+  use mod_cmdline,   only: ind, moreverbose
+  use mod_printing
+  use mod_mjd
+  type (file) :: model
+  real(dp) ::  val, valarea, totalarea
+  integer :: ilat, ilon
+  integer, intent(in),optional :: date(6)
+
+
+  totalarea = 0
+  valarea    = 0
+
+  do ilat = 1, size(model%lat)
+    do ilon =1,size(model%lon)
+      totalarea = totalarea + cos(d2r(model%lat(ilat)))
+      call get_value(model, model%lat(ilat), model%lon(ilon), val)
+     valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+    enddo
+  enddo
+
+  if (output%header)  then
+    if (present(date)) then
+      write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14)', advance='no') , "mjd",  "date"
+    endif
+    write (moreverbose(ind%moreverbose%t)%unit,'(a12)') , "mean_val"
+  endif
+  if (present(date)) then
+    write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
+  endif
+  write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)') ,  valarea/ totalarea
+end subroutine
+
 end module

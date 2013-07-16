@@ -633,19 +633,18 @@ subroutine green_newtonian_compute(filenames)
   write(column_name, '(f0.0)' ) (h(i),i=1,11)
 
   do k =1,3
-!    if (file_exists(trim(filenames(i)))) return
+    !if (file_exists(trim(filenames(i)))) return
     print *, "green_newtonian_compute ---> " , trim(filenames(k))
     open (newunit=iun, file=filenames(k), action = 'write')
 
-    iun=6
-  method = filenames(k)(17:index(filenames(k),".")-1)
+    method = filenames(k)(17:index(filenames(k),".")-1)
     write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
+    write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
+      (green_newtonian(d2r(psi(i)), h= h(j), method = method), j=1,size(h)) , &
+      i=1,size(psi))
     close(iun)
   enddo
 
-!  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
-!    (green_newtonian(d2r(psi(i)), h= h(j)), j=1,size(h), method ="a") , &
-!    i=1,size(psi))
 
 
 end subroutine

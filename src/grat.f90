@@ -162,6 +162,15 @@ program grat
         endif
       endif
 
+      ! calculate total mass if asked for
+      if (ind%moreverbose%t.ne.0) then
+        if( size(date).eq.0) then
+          call total_mass(model(ind%model%sp))
+        else
+          call total_mass(model(ind%model%sp), date=date(idate)%date)
+        endif
+      endif
+
 
       ! perform convolution
       if (idate.gt.0) then
