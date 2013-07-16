@@ -114,14 +114,14 @@ subroutine parse_model (cmd_line_entry)
 end subroutine
 function variable_modifer(val, modifer)
   !todo
-!  use mod_atmosphere, only: geop2geom
+  use mod_atmosphere, only: geop2geom
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
   character(*), intent(in) :: modifer
 
 select case (modifer)
   case ("g2h")
-!  variable_modifer=geop2geom(val)
+  variable_modifer=geop2geom(val)
 case default
   variable_modifer=val
 end select
@@ -612,16 +612,19 @@ end function
 !
 ! working only for regular grid!
 ! =============================================================================
-subroutine conserve_mass (model, landseamask , inverted_landsea_mask )
+subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
   use mod_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
   use mod_polygon
+  use mod_mjd
   type (file) :: model, landseamask
   logical, intent(in):: inverted_landsea_mask
   real(dp) ::  val, valls , total_area, ocean_area, valarea
   integer :: ilat, ilon , iun
   integer(2) :: iok
+  integer, intent(in),optional :: date(6)
+
 
   total_area = 0
   ocean_area = 0
@@ -650,8 +653,14 @@ subroutine conserve_mass (model, landseamask , inverted_landsea_mask )
 
   if (ind%moreverbose%o.ne.0) then
     if (output%header)  then
-      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "oceanarea[%]",  "mean_val"
+      if (present(date)) then
+        write (moreverbose(ind%moreverbose%o)%unit,'(a12,x,a14)', advance='no') , "mjd",  "date"
+      endif
+      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "ocean[%]",  "mean_val"
     endif
+      if (present(date)) then
+        write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
+      endif
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valarea/ ocean_area
   endif
 

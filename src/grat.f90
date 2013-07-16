@@ -148,11 +148,17 @@ program grat
       enddo
 
 
-      ! if ocean mass should be conserved (-O @C)
+      ! if ocean mass should be conserved (-O C)
       if (ocean_conserve_mass) then
         if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
-          call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-            inverted_landsea_mask = inverted_landsea_mask)
+          if( size(date).eq.0) then
+            call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
+              inverted_landsea_mask = inverted_landsea_mask)
+          else
+            call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
+              date = date(idate)%date, &
+              inverted_landsea_mask = inverted_landsea_mask)
+          endif
         endif
       endif
 

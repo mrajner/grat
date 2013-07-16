@@ -206,7 +206,6 @@ end function
 ! =============================================================================
 real(dp) function geop2geom (geopotential_height)
   use mod_constants, only: dp, earth
-
   real (dp) :: geopotential_height
 
   geop2geom = geopotential_height * &

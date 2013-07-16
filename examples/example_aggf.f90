@@ -643,9 +643,9 @@ subroutine green_newtonian_compute(filenames)
     close(iun)
   enddo
 
-  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
-    (green_newtonian(d2r(psi(i)), h= h(j)), j=1,size(h), method ="a") , &
-    i=1,size(psi))
+!  write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
+!    (green_newtonian(d2r(psi(i)), h= h(j)), j=1,size(h), method ="a") , &
+!    i=1,size(psi))
 
 
 end subroutine
