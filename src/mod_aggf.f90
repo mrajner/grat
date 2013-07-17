@@ -110,12 +110,13 @@ end subroutine
 !! \date 2013.07.15
 !! \warning psi in radians h in meter
 ! ==============================================================================
-function aggf (psi, zmin, zmax, dz, if_normalization, &
-    t_zero, h,  first_derivative_h, first_derivative_z, fels_type)
+function aggf (psi, zmin, zmax, dz, &
+    t_zero, h,   first_derivative_h, first_derivative_z, fels_type)
 
   use mod_constants,  only: dp, pi, earth, gravity, atmosphere
   use mod_utilities, only: d2r
   use mod_atmosphere, only: standard_density
+  use mod_green, only: green_normalization
 
   real(dp), intent(in)          :: psi       ! spherical distance from site   [degree]
   real(dp), intent(in),optional :: & 
@@ -124,11 +125,11 @@ function aggf (psi, zmin, zmax, dz, if_normalization, &
     dz ,    & ! integration step               [m]     (default=0.1 -> 10 cm)
     t_zero, & ! temperature at the surface     [K]      (default=288.15=t0)
     h         ! station height                 [m]     (default=0)
-  logical, intent(in), optional :: if_normalization , first_derivative_h , first_derivative_z
+  logical, intent(in), optional ::  first_derivative_h , first_derivative_z
   character (len=*) , intent(in), optional  :: fels_type 
   real(dp) :: aggf
   real(dp) :: zmin_, zmax_, dz_ , h_
-  real(dp) :: dA, z , rho , r
+  real(dp) :: dA, z_ , rho , l , z
 
   zmin_ =     0.
   zmax_ = 60000.
@@ -136,7 +137,7 @@ function aggf (psi, zmin, zmax, dz, if_normalization, &
   h_    =     0.
 
   !todo!!!!!!!!!!!
-  dz_=50.01
+  dz_=1.01
 
   if (present(zmin)) zmin_ = zmin
   if (present(zmax)) zmax_ = zmax
@@ -144,13 +145,12 @@ function aggf (psi, zmin, zmax, dz, if_normalization, &
   if (present(   h))    h_ = h
 
   
-  dA = 2 * pi * earth%radius**2 * ( 1 - cos (d2r(dble(1.))) )
   aggf = 0.
   do z = zmin_, zmax_, dz_
 
-    r = ( ( earth%radius + z )**2 + (earth%radius + h_)**2 & 
-      - 2.*(earth%radius + h_) *(earth%radius+z)*cos(psi) )**(0.5)
-    rho =  standard_density ( z , t_zero = t_zero , fels_type = fels_type )
+    l = (( earth%radius + z)**2 + (earth%radius + h_)**2 & 
+      - 2.*(earth%radius + h_)*(earth%radius+z)*cos(psi))**(0.5)
+      
 
     ! first derivative (respective to station height)
     ! micro Gal height / km
@@ -175,22 +175,18 @@ function aggf (psi, zmin, zmax, dz, if_normalization, &
 !            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
 !        endif
       else
-        ! aggf GN
-        ! micro Gal / hPa !!!todo
+        ! GN microGal/hPa
         aggf = aggf  &
-          + rho * ( ( (earth%radius + z ) * cos ( psi ) - ( earth%radius + h_) ) / ( r**3 ) ) * dz_
+          + standard_density ( z , t_zero = t_zero , fels_type = fels_type ) &
+          * ((earth%radius +z)*cos(psi) - (earth%radius + h_)) / (l**3)  * dz_
       endif
     endif
   enddo
 
-  aggf = -gravity%constant * dA * aggf * 1e6
 
-  ! if you put the optional parameter \c if_normalization=.false.
-  ! this block will be skipped
-  ! by default the normalization is applied according to \cite Merriam92
-  if ( (.not.present(if_normalization)) .or. (if_normalization)) then
-    aggf= psi * aggf * 1e5   ! ??? todo / atmosphere%pressure%standard
-  endif
+  !aggf = aggf * green_normalization("m", psi = psi) / earth%radius**2 *1e10
+  aggf = - aggf * gravity%constant*1e10 / atmosphere%pressure%standard *   1e5 * psi * earth%radius**2 * 2 *pi * (1-cos(d2r(dble(1.))))
+
 end function
 
 ! ==============================================================================

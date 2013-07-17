@@ -10,16 +10,18 @@ program example_aggf
   call standard1976 ('standard1976.dat')
   call compare_fels_profiles ('compare_fels_profiles.dat')
   call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
-  call green_newtonian_compute(["green_newtonian_olsson.dat","green_newtonian_spotl.dat","green_newtonian.dat"])
-!  call admit_niebauer()
-!  call aggf_thin_layer ("tmp")
+  call green_newtonian_compute( &
+    ["green_newtonian_olsson.dat","green_newtonian_spotl.dat","green_newtonian.dat"])
+  call admit_niebauer("admit_niebauer.dat")
+  call aggf_thin_layer ("tmp")
+
+  call compute_tabulated_green_functions ('../dat/rajner_green.dat')
 
 !  call aggf_resp_hmax ()
 !  call aggf_resp_dz ()
 !  call aggf_resp_t ()
 !  call aggf_resp_h ()
 !  call aggfdt_resp_dt ()
-!  call compute_tabulated_green_functions ()
 !  call aggf_resp_fels_profiles ()
 !  call compare_tabulated_green_functions ()
 
@@ -139,7 +141,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine compute_tabulated_green_functions ()
+subroutine compute_tabulated_green_functions (filename)
   use mod_constants, only:dp
   use mod_aggf , only: aggf
   use mod_green, only: green, read_green
@@ -147,6 +149,7 @@ subroutine compute_tabulated_green_functions ()
   integer :: i , file_unit
   real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
   real(dp), dimension(:,:), allocatable :: table , results 
+  character(*), intent(in) :: filename
 
   ! Get the spherical distances from Merriam92
   allocate(green(1))
@@ -156,9 +159,10 @@ subroutine compute_tabulated_green_functions ()
 
   open (                                 & 
     newunit = file_unit,                 & 
-    file    = '../dat/rajner_green.dat', & 
+    file    = filename, & 
     action  = 'write'                    & 
     )
+  !todo
   file_unit=6
 
   ! print header
@@ -172,13 +176,16 @@ subroutine compute_tabulated_green_functions ()
     'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
 
 
-  do i= 1, 6 ! size(green(1)%distance)
+  do i= 1, 16 ! size(green(1)%distance)
     !    call compute_aggfdt ( table(i,1) , val_aggfdt )
     !    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-    write(file_unit, *) , green(1)%data(i), green(1)%distance(i), aggf(d2r(green(1)%distance(i)))
+    write(file_unit, '(3f15.6)'),              & 
+      green(1)%data(i),               & 
+      green(1)%distance(i),           & 
+      aggf(d2r(green(1)%distance(i)))
   enddo
   close(file_unit)
 end subroutine
@@ -563,12 +570,14 @@ subroutine aggf_thin_layer (filename)
   use, intrinsic:: iso_fortran_env
   use mod_constants, only : dp , pi
   use mod_aggf, only : read_tabulated_green, GN_thin_layer
-  use mod_utilities, only: d2r
+  use mod_utilities, only: d2r, file_exists
   use mod_green
 
   integer :: file_unit , i
   real(dp) , dimension (:,:), allocatable :: table
   character(*) , intent (in) , optional:: filename
+
+  if (file_exists(filename)) return
 
   allocate (green(1))
   green(1)%name="merriam"
@@ -584,19 +593,24 @@ subroutine aggf_thin_layer (filename)
     file_unit = output_unit
   endif
   do i = 1 , size (green(1)%distance)
-    write(file_unit,*) green(1)%distance(i) ,green(1)%data(i) ,  GN_thin_layer (d2r(green(1)%distance(i)))
+    write(file_unit,*) green(1)%distance(i) ,green(1)%data(i), &
+      GN_thin_layer (d2r(green(1)%distance(i)))
   enddo
 end subroutine
 
-subroutine admit_niebauer()
+subroutine admit_niebauer(filename)
   use mod_constants
   use mod_utilities
   real(dp) :: a
   real(dp) :: theta
   real(dp) :: b , f
+  character(*), intent(in) :: filename
   integer::iun
 
-  open (newunit=iun, file="admit_niebauer.dat", action = 'write')
+  if (file_exists(filename)) return
+  print * , "admit_niebauer ---> ", filename
+
+  open (newunit=iun, file=filename, action = 'write')
 
   f=earth%radius/9500
   do theta=0.5 , 180, 0.01

@@ -21,8 +21,8 @@ function standard_density ( height , t_zero ,fels_type )
   real(dp) :: standard_density 
   real(dp) :: p ,t
 
-  t = standard_temperature (height , t_zero = t_zero, fels_type=fels_type)
-  p = standard_pressure(height , t_zero = t_zero, fels_type=fels_type)
+  t = standard_temperature (height, t_zero = t_zero, fels_type=fels_type)
+  p = standard_pressure    (height, t_zero = t_zero, fels_type=fels_type)
   standard_density = p  / ( R_air * t )
 end function
 ! =============================================================================

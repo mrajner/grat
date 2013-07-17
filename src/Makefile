@@ -166,15 +166,15 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-mod_atmosphere.o mod_utilities.o: mod_constants.o
-mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
-mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
-mod_date.o:mod_data.o
-mod_mjd.o: mod_constants.o
-mod_polygon.o:mod_printing.o mod_cmdline.o
+# mod_atmosphere.o mod_utilities.o: mod_constants.o
+# mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
+# mod_data.o: mod_mjd.o mod_aggf.o mod_polygon.o
+# mod_date.o:mod_data.o
+# mod_mjd.o: mod_constants.o
+# mod_polygon.o:mod_printing.o mod_cmdline.o
 
 ../examples/example_aggf: mod_green.o $(OBJS)
 
