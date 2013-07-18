@@ -15,7 +15,7 @@ program example_aggf
   call admit_niebauer("admit_niebauer.dat")
   call aggf_thin_layer ("tmp")
 
-  call compute_tabulated_green_functions ('../dat/rajner_green.dat')
+  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat')
 
 !  call aggf_resp_hmax ()
 !  call aggf_resp_dz ()
@@ -633,6 +633,9 @@ subroutine green_newtonian_compute(filenames)
   character(12) , allocatable , dimension(:) :: column_name
   character(*) ,  optional :: filenames(3)
   character(20) :: method
+  character(40) :: prefix
+
+  prefix="/home/mrajner/src/grat/examples/"
 
   iun = 6
 
@@ -647,9 +650,9 @@ subroutine green_newtonian_compute(filenames)
   write(column_name, '(f0.0)' ) (h(i),i=1,11)
 
   do k =1,3
-    if (file_exists(trim(filenames(k)))) return
-    print *, "green_newtonian_compute ---> " , trim(filenames(k))
-    open (newunit=iun, file=filenames(k), action = 'write')
+    if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
+    print *, "green_newtonian_compute ---> " , trim(prefix)//trim(filenames(k))
+    open (newunit=iun, file=trim(prefix)//filenames(k), action = 'write')
 
     method = filenames(k)(17:index(filenames(k),".")-1)
     write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)

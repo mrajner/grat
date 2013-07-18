@@ -37,7 +37,7 @@ function standard_gravity (height)
   real(dp), intent(in)  :: height
   real(dp) :: standard_gravity
 
-  standard_gravity = earth%gravity%mean * ( earth%radius / ( earth%radius + height))**2
+  standard_gravity = earth%gravity%mean * (earth%radius/(earth%radius + height))**2
 end function
 
 
@@ -53,6 +53,7 @@ end function
 function standard_pressure ( &
     height,  &
     p_zero , t_zero , h_zero,  method ,fels_type , inverted)
+
   use mod_constants, only: dp, earth, atmosphere, R_air
   implicit none
   real(dp) , intent(in)            :: height
@@ -204,12 +205,18 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-19
 ! =============================================================================
-real(dp) function geop2geom (geopotential_height)
+real(dp) function geop2geom (geopotential_height, inverse)
   use mod_constants, only: dp, earth
   real (dp) :: geopotential_height
+  logical, intent(in), optional:: inverse
 
+  if (present(inverse) .and. inverse) then
   geop2geom = geopotential_height * &
-    (earth%radius / (earth%radius + geopotential_height))
+    (earth%radius / (earth%radius + geopotential_height))**2
+  else
+  geop2geom = geopotential_height / &
+    (earth%radius / (earth%radius + geopotential_height))**2
+  endif
 end function
 
 end module

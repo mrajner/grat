@@ -116,7 +116,7 @@ function aggf (psi, zmin, zmax, dz, &
   use mod_constants,  only: dp, pi, earth, gravity, atmosphere
   use mod_utilities, only: d2r
   use mod_atmosphere, only: standard_density
-  use mod_green, only: green_normalization
+  use mod_green, only : green_normalization
 
   real(dp), intent(in)          :: psi       ! spherical distance from site   [degree]
   real(dp), intent(in),optional :: & 
@@ -133,11 +133,11 @@ function aggf (psi, zmin, zmax, dz, &
 
   zmin_ =     0.
   zmax_ = 60000.
-  dz_   =     0.01
+  dz_   =     0.41
   h_    =     0.
 
   !todo!!!!!!!!!!!
-  dz_=1.01
+  dz_=.4
 
   if (present(zmin)) zmin_ = zmin
   if (present(zmax)) zmax_ = zmax
@@ -155,7 +155,6 @@ function aggf (psi, zmin, zmax, dz, &
     ! first derivative (respective to station height)
     ! micro Gal height / km
     if ( present ( first_derivative_h) .and. first_derivative_h ) then
-
 !      ! see equation 22, 23 in \cite Huang05
 !      !J_aux =  (( earth%radius + z )**2)*(1.-3.*((cos(psir))**2)) -2.*(earth%radius + h_station )**2  &
 !      !  + 4.*(earth%radius+h_station)*(earth%radius+z)*cos(psir)
@@ -183,10 +182,7 @@ function aggf (psi, zmin, zmax, dz, &
     endif
   enddo
 
-
-  !aggf = aggf * green_normalization("m", psi = psi) / earth%radius**2 *1e10
-  aggf = - aggf * gravity%constant*1e10 / atmosphere%pressure%standard *   1e5 * psi * earth%radius**2 * 2 *pi * (1-cos(d2r(dble(1.))))
-
+  aggf = -aggf /atmosphere%pressure%standard * green_normalization("m", psi = psi) 
 end function
 
 ! ==============================================================================

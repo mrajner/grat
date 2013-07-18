@@ -1,10 +1,20 @@
 program check_transfer
 !  use mod_aggf, only:standard_pressure, standard_temperature
-  use mod_constants, only:dp, pi
-  use mod_green
-  use mod_utilities
+  use mod_constants
+!  use mod_green
+  use mod_utilities ,only: linspace
+  use mod_atmosphere
+  implicit none
 
-!  do i = 1 , size(h)
+  real (dp), allocatable, dimension(:) :: heights
+  integer :: i, nheight
+
+
+  nheight=25
+  allocate(heights(nheight))
+  heights = linspace(real(0,dp),real(60000,dp),nheight)
+
+  do i = 1 , nheight
 
 !  if (i.gt.1) call standard_pressure(h(i), pressure3 , h_zero = h(i-1) ,p_zero = pressure )
 !  if (i.gt.1) call standard_pressure(h(i), pressure4 , h_zero = h(i-1) ,p_zero = pressure2 )
@@ -32,6 +42,10 @@ program check_transfer
 
 !!  call transfer_pressure ( x , x+x2, pressure , pressure2)
 !!  print * ,x+x2 , pressure2 , temperature
+print '(10f12.4)' , heights(i), geop2geom(heights(i), .true.), &
+  standard_pressure(heights(i)), &
+  standard_pressure(heights(i),method="berg") 
+enddo
 
 
 end program

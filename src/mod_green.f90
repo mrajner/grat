@@ -214,12 +214,12 @@ function green_normalization(method, psi)
 
   if (method.eq."f2m") then
     green_normalization = &
-      ! -->" * 1e8 * 1e5 * 1e-18 n * 1e2" 
+      ! -->" * 1e8 * 1e5 * 1e-18  * 1e2" 
     1e-3 &
       / earth%gravity%mean  * earth%radius * 2 * pi * (1.- cos(d2r(dble(1.))))
   else if (method.eq."m") then
     green_normalization =  &
-  1./earth%mass *  psi *1e15 * earth%radius**4 * 2 * pi * (1.- cos(d2r(dble(1.))))
+    gravity%constant  *  psi *1e15 * earth%radius**2 * 2 * pi * (1.- cos(d2r(dble(1.))))
   endif
 end function
 
@@ -732,7 +732,8 @@ function green_newtonian (psi, h, z, method)
     endif
   else
     green_newtonian =                                   & 
-      ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
+      1./ earth%gravity%mean &
+      *((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
       / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
       -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) 
 
