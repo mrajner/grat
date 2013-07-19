@@ -176,13 +176,13 @@ function aggf (psi, zmin, zmax, dz, &
       else
         ! GN microGal/hPa
         aggf = aggf  &
-          + standard_density ( z , t_zero = t_zero , fels_type = fels_type ) &
+          + standard_density ( z, t_zero = t_zero , fels_type = fels_type ) &
           * ((earth%radius +z)*cos(psi) - (earth%radius + h_)) / (l**3)  * dz_
       endif
     endif
   enddo
 
-  aggf = -aggf /atmosphere%pressure%standard * green_normalization("m", psi = psi) 
+  aggf = -aggf /atmosphere%pressure%standard *gravity%constant * green_normalization("m", psi = psi) 
 end function
 
 ! ==============================================================================

@@ -44,7 +44,8 @@ program check_transfer
 !!  print * ,x+x2 , pressure2 , temperature
 print '(10f12.4)' , heights(i), geop2geom(heights(i), .true.), &
   standard_pressure(heights(i)), &
-  standard_pressure(heights(i),method="berg") 
+  standard_pressure(heights(i),method="berg") , &
+  standard_density(heights(i))
 enddo
 
 

@@ -205,6 +205,8 @@ subroutine read_green (green)
 
 end subroutine
 
+! =============================================================================
+! =============================================================================
 function green_normalization(method, psi)
   use mod_constants, only:pi, earth, gravity
   use mod_utilities, only: d2r
@@ -214,12 +216,14 @@ function green_normalization(method, psi)
 
   if (method.eq."f2m") then
     green_normalization = &
-      ! -->" * 1e8 * 1e5 * 1e-18  * 1e2" 
-    1e-3 &
+      1e-3 &
       / earth%gravity%mean  * earth%radius * 2 * pi * (1.- cos(d2r(dble(1.))))
-  else if (method.eq."m") then
+  else if (method.eq."m") then ! merriam normalization
     green_normalization =  &
-    gravity%constant  *  psi *1e15 * earth%radius**2 * 2 * pi * (1.- cos(d2r(dble(1.))))
+      psi * 1e15 * earth%radius**2 * 2 * pi * (1.- cos(d2r(dble(1.))))
+  else if (method.eq."f") then ! farrell normalization
+    green_normalization =  &
+      psi * 1e18 * earth%radius
   endif
 end function
 
@@ -402,6 +406,7 @@ subroutine convolve (site , date)
   tot_area_used = 0
 
   result=0
+
   do igreen = 1 , size(green_common)
     do idist = 1 , size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
@@ -417,6 +422,19 @@ subroutine convolve (site , date)
         nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
       endif
 
+
+      ! calculate area using spherical formulae
+      area = spher_area(                        & 
+        d2r(green_common(igreen)%start(idist)), & 
+        d2r(green_common(igreen)%stop(idist)),  & 
+        d2r(dazimuth),                          & 
+        radius=earth%radius,                    & 
+        alternative_method=.true.)
+
+      ! normalization according to Merriam (1992) 
+      normalize= 1e8 / &
+        (green_normalization("m", psi = d2r(green_common(igreen)%distance(idist))))
+
       allocate(azimuths(nazimuth))
       azimuths = [ (info(igreen)%azimuth%start + (i-1) * dazimuth , i =1, nazimuth)] 
 
@@ -424,6 +442,8 @@ subroutine convolve (site , date)
         npoints = npoints + 1
         azimuth = (iazimuth - 1) * dazimuth
         azimuth = azimuths(iazimuth)
+
+        tot_area=tot_area+ area
 
         ! get lat and lon of point
         call spher_trig &
@@ -438,17 +458,6 @@ subroutine convolve (site , date)
             endif
           enddo
         endif
-
-
-        ! calculate area using spherical formulae
-        area = spher_area(                        & 
-          d2r(green_common(igreen)%start(idist)), & 
-          d2r(green_common(igreen)%stop(idist)),  & 
-          d2r(dazimuth),                          & 
-          radius=earth%radius,                    & 
-          alternative_method=.true.)
-
-        tot_area=tot_area+ area
 
         ! get LS
         if (ind%model%ls.ne.0) then
@@ -469,14 +478,6 @@ subroutine convolve (site , date)
           .or.ind%green%gegdt.ne.0 & 
           ) then
 
-
-          ! normalization according to Merriam (1992) 
-          normalize= 1./ &
-            (2.*pi*(1.-cos(d2r(dble(1.)))) *            & 
-            d2r(green_common(igreen)%distance(idist)) * & 
-            1.e5 *                                      & 
-            earth%radius**2 *                           & 
-            100) ! Pa into hPa
 
           ! get SP (and RP if given)
           if (ind%model%sp.ne.0) then
@@ -717,33 +718,32 @@ function green_newtonian (psi, h, z, method)
     .and. (method.eq."spotl" .or. method.eq."olsson")) then
     if(method.eq."spotl") then
       eps = h_/ earth%radius
-      green_newtonian =                                   & 
-        1 &
-        /earth%radius**2                                  & 
-        *(eps + 2. * (sin(psi/2.))**2 )                     & 
-        /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.))
+      green_newtonian =                                      & 
+        1. /earth%radius**2                                  & 
+        *(eps + 2. * (sin(psi/2.))**2 )                      & 
+        /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) & 
+        * gravity%constant                                   & 
+        * green_normalization("f",psi=psi)
+      return
     else if (method.eq."olsson") then
       t = earth%radius/(earth%radius +h_)
-
-      green_newtonian = &
-        1 / earth%radius**2 * t**2 * &
-        (1. - t * cos (psi) ) / &
-        ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) 
+      green_newtonian =                      & 
+        1 / earth%radius**2 * t**2 *         & 
+        (1. - t * cos (psi) ) /              & 
+        ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) & 
+        * gravity%constant                   & 
+        * green_normalization("f",psi=psi)
+      return
     endif
   else
     green_newtonian =                                   & 
-      1./ earth%gravity%mean &
-      *((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
+      ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
       / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
       -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) 
 
-    green_newtonian = green_newtonian * green_normalization("m", psi=psi)
+    green_newtonian = green_newtonian &
+      * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
     return
   endif
-
-  green_newtonian =              & 
-    green_newtonian              & 
-    * gravity%constant           & 
-    * psi * 1.e18 * earth%radius
 end function
 end module
