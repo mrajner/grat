@@ -89,7 +89,7 @@ program grat
 
   if (size(date).gt.0) then
     if(output%header) then
-      write (output%unit , '(a15,x,a14)' , advance = "no" ) "mjd" , "date"
+      write (output%unit , '(a12,x,a14)' , advance = "no" ) "mjd" , "date"
     endif
     start = 1
   endif
@@ -194,5 +194,4 @@ program grat
   endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
-
 end program 

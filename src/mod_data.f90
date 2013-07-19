@@ -98,10 +98,13 @@ subroutine parse_model (cmd_line_entry)
       if (model(i)%dataname.ne."ascii") call read_netCDF(model(i))
     else if (is_numeric(model(i)%name)) then
       model(i)%if_constant_value=.true.
+      write (log%unit , form%i3) , &
+      trim (dataname(model(i)%dataname)), &
+        "("//trim(model(i)%dataname)//")"
       read (model(i)%name , * ) model(i)%constant_value
       write(log%unit, form%i3), 'constant value was set: ' , model(i)%constant_value
       if (trim(model(i)%datanames(1)).ne."") then
-         model(i)%constant_value = variable_modifer (model(i)%constant_value, model(i)%datanames(1))
+        model(i)%constant_value = variable_modifer (model(i)%constant_value, model(i)%datanames(1))
       endif
       write(log%unit, form%i3), 'constant value was re-set: ' , model(i)%constant_value
       model(i)%lonrange=[  0,360]
@@ -119,12 +122,12 @@ function variable_modifer(val, modifer)
   real(dp), intent(in) :: val
   character(*), intent(in) :: modifer
 
-select case (modifer)
+  select case (modifer)
   case ("g2h")
-  variable_modifer=geop2geom(val)
-case default
-  variable_modifer=val
-end select
+    variable_modifer=geop2geom(val)
+  case default
+    variable_modifer=val
+  end select
 end function
 
 ! =============================================================================
@@ -566,7 +569,7 @@ function dataname(abbreviation)
   dataname="unknown"
   if (abbreviation.eq."LS") dataname = "Land-sea mask"
   if (abbreviation.eq."SP") dataname = "Surface pressure"
-  if (abbreviation.eq."ST") dataname = "Surface temperature"
+  if (abbreviation.eq."T") dataname = "Surface temperature"
   if (abbreviation.eq."RSP") dataname = "Reference surface pressure"
   if (abbreviation.eq."GN") dataname = "Green newtonian"
 end function
@@ -658,9 +661,9 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
       endif
       write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "ocean[%]",  "mean_val"
     endif
-      if (present(date)) then
-        write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
-      endif
+    if (present(date)) then
+      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
+    endif
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valoceanarea/ ocean_area
   endif
 end subroutine
@@ -688,7 +691,7 @@ subroutine total_mass (model, date)
     do ilon =1,size(model%lon)
       totalarea = totalarea + cos(d2r(model%lat(ilat)))
       call get_value(model, model%lat(ilat), model%lon(ilon), val)
-     valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+      valarea    = valarea + val * cos(d2r(model%lat(ilat)))
     enddo
   enddo
 

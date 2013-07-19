@@ -7,13 +7,13 @@
 program example_aggf
   implicit none
 
-  call standard1976 ('standard1976.dat')
-  call compare_fels_profiles ('compare_fels_profiles.dat')
+  call standard1976 ('/home/mrajner/src/grat/examples/standard1976.dat')
+  call compare_fels_profiles ('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
   call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
   call green_newtonian_compute( &
     ["green_newtonian_olsson.dat","green_newtonian_spotl.dat","green_newtonian.dat"])
-  call admit_niebauer("admit_niebauer.dat")
-  call aggf_thin_layer ("tmp")
+  call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
+  call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat')
 
@@ -163,7 +163,7 @@ subroutine compute_tabulated_green_functions (filename)
     action  = 'write'                    & 
     )
   !todo
-  file_unit=6
+!  file_unit=6
 
   ! print header
   write ( file_unit,*) '# This is set of AGGF computed using module ', & 
@@ -176,16 +176,16 @@ subroutine compute_tabulated_green_functions (filename)
     'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
 
 
-  do i= 1, 16 ! size(green(1)%distance)
+  do i= 1, size(green(1)%distance)
     !    call compute_aggfdt ( table(i,1) , val_aggfdt )
     !    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
     write(file_unit, '(3f15.6)'),              & 
-      green(1)%data(i),               & 
       green(1)%distance(i),           & 
-      aggf(d2r(green(1)%distance(i)))
+      aggf(d2r(green(1)%distance(i))), &
+      green(1)%data(i)                
   enddo
   close(file_unit)
 end subroutine

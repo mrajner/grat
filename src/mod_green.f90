@@ -614,7 +614,7 @@ subroutine convolve (site , date)
             )                                            & 
             ) then
             write(moreverbose(ind%moreverbose%p)%unit ,                                     & 
-              '(a8,6en12.2,2en12.2,<size(result)>en12.2,a)', advance = 'no'),                & 
+              '(a8,6en12.2,2en12.2,<size(result)>en13.3,a)', advance = 'no'),                & 
               site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, & 
               r2d(lat),r2d(lon), area, tot_area, result
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
@@ -651,7 +651,7 @@ subroutine convolve (site , date)
   if (present(date)) then
     write (output%unit, '(f12.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
   endif
-  write (output%unit, '(a8,3f15.4,10en15.4)' ), site%name, site%lat, site%lon, site%height, result
+  write (output%unit, '(a8,3f15.4,10en15.5)' ), site%name, site%lat, site%lon, site%height, result
 
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then
