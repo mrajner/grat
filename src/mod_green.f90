@@ -129,8 +129,9 @@ subroutine read_green (green)
       (green%dataname.eq."GNdz") then
       green%column=[1,5]
     endif
-  else if (green%name.eq."rajner" .or. &
-  green%name.eq."/home/mrajner/src/grat/dat/rajner_green.dat") then
+  else if (green%name.eq."rajner" & 
+!    .or. green%name.eq."/home/mrajner/src/grat/dat/rajner_green.dat"
+) then
     green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]

@@ -8,8 +8,8 @@
 #   ./atmp
 # ll: ../bin/barometric_formula rrrx
 
-# rrrx:
-#   ../bin/barometric_formula
+rrrx:
+	../bin/barometric_formula
 		 
 # i:value_check
 #   value_check \

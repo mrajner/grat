@@ -16,13 +16,11 @@ function standard_density ( height , t_zero ,fels_type )
   real(dp) , intent(in)  ::  height 
   real(dp) , intent(in), optional  :: t_zero 
   character(len = 22) , optional :: fels_type
-  ! surface temperature is set to this value, 
-  ! otherwise the T0 for standard atmosphere is used
   real(dp) :: standard_density 
   real(dp) :: p ,t
 
   t = standard_temperature (height, t_zero = t_zero, fels_type=fels_type)
-  p = standard_pressure    (height, t_zero = t_zero, fels_type=fels_type)
+  p = standard_pressure    (height, t_zero = t_zero)
   standard_density = p  / ( R_air * t )
 end function
 ! =============================================================================
@@ -50,15 +48,13 @@ end function
 !!
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
-function standard_pressure ( &
-    height,  &
-    p_zero , t_zero , h_zero,  method ,fels_type , inverted)
+function standard_pressure (height,  &
+    p_zero, t_zero, h_zero, method, inverted)
 
   use mod_constants, only: dp, earth, atmosphere, R_air
   implicit none
   real(dp) , intent(in)            :: height
   real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
-  character(len = 22), intent(in) , optional :: fels_type
   character(*), intent(in) , optional :: method
   logical, intent(in) , optional :: inverted
   real(dp) :: standard_pressure
@@ -95,13 +91,13 @@ function standard_pressure ( &
     endselect
   else
     ! use precise formulae
-    lambda = R_air * sfc_temperature / sfc_gravity
+    lambda =  R_air * sfc_temperature / sfc_gravity
     standard_pressure = sfc_pressure * exp ( - (height -sfc_height) / lambda ) 
   endif 
 
-  if (present(inverted).and.inverted) then
-    standard_pressure = sfc_pressure  / ( exp ( -1000. * (height-sfc_height) / lambda ) )
-  endif
+!  if (present(inverted).and.inverted) then
+!    standard_pressure = sfc_pressure  / ( exp ( -1000. * (height-sfc_height) / lambda ) )
+!  endif
 
 
   !todo incorporate this
@@ -127,6 +123,7 @@ end function
 ! ==============================================================================
 function standard_temperature ( height, t_zero , fels_type )
   use mod_constants, only: dp , earth, atmosphere
+  use mod_printing, only : log
   
   real(dp) , intent(in)  :: height
   real(dp)  :: standard_temperature
@@ -171,7 +168,7 @@ function standard_temperature ( height, t_zero , fels_type )
       d = (/  0.4 ,  1.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
       t = 257.1
     else
-      print * , "unknown fels_type argument: &
+     write(log%unit, *) , "unknown fels_type argument: &
         using US standard atmosphere 1976 instead"
     endif
   endif

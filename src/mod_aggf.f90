@@ -111,11 +111,12 @@ end subroutine
 !! \warning psi in radians h in meter
 ! ==============================================================================
 function aggf (psi, zmin, zmax, dz, &
-    t_zero, h,   first_derivative_h, first_derivative_z, fels_type)
+    t_zero, h,   first_derivative_h, first_derivative_z, fels_type, &
+    standard_pressure_method)
 
-  use mod_constants,  only: dp, pi, earth, gravity, atmosphere
+  use mod_constants,  only: dp, pi, earth, gravity, atmosphere, R_air
   use mod_utilities, only: d2r
-  use mod_atmosphere, only: standard_density
+  use mod_atmosphere !, only: standard_density
   use mod_green, only : green_normalization
 
   real(dp), intent(in)          :: psi       ! spherical distance from site   [degree]
@@ -126,18 +127,15 @@ function aggf (psi, zmin, zmax, dz, &
     t_zero, & ! temperature at the surface     [K]      (default=288.15=t0)
     h         ! station height                 [m]     (default=0)
   logical, intent(in), optional ::  first_derivative_h , first_derivative_z
-  character (len=*) , intent(in), optional  :: fels_type 
+  character (len=*) , intent(in), optional  :: fels_type , standard_pressure_method
   real(dp) :: aggf
   real(dp) :: zmin_, zmax_, dz_ , h_
   real(dp) :: dA, z_ , rho , l , z
 
   zmin_ =     0.
-  zmax_ =    20000.
+  zmax_ =    60000.
   dz_   =     0.1
   h_    =     0.
-
-  !todo!!!!!!!!!!!
-  dz_=.1
 
   if (present(zmin)) zmin_ = zmin
   if (present(zmax)) zmax_ = zmax
@@ -148,7 +146,7 @@ function aggf (psi, zmin, zmax, dz, &
   aggf = 0.
   do z = zmin_, zmax_, dz_
 
-    l = ((earth%radius + z)**2 + (earth%radius + h_)**2 & 
+    l =  ((earth%radius + z)**2 + (earth%radius + h_)**2 & 
       - 2.*(earth%radius + h_)*(earth%radius+z)*cos(psi))**(0.5)
       
 
@@ -164,21 +162,23 @@ function aggf (psi, zmin, zmax, dz, &
 !      J_aux = (2.* (earth%radius ) - 2 * (earth%radius +z )*cos(psir)) / (2. * r)
 !      J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
 !      aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
-    else
+!    else
 !      ! first derivative (respective to column height)
 !      ! according to equation 26 in \cite Huang05
 !      ! micro Gal / hPa / km
-      if (present (first_derivative_z) .and. first_derivative_z) then
+!      if (present (first_derivative_z) .and. first_derivative_z) then
 !        if (z.eq.h_min) then
 !          aggf = aggf  &
 !            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
 !        endif
       else
         ! GN microGal/hPa
-        aggf = aggf  &
-          + standard_density (z, t_zero = t_zero , fels_type = fels_type ) &
-          * ((earth%radius +z)*cos(psi) - (earth%radius + h_)) / (l**3)  * dz_
-      endif
+        aggf = aggf +  &
+!           standard_density (z, t_zero = t_zero , fels_type = fels_type , &
+!         standard_pressure_method = standard_pressure_method ) &
+          standard_pressure(z,method="simple")/ R_air / standard_temperature(z,fels_type="tropical")  &
+          * ((earth%radius +z)*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
+!      endif
     endif
   enddo
 

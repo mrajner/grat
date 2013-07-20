@@ -146,10 +146,14 @@ subroutine compute_tabulated_green_functions (filename)
   use mod_aggf , only: aggf
   use mod_green, only: green, read_green
   use mod_utilities, only: d2r
+  use mod_atmosphere
   integer :: i , file_unit
   real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
   real(dp), dimension(:,:), allocatable :: table , results 
   character(*), intent(in) :: filename
+  real(dp) :: dz , t_zero , z
+  character(100) :: fels_type
+
 
   ! Get the spherical distances from Merriam92
   allocate(green(1))
@@ -175,6 +179,7 @@ subroutine compute_tabulated_green_functions (filename)
     'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
     'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
 
+  dz=0.4
 
   do i= 1, size(green(1)%distance)
     !    call compute_aggfdt ( table(i,1) , val_aggfdt )
@@ -182,9 +187,9 @@ subroutine compute_tabulated_green_functions (filename)
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-    write(file_unit, '(3f15.6)'),              & 
+    write(file_unit, '(13f15.6)'),              & 
       green(1)%distance(i),           & 
-      aggf(d2r(green(1)%distance(i))), &
+      aggf(d2r(green(1)%distance(i)),dz=dz), &
       green(1)%data(i)                
   enddo
   close(file_unit)
