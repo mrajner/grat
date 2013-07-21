@@ -61,13 +61,12 @@ function standard_pressure (height,  &
   real(dp) ::  lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
 
   sfc_temperature = atmosphere%temperature%standard
-  sfc_pressure = atmosphere%pressure%standard
-  sfc_height = 0.
-  sfc_gravity = earth%gravity%mean
+  sfc_pressure    = atmosphere%pressure%standard
+  sfc_height      = 0.
+  sfc_gravity     = earth%gravity%mean
 
   if (present(h_zero)) then
-    sfc_height = h_zero
-    sfc_temperature = standard_temperature (sfc_height)
+    sfc_height      = h_zero
     sfc_temperature = standard_temperature (sfc_height)
     sfc_gravity     = standard_gravity (sfc_height)
   endif
@@ -76,33 +75,28 @@ function standard_pressure (height,  &
   if (present(t_zero)) sfc_temperature = t_zero
 
 
+  alpha = -6.5e-3
   if (present (method)) then
     select case (method)
     case("berg")
       ! use Berg formulae
-      standard_pressure = sfc_pressure *(1-0.0000226 * ( height -sfc_height))**(5.225)
+      standard_pressure = sfc_pressure *(1-0.0000226 * (height -sfc_height))**(5.225)
     case ("simple")
-      alpha = -6.5 
-      standard_pressure = sfc_pressure  &
-        * ( 1 + alpha / sfc_temperature * (height-sfc_height)) &
-        ** ( -sfc_gravity / (R_air * alpha / 1000. ) )
+        standard_pressure = sfc_pressure * exp (- (height -sfc_height) *standard_gravity(height) /standard_temperature(height) / R_air   ) 
     case default
       stop "Method not known"
     endselect
   else
-    ! use precise formulae
-    lambda =  R_air * sfc_temperature / sfc_gravity
-    standard_pressure = sfc_pressure * exp ( - (height -sfc_height) / lambda ) 
+    !http://en.wikipedia.org/wiki/Barometric_formula
+    standard_pressure= sfc_pressure &
+      * (sfc_temperature /(sfc_temperature+alpha*(height-sfc_height))) &
+      **(earth%gravity%mean /R_air/alpha)
   endif 
-
-!  if (present(inverted).and.inverted) then
-!    standard_pressure = sfc_pressure  / ( exp ( -1000. * (height-sfc_height) / lambda ) )
-!  endif
-
 
   !todo incorporate this
   !  Zdunkowski and Bott
   !  p(z) = p0 (T0-gamm z )/T0
+  if (isnan(standard_pressure)) standard_pressure=0
 
 end function
 
@@ -124,7 +118,7 @@ end function
 function standard_temperature ( height, t_zero , fels_type )
   use mod_constants, only: dp , earth, atmosphere
   use mod_printing, only : log
-  
+
   real(dp) , intent(in)  :: height
   real(dp)  :: standard_temperature
   real(dp) , intent(in), optional  :: t_zero
@@ -168,7 +162,7 @@ function standard_temperature ( height, t_zero , fels_type )
       d = (/  0.4 ,  1.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
       t = 257.1
     else
-     write(log%unit, *) , "unknown fels_type argument: &
+      write(log%unit, *) , "unknown fels_type argument: &
         using US standard atmosphere 1976 instead"
     endif
   endif
@@ -208,11 +202,11 @@ real(dp) function geop2geom (geopotential_height, inverse)
   logical, intent(in), optional:: inverse
 
   if (present(inverse) .and. inverse) then
-  geop2geom = geopotential_height * &
-    (earth%radius / (earth%radius + geopotential_height))**2
+    geop2geom = geopotential_height * &
+      (earth%radius / (earth%radius + geopotential_height))**2
   else
-  geop2geom = geopotential_height / &
-    (earth%radius / (earth%radius + geopotential_height))**2
+    geop2geom = geopotential_height / &
+      (earth%radius / (earth%radius + geopotential_height))**2
   endif
 end function
 

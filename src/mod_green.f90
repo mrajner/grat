@@ -94,8 +94,9 @@ subroutine read_green (green)
     .and.  .not. green%name.eq."rajner" )) then
     green%name="merriam"
   endif
-  if (green%name.eq."merriam".or. &
-    green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat") then
+  if (green%name.eq."merriam" &
+!  .or.     green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" & 
+) then
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]

@@ -143,7 +143,7 @@ end subroutine
 ! ============================================================================
 subroutine compute_tabulated_green_functions (filename)
   use mod_constants, only:dp
-  use mod_aggf , only: aggf
+  use mod_aggf , only: aggf, aggfdt
   use mod_green, only: green, read_green
   use mod_utilities, only: d2r
   use mod_atmosphere
@@ -157,8 +157,8 @@ subroutine compute_tabulated_green_functions (filename)
 
   ! Get the spherical distances from Merriam92
   allocate(green(1))
-  green(1)%name="merriam"
-  green(1)%column=[1,2]
+  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  green(1)%column=[1,3]
   call read_green(green(1))
 
   open (                                 & 
@@ -167,7 +167,7 @@ subroutine compute_tabulated_green_functions (filename)
     action  = 'write'                    & 
     )
   !todo
-!  file_unit=6
+  file_unit=6
 
   ! print header
   write ( file_unit,*) '# This is set of AGGF computed using module ', & 
@@ -179,7 +179,6 @@ subroutine compute_tabulated_green_functions (filename)
     'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
     'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
 
-  dz=0.4
 
   do i= 1, size(green(1)%distance)
     !    call compute_aggfdt ( table(i,1) , val_aggfdt )
@@ -188,8 +187,11 @@ subroutine compute_tabulated_green_functions (filename)
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
     write(file_unit, '(13f15.6)'),              & 
-      green(1)%distance(i),           & 
-      aggf(d2r(green(1)%distance(i)),dz=dz), &
+      green(1)%distance(i),               & 
+      aggf(d2r(green(1)%distance(i)),dz=dble(1.)),    & 
+      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
+      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
+      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
       green(1)%data(i)                
   enddo
   close(file_unit)

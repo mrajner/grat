@@ -17,40 +17,25 @@ contains
 !!
 !! optional argument define (-dt;-dt) range
 !! See equation 19 in \cite Huang05
-!! Same simple method is applied for aggf(gn) if \c aggf optional parameter
-!! is set to \c .true. 
-!! \warning Please do not use \c aggf=.true. this option was added only
-!! for testing some numerical routines
 !! \author M. Rajner
 !! \date 2013-03-19
+!! \warning psi in radians
 ! ==============================================================================
-!subroutine compute_aggfdt ( psi , aggfdt , delta_ , aggf )
-!  real(dp) , intent (in) :: psi
-!  real(dp) , intent (in) , optional :: delta_
-!  logical , intent (in) , optional :: aggf
-!  real(dp) , intent (out) :: aggfdt
-!  real(dp) :: deltat , aux , h_
+function aggfdt (psi, deltat, dz)
+  use mod_constants, only: atmosphere, dp
+  real(dp) , intent (in) :: psi
+  real(dp) , intent (in) , optional :: deltat
+  real(dp) , intent (in) , optional :: dz
+  real(dp)  :: aggfdt
+  real(dp) :: deltat_ 
 
-!  deltat = 10. ! Default value
-!  if (present(delta_))  deltat = delta_
-!  if (present(aggf) .and. aggf ) then
-!    h_ = 0.001 ! default if we compute dggfdh using this routine
-!    if (present(delta_))  h_ = deltat
-!    call compute_aggf ( psi , aux , h = + h_ )
-!    aggfdt = aux
-!    call compute_aggf (psi, aux, h= -h_)
-!    aggfdt = aggfdt - aux
-!    aggfdt = aggfdt / ( 2. * h_ )
-!  else
-!    call compute_aggf (psi, aux, &
-!      t_zero = atmosphere%temperature%standard + deltat )
-!   aggfdt = aux
-!    call compute_aggf (psi, aux,&
-!      t_zero = atmosphere%temperature%standard - deltat )
-!    aggfdt = aggfdt - aux
-!    aggfdt = aggfdt / ( 2. * deltat)
-!  endif
-!end subroutine
+  deltat_ = 10. ! Default value
+  if (present(deltat))  deltat_ = deltat
+  aggfdt = ( &
+    + aggf (psi, t_zero = atmosphere%temperature%standard + deltat_, dz=dz ) &
+    - aggf (psi, t_zero = atmosphere%temperature%standard - deltat_, dz=dz )) &
+    / ( 2. * deltat_)
+end function
 
 ! ==============================================================================
 !> Read AGGF
@@ -142,43 +127,43 @@ function aggf (psi, zmin, zmax, dz, &
   if (present(  dz))   dz_ = dz
   if (present(   h))    h_ = h
 
-  
+
   aggf = 0.
   do z = zmin_, zmax_, dz_
 
     l =  ((earth%radius + z)**2 + (earth%radius + h_)**2 & 
       - 2.*(earth%radius + h_)*(earth%radius+z)*cos(psi))**(0.5)
-      
+
 
     ! first derivative (respective to station height)
     ! micro Gal height / km
     if ( present ( first_derivative_h) .and. first_derivative_h ) then
-!      ! see equation 22, 23 in \cite Huang05
-!      !J_aux =  (( earth%radius + z )**2)*(1.-3.*((cos(psir))**2)) -2.*(earth%radius + h_station )**2  &
-!      !  + 4.*(earth%radius+h_station)*(earth%radius+z)*cos(psir)
-!      ! aggf =  aggf -  rho * (  J_aux  /  r**5  ) * dz 
+      !      ! see equation 22, 23 in \cite Huang05
+      !      !J_aux =  (( earth%radius + z )**2)*(1.-3.*((cos(psir))**2)) -2.*(earth%radius + h_station )**2  &
+      !      !  + 4.*(earth%radius+h_station)*(earth%radius+z)*cos(psir)
+      !      ! aggf =  aggf -  rho * (  J_aux  /  r**5  ) * dz 
 
-!      ! direct derivative of equation 20 \cite Huang05      
-!      J_aux = (2.* (earth%radius ) - 2 * (earth%radius +z )*cos(psir)) / (2. * r)
-!      J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
-!      aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
-!    else
-!      ! first derivative (respective to column height)
-!      ! according to equation 26 in \cite Huang05
-!      ! micro Gal / hPa / km
-!      if (present (first_derivative_z) .and. first_derivative_z) then
-!        if (z.eq.h_min) then
-!          aggf = aggf  &
-!            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
-!        endif
-      else
-        ! GN microGal/hPa
-        aggf = aggf +  &
-!           standard_density (z, t_zero = t_zero , fels_type = fels_type , &
-!         standard_pressure_method = standard_pressure_method ) &
-          standard_pressure(z,method="simple")/ R_air / standard_temperature(z,fels_type="tropical")  &
-          * ((earth%radius +z)*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
-!      endif
+      !      ! direct derivative of equation 20 \cite Huang05      
+      !      J_aux = (2.* (earth%radius ) - 2 * (earth%radius +z )*cos(psir)) / (2. * r)
+      !      J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
+      !      aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
+      !    else
+      !      ! first derivative (respective to column height)
+      !      ! according to equation 26 in \cite Huang05
+      !      ! micro Gal / hPa / km
+      !      if (present (first_derivative_z) .and. first_derivative_z) then
+      !        if (z.eq.h_min) then
+      !          aggf = aggf  &
+      !            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
+      !        endif
+    else
+      ! GN microGal/hPa
+      aggf = aggf +  &
+        !           standard_density (z, t_zero = t_zero , fels_type = fels_type , &
+      !         standard_pressure_method = standard_pressure_method ) &
+      standard_pressure(z,method=standard_pressure_method)/ R_air / standard_temperature(z)  &
+        * ((earth%radius +z)*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
+      !      endif
     endif
   enddo
 
