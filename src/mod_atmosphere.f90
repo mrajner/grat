@@ -44,7 +44,6 @@ end function
 !!
 !! See \cite US1976 or  \cite Huang05 for details.
 !! Uses formulae 5 from \cite Huang05.
-!! Simplified method if optional argument if_simplificated = .true.
 !!
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
@@ -58,7 +57,8 @@ function standard_pressure (height,  &
   character(*), intent(in) , optional :: method
   logical, intent(in) , optional :: inverted
   real(dp) :: standard_pressure
-  real(dp) ::  lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
+  real(dp) :: lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
+  real(dp) :: z_, dz_
 
   sfc_temperature = atmosphere%temperature%standard
   sfc_pressure    = atmosphere%pressure%standard
@@ -83,6 +83,14 @@ function standard_pressure (height,  &
       standard_pressure = sfc_pressure *(1-0.0000226 * (height -sfc_height))**(5.225)
     case ("simple")
         standard_pressure = sfc_pressure * exp (- (height -sfc_height) *standard_gravity(height) /standard_temperature(height) / R_air   ) 
+    case ("full")
+      standard_pressure=0.
+      dz_ = 0.1
+      do z_=0, height, dz_
+        standard_pressure = standard_pressure &
+          + standard_gravity(z_)/(R_air * standard_temperature(z_)) *dz_
+      enddo
+      standard_pressure=atmosphere%pressure%standard * exp(-standard_pressure)
     case default
       stop "Method not known"
     endselect

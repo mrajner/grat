@@ -40,11 +40,12 @@ program check_transfer
     !  call standard_pressure(x2, pressure2, p_zero = pressure, t_zero= temperature, if_simplificated=.true.)
     !  print * ,x+x2 , pressure2 , temperature
 
-    if (i.eq.1) print '(10a18)' , "h", "--", "berg", "simple" 
+    if (i.eq.1) print '(10a18)' , "h", "--", "berg", "simple" , "full"
     print '(10f18.9)' , heights(i),  &
       standard_pressure(heights(i)), &
       standard_pressure(heights(i),method="berg") , &
-      standard_pressure(heights(i),method="simple") 
+      standard_pressure(heights(i),method="simple"), & 
+      standard_pressure(heights(i),method="full") 
   enddo
 
 
