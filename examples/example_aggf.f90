@@ -188,9 +188,9 @@ subroutine compute_tabulated_green_functions (filename)
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
     write(file_unit, '(13f15.6)'),              & 
       green(1)%distance(i),               & 
-      aggf(d2r(green(1)%distance(i)),standard_pressure_method="full"),    & 
       aggf(d2r(green(1)%distance(i)),standard_pressure_method="simple"),    & 
       aggf(d2r(green(1)%distance(i))),    & 
+      aggf(d2r(green(1)%distance(i)),standard_pressure_method="full", dz=dble(10.)),    & 
 !      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
 !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
 !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &

@@ -7,6 +7,5 @@ example_aggf: example_aggf.f90 ../src/mod_aggf.o ../src/mod_green.o
 	make mod_green.o -C ../src/
 	make ../examples/example_aggf -C ../src/
 
-
 run:
 	./example_aggf

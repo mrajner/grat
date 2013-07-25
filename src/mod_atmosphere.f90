@@ -48,7 +48,7 @@ end function
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
 function standard_pressure (height,  &
-    p_zero, t_zero, h_zero, method, inverted)
+    p_zero, t_zero, h_zero, method, inverted, dz)
 
   use mod_constants, only: dp, earth, atmosphere, R_air
   implicit none
@@ -56,6 +56,7 @@ function standard_pressure (height,  &
   real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
   character(*), intent(in) , optional :: method
   logical, intent(in) , optional :: inverted
+  real(dp), intent(in) , optional :: dz
   real(dp) :: standard_pressure
   real(dp) :: lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
   real(dp) :: z_, dz_
@@ -79,10 +80,9 @@ function standard_pressure (height,  &
   if (present (method)) then
     select case (method)
     case("berg")
-      ! use Berg formulae
       standard_pressure = sfc_pressure *(1-0.0000226 * (height -sfc_height))**(5.225)
     case ("simple")
-        standard_pressure = sfc_pressure * exp (- (height -sfc_height) *standard_gravity(height) /standard_temperature(height) / R_air   ) 
+      standard_pressure = sfc_pressure * exp (- (height -sfc_height) *standard_gravity(height) /standard_temperature(height) / R_air   ) 
     case ("full")
       standard_pressure=0.
       dz_ = 0.1

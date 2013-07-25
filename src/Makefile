@@ -7,9 +7,9 @@
 #   $(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
 #   ./atmp
 
-ll: ../bin/barometric_formula rrrx
-rrrx:
-	../bin/barometric_formula
+# ll: ../bin/barometric_formula rrrx
+# rrrx:
+#   ../bin/barometric_formula
 		 
 # i:value_check
 #   value_check \

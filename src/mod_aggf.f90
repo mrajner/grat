@@ -106,11 +106,11 @@ function aggf (psi, zmin, zmax, dz, &
 
   real(dp), intent(in)          :: psi       ! spherical distance from site   [degree]
   real(dp), intent(in),optional :: & 
-    zmin ,  & ! minimum height, starting point [m]     (default=0)
-    zmax ,  & ! maximum height. eding point    [m]     (default=60000)
-    dz ,    & ! integration step               [m]     (default=0.1 -> 10 cm)
-    t_zero, & ! temperature at the surface     [K]      (default=288.15=t0)
-    h         ! station height                 [m]     (default=0)
+    zmin ,  & ! minimum height, starting point [m]     (default = 0)
+    zmax ,  & ! maximum height, ending point    [m]     (default = 60000)
+    dz ,    & ! integration step               [m]     (default = 0.1 -> 10 cm)
+    t_zero, & ! temperature at the surface     [K]     (default = 288.15=t0)
+    h         ! station height                 [m]     (default = 0)
   logical, intent(in), optional ::  first_derivative_h , first_derivative_z
   character (len=*) , intent(in), optional  :: fels_type , standard_pressure_method
   real(dp) :: aggf
@@ -161,7 +161,7 @@ function aggf (psi, zmin, zmax, dz, &
       aggf = aggf +  &
         !           standard_density (z, t_zero = t_zero , fels_type = fels_type , &
       !         standard_pressure_method = standard_pressure_method ) &
-      standard_pressure(z,method=standard_pressure_method)/ R_air / standard_temperature(z)  &
+      standard_pressure(z,method=standard_pressure_method,dz=dz)/ R_air / standard_temperature(z)  &
         * ((earth%radius +z)*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
       !      endif
     endif
