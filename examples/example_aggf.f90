@@ -18,11 +18,12 @@ program example_aggf
   call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "simple")
+  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_s.dat', "simple")
 
   ! run only on server
-  if (host.eq."grat") then
+!  if (host.eq."grat") then
     call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat', "full")
-  endif
+!  endif
 
   !  call aggf_resp_hmax ()
   !  call aggf_resp_dz ()
