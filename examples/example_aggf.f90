@@ -15,7 +15,8 @@ program example_aggf
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
   call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
-  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat')
+  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "simple")
+  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat', "full")
 
 !  call aggf_resp_hmax ()
 !  call aggf_resp_dz ()
@@ -141,7 +142,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine compute_tabulated_green_functions (filename)
+subroutine compute_tabulated_green_functions (filename, method)
   use mod_constants, only:dp
   use mod_aggf , only: aggf, aggfdt
   use mod_green, only: green, read_green
@@ -153,9 +154,10 @@ subroutine compute_tabulated_green_functions (filename)
   character(*), intent(in) :: filename
   real(dp) :: dz , t_zero , z
   character(100) :: fels_type
-
+  character(*) :: method
 
   ! Get the spherical distances from Merriam92
+  if(allocated(green)) deallocate(green)
   allocate(green(1))
   green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
   green(1)%column=[1,2]
@@ -167,7 +169,7 @@ subroutine compute_tabulated_green_functions (filename)
     action  = 'write'                    & 
     )
   !todo
-  file_unit=6
+  !  file_unit=6
 
   ! print header
   write ( file_unit,*) '# This is set of AGGF computed using module ', & 
@@ -186,15 +188,20 @@ subroutine compute_tabulated_green_functions (filename)
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-    write(file_unit, '(13f15.6)'),              & 
-      green(1)%distance(i),               & 
-      aggf(d2r(green(1)%distance(i)),standard_pressure_method="simple"),    & 
-      aggf(d2r(green(1)%distance(i))),    & 
-      aggf(d2r(green(1)%distance(i)),standard_pressure_method="full", dz=dble(10.)),    & 
-!      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
-!      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
-!      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
-      green(1)%data(i)                
+    if (method.eq."full") then
+      write(file_unit, '(13f15.6)'),              & 
+        green(1)%distance(i),               & 
+        aggf(d2r(green(1)%distance(i)),standard_pressure_method="full")
+    else if (method.eq."simple") then
+      write(file_unit, '(13f15.6)'),              & 
+        green(1)%distance(i),               & 
+        aggf(d2r(green(1)%distance(i)),standard_pressure_method="simple")
+    endif
+    !      aggf(d2r(green(1)%distance(i))),    & 
+    !      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
+    !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
+    !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
+    !      green(1)%data(i)                
   enddo
   close(file_unit)
 end subroutine
