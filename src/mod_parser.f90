@@ -220,6 +220,7 @@ end function
 ! =============================================================================
 subroutine parse_moreverbose (cmd_line_entry)
   use mod_cmdline
+  use mod_utilities, only: file_exists
   type (cmd_line_arg)  :: cmd_line_entry
   integer :: i,j
 
@@ -245,6 +246,13 @@ subroutine parse_moreverbose (cmd_line_entry)
       "<-", dataname(moreverbose(i)%dataname)
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
+    endif
+    if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
+      moreverbose(i)%noclobber=.true.
+      if (file_exists(moreverbose(i)%name)) then
+        write(log%unit,*) "I will not overwrite with -L : nc (noclobber) ... sorry"
+        stop
+      endif
     endif
   enddo
 end subroutine
