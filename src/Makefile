@@ -178,6 +178,7 @@ mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o
 mod_date.o:mod_data.o
 mod_mjd.o: mod_constants.o
 mod_polygon.o:mod_printing.o mod_cmdline.o
+mod_printing.o: mod_cmdline.o
 
 ../examples/example_aggf: mod_green.o $(OBJS)
 
