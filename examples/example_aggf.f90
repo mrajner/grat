@@ -33,11 +33,59 @@ program example_aggf
   !  call aggf_resp_fels_profiles ()
 
 
+  call mass_vs_height('/home/mrajner/src/grat/examples/mass_vs_height.dat')
 
 
 
 contains 
+! =============================================================================
+!> Mass of atmosphere respect to height
+! =============================================================================
+subroutine mass_vs_height (filename)
+  use, intrinsic:: iso_fortran_env
+  use mod_utilities, only: file_exists
+  use mod_constants, only : dp,pi,earth
+  use mod_atmosphere
+  character(*) , intent (in) , optional:: filename
+  real(dp) :: max_height,dh, percent
+  real(dp) , allocatable, dimension(:):: mass, mass2, height
+  integer::i,j,file_unit
 
+  if (present (filename)) then
+    if (file_exists(filename)) return
+    open ( &
+      newunit = file_unit, & 
+      file    = filename,  & 
+      action  = 'write'    & 
+      )
+  else
+    file_unit = output_unit
+  endif
+  write(*,*), "mass_vs_height ---> ",filename
+
+  max_height=60000.
+  dh=0.1
+  
+  allocate(height(int(max_height/dh)+1))
+  allocate(mass(size(height)))
+  do i =1,size(height)
+    height(i) = dh*(i-1) 
+    mass  (i) = standard_density (height(i))
+ 
+  enddo
+
+  do i =0,50000,1000
+    percent=0
+    do j = 1 , size(height)
+      if (height(j).le.dble(i)) percent=percent+mass(j)
+    enddo
+    percent = percent /sum(mass)*100
+    write(file_unit, '(i6,2f19.9,es10.3)' ) , i ,percent , &
+    100-(earth%radius+dble(1))**2 * standard_pressure(dble(i)) / standard_gravity(dble(i))&
+    /earth%radius**2/standard_pressure(dble(0)) * standard_gravity(dble(0))*100
+    
+  enddo
+end subroutine
 
 ! =============================================================================
 !> Reproduces data to Fig.~3 in \cite Warburton77
@@ -135,17 +183,6 @@ subroutine compute_tabulated_green_functions (filename, method)
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-<<<<<<< HEAD
-    write(file_unit, '(13f15.6)'),              & 
-      green(1)%distance(i),               & 
-      aggf(d2r(green(1)%distance(i)),standard_pressure_method="simple"),    & 
-      aggf(d2r(green(1)%distance(i))),    & 
-      aggf(d2r(green(1)%distance(i)),standard_pressure_method="full", dz=dble(100.)),    & 
-!      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
-!      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
-!      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
-      green(1)%data(i)                
-=======
     if (method.eq."full") then
       write(file_unit, '(13f15.6)'),              & 
         green(1)%distance(i),               & 
@@ -160,7 +197,6 @@ subroutine compute_tabulated_green_functions (filename, method)
     !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
     !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
     !      green(1)%data(i)                
->>>>>>> 3e215302e5e91c71bf53e0ba2f5ad1b6de071b02
   enddo
   close(file_unit)
 end subroutine
