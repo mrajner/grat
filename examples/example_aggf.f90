@@ -6,6 +6,8 @@
 ! ============================================================================
 program example_aggf
   implicit none
+  character(20):: host
+
 
   call standard1976 ('/home/mrajner/src/grat/examples/standard1976.dat')
   call compare_fels_profiles ('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
@@ -15,22 +17,27 @@ program example_aggf
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
   call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
-  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat')
+  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "simple")
+  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_s.dat', "simple")
 
-!  call aggf_resp_hmax ()
-!  call aggf_resp_dz ()
-!  call aggf_resp_t ()
-!  call aggf_resp_h ()
-!  call aggfdt_resp_dt ()
-!  call aggf_resp_fels_profiles ()
-!  call compare_tabulated_green_functions ()
+  ! run only on server
+!  if (host.eq."grat") then
+    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat', "full")
+!  endif
+
+  !  call aggf_resp_hmax ()
+  !  call aggf_resp_dz ()
+  !  call aggf_resp_t ()
+  !  call aggf_resp_h ()
+  !  call aggfdt_resp_dt ()
+  !  call aggf_resp_fels_profiles ()
 
 
 
 
 
 contains 
- 
+
 
 ! =============================================================================
 !> Reproduces data to Fig.~3 in \cite Warburton77
@@ -52,9 +59,11 @@ subroutine simple_atmospheric_model (filename)
 
   if (present (filename)) then
     if (file_exists(filename)) return
-    open ( newunit = file_unit , &
-      file =filename , &
-      action  = 'write' )
+    open ( &
+      newunit = file_unit, & 
+      file    = filename,  & 
+      action  = 'write'    & 
+      )
   else
     file_unit = output_unit
   endif
@@ -68,72 +77,6 @@ subroutine simple_atmospheric_model (filename)
 
 end subroutine
 
-!! =============================================================================
-!!> Compare tabulated green functions from different authors
-!!!
-!!! \date 2013-03-18
-!!! \author M. Rajner
-!! =============================================================================
-!subroutine compare_tabulated_green_functions ()
-!  use mod_constants, only : dp
-!  use mod_aggf, only:read_tabulated_green
-!  use mod_utilities, only : size_ntimes_denser, spline_interpolation
-
-!  integer :: i , j , file_unit , ii , iii
-!  real(dp), dimension(:,:), allocatable :: table , results
-!  real(dp), dimension(:,:), allocatable :: parameters
-!  real(dp), dimension(:), allocatable :: x1, y1 ,x2 , y2 , x, y , x_interpolated, y_interpolated
-!  integer :: how_many_denser
-!  character(len=255), dimension(3) :: authors 
-!  integer , dimension(3) :: columns
-
-!  authors=["rajner", "merriam" , "huang"] 
-!  ! selected columns for comparison in appropriate tables
-!  columns=[2 , 2, 2]
-
-!  how_many_denser=0
-
-!  ! reference author 
-!  call read_tabulated_green (table , author = authors(1) )
-!  allocate (results (size_ntimes_denser(size(table(:,1)), how_many_denser) , 0 : size(authors) ))
-
-!  ! fill abscissa in column 0
-!  ii = 1
-!  do i = 1 ,  size (table (:,1) ) - 1
-!    do j = 0 , how_many_denser
-!        results(ii,0) = table (i,1 ) + j * (table (i+1, 1) -table (i,1) ) / ( how_many_denser + 1 )
-!        ii=ii+1
-!    enddo
-!  enddo
-!  ! and the last element
-!  results ( size (results (:,0) )  , 0) =  table ( size(table(:,1)) ,1 ) 
-
-!  ! take it as main for all series
-!  allocate(x_interpolated ( size ( results(:,0))))
-!  x_interpolated = results(:,0)
-
-!  open (newunit = file_unit , file = "../examples/compare_aggf.dat", action="write")
-
-!  ! for every author 
-!  do i= 1, size(authors)
-!    print * , trim ( authors ( i ) )
-!    call read_tabulated_green (table , author = authors(i) )
-!    allocate(x ( size (table (:,1))))
-!    allocate(y ( size (table (:,2))))
-!    x = table (:,1)
-!    y = table (:, columns(i))
-!    call spline_interpolation ( x , y , size(x), x_interpolated, y_interpolated , size(x_interpolated) ) 
-!    if (i.gt.1) then
-!      y_interpolated = ( y_interpolated - results(:,1) ) / results(:,1)  * 100.
-!    endif
-
-!    results(:, i ) = y_interpolated
-!    deallocate(x,y)
-!  enddo
-
-!  write (file_unit , '(<size(results(1,:))>f20.5)' ) ( results (i , :) , i = 1 , size(results ( :,1)) )  
-!  close(file_unit)
-!end subroutine
 
 ! ============================================================================
 !> Compute AGGF and derivatives
@@ -141,11 +84,11 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine compute_tabulated_green_functions (filename)
+subroutine compute_tabulated_green_functions (filename, method)
   use mod_constants, only:dp
   use mod_aggf , only: aggf, aggfdt
   use mod_green, only: green, read_green
-  use mod_utilities, only: d2r
+  use mod_utilities, only: d2r , file_exists
   use mod_atmosphere
   integer :: i , file_unit
   real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
@@ -153,9 +96,15 @@ subroutine compute_tabulated_green_functions (filename)
   character(*), intent(in) :: filename
   real(dp) :: dz , t_zero , z
   character(100) :: fels_type
+  character(*) :: method
 
-
+  if (file_exists(filename)) then
+    return
+  else
+    print * , "compute_tabulated_green_functions ---> ", filename
+  endif
   ! Get the spherical distances from Merriam92
+  if(allocated(green)) deallocate(green)
   allocate(green(1))
   green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
   green(1)%column=[1,2]
@@ -167,7 +116,7 @@ subroutine compute_tabulated_green_functions (filename)
     action  = 'write'                    & 
     )
   !todo
-  file_unit=6
+  !  file_unit=6
 
   ! print header
   write ( file_unit,*) '# This is set of AGGF computed using module ', & 
@@ -186,6 +135,7 @@ subroutine compute_tabulated_green_functions (filename)
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
+<<<<<<< HEAD
     write(file_unit, '(13f15.6)'),              & 
       green(1)%distance(i),               & 
       aggf(d2r(green(1)%distance(i)),standard_pressure_method="simple"),    & 
@@ -195,6 +145,22 @@ subroutine compute_tabulated_green_functions (filename)
 !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
 !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
       green(1)%data(i)                
+=======
+    if (method.eq."full") then
+      write(file_unit, '(13f15.6)'),              & 
+        green(1)%distance(i),               & 
+        aggf(d2r(green(1)%distance(i)),standard_pressure_method="full")
+    else if (method.eq."simple") then
+      write(file_unit, '(13f15.6)'),              & 
+        green(1)%distance(i),               & 
+        aggf(d2r(green(1)%distance(i)),standard_pressure_method="simple")
+    endif
+    !      aggf(d2r(green(1)%distance(i))),    & 
+    !      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
+    !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
+    !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
+    !      green(1)%data(i)                
+>>>>>>> 3e215302e5e91c71bf53e0ba2f5ad1b6de071b02
   enddo
   close(file_unit)
 end subroutine
@@ -546,9 +512,9 @@ end subroutine
 !  close(file_unit)
 !end subroutine
 
-!! ============================================================================
-!!> Auxiliary subroutine -- height sampling for semilog plot
-!! ============================================================================
+! ============================================================================
+!> Auxiliary subroutine -- height sampling for semilog plot
+! ============================================================================
 !subroutine aux_heights ( table )
 !  use mod_constants, only : dp
 !  real(dp) , dimension (:), allocatable, intent(inout) :: table
@@ -575,6 +541,8 @@ end subroutine
 !  table (0 : count_heights ) = heights ( 0 : count_heights )
 !end subroutine
 
+! ============================================================================
+! ============================================================================
 subroutine aggf_thin_layer (filename)
   use, intrinsic:: iso_fortran_env
   use mod_constants, only : dp , pi

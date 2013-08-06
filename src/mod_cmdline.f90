@@ -38,6 +38,7 @@ module mod_cmdline
     logical  :: sparse=.false.
     logical :: first_call = .true.
     integer :: unit
+    logical :: noclobber = .false.
   end type
   type(moreverbose_info), allocatable , dimension(:) :: moreverbose
 
