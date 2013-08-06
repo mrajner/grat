@@ -11,16 +11,17 @@ contains
 !! \author M. Rajner
 !! height in meter
 ! ==============================================================================
-function standard_density ( height , t_zero ,fels_type )
+function standard_density ( height , t_zero ,fels_type , method)
   use mod_constants, only: dp , R_air
   real(dp) , intent(in)  ::  height 
   real(dp) , intent(in), optional  :: t_zero 
   character(len = 22) , optional :: fels_type
+  character(len = *) , optional :: method
   real(dp) :: standard_density 
   real(dp) :: p ,t
 
   t = standard_temperature (height, t_zero = t_zero, fels_type=fels_type)
-  p = standard_pressure    (height, t_zero = t_zero)
+  p = standard_pressure    (height, t_zero = t_zero, method=method)
   standard_density = p  / ( R_air * t )
 end function
 ! =============================================================================
@@ -48,14 +49,13 @@ end function
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
 function standard_pressure (height,  &
-    p_zero, t_zero, h_zero, method, inverted, dz)
+    p_zero, t_zero, h_zero, method, dz)
 
   use mod_constants, only: dp, earth, atmosphere, R_air
   implicit none
   real(dp) , intent(in)            :: height
   real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
   character(*), intent(in) , optional :: method
-  logical, intent(in) , optional :: inverted
   real(dp), intent(in) , optional :: dz
   real(dp) :: standard_pressure
   real(dp) :: lambda , sfc_height , sfc_temperature , sfc_gravity , alpha , sfc_pressure
@@ -85,7 +85,11 @@ function standard_pressure (height,  &
       standard_pressure = sfc_pressure * exp (- (height -sfc_height) *standard_gravity(height) /standard_temperature(height) / R_air   ) 
     case ("full")
       standard_pressure=0.
-      dz_ = 0.1
+      if (present(dz)) then
+        dz_ = dz
+      else
+        dz_ = 0.1
+      endif
       do z_=0, height, dz_
         standard_pressure = standard_pressure &
           + standard_gravity(z_)/(R_air * standard_temperature(z_)) *dz_

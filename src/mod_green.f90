@@ -576,12 +576,12 @@ subroutine convolve (site , date)
                 if (ind%green%ghn.ne.0) then
                   result(ind%green%ghn) = result(ind%green%ghn) +    & 
                     green_common(igreen)%data(idist,ind%green%ghn) * & 
-                    aux * - cos (d2r(azimuth))
+                    aux * (- cos (d2r(azimuth)))
                 endif
                 if (ind%green%ghe.ne.0) then
                   result(ind%green%ghe) = result(ind%green%ghe) +    & 
                     green_common(igreen)%data(idist,ind%green%ghe) * & 
-                    aux * - sin (d2r(azimuth))
+                    aux * (- sin (d2r(azimuth)))
                 endif
               endif
             endif

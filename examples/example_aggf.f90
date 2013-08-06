@@ -5,9 +5,27 @@
 !! \date 20121108
 ! ============================================================================
 program example_aggf
+  use mod_atmosphere
+  use mod_constants,only :dp
+  use mod_utilities
   implicit none
   character(20):: host
 
+  integer :: i
+  real(dp)::  height(20)
+  
+  height= linspace(dble(0),dble(10000),20)
+  do i = 1, size(height)
+    print '(6f14.5)', height(i) , &
+      standard_pressure(height(i)), &
+      standard_pressure(height(i),method="full", dz=dble(.01)), &
+      standard_pressure(height(i),method="full", dz=dble(.02)), &
+      standard_pressure(height(i),method="simple"), &
+      standard_pressure(height(i),method="berg")
+  enddo
+  stop
+
+  
 
   call standard1976 ('/home/mrajner/src/grat/examples/standard1976.dat')
   call compare_fels_profiles ('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
@@ -33,7 +51,7 @@ program example_aggf
   !  call aggf_resp_fels_profiles ()
 
 
-  call mass_vs_height('/home/mrajner/src/grat/examples/mass_vs_height.dat')
+!  call mass_vs_height() !'/home/mrajner/src/grat/examples/mass_vs_height.dat')
 
 
 
@@ -63,15 +81,15 @@ subroutine mass_vs_height (filename)
   endif
   write(*,*), "mass_vs_height ---> ",filename
 
-  max_height=60000.
-  dh=0.1
-  
+  max_height=50000.
+  dh=10
+
   allocate(height(int(max_height/dh)+1))
   allocate(mass(size(height)))
   do i =1,size(height)
     height(i) = dh*(i-1) 
-    mass  (i) = standard_density (height(i))
- 
+    mass  (i) = standard_density (height(i), method="full")
+!    mass  (i) = standard_density (height(i))
   enddo
 
   do i =0,50000,1000
@@ -81,9 +99,9 @@ subroutine mass_vs_height (filename)
     enddo
     percent = percent /sum(mass)*100
     write(file_unit, '(i6,2f19.9,es10.3)' ) , i ,percent , &
-    100-(earth%radius+dble(1))**2 * standard_pressure(dble(i)) / standard_gravity(dble(i))&
-    /earth%radius**2/standard_pressure(dble(0)) * standard_gravity(dble(0))*100
-    
+      100-(earth%radius+dble(1))**2 * standard_pressure(dble(i)) / standard_gravity(dble(i))&
+      /earth%radius**2/standard_pressure(dble(0)) * standard_gravity(dble(0))*100
+
   enddo
 end subroutine
 

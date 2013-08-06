@@ -37,7 +37,7 @@ sx: grat
 		-P ../polygon/baltyk.poly@E \
 		-Sj  \
 		-L  @o -H  \
-		-I2.5 @DB :2@DD -OC -D201102
+		-I2.5 @DB :2@DD -OC -D201102 
 
 #   grat -Sj  \
 	#     -F $(SP), $(RSP)  \
@@ -135,7 +135,7 @@ DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 T       = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
-LS      = $(DAT_DIR)/landsea/landseaRdI0.2-0.2.grd@LS:z:x:y
+LS      = $(NCEP_DIR)/land.nc:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 	FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
