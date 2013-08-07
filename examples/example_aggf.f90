@@ -10,22 +10,7 @@ program example_aggf
   use mod_utilities
   implicit none
   character(20):: host
-
-  integer :: i
-  real(dp)::  height(20)
-  
-  height= linspace(dble(0),dble(10000),20)
-  do i = 1, size(height)
-    print '(6f14.5)', height(i) , &
-      standard_pressure(height(i)), &
-      standard_pressure(height(i),method="full", dz=dble(.01)), &
-      standard_pressure(height(i),method="full", dz=dble(.02)), &
-      standard_pressure(height(i),method="simple"), &
-      standard_pressure(height(i),method="berg")
-  enddo
-  stop
-
-  
+  real(dp) :: x
 
   call standard1976 ('/home/mrajner/src/grat/examples/standard1976.dat')
   call compare_fels_profiles ('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
@@ -35,13 +20,15 @@ program example_aggf
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
   call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
-  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "simple")
-  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_s.dat', "simple")
+
 
   ! run only on server
-!  if (host.eq."grat") then
-    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat', "full")
-!  endif
+  !call hostnm(host)
+  !if (host.eq."grat") then
+  do x =1 , 1
+    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "full")
+  enddo
+  !endif
 
   !  call aggf_resp_hmax ()
   !  call aggf_resp_dz ()
@@ -51,7 +38,7 @@ program example_aggf
   !  call aggf_resp_fels_profiles ()
 
 
-!  call mass_vs_height() !'/home/mrajner/src/grat/examples/mass_vs_height.dat')
+  !  call mass_vs_height() !'/home/mrajner/src/grat/examples/mass_vs_height.dat')
 
 
 
@@ -89,7 +76,7 @@ subroutine mass_vs_height (filename)
   do i =1,size(height)
     height(i) = dh*(i-1) 
     mass  (i) = standard_density (height(i), method="full")
-!    mass  (i) = standard_density (height(i))
+    !    mass  (i) = standard_density (height(i))
   enddo
 
   do i =0,50000,1000
@@ -150,7 +137,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine compute_tabulated_green_functions (filename, method)
+subroutine compute_tabulated_green_functions (filename, method,dz)
   use mod_constants, only:dp
   use mod_aggf , only: aggf, aggfdt
   use mod_green, only: green, read_green
@@ -160,20 +147,22 @@ subroutine compute_tabulated_green_functions (filename, method)
   real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
   real(dp), dimension(:,:), allocatable :: table , results 
   character(*), intent(in) :: filename
-  real(dp) :: dz , t_zero , z
+  real(dp), optional :: dz
+  real(dp) ::  t_zero , z
   character(100) :: fels_type
-  character(*) :: method
+  character(*), optional :: method
 
   if (file_exists(filename)) then
-    return
-  else
-    print * , "compute_tabulated_green_functions ---> ", filename
+    !    return
+    !  else
+    print '(a,a)' , "compute_tabulated_green_functions ---> ", trim(filename)
   endif
   ! Get the spherical distances from Merriam92
   if(allocated(green)) deallocate(green)
   allocate(green(1))
-  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-  green(1)%column=[1,2]
+!  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
+  green(1)%column=[1,4]
   call read_green(green(1))
 
   open (                                 & 
@@ -181,36 +170,33 @@ subroutine compute_tabulated_green_functions (filename, method)
     file    = filename, & 
     action  = 'write'                    & 
     )
+
+   !print header
+    write ( file_unit,*) '# This is set of AGGF computed using module ', & 
+      'aggf from grat software'
+    write ( file_unit,*) '# Normalization according to Merriam92'
+    write ( file_unit,*) '# Marcin Rajner'
+    write ( file_unit,*) '# For detail see www.geo.republika.pl'
+    write ( file_unit,'(10(a23))')  '#psi[deg]',                         & 
+      'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
+      'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
+
+
   !todo
-  !  file_unit=6
-
-  ! print header
-  write ( file_unit,*) '# This is set of AGGF computed using module ', & 
-    'aggf from grat software'
-  write ( file_unit,*) '# Normalization according to Merriam92'
-  write ( file_unit,*) '# Marcin Rajner'
-  write ( file_unit,*) '# For detail see www.geo.republika.pl'
-  write ( file_unit,'(10(a23))')  '#psi[deg]',                         & 
-    'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
-    'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
-
-
+  file_unit=6
   do i= 1, size(green(1)%distance)
     !    call compute_aggfdt ( table(i,1) , val_aggfdt )
     !    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-    if (method.eq."full") then
-      write(file_unit, '(13f15.6)'),              & 
-        green(1)%distance(i),               & 
-        aggf(d2r(green(1)%distance(i)),standard_pressure_method="full")
-    else if (method.eq."simple") then
-      write(file_unit, '(13f15.6)'),              & 
-        green(1)%distance(i),               & 
-        aggf(d2r(green(1)%distance(i)),standard_pressure_method="simple")
-    endif
-    !      aggf(d2r(green(1)%distance(i))),    & 
+    write(file_unit, '(13f15.6)'), &
+    green(1)%distance(i), &
+!    aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
+     aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
+     green(1)%data(i)
+     if (i.eq.6) return
+!    return
     !      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
     !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
     !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &

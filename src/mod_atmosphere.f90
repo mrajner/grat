@@ -48,12 +48,10 @@ end function
 !!
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
-function standard_pressure (height,  &
+function standard_pressure (height, &
     p_zero, t_zero, h_zero, method, dz)
-
   use mod_constants, only: dp, earth, atmosphere, R_air
-  implicit none
-  real(dp) , intent(in)            :: height
+  real(dp) , intent(in) ,optional            :: height
   real(dp) , intent(in) , optional :: t_zero , p_zero , h_zero
   character(*), intent(in) , optional :: method
   real(dp), intent(in) , optional :: dz
@@ -75,14 +73,13 @@ function standard_pressure (height,  &
   if (present(p_zero)) sfc_pressure = p_zero
   if (present(t_zero)) sfc_temperature = t_zero
 
-
   alpha = -6.5e-3
   if (present (method)) then
     select case (method)
     case("berg")
       standard_pressure = sfc_pressure *(1-0.0000226 * (height -sfc_height))**(5.225)
     case ("simple")
-      standard_pressure = sfc_pressure * exp (- (height -sfc_height) *standard_gravity(height) /standard_temperature(height) / R_air   ) 
+      standard_pressure = sfc_pressure * exp (- (height -sfc_height) * standard_gravity(height) /standard_temperature(height) / R_air   ) 
     case ("full")
       standard_pressure=0.
       if (present(dz)) then
@@ -90,11 +87,11 @@ function standard_pressure (height,  &
       else
         dz_ = 0.1
       endif
-      do z_=0, height, dz_
+      do z_=sfc_height+dz_/2, height, dz_
         standard_pressure = standard_pressure &
           + standard_gravity(z_)/(R_air * standard_temperature(z_)) *dz_
       enddo
-      standard_pressure=atmosphere%pressure%standard * exp(-standard_pressure)
+      standard_pressure=sfc_pressure  * exp(-standard_pressure)
     case default
       stop "Method not known"
     endselect
@@ -105,12 +102,9 @@ function standard_pressure (height,  &
       **(earth%gravity%mean /R_air/alpha)
   endif 
 
-  !todo incorporate this
-  !  Zdunkowski and Bott
-  !  p(z) = p0 (T0-gamm z )/T0
   if (isnan(standard_pressure)) standard_pressure=0
-
 end function
+
 
 ! =============================================================================
 !> \brief Compute standard temperature [K] for specific height [km]
