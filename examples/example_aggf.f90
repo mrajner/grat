@@ -26,6 +26,7 @@ program example_aggf
   !call hostnm(host)
   !if (host.eq."grat") then
   do x =1 , 1
+!    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "simple")
     call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "full")
   enddo
   !endif
@@ -144,8 +145,6 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   use mod_utilities, only: d2r , file_exists
   use mod_atmosphere
   integer :: i , file_unit
-  real(dp) :: val_aggf , val_aggfdt ,val_aggfdh, val_aggfdz
-  real(dp), dimension(:,:), allocatable :: table , results 
   character(*), intent(in) :: filename
   real(dp), optional :: dz
   real(dp) ::  t_zero , z
@@ -162,7 +161,7 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   allocate(green(1))
 !  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
   green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
-  green(1)%column=[1,4]
+  green(1)%column=[1,3]
   call read_green(green(1))
 
   open (                                 & 
@@ -179,28 +178,23 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
     write ( file_unit,*) '# For detail see www.geo.republika.pl'
     write ( file_unit,'(10(a23))')  '#psi[deg]',                         & 
       'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
-      'GN/dh[microGal/hPa/km]' , 'GN/dz[microGal/hPa/km]'
+      'GN/dh[microGal/hPa/m]' , 'GN/dz[microGal/hPa/km]'
 
 
   !todo
   file_unit=6
   do i= 1, size(green(1)%distance)
     !    call compute_aggfdt ( table(i,1) , val_aggfdt )
-    !    call compute_aggf   ( table(i,1) , val_aggfdh , first_derivative_h=.true. )
     !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
     !    write ( file_unit, '(10(e23.5))' ) &
     !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
     write(file_unit, '(13f15.6)'), &
-    green(1)%distance(i), &
-!    aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
-     aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
-     green(1)%data(i)
-     if (i.eq.6) return
-!    return
-    !      aggfdt(d2r(green(1)%distance(i)),deltat=dble(30),dz=dble(1)), & 
-    !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) + 10,dz=dble(1) ), &
-    !      aggf (d2r(green(1)%distance(i)), t_zero = dble(288) - 10,dz=dble(1) ), &
-    !      green(1)%data(i)                
+      green(1)%distance(i), &
+!      aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
+!      aggfdt(d2r(green(1)%distance(i)), method=method, dz=dz) , &
+!      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
+      green(1)%data(i)
+    if (i.eq.10) return
   enddo
   close(file_unit)
 end subroutine
@@ -586,7 +580,7 @@ end subroutine
 subroutine aggf_thin_layer (filename)
   use, intrinsic:: iso_fortran_env
   use mod_constants, only : dp , pi
-  use mod_aggf, only : read_tabulated_green, GN_thin_layer
+  use mod_aggf, only : GN_thin_layer
   use mod_utilities, only: d2r, file_exists
   use mod_green
 

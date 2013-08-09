@@ -70,7 +70,7 @@ function standard_pressure (height, &
     sfc_gravity     = standard_gravity (sfc_height)
   endif
 
-  if (present(p_zero)) sfc_pressure = p_zero
+  if (present(p_zero)) sfc_pressure    = p_zero
   if (present(t_zero)) sfc_temperature = t_zero
 
   alpha = -6.5e-3
@@ -79,7 +79,7 @@ function standard_pressure (height, &
     case("berg")
       standard_pressure = sfc_pressure *(1-0.0000226 * (height -sfc_height))**(5.225)
     case ("simple")
-      standard_pressure = sfc_pressure * exp (- (height -sfc_height) * standard_gravity(height) /standard_temperature(height) / R_air   ) 
+      standard_pressure = sfc_pressure * exp (- (height -sfc_height) * standard_gravity(height) /standard_temperature(height, t_zero=t_zero) / R_air   ) 
     case ("full")
       standard_pressure=0.
       if (present(dz)) then
@@ -89,7 +89,7 @@ function standard_pressure (height, &
       endif
       do z_=sfc_height+dz_/2, height, dz_
         standard_pressure = standard_pressure &
-          + standard_gravity(z_)/(R_air * standard_temperature(z_)) *dz_
+          + standard_gravity(z_)/(R_air * standard_temperature(z_,t_zero=sfc_temperature)) *dz_
       enddo
       standard_pressure=sfc_pressure  * exp(-standard_pressure)
     case default
