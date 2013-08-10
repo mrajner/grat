@@ -234,6 +234,13 @@ subroutine parse_moreverbose (cmd_line_entry)
     moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
     if (dataname(moreverbose(i)%dataname).ne."unknown") then 
       if (moreverbose(i)%name.ne."") then
+        if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
+          moreverbose(i)%noclobber=.true.
+          if (file_exists(moreverbose(i)%name)) then
+            write(log%unit,*) "I will not overwrite with -L : nc (noclobber) ... sorry"
+            stop
+          endif
+        endif
         open( & 
           newunit=moreverbose(i)%unit, &
           file =moreverbose(i)%name , action = 'write' & 
@@ -246,13 +253,6 @@ subroutine parse_moreverbose (cmd_line_entry)
       "<-", dataname(moreverbose(i)%dataname)
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
-    endif
-    if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
-      moreverbose(i)%noclobber=.true.
-      if (file_exists(moreverbose(i)%name)) then
-        write(log%unit,*) "I will not overwrite with -L : nc (noclobber) ... sorry"
-        stop
-      endif
     endif
   enddo
 end subroutine

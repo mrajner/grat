@@ -21,21 +21,36 @@ contains
 !! \date 2013-03-19
 !! \warning psi in radians
 ! ==============================================================================
-function aggfdt (psi, deltat, dz , method)
+function aggfd (psi, delta, dz , method, aggfdh, aggfdz , aggfdt, predefined)
   use mod_constants, only: atmosphere, dp
   real(dp), intent (in) :: psi
-  real(dp), intent (in), optional :: deltat
+  real(dp), intent (in), optional :: delta
   real(dp), intent (in), optional :: dz
-  real(dp) :: aggfdt
-  real(dp) :: deltat_ 
+  logical, intent (in), optional :: aggfdh , aggfdz , aggfdt, predefined
+  real(dp) :: aggfd
+  real(dp) :: delta_ 
   character (len=*) , intent(in), optional  :: method
 
-  deltat_ = 10. ! Default value
-  if (present(deltat))  deltat_ = deltat
-  aggfdt = ( &
-    + aggf (psi, t_zero = atmosphere%temperature%standard+deltat_, dz=dz, method = method )  &
-    - aggf (psi, t_zero = atmosphere%temperature%standard-deltat_, dz=dz, method = method)) &
-    / ( 2. * deltat_)
+  delta_ = 10. ! Default value
+  if (present(delta))  delta_ = delta
+
+
+  if(present(aggfdh).and.aggfdh) then
+    aggfd = ( &
+      + aggf (psi, h = +delta_, dz=dz, method = method, predefined=predefined )  &
+      - aggf (psi, h = -delta_, dz=dz, method = method, predefined=predefined)) &
+      / ( 2. * delta_)
+  else if(present(aggfdz).and.aggfdz) then
+    aggfd = ( &
+      + aggf (psi, zmax = +delta_, dz=dz, method = method, predefined=predefined )  &
+      - aggf (psi, zmax = -delta_, dz=dz, method = method, predefined=predefined)) &
+      / ( 2. * delta_)
+  else if(present(aggfdt).and.aggfdt) then
+    aggfd = ( &
+      + aggf (psi, t_zero = atmosphere%temperature%standard+delta_, dz=dz, method = method, predefined=predefined )  &
+      - aggf (psi, t_zero = atmosphere%temperature%standard-delta_, dz=dz, method = method, predefined=predefined)) &
+      / ( 2. * delta_)
+  endif
 end function
 
 ! ==============================================================================
@@ -50,7 +65,7 @@ function aggf ( &
     zmin, zmax, dz, &
     t_zero, &
     h, first_derivative_h, first_derivative_z, fels_type, &
-    method)
+    method , predefined)
 
   use mod_constants, only: dp, pi, earth, gravity, atmosphere, R_air
   use mod_utilities, only: d2r
@@ -64,14 +79,15 @@ function aggf ( &
     dz ,    & ! integration step               [m]     (default = 0.1 -> 10 cm)
     t_zero, & ! temperature at the surface     [K]     (default = 288.15=t0)
     h         ! station height                 [m]     (default = 0)
-  logical, intent(in), optional ::  first_derivative_h , first_derivative_z
+  logical, intent(in), optional :: &
+    first_derivative_h , first_derivative_z, predefined
   character (len=*) , intent(in), optional  :: fels_type , method
   real(dp) :: aggf
   real(dp) :: zmin_, zmax_, dz_ , h_
   real(dp) :: J_aux
   real(dp) :: dA, z_ , rho , l , z
 
-  real(dp), dimension(:), allocatable,save :: heights, pressures
+  real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
 
   zmin_ = 0.
@@ -87,18 +103,19 @@ function aggf ( &
   if(allocated(heights)) then
     if ( &
       ((zmin_ +dz_/2).ne.heights(1)) &
-      .or.(zmax_-dz_/2).ne.heights(size(heights)) &
-      .or.int((zmax_-zmin_)/dz_).ne.size(heights) &
-      .or.present(t_zero) &
+      .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6 &
+      .or.nint((zmax_-zmin_)/dz_).ne.size(heights) &
+      .or. (present(predefined)) &
       ) then
+      write( *, * ) , "I: newallocation"
       deallocate(heights)
       deallocate(pressures)
     endif
   endif
 
   if (.not.allocated(heights))  then
-    allocate(heights(int((zmax_-zmin_)/dz_)))
-    allocate(pressures(int((zmax_-zmin_)/dz_)))
+    allocate(heights(nint((zmax_-zmin_)/dz_)))
+    allocate(pressures(size(heights)))
     do i = 1, size(heights)
       heights(i) = zmin_ &
         + dz_/2  &
@@ -142,7 +159,7 @@ function aggf ( &
         rho * ((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
     endif
   enddo
-  aggf = aggf /atmosphere%pressure%standard *gravity%constant * green_normalization("m", psi = psi) 
+  aggf = aggf / atmosphere%pressure%standard * gravity%constant * green_normalization("m", psi = psi) 
 end function
 
 ! ==============================================================================
