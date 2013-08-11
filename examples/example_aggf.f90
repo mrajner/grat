@@ -191,7 +191,7 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
     write(file_unit, '(13f15.6)'), &
       green(1)%distance(i), &
 !      aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
-      aggfd(d2r(green(1)%distance(i)), method=method, dz=dz, aggfdt=.true.) , &
+      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdt=.true. ) , &
 !     aggfdt(d2r(green(1)%distance(i)), method=method, dz=dz, aggfdh=.true.) , &
 !     aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
       green(1)%data(i)
