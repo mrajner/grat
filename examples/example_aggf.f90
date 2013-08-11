@@ -158,9 +158,9 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   ! Get the spherical distances from Merriam92
   if(allocated(green)) deallocate(green)
   allocate(green(1))
-  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-!  green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
-  green(1)%column=[1,3]
+!  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
+  green(1)%column=[1,5]
   call read_green(green(1))
 
   open (                                 & 
@@ -183,17 +183,14 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   !todo
   file_unit=6
   do i= 1, size(green(1)%distance)
-    !    call compute_aggfdt ( table(i,1) , val_aggfdt )
-    !    call compute_aggf   ( table(i,1) , val_aggfdz , first_derivative_z=.true. )
-    !    write ( file_unit, '(10(e23.5))' ) &
-    !      table(i,1) , val_aggf , val_aggfdt , val_aggfdh, val_aggfdz
-    if (i.gt.9) cycle
+!    if (i.gt.9.or. i.lt.6) cycle
     write(file_unit, '(13f15.6)'), &
       green(1)%distance(i), &
 !      aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
-      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdt=.true. ) , &
-!     aggfdt(d2r(green(1)%distance(i)), method=method, dz=dz, aggfdh=.true.) , &
+!      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdt=.true. , predefined=.false.) , &
 !     aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
+!     aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_z=.true.) , &
+      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdz=.true. ) , &
       green(1)%data(i)
   enddo
   close(file_unit)

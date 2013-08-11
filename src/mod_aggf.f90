@@ -36,19 +36,19 @@ function aggfd (psi, delta, dz , method, aggfdh, aggfdz , aggfdt, predefined)
 
 
   if(present(aggfdh).and.aggfdh) then
-    aggfd = ( &
-      + aggf (psi, h = +delta_, dz=dz, method = method, predefined=predefined )  &
-      - aggf (psi, h = -delta_, dz=dz, method = method, predefined=predefined)) &
+    aggfd = (                                                                   & 
+      + aggf (psi, h = +delta_, dz=dz, method = method, predefined=predefined ) & 
+      - aggf (psi, h = -delta_, dz=dz, method = method, predefined=predefined)) & 
       / ( 2. * delta_)
   else if(present(aggfdz).and.aggfdz) then
-    aggfd = ( &
-      + aggf (psi, zmax = +delta_, dz=dz, method = method, predefined=predefined )  &
-      - aggf (psi, zmax = -delta_, dz=dz, method = method, predefined=predefined)) &
+    aggfd = (                                                                      & 
+      + aggf (psi, zmin = +delta_, dz=dz, method = method, predefined=predefined ) & 
+      - aggf (psi, zmin = -delta_, dz=dz, method = method, predefined=predefined)) & 
       / ( 2. * delta_)
   else if(present(aggfdt).and.aggfdt) then
-    aggfd = ( &
-      + aggf (psi, t_zero = atmosphere%temperature%standard+delta_, dz=dz, method = method, predefined=predefined )  &
-      - aggf (psi, t_zero = atmosphere%temperature%standard-delta_, dz=dz, method = method, predefined=predefined)) &
+    aggfd = (                                                                                                       & 
+      + aggf (psi, t_zero = atmosphere%temperature%standard+delta_, dz=dz, method = method, predefined=predefined ) & 
+      - aggf (psi, t_zero = atmosphere%temperature%standard-delta_, dz=dz, method = method, predefined=predefined)) & 
       / ( 2. * delta_)
   endif
 end function
@@ -107,7 +107,6 @@ function aggf ( &
       .or.nint((zmax_-zmin_)/dz_).ne.size(heights) &
       .or. (present(predefined)) &
       ) then
-      write( *, * ) , "I: newallocation"
       deallocate(heights)
       deallocate(pressures)
     endif
@@ -123,7 +122,13 @@ function aggf ( &
     enddo
     pressures(1) = standard_pressure(heights(1),method=method, t_zero=t_zero)
     do i = 2 , size(heights)
-      pressures(i) = standard_pressure(heights(i),p_zero=pressures(i-1),h_zero = heights(i-1),method=method, t_zero=t_zero)
+      pressures(i) = standard_pressure(                          & 
+        heights(i),                                              & 
+        p_zero=pressures(i-1),                                   & 
+        h_zero = heights(i-1),                                   & 
+        method=method,                                           & 
+        t_zero=standard_temperature(heights(i-1), t_zero=t_zero) & 
+        )
     enddo
   endif
 
@@ -131,7 +136,7 @@ function aggf ( &
   do i = 1 , size(heights)
     l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 & 
       - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
-    rho = pressures(i)/ R_air / standard_temperature(heights(i) , t_zero=t_zero)  
+    rho = pressures(i)/ R_air / standard_temperature( heights(i), t_zero=t_zero )
     if ( present ( first_derivative_h) .and. first_derivative_h ) then
       ! first derivative (respective to station height)
       ! micro Gal height / m
@@ -145,14 +150,13 @@ function aggf ( &
       !          J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
       !          aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
       !        else
-      !      ! first derivative (respective to column height)
-      !      ! according to equation 26 in \cite Huang05
-      !      ! micro Gal / hPa / km
-      !      if (present (first_derivative_z) .and. first_derivative_z) then
+      ! first derivative (respective to column height)
+      ! according to equation 26 in \cite Huang05
+      ! micro Gal / hPa / m
+    else if (present (first_derivative_z) .and. first_derivative_z) then
       !        if (z.eq.h_min) then
       !          aggf = aggf  &
       !            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
-      !        endif
     else
       ! GN microGal/hPa
       aggf = aggf -  &
@@ -160,6 +164,8 @@ function aggf ( &
     endif
   enddo
   aggf = aggf / atmosphere%pressure%standard * gravity%constant * green_normalization("m", psi = psi) 
+  !  aggf = aggf / standard_pressure(height=dble(0),t_zero=t_zero) * gravity%constant * green_normalization("m", psi = psi) 
+  !  aggf =  standard_pressure(height=dble(0),t_zero=t_zero) 
 end function
 
 ! ==============================================================================

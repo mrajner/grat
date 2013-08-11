@@ -89,7 +89,7 @@ function standard_pressure (height, &
       endif
       do z_=sfc_height+dz_/2, height, dz_
         standard_pressure = standard_pressure &
-          + standard_gravity(z_)/(R_air * standard_temperature(z_)) *dz_
+          + standard_gravity(z_)/(R_air * standard_temperature(z_ ,t_zero=t_zero) ) *dz_
       enddo
       standard_pressure = sfc_pressure*exp(-standard_pressure)
     case default
