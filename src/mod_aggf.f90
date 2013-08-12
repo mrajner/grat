@@ -82,7 +82,7 @@ function aggf ( &
   logical, intent(in), optional :: &
     first_derivative_h , first_derivative_z, predefined
   character (len=*) , intent(in), optional  :: fels_type , method
-  real(dp) :: aggf
+  real(4) :: aggf
   real(dp) :: zmin_, zmax_, dz_ , h_
   real(dp) :: J_aux
   real(dp) :: dA, z_ , rho , l , z
@@ -132,7 +132,6 @@ function aggf ( &
     enddo
   endif
 
-  aggf = 0.
   do i = 1 , size(heights)
     l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 & 
       - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
@@ -145,18 +144,12 @@ function aggf ( &
         + 4.*(earth%radius+h_)*(earth%radius+heights(i))*cos(psi)
       aggf =  aggf + rho * (  J_aux  /  l**5  ) * dz_
 
-      ! direct derivative of equation 20 \cite Huang05      
-      !          J_aux = (2.* (earth%radius ) - 2 * (earth%radius +z )*cos(psir)) / (2. * r)
-      !          J_aux =  -r - 3 * J_aux * ((earth%radius+z)*cos(psir) - earth%radius)
-      !          aggf =  aggf +  rho * (  J_aux  /  r**4  ) * dz 
-      !        else
+    else if (present (first_derivative_z) .and. first_derivative_z) then
       ! first derivative (respective to column height)
       ! according to equation 26 in \cite Huang05
       ! micro Gal / hPa / m
-    else if (present (first_derivative_z) .and. first_derivative_z) then
-      !        if (z.eq.h_min) then
-      !          aggf = aggf  &
-      !            + rho*( ((earth%radius + z)*cos(psir) - ( earth%radius + h_station ) ) / ( r**3 ) ) 
+      if (i.gt.1) exit
+                aggf = rho *( ((earth%radius + heights(i))*cos(psi) - (earth%radius + h_ ) ) / ( l**3 ) ) 
     else
       ! GN microGal/hPa
       aggf = aggf -  &
@@ -164,8 +157,6 @@ function aggf ( &
     endif
   enddo
   aggf = aggf / atmosphere%pressure%standard * gravity%constant * green_normalization("m", psi = psi) 
-  !  aggf = aggf / standard_pressure(height=dble(0),t_zero=t_zero) * gravity%constant * green_normalization("m", psi = psi) 
-  !  aggf =  standard_pressure(height=dble(0),t_zero=t_zero) 
 end function
 
 ! ==============================================================================

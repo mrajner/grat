@@ -151,16 +151,15 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   character(*), optional :: method
 
   if (file_exists(filename)) then
-    !    return
-    !  else
+    return
+  else
     print '(a,a)' , "compute_tabulated_green_functions ---> ", trim(filename)
   endif
   ! Get the spherical distances from Merriam92
   if(allocated(green)) deallocate(green)
   allocate(green(1))
-!  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-  green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
-  green(1)%column=[1,5]
+  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  green(1)%column=[1,1]
   call read_green(green(1))
 
   open (                                 & 
@@ -169,29 +168,26 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
     action  = 'write'                    & 
     )
 
-   !print header
-    write ( file_unit,*) '# This is set of AGGF computed using module ', & 
-      'aggf from grat software'
-    write ( file_unit,*) '# Normalization according to Merriam92'
-    write ( file_unit,*) '# Marcin Rajner'
-    write ( file_unit,*) '# For detail see www.geo.republika.pl'
-    write ( file_unit,'(10(a23))')  '#psi[deg]',                         & 
-      'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
-      'GN/dh[microGal/hPa/m]' , 'GN/dz[microGal/hPa/km]'
+  !print header
+  write ( file_unit,*) '# This is set of AGGF computed using module ', & 
+    'aggf from grat software'
+  write ( file_unit,*) '# Normalization according to Merriam92'
+  write ( file_unit,*) '# Marcin Rajner'
+  write ( file_unit,*) '# For detail see www.geo.republika.pl'
+  write ( file_unit,'(10(a23))')  '#psi[deg]',                         & 
+    'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
+    'GN/dh[microGal/hPa/m]' , 'GN/dz[microGal/hPa/km]'
 
 
   !todo
-  file_unit=6
+  !  file_unit=6
   do i= 1, size(green(1)%distance)
-!    if (i.gt.9.or. i.lt.6) cycle
     write(file_unit, '(13f15.6)'), &
       green(1)%distance(i), &
-!      aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
-!      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdt=.true. , predefined=.false.) , &
-!     aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
-!     aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_z=.true.) , &
-      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdz=.true. ) , &
-      green(1)%data(i)
+      aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
+      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdt=.true. , predefined=.false.) , &
+      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
+      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_z=.true.)
   enddo
   close(file_unit)
 end subroutine
