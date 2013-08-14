@@ -105,19 +105,6 @@ gn:
 		-G merriam @GE  \
 		-D2006:10@D  
 
-#     :55.1:15.3 ,\
-	#     :48.7:19.6,\
-	#     :25.6:-1.1,\
-	#     :-3: -56 \
-	gggg:
-
-
-al:
-xxx: ddd tmp runtmp
-
-
-al: grat example
-
 # tmp: tmp.f90 $(OBJS) mod_cmdline.o
 #   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
