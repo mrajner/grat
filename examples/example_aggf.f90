@@ -10,8 +10,9 @@ program example_aggf
   use mod_utilities
   implicit none
   character(20):: host
-  real(dp) :: x
+  real(dp) :: cpu(2)
 
+  call cpu_time(cpu(1))
   call standard1976 ('/home/mrajner/src/grat/examples/standard1976.dat')
   call compare_fels_profiles ('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
   call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
@@ -40,6 +41,8 @@ program example_aggf
 
   !  call mass_vs_height() !'/home/mrajner/src/grat/examples/mass_vs_height.dat')
 
+  call cpu_time(cpu(2))
+  print * , "total", cpu(2)-cpu(1)
 
 
 contains 
@@ -151,7 +154,7 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   character(*), optional :: method
 
   if (file_exists(filename)) then
-    return
+!    return
   else
     print '(a,a)' , "compute_tabulated_green_functions ---> ", trim(filename)
   endif
@@ -159,7 +162,7 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   if(allocated(green)) deallocate(green)
   allocate(green(1))
   green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-  green(1)%column=[1,1]
+  green(1)%column=[1,2]
   call read_green(green(1))
 
   open (                                 & 
@@ -180,14 +183,15 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
 
 
   !todo
-  !  file_unit=6
-  do i= 1, size(green(1)%distance)
+    file_unit=6
+  do i= 1,10! size(green(1)%distance)
     write(file_unit, '(13f15.6)'), &
       green(1)%distance(i), &
       aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
-      aggfd(d2r(green(1)%distance(i)), method=method ,aggfdt=.true. , predefined=.false.) , &
-      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
-      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_z=.true.)
+!      aggfd(d2r(green(1)%distance(i)), method=method ,dz=dz,aggfdt=.true. , predefined=.false.) , &
+!      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
+!      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_z=.true.)
+      green(1)%data(i)
   enddo
   close(file_unit)
 end subroutine

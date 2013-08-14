@@ -4,6 +4,7 @@ program check_transfer
 !  use mod_green
   use mod_utilities ,only: linspace
   use mod_atmosphere
+  use mod_aggf
   implicit none
 
   real (dp), allocatable, dimension(:) :: heights , pressures
@@ -24,8 +25,8 @@ program check_transfer
     pressures(i) = standard_pressure(heights(i),p_zero=pressures(i-1),h_zero = heights(i-1))
   enddo
 
-  do i = 1 , nheight
-    if (i.eq.1) print '(10a18)' , "h", "--", "berg", "--", "simple" , "full"
+  do i = 1 , 2 !nheight
+    if (i.eq.1) print '(10a18)' , "h", "std", "berg", "pred", "simple" , "full"
     print '(10f18.9)' , heights(i),  &
       standard_pressure(heights(i)), &
       standard_pressure(heights(i),method="berg") , &
@@ -36,5 +37,8 @@ program check_transfer
 
   call cpu_time(cpu(2))
   print '(f10.3)' , cpu(2)-cpu(1)
+
+  print *, aggf(psi=dble(0.1*3.14/57), dz = dble(.1), method="full")
+  print *, aggf(psi=dble(0.1*3.14/57), dz = dble(.1),predefined=.false., method="full")
 
 end program

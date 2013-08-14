@@ -149,7 +149,7 @@ function aggf ( &
       ! according to equation 26 in \cite Huang05
       ! micro Gal / hPa / m
       if (i.gt.1) exit
-                aggf = rho *( ((earth%radius + heights(i))*cos(psi) - (earth%radius + h_ ) ) / ( l**3 ) ) 
+      aggf = rho *( ((earth%radius + heights(i))*cos(psi) - (earth%radius + h_ ) ) / ( l**3 ) ) 
     else
       ! GN microGal/hPa
       aggf = aggf -  &
