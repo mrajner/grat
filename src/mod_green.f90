@@ -409,8 +409,8 @@ subroutine convolve (site , date)
 
   result=0
 
-  do igreen = 1 , size(green_common)
-    do idist = 1 , size(green_common(igreen)%distance)
+  do igreen = 1, size(green_common)
+    do idist = 1, size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
       if (info(igreen)%azimuth%step.eq.0) then
         nazimuth = &
