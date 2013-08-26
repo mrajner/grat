@@ -168,11 +168,11 @@ end subroutine
 ! =============================================================================
 !> Convert dates given as string to integer (6 elements)
 !! 
-!! 20110612060302 --> [2011 , 6 , 12 , 6 , 3 , 2
+!! 20110612060302 --> [2011 , 6 , 12 , 6 , 3 , 2 ]
 !! you can omit
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine string2date (string, date )
+subroutine string2date (string, date)
   use mod_utilities, only: is_numeric
   character (*) , intent(in) :: string
   integer , dimension(6) ,intent(out):: date 
