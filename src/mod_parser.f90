@@ -241,9 +241,10 @@ subroutine parse_moreverbose (cmd_line_entry)
             stop
           endif
         endif
-        open( & 
-          newunit=moreverbose(i)%unit, &
-          file =moreverbose(i)%name , action = 'write' & 
+        open(                            & 
+          newunit = moreverbose(i)%unit, & 
+          file    = moreverbose(i)%name, & 
+          action  = 'write'              & 
           )
       else
         moreverbose(i)%unit = output_unit

@@ -615,7 +615,7 @@ end function
 !
 ! working only for regular grid!
 ! =============================================================================
-subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
+subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask)
   use mod_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
@@ -627,7 +627,6 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
   integer :: ilat, ilon 
   integer(2) :: iok
   integer, intent(in),optional :: date(6)
-
 
   total_area = 0
   ocean_area = 0
@@ -659,12 +658,14 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask )
       if (present(date)) then
         write (moreverbose(ind%moreverbose%o)%unit,'(a12,x,a14)', advance='no') , "mjd",  "date"
       endif
-      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "ocean[%]",  "mean_val"
+      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "ocean[%]", "mean_val"
     endif
     if (present(date)) then
       write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
     endif
-    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') , ocean_area/ total_area *100.,  valoceanarea/ ocean_area
+    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
+      ocean_area/total_area*100.,                                & 
+      valoceanarea/ocean_area
   endif
 end subroutine
 
@@ -685,7 +686,7 @@ subroutine total_mass (model, date)
 
 
   totalarea = 0
-  valarea    = 0
+  valarea   = 0
 
   do ilat = 1, size(model%lat)
     do ilon =1,size(model%lon)
@@ -706,5 +707,4 @@ subroutine total_mass (model, date)
   endif
   write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)') ,  valarea/ totalarea
 end subroutine
-
 end module

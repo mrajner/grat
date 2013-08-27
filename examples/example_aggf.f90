@@ -27,7 +27,7 @@ program example_aggf
     call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat', "full")
     call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full_predefined.dat', "full", predefined=.false.)
   !endif
-    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple_predefined.dat', "simple")
+    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', "simple")
     call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple_predefined.dat', "simple", predefined=.false.)
 
   !  call aggf_resp_hmax ()
