@@ -21,15 +21,14 @@ program example_aggf
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
   call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
-
-
-  ! run only on server
+  !run only on server
   !call hostnm(host)
   !if (host.eq."grat") then
-!  do x =1 , 1
-    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat', "full")
-!  enddo
+    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat', "full")
+    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full_predefined.dat', "full", predefined=.false.)
   !endif
+    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple_predefined.dat', "simple")
+    call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple_predefined.dat', "simple", predefined=.false.)
 
   !  call aggf_resp_hmax ()
   !  call aggf_resp_dz ()
@@ -140,7 +139,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine compute_tabulated_green_functions (filename, method,dz)
+subroutine compute_tabulated_green_functions (filename, method, dz, predefined)
   use mod_constants, only:dp
   use mod_aggf , only: aggf, aggfd
   use mod_green, only: green, read_green
@@ -152,9 +151,10 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   real(dp) ::  t_zero , z
   character(100) :: fels_type
   character(*), optional :: method
+  logical, optional, intent(in) :: predefined
 
   if (file_exists(filename)) then
-!    return
+    return
   else
     print '(a,a)' , "compute_tabulated_green_functions ---> ", trim(filename)
   endif
@@ -165,10 +165,10 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   green(1)%column=[1,2]
   call read_green(green(1))
 
-  open (                                 & 
-    newunit = file_unit,                 & 
-    file    = filename, & 
-    action  = 'write'                    & 
+  open (                 & 
+    newunit = file_unit, & 
+    file    = filename,  & 
+    action  = 'write'    & 
     )
 
   !print header
@@ -177,21 +177,17 @@ subroutine compute_tabulated_green_functions (filename, method,dz)
   write ( file_unit,*) '# Normalization according to Merriam92'
   write ( file_unit,*) '# Marcin Rajner'
   write ( file_unit,*) '# For detail see www.geo.republika.pl'
-  write ( file_unit,'(10(a23))')  '#psi[deg]',                         & 
-    'GN[microGal/hPa]'       , 'GN/dT[microGal/hPa/K]' ,               & 
-    'GN/dh[microGal/hPa/m]' , 'GN/dz[microGal/hPa/km]'
+  write ( file_unit,'(10(a23))')  '#psi[deg]',                       & 
+    'GN[microGal/hPa]'     , 'GN/dT[microGal/hPa/K]' ,               & 
+    'GN/dh[microGal/hPa/m]', 'GN/dz[microGal/hPa/km]'
 
-
-  !todo
-    file_unit=6
-  do i= 1,10! size(green(1)%distance)
+  do i= 1, size(green(1)%distance)
     write(file_unit, '(13f15.6)'), &
       green(1)%distance(i), &
-      aggf(d2r(green(1)%distance(i)),method=method, dz=dz), &
-!      aggfd(d2r(green(1)%distance(i)), method=method ,dz=dz,aggfdt=.true. , predefined=.false.) , &
-!      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_h=.true.) , &
-!      aggf(d2r(green(1)%distance(i)),method=method, dz=dz,first_derivative_z=.true.)
-      green(1)%data(i)
+      aggf (d2r(green(1)%distance(i)), method=method, dz=dz), &
+      aggfd(d2r(green(1)%distance(i)), method=method, dz=dz , aggfdt=.true.             , predefined=predefined), &
+      aggf (d2r(green(1)%distance(i)), method=method, dz=dz , first_derivative_h=.true.), &
+      aggf (d2r(green(1)%distance(i)), method=method, dz=dz , first_derivative_z=.true.)
   enddo
   close(file_unit)
 end subroutine
