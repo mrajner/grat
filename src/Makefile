@@ -7,6 +7,9 @@
 #   $(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
 #   ./atmp
 
+i: grat
+	grat -F $(SP) , $(LS) -D m:m -Sj -G -I5@DD -o /dev/null
+
 ll: ../bin/barometric_formula rrrx
 rrrx:
 	../bin/barometric_formula

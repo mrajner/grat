@@ -179,8 +179,9 @@ program grat
         call convolve (site(isite))
       endif
       if (output%unit.ne.output_unit) then 
-        call progress(100*iprogress/(max(size(date),1)*max(size(site),1)))
-        call progress(100*iprogress/(max(size(date),1)*max(size(site),1)))
+        call cpu_time(cpu(2))
+        call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), &
+          cpu(2)-cpu(1))
       endif
 
     enddo
