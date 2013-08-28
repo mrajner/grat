@@ -1,7 +1,7 @@
 # this makefile simple link to rules in main Makefile
 # in grat/src
 
-all: example_aggf run
+all: example_aggf run ../dat/rajner_green.dat
 
 example_aggf: example_aggf.f90 ../src/mod_atmosphere.f90 ../src/mod_aggf.f90 ../src/mod_green.f90
 	@make mod_green.o mod_atmosphere.o mod_aggf.o -C ../src/
@@ -9,3 +9,6 @@ example_aggf: example_aggf.f90 ../src/mod_atmosphere.f90 ../src/mod_aggf.f90 ../
 
 run:
 	@./example_aggf
+
+../dat/rajner_green.dat:
+	ln -s ../dat/rajner_green_full.dat $@
