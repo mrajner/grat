@@ -59,6 +59,7 @@ subroutine parse_green (cmd_line_entry)
     endif
     if (cmd_line_entry%field(i)%subfield(1)%dataname.eq."") then
       green(i)%dataname = "NN"
+      stop "green NN"
     else
       green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
     endif

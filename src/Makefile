@@ -8,7 +8,7 @@
 #   ./atmp
 
 i: grat
-	grat -F $(SP) , $(LS) -D m:m -Sj -G -I5@DD -o /dev/null
+	grat -F $(SP) , $(LS) -Dm:10@D:2@D -H -V -Sj -G ../dat/rajner_green.dat@GN:1:2, @GNC -L@g 
 
 ll: ../bin/barometric_formula rrrx
 rrrx:
@@ -125,7 +125,7 @@ DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 T       = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
-LS      = $(NCEP_DIR)/land.nc:land
+LS      = $(NCEP_DIR)/land.nc@LS:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
 	FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
