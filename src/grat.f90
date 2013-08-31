@@ -185,7 +185,6 @@ program grat
           *max(size(site),1)),             & 
           cpu(2)-cpu(1))
       endif
-
     enddo
   enddo
 
