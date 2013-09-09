@@ -118,7 +118,7 @@ FC = ifort
 FLAGS =   # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
-NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff  
+NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
 
 # data for computation
 DAT_DIR  = /home/mrajner/dat
