@@ -34,7 +34,17 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   case ('-V')
     write(log%unit, form%i3) 'verbose mode' 
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
-      write(log%unit, form_62) 'the log file was set:' ,log%name
+      write(log%unit, form_62) 'the log file was set:', log%name
+    endif
+    if (any(cmd_line_entry%field(1)%subfield(2:)%name.eq."s")) then
+      log%sparse = .true.
+    endif
+    if (any(cmd_line_entry%field(1)%subfield(2:)%name.eq."nc")) then
+      log%noclobber = .true.
+    endif
+    if (file_exists(log%name).and.log%noclobber) then
+      write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
+      call exit(1)
     endif
   case ('-S','-R')
     call parse_site(cmd_line_entry)
@@ -81,7 +91,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     write(log%unit, form_62), 'output file was set: ' , trim(output%name)
     if (file_exists(output%name).and.output%noclobber) then
       write(log%unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
-      stop
+      call exit(1)
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit , file = output%name , action = "write" )
@@ -177,9 +187,8 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
   do i = 1, int(len(trim(dummy))/72)+1
-    write (log%unit, '(a72)' ) trim(dummy(72*(i-1)+1:))
+    write (log%unit, '(a72)') trim(dummy(72*(i-1)+1:))
   enddo
-
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command parsing:"
   do i =1 , size(cmd_line)
