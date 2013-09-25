@@ -252,7 +252,7 @@ docman: doc
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
-install: installprogs installlib
+install: all installprogs installlib
 
 installprogs: $(PROGS) 
 	ln -sf /home/mrajner/src/grat/bin/*  ~/.local/bin/
