@@ -123,7 +123,7 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
     write(output_unit , '(a)' ) , &
       'No cmd line args! Try: ./'//program_calling//' -h' 
-    call exit
+    call exit(1)
   endif
 
   call get_command_cleaned(dummy)

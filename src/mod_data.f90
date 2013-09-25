@@ -111,7 +111,7 @@ subroutine parse_model (cmd_line_entry)
       model(i)%latrange=[-90, 90]
     else
       call print_warning ("model")
-      stop
+      call exit(1)
     endif
   enddo
 end subroutine
