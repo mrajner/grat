@@ -58,15 +58,8 @@ sx: grat
 	#     -P ../polygon/baltyk.poly:- \
 	#     -Dm  -L@s , p@p:s
 
-
-oo: value_check
-	value_check \
-		-F /home/mrajner/dat/ncep_reanalysis/pres.sfc.2009.nc @ SP :pres\
-		-S j :52:21 \
-		-D 2009:200904  -H -o tmp2
-iiiii: grat rrrr
-r:
-	../bin/grat  -S \
+wghm_example:
+	grat  -S \
 		joze:52.0:21 \
 		-F \
 		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
@@ -160,6 +153,7 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 mod_atmosphere.o mod_utilities.o: mod_constants.o
+mod_atmosphere.o:mod_printing.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
@@ -267,7 +261,10 @@ installlib: /usr/local/lib/libgrat.a
 	@echo "library grat sucessfully installed"
 
 rmlib:
-	-sudo rm /usr/local/include/mod_*
+	-sudo rm \
+		/usr/local/include/mod_* \
+		/usr/local/lib/libgrat.a \
+		~/.local/bin/{grat,value_check,polygon_check}
 
 clean: rmlib
 	rm -f *.o *.mod *.a fort?????? tmp*

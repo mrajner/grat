@@ -85,7 +85,7 @@ program grat
   ! for progress bar
   if (output%unit.ne.output_unit) open (unit=output_unit, carriagecontrol='fortran')
 
-  start=0
+  start = 0
 
   if (size(date).gt.0) then
     if(output%header) then
@@ -110,8 +110,8 @@ program grat
     write (output%unit , *)
   endif
 
-  do idate = start , size (date)
-    do isite = 1 , size(site)
+  do idate = start, size (date)
+    do isite = 1, size(site)
       iprogress = iprogress + 1
 
       do i = 1 , size(model)
@@ -185,7 +185,6 @@ program grat
           *max(size(site),1)),             & 
           cpu(2)-cpu(1))
       endif
-
     enddo
   enddo
 
