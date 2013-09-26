@@ -244,10 +244,10 @@ docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
 
 
-# Change this path according to your system settings
-# Make sure that target path is in your system serch $PATH
 install: all installprogs installlib
 
+# Change this path according to your system settings
+# Make sure that target path is in your system serch $PATH
 installprogs: $(PROGS) 
 	ln -sf /home/mrajner/src/grat/bin/*  ~/.local/bin/
 	@echo "program grat sucessfully installed"
