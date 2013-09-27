@@ -5,7 +5,6 @@ module mod_parser
 
   implicit none
 
-
 contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
