@@ -263,8 +263,7 @@ installlib: /usr/local/lib/libgrat.a
 rmlib:
 	-sudo rm \
 		/usr/local/include/mod_* \
-		/usr/local/lib/libgrat.a \
-		~/.local/bin/{grat,value_check,polygon_check}
+		/usr/local/lib/libgrat.a 
 
 clean: rmlib
 	rm -f *.o *.mod *.a fort?????? tmp*
