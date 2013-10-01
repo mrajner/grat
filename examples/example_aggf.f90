@@ -153,7 +153,7 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
   logical, optional, intent(in) :: predefined
 
   if (file_exists(filename)) then
-!    return
+    return
   else
     print '(a,a)', "compute_tabulated_green_functions --> ", trim(filename)
   endif
@@ -161,7 +161,7 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
   if(allocated(green)) deallocate(green)
   allocate(green(1))
   green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-!  green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
+  !green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
   green(1)%column=[1,2]
   call read_green(green(1), print=.false.)
 
@@ -181,7 +181,7 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
   'GN[microGal/hPa]'     , 'GN/dT[microGal/hPa/K]' ,               & 
   'GN/dh[microGal/hPa/m]', 'GN/dz[microGal/hPa/m]'
 
-  file_unit=6 !testing
+  !file_unit=6 !testing
   do i= 1, size(green(1)%distance)
     write(file_unit, '(13f15.6)'), &
     green(1)%distance(i), &
