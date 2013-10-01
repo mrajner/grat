@@ -7,12 +7,13 @@
 #   $(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
 #   ./atmp
 
-i: grat
-	grat -F $(SP) , $(LS) -Dm:10@D:2@D -H -V -Sj -G ../dat/rajner_green.dat@GN:1:2, @GNC -L@g 
+# ddd: libgrat.a fdsdf ll
+# i: grat
+#   grat -F $(SP) , $(LS) -Dm:10@D:2@D -H -V -Sj -G ../dat/rajner_green.dat@GN:1:2, @GNC -L@g 
 
-ll: ../bin/barometric_formula rrrx
-rrrx:
-	../bin/barometric_formula
+# ll: ../bin/barometric_formula rrrx
+# rrrx:
+#   ../bin/barometric_formula
 		 
 # i:value_check
 #   value_check \
@@ -155,14 +156,14 @@ OBJS = $(SRCS:.f90=.o)
 mod_atmosphere.o mod_utilities.o: mod_constants.o
 mod_atmosphere.o:mod_printing.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o
-mod_date.o:mod_data.o
-mod_mjd.o: mod_constants.o
-mod_polygon.o:mod_printing.o mod_cmdline.o
-mod_printing.o: mod_cmdline.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
+# mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o
+# mod_date.o:mod_data.o
+# mod_mjd.o: mod_constants.o
+# mod_polygon.o:mod_printing.o mod_cmdline.o
+# mod_printing.o: mod_cmdline.o
 
 ../examples/example_aggf: mod_green.o $(OBJS)
 

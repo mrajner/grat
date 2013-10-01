@@ -21,7 +21,16 @@ contains
 !! \date 2013-03-19
 !! \warning psi in radians
 ! ==============================================================================
-function aggfd (psi, delta, dz , method, aggfdh, aggfdz , aggfdt, predefined)
+function aggfd ( & 
+    psi,         & 
+    delta,       & 
+    dz,          & 
+    method,      & 
+    aggfdh,      & 
+    aggfdz,      & 
+    aggfdt,      & 
+    predefined,  & 
+    fels_type)
   use mod_constants, only: atmosphere, dp
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: delta
@@ -29,43 +38,77 @@ function aggfd (psi, delta, dz , method, aggfdh, aggfdz , aggfdt, predefined)
   logical, intent (in), optional :: aggfdh , aggfdz , aggfdt, predefined
   real(dp) :: aggfd
   real(dp) :: delta_ 
-  character (len=*) , intent(in), optional  :: method
+  character (len=*) , intent(in), optional  :: method, fels_type
 
   delta_ = 10. ! Default value
   if (present(delta))  delta_ = delta
 
-
   if(present(aggfdh).and.aggfdh) then
-    aggfd = (                                                                   & 
-      + aggf (psi, h = +delta_, dz=dz, method = method, predefined=predefined ) & 
-      - aggf (psi, h = -delta_, dz=dz, method = method, predefined=predefined)) & 
+    aggfd = (                & 
+      + aggf (psi,           & 
+      h=+delta_,             & 
+      dz=dz,                 & 
+      method=method,         & 
+      predefined=predefined, & 
+      fels_type=fels_type )  & 
+      - aggf (psi,           & 
+      h=-delta_,             & 
+      dz=dz,                 & 
+      method=method,         & 
+      predefined=predefined, & 
+      fels_type=fels_type))  & 
       / ( 2. * delta_)
   else if(present(aggfdz).and.aggfdz) then
-    aggfd = (                                                                      & 
-      + aggf (psi, zmin = +delta_, dz=dz, method = method, predefined=predefined ) & 
-      - aggf (psi, zmin = -delta_, dz=dz, method = method, predefined=predefined)) & 
+    aggfd = (                & 
+      + aggf (psi,           & 
+      zmin = +delta_,        & 
+      dz=dz,                 & 
+      method = method,       & 
+      predefined=predefined, & 
+      fels_type=fels_type )  & 
+      - aggf (psi,           & 
+      zmin = -delta_,        & 
+      dz=dz,                 & 
+      method = method,       & 
+      predefined=predefined, & 
+      fels_type=fels_type))  & 
       / ( 2. * delta_)
   else if(present(aggfdt).and.aggfdt) then
-    aggfd = (                                                                                                       & 
-      + aggf (psi, t_zero = atmosphere%temperature%standard+delta_, dz=dz, method = method, predefined=predefined ) & 
-      - aggf (psi, t_zero = atmosphere%temperature%standard-delta_, dz=dz, method = method, predefined=predefined)) & 
+    aggfd = (                & 
+      + aggf (psi,           & 
+      t_zero = +delta_,      & 
+      dz=dz,                 & 
+      method = method,       & 
+      predefined=predefined, & 
+      fels_type=fels_type)   & 
+      - aggf (psi,           & 
+      t_zero = -delta_,      & 
+      dz=dz,                 & 
+      method = method,       & 
+      predefined=predefined, & 
+      fels_type=fels_type))  & 
       / ( 2. * delta_)
   endif
 end function
 
 ! ==============================================================================
-!> This subroutine computes the value of atmospheric gravity green functions
+!> This function computes the value of atmospheric gravity green functions
 !! (AGGF) on the basis of spherical distance (psi)
 !! \author Marcin Rajner
 !! \date 2013.07.15
 !! \warning psi in radians h in meter
 ! ==============================================================================
-function aggf ( &
-    psi, &
-    zmin, zmax, dz, &
-    t_zero, &
-    h, first_derivative_h, first_derivative_z, fels_type, &
-    method , predefined)
+function aggf (       & 
+    psi,                & 
+    zmin, zmax, dz,     & 
+    t_zero,             & 
+    h,                  & 
+    first_derivative_h, & 
+    first_derivative_z, &
+    fels_type,          & 
+    method,             & 
+    predefined,         &
+    rough)
 
   use mod_constants, only: dp, pi, earth, gravity, atmosphere, R_air
   use mod_utilities, only: d2r
@@ -80,12 +123,13 @@ function aggf ( &
     t_zero, & ! temperature at the surface     [K]     (default = 288.15=t0)
     h         ! station height                 [m]     (default = 0)
   logical, intent(in), optional :: &
-    first_derivative_h , first_derivative_z, predefined
-  character (len=*) , intent(in), optional  :: fels_type , method
-  real(4) :: aggf
-  real(dp) :: zmin_, zmax_, dz_ , h_
+    first_derivative_h, first_derivative_z, predefined, rough
+  character (len=*), intent(in), optional  :: fels_type , method
+  character (len=20) :: old_method
+  real(dp) :: aggf
+  real(dp) :: zmin_, zmax_, dz_ , h_ , old_t_zero
   real(dp) :: J_aux
-  real(dp) :: dA, z_ , rho , l , z
+  real(dp) :: dA, z_, rho, l, z, deltat
 
   real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
@@ -99,6 +143,7 @@ function aggf ( &
   if (present(zmax)) zmax_ = zmax
   if (present(  dz))   dz_ = dz
   if (present(   h))    h_ = h
+  if (present(t_zero)) deltat=t_zero
 
   if(allocated(heights)) then
     if ( &
@@ -106,6 +151,8 @@ function aggf ( &
       .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6 &
       .or.nint((zmax_-zmin_)/dz_).ne.size(heights) &
       .or. (present(predefined)) &
+      .or. method.ne.old_method &
+      .or. present(t_zero) &
       ) then
       deallocate(heights)
       deallocate(pressures)
@@ -120,23 +167,42 @@ function aggf ( &
         + dz_/2  &
         + (i-1) * dz_
     enddo
-    pressures(1) = standard_pressure(heights(1),method=method, t_zero=t_zero)
-    do i = 2 , size(heights)
-      pressures(i) = standard_pressure(                          & 
-        heights(i),                                              & 
-        p_zero=pressures(i-1),                                   & 
-        h_zero = heights(i-1),                                   & 
-        method=method,                                           & 
-        t_zero=standard_temperature(heights(i-1), t_zero=t_zero) & 
+    if (present(rough).and.rough) then
+      ! do not use rough! it is only for testing
+      do i = 1, size(heights)
+        pressures(i) = standard_pressure ( & 
+          heights(i),                      & 
+          method=method,                   & 
+          dz=dz                            & 
+          )
+      enddo
+    else
+      pressures(1) = standard_pressure( &
+        heights(1), &
+        method = method, &
+        h_zero = zmin_ , &
+        dz = dz, &
+        temperature = standard_temperature(zmin_, fels_type=fels_type) +deltat & 
         )
-    enddo
+      do i = 2 , size(heights)
+        pressures(i) = standard_pressure(                                       & 
+          heights(i),                                                           & 
+          p_zero = pressures(i-1),                                              & 
+          h_zero = heights(i-1),                                                & 
+          method = method,                                                      & 
+          dz = dz,                                                              & 
+          temperature = standard_temperature(heights(i-1), fels_type=fels_type) +deltat & 
+          )
+      enddo
+    endif
   endif
+  old_method=method
 
-  do i = 1 , size(heights)
+  do i = 1, size(heights)
     l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 & 
       - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
-    rho = pressures(i)/ R_air / standard_temperature( heights(i), t_zero=t_zero )
-    if ( present ( first_derivative_h) .and. first_derivative_h ) then
+    rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
+    if (present(first_derivative_h) .and. first_derivative_h) then
       ! first derivative (respective to station height)
       ! micro Gal height / m
       ! see equation 22, 23 in \cite Huang05
@@ -149,7 +215,7 @@ function aggf ( &
       ! according to equation 26 in \cite Huang05
       ! micro Gal / hPa / m
       if (i.gt.1) exit
-      aggf = rho *( ((earth%radius + heights(i))*cos(psi) - (earth%radius + h_ ) ) / ( l**3 ) ) 
+      aggf = rho *( ((earth%radius + heights(i))*cos(psi)-(earth%radius + h_)) / (l**3)) 
     else
       ! GN microGal/hPa
       aggf = aggf -  &

@@ -7,38 +7,45 @@ program check_transfer
   use mod_aggf
   implicit none
 
-  real (dp), allocatable, dimension(:) :: heights , pressures
+  real (dp), allocatable, dimension(:) :: heights , pressures, pressures2
   integer :: i, nheight
 
+  real(dp) :: dz
   real(dp) :: cpu(2)
+  character(20):: method
+
   call cpu_time(cpu(1))
 
-  nheight=25
+  dz =4000
+  nheight=nint(60000./dz)
   allocate(heights(nheight))
   allocate(pressures(nheight))
+  allocate(pressures2(nheight))
 
-  heights = linspace(real(0,dp),real(48000,dp),nheight)
+  heights = linspace(real(0,dp),real(60000,dp),nheight) 
 
-  pressures(1) = standard_pressure(heights(1),method="full")
+  pressures(1) = standard_pressure(heights(1), h_zero=heights(1))
   do i = 2 , nheight
-!    pressures(i) = standard_pressure(heights(i),p_zero=pressures(i-1),h_zero = heights(i-1),method="full")
     pressures(i) = standard_pressure(heights(i),p_zero=pressures(i-1),h_zero = heights(i-1))
   enddo
+  pressures2(1) = standard_pressure(heights(1), h_zero=heights(1), method="full")
+  do i = 2 , nheight
+    pressures2(i) = standard_pressure(heights(i),p_zero=pressures2(i-1),h_zero = heights(i-1),method="full" )
+  enddo
 
-  do i = 1 , 2 !nheight
-    if (i.eq.1) print '(10a18)' , "h", "std", "berg", "pred", "simple" , "full"
+  do i = max(1,nheight-40) , nheight
     print '(10f18.9)' , heights(i),  &
       standard_pressure(heights(i)), &
       standard_pressure(heights(i),method="berg") , &
       pressures(i), &
+      pressures2(i), &
       standard_pressure(heights(i),method="simple"), & 
-      standard_pressure(heights(i),method="full") 
+      standard_pressure(heights(i),method="full", dz=dble(0.1)) 
   enddo
+    print '(10a18)' , "h", "std", "berg", "pred", "pred2", "simple" , "full"
 
   call cpu_time(cpu(2))
-  print '(f10.3)' , cpu(2)-cpu(1)
+  print '(a,f10.3)' , "execution time [s]:", cpu(2)-cpu(1)
 
-  print *, aggf(psi=dble(0.1*3.14/57), dz = dble(.1), method="full")
-  print *, aggf(psi=dble(0.1*3.14/57), dz = dble(.1),predefined=.false., method="full")
 
 end program

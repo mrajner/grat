@@ -9,6 +9,3 @@ example_aggf: example_aggf.f90 ../src/mod_atmosphere.f90 ../src/mod_aggf.f90 ../
 
 run:
 	@./example_aggf
-
-../dat/rajner_green.dat:
-	ln -s ../dat/rajner_green_full.dat $@
