@@ -63,9 +63,9 @@ program value_check
         ! for 'static' data files get_variable was performed
         ! during read_netCDF
         if (allocated(date)) then
-           call get_variable (model(i), date = date(j)%date , huge= model(i)%dataname)
+           call get_variable (model(i), date = date(j)%date , huge=model(i)%dataname)
         else
-          call get_variable (model(i) , huge = model(i)%dataname)
+          call get_variable (model(i) , huge=model(i)%dataname)
         endif
       endif
     enddo

@@ -21,7 +21,7 @@
 #      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
 #     -S j -Dm:1@D -V
-
+o: value_check
 fdsdf: mod_aggf.o mod_green.o
 	make -C ../examples/
 

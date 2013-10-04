@@ -100,6 +100,7 @@ function standard_pressure ( &
       else
         dz_ = 0.1
       endif
+      if (sfc_height.gt.height) dz_=-dz_
       do z_=sfc_height+dz_/2, height, dz_
         standard_pressure = standard_pressure &
         + standard_gravity(sfc_height)/(R_air * sfc_temperature )*dz_
@@ -115,6 +116,7 @@ function standard_pressure ( &
     **(earth%gravity%mean /R_air/alpha)
   endif 
   if (isnan(standard_pressure)) standard_pressure=0
+!  if (sfc_height.gt.height) standard_pressure=-standard_pressure
 end function
 
 

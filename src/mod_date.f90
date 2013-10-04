@@ -27,23 +27,21 @@ subroutine parse_date (cmd_line_entry)
   use mod_data
   integer , dimension(6) :: start , stop , swap 
   real (dp) :: step 
-  integer :: i_ , i ,  start_index
+  integer :: i_, i, start_index, i_aux
   character(1) :: interval_unit
   type(cmd_line_arg)  :: cmd_line_entry
-
-  
 
   if (allocated(date)) then
     call print_warning ("repeated")
     return
   endif
-  do i_ = 1 , size(cmd_line_entry%field)
+  do i_ = 1, size(cmd_line_entry%field)
     interval_unit = "h"
     write(log%unit,form%i2) trim(cmd_line_entry%field(i_)%full)
     call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
-      if ( size(model(1)%date) .eq. 0) then
+      if (size(model(1)%date).eq.0) then
         stop "NO dates in first model. -Dm is forbidden"
       else
         start = model(1)%date(lbound(model(1)%date,1),1:6)
@@ -77,7 +75,7 @@ subroutine parse_date (cmd_line_entry)
     else
       stop = start
     endif
-    if (size(cmd_line_entry%field(i_)%subfield).ge.3 )then
+    if (size(cmd_line_entry%field(i_)%subfield).ge.3)then
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
       case("M","D","Y")
@@ -114,7 +112,7 @@ subroutine parse_date (cmd_line_entry)
       endif
       if (interval_unit.eq."M") then
         call more_dates &
-          ( int((12*(stop(1) - start(1))+stop(2)-start(2))/(step)) +1  , start_index)
+          (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
         date(start_index)%date=start
         date(start_index)%mjd=mjd(date(start_index)%date)
         do i= start_index+1 ,size(date)
@@ -131,19 +129,38 @@ subroutine parse_date (cmd_line_entry)
         enddo
       endif
     else
-      if (interval_unit.eq."D") step = 24. * step
-      if (interval_unit.eq."m") step = step /60.
-      if (interval_unit.eq."s") step = step /60./60.
+      if (cmd_line_entry%field(i_)%subfield(1)%name=="m" &
+        .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
+        .and. ( &
+        size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
+        cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
+        ) &
+        ) then
+        if (size(cmd_line_entry%field(i_)%subfield).lt.3) step=1
+        if (step.gt.size(model(1)%time)) step=size(model(1)%time)
+        call more_dates (nint(size(model(1)%time)/step),start_index)
+        i_aux=0
+        do i = 1, size(model(1)%time), int(step)
+          i_aux=i_aux+1
+          date(i_aux)%date = model(1)%date(i,:)
+          date(i_aux)%mjd =mjd (date(i_aux)%date)
+        enddo
+      else
+        if (interval_unit.eq."D") step = 24. * step
+        if (interval_unit.eq."m") step = step/60.
+        if (interval_unit.eq."s") step = step/60./60.
 
-      call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index )
-      do i = start_index , size(date)
-        date(i)%mjd = mjd(start) + ( i - start_index ) * step / 24.
-        call invmjd ( date(i)%mjd , date(i)%date)
-      enddo
+        call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index )
+        do i = start_index , size(date)
+          date(i)%mjd = mjd(start) + (i-start_index)*step/24.
+          call invmjd (date(i)%mjd, date(i)%date)
+        enddo
+      endif
     endif
   enddo
   write (log%unit , form%i3) "dates total:" , size(date)
 end subroutine
+
 ! =============================================================================
 ! =============================================================================
 subroutine more_dates (number, start_index)
@@ -163,7 +180,6 @@ subroutine more_dates (number, start_index)
     start_index=1
   endif
 end subroutine
-
 
 ! =============================================================================
 !> Convert dates given as string to integer (6 elements)

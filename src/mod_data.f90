@@ -14,8 +14,7 @@ module mod_data
 
   implicit none
   type file
-    !    character(:), allocatable :: name 
-    character(60) :: name 
+    character(90) :: name 
 
     ! varname,lonname,latname,levelname,timename
     character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
@@ -26,7 +25,7 @@ module mod_data
     ! if file was determined
     logical :: if =.false.
 
-    real(dp), allocatable, dimension(:) :: lat , lon , time ,level
+    real(dp), allocatable, dimension(:) :: lat, lon, time, level
     integer , allocatable, dimension(:,:) :: date
 
     real (dp), dimension(2) :: latrange , lonrange
@@ -34,7 +33,6 @@ module mod_data
     logical :: if_constant_value  !, if_time, if_level
     real(dp):: constant_value
 
-    ! 4 dimension - lat , lon , level , mjd
     real(dp) , allocatable , dimension(:,:,:) :: data
 
     ! netcdf identifiers
@@ -115,9 +113,13 @@ subroutine parse_model (cmd_line_entry)
     endif
   enddo
 end subroutine
-function variable_modifer(val, modifer)
+
+! =============================================================================
+! =============================================================================
+function variable_modifer (val, modifer)
   !todo
   use mod_atmosphere, only: geop2geom
+  use mod_constants, only: earth
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
   character(*), intent(in) :: modifer
@@ -125,7 +127,14 @@ function variable_modifer(val, modifer)
   select case (modifer)
   case ("g2h")
     variable_modifer=geop2geom(val)
+  case ("gh2h")
+    variable_modifer=geop2geom(val)
+  case ("gp2gh")
+    variable_modifer=val/earth%gravity%mean
+  case ("gp2h")
+    variable_modifer=geop2geom(val)/earth%gravity%mean
   case default
+    stop "variable modifer not found"
     variable_modifer=val
   end select
 end function
@@ -133,19 +142,22 @@ end function
 ! =============================================================================
 !> Read netCDF file into memory
 ! =============================================================================
-subroutine read_netCDF (model)
+subroutine read_netCDF (model, print)
   use netcdf
   use mod_printing
   type (file) :: model
+  logical, optional :: print
   integer :: i 
 
-  write (log%unit , form%i3) "Opening file:" , trim(model%name)
-  call check ( nf90_open ( model%name , nf90_nowrite , model%ncid ) )
+  if (.not. (present(print).and. .not. print)) then
+    write (log%unit , form%i3) "Opening file:" , trim(model%name)
+  endif
+  call check (nf90_open (model%name, nf90_nowrite, model%ncid))
 
   do i = 2,5
-    call get_dimension (model, i)
+    call get_dimension (model, i , print=print)
   enddo
-  if (size (model%time).ge.1) call nctime2date (model)
+  if (size (model%time).ge.1) call nctime2date (model, print=print)
 end subroutine
 
 ! =============================================================================
@@ -153,33 +165,44 @@ end subroutine
 !! \author Marcin Rajner
 !! \date 2013.05.24
 ! =============================================================================
-subroutine get_dimension (model , i)
+subroutine get_dimension (model , i, print)
   use netcdf
   use mod_printing
   type(file) :: model
   integer :: dimid , varid 
   integer , intent(in) :: i
   integer :: length , status
+  logical, optional :: print
 
-  write (log%unit , form%i4, advance='no') "Getting dim:",trim(model%names(i)), ".."
+  if (.not. (present(print).and..not.print))then
+    write (log%unit , form%i4, advance='no') "Getting dim:",trim(model%names(i)), ".."
+  endif
   status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
   if (status /=nf90_noerr) then
     if(model%names(i).eq."lon") then
       model%names(i)="longitude"
-      write(log%unit, '(a)', advance='no') "longitude"
+      if (.not. (present(print).and..not.print))then
+        write(log%unit, '(a)', advance='no') "longitude"
+      endif
       status = nf90_inq_dimid(model%ncid,"longitude", dimid)
     else if(model%names(i).eq."lat") then
       model%names(i)="latitude"
-      write(log%unit, '(a)', advance='no') "latitude"
+      if (.not. (present(print).and..not.print))then
+        write(log%unit, '(a)', advance='no') "latitude"
+      endif
     endif
     status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
   endif
   if(status /= nf90_noerr) then 
-    write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
-    call nc_info(model)
+    if (.not. (present(print).and..not.print))then
+      write (log%unit , '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
+      call nc_info(model)
+    endif
     length=1
   else
-    write (log%unit , '(a6,1x,a)') "ok"
+    if (.not. (present(print).and..not.print))then
+      write (log%unit , '(a6,1x,a)') "ok"
+    endif
     call check (nf90_inquire_dimension(model%ncid, dimid , len = length) )
     call check (nf90_inq_varid(model%ncid, model%names(i) , varid))
   endif
@@ -217,7 +240,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-04
 ! =============================================================================
-subroutine nctime2date (model)
+subroutine nctime2date (model, print)
   use netcdf
   use mod_printing
   use mod_constants, only: dp
@@ -226,13 +249,16 @@ subroutine nctime2date (model)
   real(dp)           :: mjd_start , mjd_
   integer            :: varid ,i, ind(2) , date (6) , status
   character (len=66) :: dummy
+  logical, optional :: print
 
-  status = nf90_inq_varid (model%ncid, "time", varid)
+  status = nf90_inq_varid (model%ncid, model%names(5), varid)
   if (status /=nf90_noerr) return
   call check (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
-  write(log%unit, form%i4) "Converting time: " , trim(dummy)
+  if (.not. (present(print).and..not.print))then
+    write(log%unit, form%i4) "Converting time: " , trim(dummy)
+  endif
   if (dummy.eq. "hours since 1-1-1 00:00:0.0") then
     ! -2 is necessary to keep it with ncep convention
     ! this may need (?) change for other data fields
@@ -255,6 +281,22 @@ subroutine nctime2date (model)
     !    mjd_start =  mjd([1900,1,1,0,0,0])
     !  else if (dummy.eq. "hours since 1800-1-1 00:00:0.0") then
     !    mjd_start =  mjd([1800,1,1,0,0,0])
+  else if (index(dummy,"Days since").eq.1) then
+    ! this option for gldas from grace tellus
+    do i=1,2
+      dummy = dummy(index(dummy, ' ')+1:)
+    enddo
+    do 
+      ind=[index(dummy,'-'), index(dummy,':')]
+      do i=1,2
+        if (ind(i).ne.0) dummy = dummy(1:ind(i)-1)//" "//dummy(ind(i)+i:)
+      enddo
+      if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0) exit
+    enddo
+    dummy = dummy//" 0 0 0"
+    read(dummy,*) date(1:3)
+    mjd_start = mjd (date)
+    model%time = model%time *24
   else
     write (log%unit , form%i4 ) "unknown time begining"
   endif
@@ -289,7 +331,7 @@ subroutine nc_info(model)
   use netcdf
   use mod_printing
   type (file), intent(in) :: model
-  integer :: ndims , nvars, i
+  integer :: ndims, nvars, i
   integer, allocatable, dimension(:) :: varids
   character(10), allocatable, dimension(:) :: name
 
@@ -307,7 +349,7 @@ end subroutine
 ! =============================================================================
 !> \brief Get variable from netCDF file for specified variables
 ! =============================================================================
-subroutine get_variable(model, date, huge)
+subroutine get_variable(model, date, huge, print)
   use netcdf
   use mod_printing
   type (file), intent(inout) :: model
@@ -315,8 +357,9 @@ subroutine get_variable(model, date, huge)
   integer :: varid ,status
   integer :: start(3)
   integer :: index_time, i , j , k
-  character(10), intent(in), optional :: huge
+  character(*), intent(in), optional :: huge
   real (dp) :: scale_factor, add_offset
+  logical, optional :: print
 
   if (present(huge)) then
     if (huge.eq."huge") then
@@ -325,7 +368,7 @@ subroutine get_variable(model, date, huge)
   endif
 
   index_time = 0
-  status =  nf90_inq_varid ( model%ncid , model%names(1) ,  varid )
+  status = nf90_inq_varid (model%ncid, model%names(1), varid)
   if (status /= nf90_noerr) call nc_info(model)
   if (allocated(model%data)) deallocate(model%data)
   !  model%level=1
@@ -335,8 +378,11 @@ subroutine get_variable(model, date, huge)
   if (size(date).gt.0 .and. present(date)) then                       
     index_time = get_time_index(model, date)
     if (index_time.eq.0) then
-      write(log%unit,form%i3) "Cannot find date:", date, &
-        "var:", trim(model%names(1)), "file:" , model%name
+
+      if (.not. (present(print).and..not.print))then
+        write(log%unit,form%i3) "Cannot find date:", date, &
+          "var:", trim(model%names(1)), "file:" , model%name
+      endif
       model%data= sqrt(-1.)
       return
     endif
@@ -428,7 +474,7 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
   integer  :: ilon, ilat, ilon2, ilat2 , varid ,status
   real(dp), dimension(4,3) :: array_aux 
   real(dp) :: scale_factor, add_offset
-  character (10), intent(in), optional::huge
+  character (*), intent(in), optional::huge
   integer, intent(in), optional::date(6)
 
   if (present(level)) ilevel=level
@@ -456,10 +502,13 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
   ! do not look into data array - get value directly 
   if (present(huge)) then
     if (huge.eq."huge") then
-      call check ( nf90_inq_varid ( model%ncid , model%names(1) , varid ) )
-      call check (nf90_get_var (model%ncid , varid, val, start = [ilon,ilat,get_time_index(model,date)] ))
+      call check (nf90_inq_varid ( model%ncid , model%names(1) , varid ))
+      call check (nf90_get_var (model%ncid , varid, val, start = [ilon,ilat,get_time_index(model,date)]))
       call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
       if (status==nf90_noerr) val = val *scale_factor + add_offset
+      if (trim(model%datanames(1)).ne."") then
+        val = variable_modifer (val, model%datanames(1))
+      endif
       return
     endif
   endif
