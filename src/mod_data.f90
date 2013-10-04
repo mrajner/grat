@@ -333,7 +333,7 @@ subroutine nc_info(model)
   type (file), intent(in) :: model
   integer :: ndims, nvars, i
   integer, allocatable, dimension(:) :: varids
-  character(10), allocatable, dimension(:) :: name
+  character(20), allocatable, dimension(:) :: name
 
   call check (nf90_inquire(model%ncid, ndims , nvars))
   allocate(varids(nvars))
@@ -390,10 +390,17 @@ subroutine get_variable(model, date, huge, print)
     index_time = 1
   endif
   start = [1,1,index_time]
-  call check (nf90_get_var (model%ncid , varid , model%data , start = start ))
-  call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
+  call check (nf90_get_var (model%ncid, varid, model%data, start=start))
+  call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
 
   if (status == nf90_noerr) model%data = model%data *scale_factor + add_offset
+
+!  where(model%data.eq.32767)
+!    model%data=0
+!  end where
+!  where(isnan(model%data))
+!    model%data=0
+!  end where
 
   if (trim(model%datanames(1)).ne."") then
     do i =1, size(model%data,1)

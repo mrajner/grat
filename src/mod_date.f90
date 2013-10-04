@@ -138,7 +138,7 @@ subroutine parse_date (cmd_line_entry)
         ) then
         if (size(cmd_line_entry%field(i_)%subfield).lt.3) step=1
         if (step.gt.size(model(1)%time)) step=size(model(1)%time)
-        call more_dates (nint(size(model(1)%time)/step),start_index)
+        call more_dates (ceiling(size(model(1)%time)/step),start_index)
         i_aux=0
         do i = 1, size(model(1)%time), int(step)
           i_aux=i_aux+1

@@ -21,7 +21,9 @@
 #      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
 #     -S j -Dm:1@D -V
-o: value_check
+o: grat
+	grat -F /home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time -V \
+		-Sj -Gmerriam@GR
 fdsdf: mod_aggf.o mod_green.o
 	make -C ../examples/
 

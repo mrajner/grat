@@ -560,32 +560,35 @@ subroutine convolve (site , date)
 
         ! surface loads from EWT
         if ( &
-        ind%green%gr.ne.0 &
-        .or.ind%green%ghn.ne.0 &
-        .or.ind%green%ghe.ne.0 &
-        ) then
+            ind%green%gr.ne.0 &
+            .or.ind%green%ghn.ne.0 &
+            .or.ind%green%ghe.ne.0 &
+            ) then
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
             if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.val(ind%model%ls).eq.0)) then
               call get_value (                                  & 
-              model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), & 
-              level=1, method = info(igreen)%interpolation)
+                  model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), & 
+                  level=1, method = info(igreen)%interpolation)
               aux = (val(ind%model%ewt))  *                      & 
-              area/d2r(green_common(igreen)%distance(idist)) * & 
-              1./earth%radius/1e12* 1e3 ! m -> mm
+                  area/d2r(green_common(igreen)%distance(idist)) * & 
+                  1./earth%radius/1e12* 1e3 ! m -> mm
               if (ind%green%gr.ne.0) then
                 result(ind%green%gr) = result(ind%green%gr) +     & 
-                green_common(igreen)%data(idist,ind%green%gr) * & 
-                aux 
+                    green_common(igreen)%data(idist,ind%green%gr) * & 
+                    aux 
+!                print *, result(ind%green%gr)
+              print '(10f10.3)', (val(ind%model%ewt)), r2d(lat), r2d(lon), aux
+              if (isnan(aux)) stop "aux"
 
                 if (ind%green%ghn.ne.0) then
                   result(ind%green%ghn) = result(ind%green%ghn) +    & 
-                  green_common(igreen)%data(idist,ind%green%ghn) * & 
-                  aux * (- cos (d2r(azimuth)))
+                      green_common(igreen)%data(idist,ind%green%ghn) * & 
+                      aux * (- cos (d2r(azimuth)))
                 endif
                 if (ind%green%ghe.ne.0) then
                   result(ind%green%ghe) = result(ind%green%ghe) +    & 
-                  green_common(igreen)%data(idist,ind%green%ghe) * & 
-                  aux * (- sin (d2r(azimuth)))
+                      green_common(igreen)%data(idist,ind%green%ghe) * & 
+                      aux * (- sin (d2r(azimuth)))
                 endif
               endif
             endif
@@ -596,45 +599,45 @@ subroutine convolve (site , date)
         if(ind%moreverbose%p.ne.0) then
           if (header_p.and. output%header) then
             write(moreverbose(ind%moreverbose%p)%unit,                                         & 
-            '(a8,8a12,<size(result)>a12)' , advance='no' )                                   & 
-            "name", "lat", "lon", "distance", "azimuth", "lat", "lon",                       & 
-            "area", "totarea",  (trim(green(i)%dataname), i=lbound(green,1),ubound(green,1))
+                '(a8,8a12,<size(result)>a12)' , advance='no' )                                   & 
+                "name", "lat", "lon", "distance", "azimuth", "lat", "lon",                       & 
+                "area", "totarea",  (trim(green(i)%dataname), i=lbound(green,1),ubound(green,1))
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               write(moreverbose(ind%moreverbose%p)%unit,                     & 
-              '(<size(model)>a12)' , advance='no' )                        & 
-              (trim(model(i)%dataname), i=lbound(model,1),ubound(model,1))
+                  '(<size(model)>a12)' , advance='no' )                        & 
+                  (trim(model(i)%dataname), i=lbound(model,1),ubound(model,1))
             endif
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit ,             & 
-              '(<size(iok)>(a3,i1))'), ("ok",i, i =1,ubound(iok,1))
+                  '(<size(iok)>(a3,i1))'), ("ok",i, i =1,ubound(iok,1))
             else
               write(moreverbose(ind%moreverbose%p)%unit , * )
             endif
             header_p=.false.
           endif
           if (                                           & 
-          .not.moreverbose(ind%moreverbose%p)%sparse   & 
-          .or.                                         & 
-          (moreverbose(ind%moreverbose%p)%sparse       & 
-          .and.(azimuth==azimuths(ubound(azimuths,1))) & 
-          )                                            & 
-          ) then
+              .not.moreverbose(ind%moreverbose%p)%sparse   & 
+              .or.                                         & 
+              (moreverbose(ind%moreverbose%p)%sparse       & 
+              .and.(azimuth==azimuths(ubound(azimuths,1))) & 
+              )                                            & 
+              ) then
             write(moreverbose(ind%moreverbose%p)%unit ,                                     & 
-            '(a8,6en12.2,2en12.2,<size(result)>en13.3,a)', advance = 'no'),                & 
-            site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, & 
-            r2d(lat),r2d(lon), area, tot_area, result
+                '(a8,6en12.2,2en12.2,<size(result)>en13.3,a)', advance = 'no'),                & 
+                site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, & 
+                r2d(lat),r2d(lon), area, tot_area, result
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               do i=1,size(val)
                 call get_value (                                              & 
-                model(i), r2d(lat), r2d(lon), val(i), & 
-                level=1, method = info(igreen)%interpolation)
+                    model(i), r2d(lat), r2d(lon), val(i), & 
+                    level=1, method = info(igreen)%interpolation)
               enddo
               write(moreverbose(ind%moreverbose%p)%unit,     & 
-              '(<size(model)>en12.2)' , advance='no' ) val
+                  '(<size(model)>en12.2)' , advance='no' ) val
             endif
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit ,    & 
-              '(<size(iok)>(i4))'), iok
+                  '(<size(iok)>(i4))'), iok
             else
               write(moreverbose(ind%moreverbose%p)%unit , * )
             endif
@@ -644,10 +647,10 @@ subroutine convolve (site , date)
         ! moreverbose auxilary to draw: -L@a
         if(ind%moreverbose%a.ne.0) then
           call printmoreverbose (                                      & 
-          d2r(site%lat), d2r(site%lon), d2r(azimuth), d2r(dazimuth), & 
-          d2r(green_common(igreen)%start(idist)),                    & 
-          d2r(green_common(igreen)%stop(idist))                      & 
-          )
+              d2r(site%lat), d2r(site%lon), d2r(azimuth), d2r(dazimuth), & 
+              d2r(green_common(igreen)%start(idist)),                    & 
+              d2r(green_common(igreen)%stop(idist))                      & 
+              )
         endif
       enddo
     enddo
@@ -662,9 +665,9 @@ subroutine convolve (site , date)
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then
     if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8,3a12)' ) &
-    "station", "npoints" ,"area" ,"area/R2", "t_area_used"
+        "station", "npoints" ,"area" ,"area/R2", "t_area_used"
     write(moreverbose(ind%moreverbose%s)%unit,'(a8,i8,3en12.2)') &
-    site%name, npoints , tot_area, tot_area/earth%radius**2, tot_area_used
+        site%name, npoints , tot_area, tot_area/earth%radius**2, tot_area_used
   endif
 end subroutine
 
@@ -674,22 +677,22 @@ end subroutine
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, distancestop)
-  use mod_spherical, only : spher_trig
-  use mod_cmdline,   only : moreverbose, ind
-  use mod_utilities, only : r2d
+    use mod_spherical, only : spher_trig
+    use mod_cmdline,   only : moreverbose, ind
+    use mod_utilities, only : r2d
 
-  real(dp), intent(in) :: azimuth ,azstep, latin, lonin
-  real(dp) ::  lat , lon , distancestart ,distancestop
+    real(dp), intent(in) :: azimuth ,azstep, latin, lonin
+    real(dp) ::  lat , lon , distancestart ,distancestop
 
-  call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
-  call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-  call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-  call spher_trig (latin, lonin, distancestart, azimuth + azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(">")')
+    call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
+    call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+    call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+    call spher_trig (latin, lonin, distancestart, azimuth + azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(">")')
 end subroutine
 
 ! =============================================================================
@@ -703,53 +706,53 @@ end subroutine
 !!    olssson see \cite olsson2009
 !! =============================================================================
 function green_newtonian (psi, h, z, method)
-  use mod_constants, only : earth, gravity
-  real(dp) :: green_newtonian
-  real(dp), intent (in) :: psi
-  real(dp), intent (in) , optional :: h
-  real(dp), intent (in) , optional :: z
-  character(*), optional :: method
-  real(dp) :: h_, z_ , eps, t
-  if (present(h)) then
-    h_=h
-  else
-    h_=0.
-  endif
-  if (present(z)) then
-    z_=z
-  else
-    z_=0.
-  endif
-  if (present(method) &
-  .and. (method.eq."spotl" .or. method.eq."olsson")) then
-    if(method.eq."spotl") then
-      eps = h_/ earth%radius
-      green_newtonian =                                      & 
-      1. /earth%radius**2                                  & 
-      *(eps + 2. * (sin(psi/2.))**2 )                      & 
-      /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) & 
-      * gravity%constant                                   & 
-      * green_normalization("f",psi=psi)
-      return
-    else if (method.eq."olsson") then
-      t = earth%radius/(earth%radius +h_)
-      green_newtonian =                      & 
-      1 / earth%radius**2 * t**2 *         & 
-      (1. - t * cos (psi) ) /              & 
-      ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) & 
-      * gravity%constant                   & 
-      * green_normalization("f",psi=psi)
+    use mod_constants, only : earth, gravity
+    real(dp) :: green_newtonian
+    real(dp), intent (in) :: psi
+    real(dp), intent (in) , optional :: h
+    real(dp), intent (in) , optional :: z
+    character(*), optional :: method
+    real(dp) :: h_, z_ , eps, t
+    if (present(h)) then
+      h_=h
+    else
+      h_=0.
+    endif
+    if (present(z)) then
+      z_=z
+    else
+      z_=0.
+    endif
+    if (present(method) &
+        .and. (method.eq."spotl" .or. method.eq."olsson")) then
+      if(method.eq."spotl") then
+        eps = h_/ earth%radius
+        green_newtonian =                                      & 
+            1. /earth%radius**2                                  & 
+            *(eps + 2. * (sin(psi/2.))**2 )                      & 
+            /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) & 
+            * gravity%constant                                   & 
+            * green_normalization("f",psi=psi)
+        return
+      else if (method.eq."olsson") then
+        t = earth%radius/(earth%radius +h_)
+        green_newtonian =                      & 
+            1 / earth%radius**2 * t**2 *         & 
+            (1. - t * cos (psi) ) /              & 
+            ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) & 
+            * gravity%constant                   & 
+            * green_normalization("f",psi=psi)
+        return
+      endif
+    else
+      green_newtonian =                                   & 
+          ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
+          / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
+          -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) 
+
+      green_newtonian = green_newtonian &
+          * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
       return
     endif
-  else
-    green_newtonian =                                   & 
-    ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
-    / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
-    -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) 
-
-    green_newtonian = green_newtonian &
-    * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
-    return
-  endif
 end function
 end module
