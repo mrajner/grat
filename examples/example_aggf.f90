@@ -24,7 +24,6 @@ program example_aggf
   call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat'  , method="full"       , predefined=.false.)
-  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_berg.dat'  , method="berg"       , predefined=.false.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method="simple"     , predefined=.false.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat'       , predefined=.false. )
 
