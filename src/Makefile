@@ -21,6 +21,7 @@
 #      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
 #     -S j -Dm:1@D -V
+#     
 o: grat
 	grat -F /home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time -V \
 		-Sj -Gmerriam@GR
@@ -171,7 +172,7 @@ mod_printing.o: mod_cmdline.o
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
-	PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
+PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
 
 EXAMPLES_DIR = ../examples
 EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
@@ -247,11 +248,11 @@ docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
 
 
-install: all installprogs installlib
+install: all $(PROGS) installlib
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
-installprogs: $(PROGS) 
+$(PROGS):
 	ln -sf /home/mrajner/src/grat/bin/*  ~/.local/bin/
 	@echo "program grat sucessfully installed"
 
