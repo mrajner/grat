@@ -1,6 +1,6 @@
 module mod_utilities
   use, intrinsic:: iso_fortran_env
-  use mod_constants, only:dp, pi
+  use mod_constants, only: dp, pi
   implicit none
 contains
 
@@ -296,17 +296,41 @@ end function
 !! \author M. Rajner (based on www)
 !! \date 2013-03-04
 ! =============================================================================
-logical function file_exists(string)
+logical function file_exists(string, double_check, verbose)
   character(len=*), intent(in) :: string
-  logical :: exists
-  real :: x
-  integer :: e
+  logical, intent(in), optional :: double_check, verbose
+  logical :: verbose_ , double_check_
+  real :: randomnumber
+
   if (string =="") then
     file_exists=.false.
     return
   endif
-  inquire(file=string, exist=exists)
-  file_exists=exists
+  inquire(file=string, exist=file_exists)
+
+  if (present(verbose))      verbose_      = verbose
+  if (present(double_check)) double_check_ = double_check
+  if (verbose_) then
+    if (file_exists) then
+      print '(a,a)', trim(string), " exists"
+    else
+      print '(a,a)', trim(string), " not exists"
+    endif
+  endif
+  if (double_check_.and..not.file_exists) then
+    call random_number(randomnumber)
+    if (verbose_) print '(a,a,i3,"s...")', &
+      trim(string), " not exists, slepping", int(randomnumber*5+1)
+    call sleep(int(randomnumber*5+1))
+    inquire(file=string, exist=file_exists)
+    if (verbose_) then
+      if (file_exists) then
+        print '(a,a)', trim(string), " exists (indeed)"
+      else
+        print '(a,a)', trim(string), " not exists (still)"
+      endif
+    endif
+  endif
 end function 
 
 
@@ -463,4 +487,37 @@ function logspace(xmin, xmax, n)
   endif
   logspace = 10._dp** linspace(log10(xmin), log10(xmax), n = n)
 end function
+
+! ==============================================================================
+! This subroutine open new file with optional prefix name (default = tmp), and 
+! consecutive number with optional digits (default=3) , start is optional 
+! start number
+! ==============================================================================
+subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
+  character(*), intent(in), optional :: prefix, suffix
+  character(*), intent(out), optional :: filename
+  integer, intent (in), optional :: digits, start
+  integer :: counter, digit  
+  integer, intent(out) :: unit
+  character(200) :: name=" "
+
+  if (present(start)) then
+    counter = start
+  else
+    counter = 1
+  endif
+  if (present(digits)) then
+    digit = digits
+  else
+    digit = 3
+  endif
+  do while (file_exists(name) .or. name =="") 
+    write (name, '("tmp",i<digit>.<digit>,a)')  counter
+    if (present(prefix)) name = prefix//name(4:)
+    if (present(suffix)) name = trim(name)//suffix
+    counter = counter + 1
+  enddo
+  open (newunit = unit, file=name, action="write")
+  if (present(filename)) filename = name
+end subroutine
 end module

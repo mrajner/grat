@@ -22,6 +22,7 @@
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
 #     -S j -Dm:1@D -V
 #     
+i: mod_utilities.o installlib
 o: grat
 	grat -F /home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time -V \
 		-Sj -Gmerriam@GR
