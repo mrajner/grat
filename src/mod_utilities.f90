@@ -299,8 +299,10 @@ end function
 logical function file_exists(string, double_check, verbose)
   character(len=*), intent(in) :: string
   logical, intent(in), optional :: double_check, verbose
-  logical :: verbose_ , double_check_
+  logical :: verbose_, double_check_
   real :: randomnumber
+
+  verbose_=.false.
 
   if (string =="") then
     file_exists=.false.
