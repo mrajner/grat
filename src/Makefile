@@ -1,60 +1,22 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-# as: value_check  example_value_check
 
-# atmp: atmp.f90 mod_utilities.o mod_aggf.o
-#   $(FC) $(FLAGS) -o $@ $< $(OBJS)  $(NETCDFLIB) 
-#   ./atmp
-
-# ddd: libgrat.a fdsdf ll
-# i: grat
-#   grat -F $(SP) , $(LS) -Dm:10@D:2@D -H -V -Sj -G ../dat/rajner_green.dat@GN:1:2, @GNC -L@g 
-
-# ll: ../bin/barometric_formula rrrx
-# rrrx:
-#   ../bin/barometric_formula
-		 
 # i:value_check
 #   value_check \
 #     -F \
 #      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
-#     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc :air \
-#     -S j -Dm:1@D -V
-#     
-i: mod_utilities.o installlib
-o: grat
-	grat -F /home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time -V \
-		-Sj -Gmerriam@GR
-fdsdf: mod_aggf.o mod_green.o
-	make -C ../examples/
+#     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc.reanalysis1 :air \
+#     -S j -Dm:m -V
+
+o: mod_date.o grat
+	grat -F /home/mrajner/dat/gldas/GLDAS.nc@EWT -V \
+		-Sj -Gmerriam@GR   -D20110115@~
+
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 
-# RSP = /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc@RSP:pres  
-# RSP = 101300@RSP
-# wl: ../bin/real_vs_standard
-#   ./$<
-
-sx: grat 
-	grat \
-		-F $(SP) , $(LS), $(T) \
-		-Sr:54:20  \
-		-G@GE  -H  \
-		-P ../polygon/baltyk.poly@E \
-		-Sj  \
-		-L  @o -H  \
-		-I2.5 @DB :2@DD -OC -D201102 
-
-#   grat -Sj  \
-	#     -F $(SP), $(RSP)  \
-	#     -G \
-	#     /home/mrajner/dat/green/green_prem_atm_guo.dat@GE : 1 : 4 @f2m \
-	#      \
-	#     -H -Dm -tmp -La@g # -I 5 @DS : 80 @AS :0@DB: 10@DE
-
-#   grat \
 	#     -S j : 52 : 21   \
 	#     -F  /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @SP :pres , $(RSP) , $(LS) \
 	#     , 1000 @EWT \
@@ -62,52 +24,6 @@ sx: grat
 	#     -G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1:2@aplo , m@GN, m @GE   -H -V \
 	#     -P ../polygon/baltyk.poly:- \
 	#     -Dm  -L@s , p@p:s
-
-wghm_example:
-	grat  -S \
-		joze:52.0:21 \
-		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
-		-G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
-		-D200201
-gnu2:
-	../bin/grat  -S \
-		joze:52.0:21 \
-		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
-		-G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1@R:2@aplo \
-		-D2002:2013:1@M  -L ttt@g > tmp3
-rrrr:
-	../bin/grat  -S \
-		joze:52.0:21.2 \
-		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
-		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
-		, /home/mrajner/src/gotic2/data/grn1.data@GH:1:3 \
-		-D2011:2011:1@M \
-		-I 0 @DB : 90@DE : 0@AB \
-		-L a @p, aux @ a \
-		-P ../polygon/baltyk.poly -V
-
-#
-gnu:
-	../bin/grat  -S \
-		joze:52.0:21 \
-		-F \
-		/home/mrajner/dat/wghm/dat/WGHM.nc@EWT \
-		-G /home/mrajner/src/gotic2/data/grn1.data@GR:1:2 \
-		-D2004:2011:1@M  -I 1@DD :1@AD :10@rE  -Lttt@g  > tmp
-
-gn:
-	../bin/grat  -S \
-		joze:52.0:21 \
-		-F \
-		/home/mrajner/dat/ncep_reanalysis/pres.sfc.2006.nc:pres@SP \
-		-G merriam @GE  \
-		-D2006:10@D  
-
-# tmp: tmp.f90 $(OBJS) mod_cmdline.o
-#   $(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
 # compiler
 FC = ifort
@@ -157,23 +73,26 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-mod_atmosphere.o mod_utilities.o: mod_constants.o
-mod_atmosphere.o:mod_printing.o
-mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o
-mod_date.o:mod_data.o
-mod_mjd.o: mod_constants.o
-mod_polygon.o:mod_printing.o mod_cmdline.o
-mod_printing.o: mod_cmdline.o
+# mod_atmosphere.o mod_utilities.o: mod_constants.o
+# mod_atmosphere.o:mod_printing.o
+# mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
+# mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o
+# mod_date.o:mod_data.o
+# mod_mjd.o: mod_constants.o
+# mod_polygon.o:mod_printing.o mod_cmdline.o
+# mod_printing.o: mod_cmdline.o
 
-../examples/example_aggf: mod_green.o $(OBJS)
 
 PROGS_DIR=../bin
 PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
+
+# change to your path directory
+LINKS_DIR=/home/mrajner/.local/bin
+LINKS  = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
 
 EXAMPLES_DIR = ../examples
 EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
@@ -199,6 +118,7 @@ $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
 all:          \
 	$(OBJS)     \
 	$(PROGS)    \
+	$(LINKS)    \
 	$(EXAMPLES) 
 
 example: 
@@ -215,25 +135,17 @@ example:
 		-H \
 		-I 12.9 @rB : 26@rE: 1@DD : 1@AD : l@I
 
-example_value_check: value_check
-	$(PROGS_DIR)/value_check \
-		-F$(SP) \
-		, 4@PR\
-		-Szr:52:21 \
-		-V \
-		-I l @I \
-		-D2011:1@D ,20110606 \
-		-L tmp@d -H
-
-
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
 
 PACKAGE = grat-src
 VER     = pre-alpha
 DATE    = `date +%Y%m%d`
-package: 
-	tar jcf $(PACKAGE)_$(VER)_$(DATE).tar.bz2 ../../grat/src/{*.f90,Makefile} ../../grat/dat/*.dat ../../grat/bin/.README
+package:
+	tar jcf $(PACKAGE)_$(VER)_$(DATE).tar.bz2 \
+		../../grat/src/{*.f90,Makefile}         \
+		../../grat/dat/*.dat                    \
+		../../grat/bin/.README
 
 doc: 
 	cd ../doc  &&  doxygen Doxyfile
@@ -248,14 +160,13 @@ dochtml: doc
 docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
 
-
 install: all $(PROGS) installlib
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
-$(PROGS):
-	ln -sf /home/mrajner/src/grat/bin/*  ~/.local/bin/
-	@echo "program grat sucessfully installed"
+# $(PROGS_SHORTCUTS):
+$(LINKS_DIR)/%: $(PROGS_DIR)/%
+	ln -sf $(realpath $<) $@
 
 # Change this path according to your system settings
 # This could require root privilages 
@@ -269,11 +180,11 @@ rmlib:
 	-sudo rm \
 		/usr/local/include/mod_* \
 		/usr/local/lib/libgrat.a 
+rmlink:
+	-rm $(LINKS)
 
-clean: rmlib
+clean: rmlib rmlink
 	rm -f *.o *.mod *.a fort?????? tmp*
-
-todo: joinnc
 
 HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 HELPS=$(addprefix ../dat/, $(HELP_NAMES))

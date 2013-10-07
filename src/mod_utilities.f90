@@ -430,7 +430,7 @@ end function
 
 ! ==============================================================================
 ! ==============================================================================
-function datanameunit (dataname ,datanames,count)
+function datanameunit (dataname, datanames, count)
   integer:: datanameunit
   character(*), intent(in):: dataname
   integer , intent (in):: count

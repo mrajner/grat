@@ -40,6 +40,7 @@ subroutine parse_date (cmd_line_entry)
     write(log%unit,form%i2) trim(cmd_line_entry%field(i_)%full)
     call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
 
+
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
       if (size(model(1)%date).eq.0) then
         stop "NO dates in first model. -Dm is forbidden"
@@ -48,6 +49,17 @@ subroutine parse_date (cmd_line_entry)
       endif
     endif
     stop = start
+
+    ! tilde
+    if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~") then
+      swap = model(1)%date(1,:)
+      do i=2,size(model(1)%date(:,:),1)
+        if (abs(mjd(model(1)%date(i,:))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
+          swap = model(1)%date(i,:)
+        endif
+      enddo
+      start = swap
+    endif
 
     if (size(cmd_line_entry%field(i_)%subfield).ge.2  &
       .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
@@ -69,7 +81,7 @@ subroutine parse_date (cmd_line_entry)
           stop(2) =stop(2)+12*(1+int(-stop(2)/12))
         endif
       case('D')
-        call invmjd ( mjd(start)+stop(1) , stop)
+        call invmjd (mjd(start)+stop(1) , stop)
       case default
       endselect
     else
@@ -159,6 +171,7 @@ subroutine parse_date (cmd_line_entry)
     endif
   enddo
   write (log%unit , form%i3) "dates total:" , size(date)
+
 end subroutine
 
 ! =============================================================================

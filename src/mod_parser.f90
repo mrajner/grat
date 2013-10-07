@@ -527,6 +527,8 @@ subroutine get_index()
       ind%moreverbose%t = i
     case ("b")
       ind%moreverbose%b = i
+    case ("n")
+      ind%moreverbose%n = i
     end select
   enddo
   do i = 1, size(green)

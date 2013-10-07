@@ -65,8 +65,7 @@ program grat
   use mod_site
   use mod_polygon
   use mod_cmdline
-  use mod_utilities, only: datanameunit
-  use mod_printing
+!  use mod_printing
 
   implicit none
   real(dp) :: x, y, z, lat, lon, cpu(2)
@@ -123,7 +122,7 @@ program grat
             else
               call get_variable (model(i))
             endif
-            !          case ("H")
+          case ("H")
             if (idate.gt.start) then
               cycle
             else
@@ -138,7 +137,7 @@ program grat
               !        !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
             endif
           case default
-            if( size(date).eq.0) then
+            if (size(date).eq.0) then
               call get_variable (model(i))
             else
               call get_variable (model(i), date = date(idate)%date)
@@ -162,14 +161,15 @@ program grat
         endif
       endif
 
+      !todo
       ! calculate total mass if asked for
-      if (ind%moreverbose%t.ne.0) then
-        if( size(date).eq.0) then
-          call total_mass(model(ind%model%sp))
-        else
-          call total_mass(model(ind%model%sp), date=date(idate)%date)
-        endif
-      endif
+            if (ind%moreverbose%t.ne.0) then
+              if (size(date).eq.0) then
+!                call total_mass(model(ind%model%sp))
+              else
+!                call total_mass(model(ind%model%sp), date=date(idate)%date)
+              endif
+            endif
 
 
       ! perform convolution
