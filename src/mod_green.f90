@@ -575,7 +575,7 @@ subroutine convolve (site , date)
               aux = (val(ind%model%ewt))  *                      & 
                 area/d2r(green_common(igreen)%distance(idist)) * & 
                 1./earth%radius/1e12* 1e3 ! m -> mm
-                if (isnan(aux)) aux=0
+              if (isnan(aux)) aux = 0
               if (ind%green%gr.ne.0) then
                 result(ind%green%gr) = result(ind%green%gr) +     & 
                   green_common(igreen)%data(idist,ind%green%gr) * & 
@@ -595,7 +595,6 @@ subroutine convolve (site , date)
             endif
           endif
         endif
-
         ! moreverbose point: -L@p
         if(ind%moreverbose%p.ne.0) then
           if (header_p.and. output%header) then
