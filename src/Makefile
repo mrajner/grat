@@ -84,7 +84,7 @@ mod_date.o:mod_data.o
 mod_mjd.o: mod_constants.o
 mod_polygon.o:mod_printing.o mod_cmdline.o
 mod_printing.o: mod_cmdline.o
-# mod_cmdline.o: mod_utilities.o
+mod_cmdline.o: mod_utilities.o
 
 
 PROGS_DIR=../bin

@@ -152,24 +152,23 @@ program grat
         if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
           if( size(date).eq.0) then
             call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-              inverted_landsea_mask = inverted_landsea_mask)
+                inverted_landsea_mask = inverted_landsea_mask)
           else
             call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-              date = date(idate)%date, &
-              inverted_landsea_mask = inverted_landsea_mask)
+                date = date(idate)%date, &
+                inverted_landsea_mask = inverted_landsea_mask)
           endif
         endif
       endif
 
-      !todo
       ! calculate total mass if asked for
-            if (ind%moreverbose%t.ne.0) then
-              if (size(date).eq.0) then
-!                call total_mass(model(ind%model%sp))
-              else
-!                call total_mass(model(ind%model%sp), date=date(idate)%date)
-              endif
-            endif
+      if (ind%moreverbose%t.ne.0) then
+        if (size(date).eq.0) then
+          call total_mass(model(ind%model%sp))
+        else
+          call total_mass(model(ind%model%sp), date=date(idate)%date)
+        endif
+      endif
 
 
       ! perform convolution
@@ -181,9 +180,9 @@ program grat
       if (output%unit.ne.output_unit) then 
         call cpu_time(cpu(2))
         call progress(                     & 
-          100*iprogress/(max(size(date),1) & 
-          *max(size(site),1)),             & 
-          cpu(2)-cpu(1))
+            100*iprogress/(max(size(date),1) & 
+            *max(size(site),1)),             & 
+            cpu(2)-cpu(1))
       endif
     enddo
   enddo

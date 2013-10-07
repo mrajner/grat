@@ -486,14 +486,14 @@ end function
 !! functions, polygon etc.
 ! =============================================================================
 subroutine get_index()
-  use mod_polygon
-  use mod_data
+  use mod_polygon, only: polygon
+  use mod_data,    only: model
   use mod_green
   use mod_cmdline
 
-  integer :: i , aux
+  integer :: i, aux
 
-  do i = 1 , size(model)
+  do i = 1, size(model)
     select case (model(i)%dataname)
     case ("SP")
       ind%model%sp = i
