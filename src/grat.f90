@@ -121,6 +121,9 @@ program grat
               cycle
             else
               call get_variable (model(i))
+              if (inverted_landsea_mask) then
+                model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
+              endif
             endif
           case ("H")
             if (idate.gt.start) then
@@ -128,13 +131,9 @@ program grat
             else
               call get_variable (model(i))
               ! if ocean land mask should be inverted
-              if (inverted_landsea_mask) then
-                model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
-              endif
-
               !todo
               ! force topography to zero over oceans
-              !        !!        if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
+              !          if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
             endif
           case default
             if (size(date).eq.0) then

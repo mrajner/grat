@@ -214,17 +214,23 @@ end function ispline
 !> This function counts the word in line separated with space or multispaces
 !!
 !! taken from ArkM http://www.tek-tips.com/viewthread.cfm?qid=1688013
+!! 
+!! or other optional separator
+!! added Marcin Rajner 2013.10.08
 ! ==============================================================================
-integer function ntokens(line)
+integer function ntokens(line, separator)
     character,intent(in) :: line*(*)
+    character(1), intent(in), optional :: separator
     integer:: i, n, toks
+    character(1) :: separator_=' '
 
-  i = 1;
+    if (present(separator)) separator_=separator
+  i = 1
   n = len_trim(line)
   toks = 0
   ntokens = 0
   do while(i <= n)
-    do while(line(i:i) == ' ') 
+    do while(line(i:i) == separator_) 
       i = i + 1
       if (n < i) return
     enddo
@@ -233,7 +239,7 @@ integer function ntokens(line)
     do
       i = i + 1
       if (n < i) return
-      if (line(i:i) == ' ') exit
+      if (line(i:i) == separator_) exit
     enddo
   enddo
 end function ntokens 

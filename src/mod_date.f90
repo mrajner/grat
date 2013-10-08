@@ -31,6 +31,7 @@ subroutine parse_date (cmd_line_entry)
   character(1) :: interval_unit
   type(cmd_line_arg)  :: cmd_line_entry
 
+
   if (allocated(date)) then
     call print_warning ("repeated")
     return

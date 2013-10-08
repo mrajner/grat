@@ -15,10 +15,9 @@ module mod_data
   implicit none
   type file
     character(90) :: name 
-
     ! varname,lonname,latname,levelname,timename
     character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
-    character(len=10) :: datanames(5)=" "
+    character(len=100) :: datanames(5)=" "
 
     character(len=15) :: dataname
 
@@ -117,26 +116,37 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 function variable_modifer (val, modifer)
-  !todo
   use mod_atmosphere, only: geop2geom
-  use mod_constants, only: earth
+  use mod_constants,  only: earth
+  use mod_utilities,  only: ntokens
+  use iso_fortran_env
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
-  character(*), intent(in) :: modifer
+  character(*) :: modifer
+  integer :: i
 
-  select case (modifer)
-  case ("g2h")
-    variable_modifer=geop2geom(val)
-  case ("gh2h")
-    variable_modifer=geop2geom(val)
-  case ("gp2gh")
-    variable_modifer=val/earth%gravity%mean
-  case ("gp2h")
-    variable_modifer=geop2geom(val)/earth%gravity%mean
-  case default
-    stop "variable modifer not found"
-    variable_modifer=val
-  end select
+  do i = 1, ntokens(modifer,"@")-1
+    if (index(modifer(1: index(modifer, "@")-1),"=").eq.1) then
+      
+    endif
+    select case (modifer(1: index(modifer, "@")-1))
+    case ("g2h")
+      variable_modifer=geop2geom(val)
+    case ("gh2h")
+      variable_modifer=geop2geom(val)
+    case ("gp2gh")
+      variable_modifer=val/earth%gravity%mean
+    case ("gp2h")
+      variable_modifer=geop2geom(val)/earth%gravity%mean
+    case default
+      write (error_unit, *), modifer(1: index(modifer, "@")-1), &
+          " variable modifer not found"
+      stop 
+      variable_modifer=val
+    end select
+    modifer = modifer(index(modifer, "@")+1:)
+  enddo
+  stop "SS"
 end function
 
 ! =============================================================================
@@ -397,7 +407,7 @@ subroutine get_variable(model, date, huge, print)
       start=start) &
       )
     call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
-    if (status == nf90_noerr) model%data = model%data *scale_factor + add_offset
+    if (status == nf90_noerr) model%data = model%data*scale_factor + add_offset
 
     if (trim(model%datanames(1)).ne."") then
       do i =1, size(model%data,1)
@@ -616,11 +626,12 @@ subroutine get_variable(model, date, huge, print)
     character(*) :: abbreviation
 
     dataname="unknown"
-    if (abbreviation.eq."LS") dataname = "Land-sea mask"
-    if (abbreviation.eq."SP") dataname = "Surface pressure"
-    if (abbreviation.eq."T") dataname = "Surface temperature"
+    if (abbreviation.eq."LS") dataname  = "Land-sea mask"
+    if (abbreviation.eq."SP") dataname  = "Surface pressure"
+    if (abbreviation.eq."T") dataname   = "Surface temperature"
+    if (abbreviation.eq."H") dataname   = "Surface height"
     if (abbreviation.eq."RSP") dataname = "Reference surface pressure"
-    if (abbreviation.eq."GN") dataname = "Green newtonian"
+    if (abbreviation.eq."EWT") dataname = "Equivalent water thickness"
   end function
 
   !! =============================================================================

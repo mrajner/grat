@@ -15,12 +15,12 @@ module mod_cmdline
   !----------------------------------------------------
   type subfield_info
     character (len=100) :: name
-    character (len=25) :: dataname
+    character (len=100) :: dataname
   end type
   type field_info
     character (len=355) :: full
     type(subfield_info), allocatable, &
-      dimension(:)  :: subfield
+      dimension(:) :: subfield
   end type
   type cmd_line_arg
     character(2) :: switch

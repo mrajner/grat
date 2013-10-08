@@ -9,9 +9,11 @@
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc.reanalysis1 :air \
 #     -S j -Dm:m -V
 
-o: mod_date.o grat
-	grat -F /home/mrajner/dat/gldas/GLDAS.nc@EWT -V \
-		-Sj -Gmerriam@GR   -D20110115@~
+o: mod_data.o mod_utilities.o value_check
+	value_check \
+		-F /home/mrajner/dat/gldas/GLDAS.nc@EWT:z@g2h@nan=10@scale=4 @offset = 4  , \
+		/home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time \
+		-Sj,o:0.2:0.3,u:50:0 -D20110115@~ -V
 
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
@@ -38,13 +40,13 @@ NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf
 DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
-T       = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
-LS      = $(NCEP_DIR)/land.nc@LS:land
+T        = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
+LS       = $(NCEP_DIR)/land.nc@LS:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
-	FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
-	fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
-	#todo vienna
+FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
+fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+#todo vienna
 
 SRCS  = mod_constants.f90  \
 				mod_utilities.f90  \
@@ -73,18 +75,18 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-mod_atmosphere.o mod_utilities.o: mod_constants.o
-mod_atmosphere.o:mod_printing.o
-mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o
-mod_date.o:mod_data.o
-mod_mjd.o: mod_constants.o
-mod_polygon.o:mod_printing.o mod_cmdline.o
-mod_printing.o: mod_cmdline.o
-mod_cmdline.o: mod_utilities.o
+# mod_utilities.o: mod_constants.o
+# mod_atmosphere.o: mod_printing.o mod_utilities.o
+# mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
+# mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+# mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+# mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
+# mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
+# mod_date.o:mod_data.o
+# mod_mjd.o: mod_constants.o
+# mod_polygon.o:mod_printing.o mod_cmdline.o
+# mod_printing.o: mod_cmdline.o
+# mod_cmdline.o: mod_utilities.o
 
 
 PROGS_DIR=../bin
