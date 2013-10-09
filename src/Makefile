@@ -9,6 +9,11 @@
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc.reanalysis1 :air \
 #     -S j -Dm:m -V
 
+ol: mod_parser.o value_check mod_data.o
+	value_check -F \
+		/home/mrajner/dat/ncep_reanalysis/hgt.sfc.nc:hgt@g2h@offset=1\
+		-S p : -89.9999:0 , j
+	
 o: mod_data.o mod_utilities.o value_check
 	value_check \
 		-F 25@SP , /home/mrajner/dat/gldas/GLDAS.nc@EWT: z@g2h @scale = 1 @nan=3, \

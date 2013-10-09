@@ -127,37 +127,43 @@ function variable_modifer (val, modifer)
   real(dp) :: numerickeyval
   integer :: i
 
+
   variable_modifer = val
-!  do i = 1, ntokens(modifer,"@")-1
-!    key = modifer(1: index(modifer, "@")-1)
-!    if (index(key,"=").gt.0)  then
-!      keyval = trim(key(index(key,"=")+1:))
-!      key    = trim(key(1:index(key,"=")-1))
-!    endif
-!    print *, key, keyval
-!    select case (key)
-!    case ("g2h")
-!      variable_modifer=geop2geom(variable_modifer)
-!    case ("gh2h")
-!      variable_modifer=geop2geom(variable_modifer)
-!    case ("gp2gh")
-!      variable_modifer=variable_modifer/earth%gravity%mean
-!    case ("gp2h")
-!      variable_modifer=geop2geom(variable_modifer)/earth%gravity%mean
-!    case ("nan")
-!      print *, "X"
-!      read(keyval,*) numerickeyval
-!      if (isnan(variable_modifer)) variable_modifer=numerickeyval 
-!    case ("scale")
-!      read(keyval,*) numerickeyval
-!      variable_modifer=numerickeyval*variable_modifer
-!    case default
-!      write (error_unit, *), key, &
-!          " variable modifer not found"
-!      stop 
-!    end select
-!    modifer = modifer(index(modifer, "@")+1:)
-!  enddo
+  do i = 1, ntokens(modifer,"@")
+    if (ntokens(modifer,"@").eq.1) then
+      key = modifer
+    else
+      key = modifer(1: index(modifer, "@")-1)
+    endif
+    if (index(key,"=").gt.0)  then
+      keyval = trim(key(index(key,"=")+1:))
+      key    = trim(key(1:index(key,"=")-1))
+    endif
+    select case (key)
+    case ("g2h")
+      variable_modifer=geop2geom(variable_modifer)
+    case ("gh2h")
+      variable_modifer=geop2geom(variable_modifer)
+    case ("gp2gh")
+      variable_modifer=variable_modifer/earth%gravity%mean
+    case ("gp2h")
+      variable_modifer=geop2geom(variable_modifer)/earth%gravity%mean
+    case ("nan")
+      read(keyval,*) numerickeyval
+      if (isnan(variable_modifer)) variable_modifer=numerickeyval 
+    case ("scale")
+      read(keyval,*) numerickeyval
+      variable_modifer=numerickeyval*variable_modifer
+    case ("offset")
+      read(keyval,*) numerickeyval
+      variable_modifer=numerickeyval+variable_modifer
+    case default
+      write (error_unit, *), key, &
+        " variable modifer not found"
+      stop 
+    end select
+    modifer = modifer(index(modifer, "@")+1:)
+  enddo
 end function
 
 ! =============================================================================
@@ -231,16 +237,16 @@ subroutine get_dimension (model , i, print)
     allocate(model%lat (length))
     call check(nf90_get_var  (model%ncid,  varid , model%lat))
     status = nf90_get_att ( model%ncid ,varid , &
-        "actual_range" , model%latrange) 
+      "actual_range" , model%latrange) 
     if (status /= nf90_noerr ) model%latrange &
-        =[model%lat(1), model%lat(size(model%lat)) ]
+      =[model%lat(1), model%lat(size(model%lat)) ]
   else if (i.eq.2 ) then
     allocate(model%lon (length))
     call check(nf90_get_var  (model%ncid,  varid , model%lon))
     status = nf90_get_att ( model%ncid ,varid , &
-        "actual_range" , model%lonrange) 
+      "actual_range" , model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
-        =[model%lon(1) , model%lon(size(model%lon)) ]
+      =[model%lon(1) , model%lon(size(model%lon)) ]
     !if(index(model%name,"ncep_reanalysis").ne.0) then
     where (model%lonrange.ge.357.5) 
       model%lonrange=360
@@ -249,7 +255,7 @@ subroutine get_dimension (model , i, print)
   else if (i.eq.4 ) then
     allocate(model%level (length))
     status = nf90_get_var  (model%ncid,  varid , model%level)
-  elseif (i.eq.5 ) then
+    elseif (i.eq.5 ) then
     allocate(model%time (length) )
     status = nf90_get_var (model%ncid,  varid , model%time)
   endif
@@ -390,19 +396,19 @@ subroutine get_variable(model, date, huge, print)
   if (allocated(model%data)) deallocate(model%data)
   !  model%level=1
   allocate ( &
-      model%data ( &
-      size(model%lon), &
-      size(model%lat), &
-      size (model%level) &
-      ) &
-      )
+    model%data ( &
+    size(model%lon), &
+    size(model%lat), &
+    size (model%level) &
+    ) &
+    )
 
   if (size(date).gt.0 .and. present(date)) then                       
     index_time = get_time_index(model, date)
     if (index_time.eq.0) then
       if (.not. (present(print).and..not.print))then
         write(log%unit,form%i3) "cannot find date:", date, &
-            "var:", trim(model%names(1)), "file:" , model%name
+          "var:", trim(model%names(1)), "file:" , model%name
       endif
       model%data= sqrt(-1.)
       return
@@ -412,14 +418,14 @@ subroutine get_variable(model, date, huge, print)
   endif
   start = [1,1,index_time]
   call check (nf90_get_var ( &
-      ncid=model%ncid, &
-      varid=varid, &
-      values=model%data, &
-      start=start) &
-      )
-  call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
-  if (status == nf90_noerr) model%data = model%data*scale_factor + add_offset
+    ncid=model%ncid, &
+    varid=varid, &
+    values=model%data, &
+    start=start) &
+    )
 
+  call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
+  model%data = model%data*scale_factor + add_offset
   if (trim(model%datanames(1)).ne."") then
     do i =1, size(model%data,1)
       do j =1, size(model%data,2)
@@ -447,10 +453,10 @@ subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
 
   call check(nf90_inq_varid(ncid, varname , varid))
   status = nf90_get_att (ncid, varid , "scale_factor" , scale_factor) 
-  if (status /=nf90_noerr) return
+  if (status /=nf90_noerr) scale_factor=1
 
   status = nf90_get_att (ncid , varid , "add_offset" , add_offset) 
-  if (status /=nf90_noerr) return
+  if (status /=nf90_noerr) add_offset=0
 end subroutine
 
 !
@@ -491,7 +497,7 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
 
   type(file) , intent (in) :: model
   real(dp)  &
-      !    , intent (in) &
+    !    , intent (in) &
   :: lat, lon
   real(dp) , intent(out) ::  val 
   character(1), optional, intent(in) :: method
@@ -509,10 +515,10 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
   if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360 
   if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
   if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
-      .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
-      .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
-      .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
-      ) then
+    .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
+    .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
+    .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
+    ) then
     val = sqrt(-1.)
     return
   endif
@@ -551,7 +557,7 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
 
       if (ind%moreverbose%l.ne.0) then
         write(moreverbose(ind%moreverbose%l)%unit ,  '(3f15.4," l")') , &
-            (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
+          (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
         write(moreverbose(ind%moreverbose%l)%unit ,  '(">")')
       endif
       val = bilinear ( lon , lat , array_aux )
@@ -566,7 +572,7 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
   endif
   if (ind%moreverbose%n.ne.0) then
     write(moreverbose(ind%moreverbose%n)%unit ,  '(3f15.4," n")') , &
-        model%lat(ilat) , model%lon(ilon) , model%data(ilon,ilat,ilevel)
+      model%lat(ilat) , model%lon(ilon) , model%data(ilon,ilat,ilevel)
     write(moreverbose(ind%moreverbose%n)%unit ,  '(">")')
   endif
   val = model%data (ilon , ilat, ilevel)
@@ -712,7 +718,7 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask)
         if (iok.eq.0) cycle
       endif
       if ((valls.eq.0.and..not.inverted_landsea_mask) &
-          .or.(valls.eq.1 .and. inverted_landsea_mask)) then
+        .or.(valls.eq.1 .and. inverted_landsea_mask)) then
         call get_value(model, model%lat(ilat), model%lon(ilon), val)
         ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
         valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
@@ -735,8 +741,8 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask)
       write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
     endif
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
-        ocean_area/total_area*100.,                                & 
-        valoceanarea/ocean_area
+      ocean_area/total_area*100.,                                & 
+      valoceanarea/ocean_area
   endif
 end subroutine
 
