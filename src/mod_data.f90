@@ -123,30 +123,41 @@ function variable_modifer (val, modifer)
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
   character(*) :: modifer
+  character(20) :: key, keyval
+  real(dp) :: numerickeyval
   integer :: i
 
-  do i = 1, ntokens(modifer,"@")-1
-    if (index(modifer(1: index(modifer, "@")-1),"=").eq.1) then
-      
-    endif
-    select case (modifer(1: index(modifer, "@")-1))
-    case ("g2h")
-      variable_modifer=geop2geom(val)
-    case ("gh2h")
-      variable_modifer=geop2geom(val)
-    case ("gp2gh")
-      variable_modifer=val/earth%gravity%mean
-    case ("gp2h")
-      variable_modifer=geop2geom(val)/earth%gravity%mean
-    case default
-      write (error_unit, *), modifer(1: index(modifer, "@")-1), &
-          " variable modifer not found"
-      stop 
-      variable_modifer=val
-    end select
-    modifer = modifer(index(modifer, "@")+1:)
-  enddo
-  stop "SS"
+  variable_modifer = val
+!  do i = 1, ntokens(modifer,"@")-1
+!    key = modifer(1: index(modifer, "@")-1)
+!    if (index(key,"=").gt.0)  then
+!      keyval = trim(key(index(key,"=")+1:))
+!      key    = trim(key(1:index(key,"=")-1))
+!    endif
+!    print *, key, keyval
+!    select case (key)
+!    case ("g2h")
+!      variable_modifer=geop2geom(variable_modifer)
+!    case ("gh2h")
+!      variable_modifer=geop2geom(variable_modifer)
+!    case ("gp2gh")
+!      variable_modifer=variable_modifer/earth%gravity%mean
+!    case ("gp2h")
+!      variable_modifer=geop2geom(variable_modifer)/earth%gravity%mean
+!    case ("nan")
+!      print *, "X"
+!      read(keyval,*) numerickeyval
+!      if (isnan(variable_modifer)) variable_modifer=numerickeyval 
+!    case ("scale")
+!      read(keyval,*) numerickeyval
+!      variable_modifer=numerickeyval*variable_modifer
+!    case default
+!      write (error_unit, *), key, &
+!          " variable modifer not found"
+!      stop 
+!    end select
+!    modifer = modifer(index(modifer, "@")+1:)
+!  enddo
 end function
 
 ! =============================================================================
@@ -220,16 +231,16 @@ subroutine get_dimension (model , i, print)
     allocate(model%lat (length))
     call check(nf90_get_var  (model%ncid,  varid , model%lat))
     status = nf90_get_att ( model%ncid ,varid , &
-      "actual_range" , model%latrange) 
+        "actual_range" , model%latrange) 
     if (status /= nf90_noerr ) model%latrange &
-      =[model%lat(1), model%lat(size(model%lat)) ]
+        =[model%lat(1), model%lat(size(model%lat)) ]
   else if (i.eq.2 ) then
     allocate(model%lon (length))
     call check(nf90_get_var  (model%ncid,  varid , model%lon))
     status = nf90_get_att ( model%ncid ,varid , &
-      "actual_range" , model%lonrange) 
+        "actual_range" , model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
-      =[model%lon(1) , model%lon(size(model%lon)) ]
+        =[model%lon(1) , model%lon(size(model%lon)) ]
     !if(index(model%name,"ncep_reanalysis").ne.0) then
     where (model%lonrange.ge.357.5) 
       model%lonrange=360
@@ -238,7 +249,7 @@ subroutine get_dimension (model , i, print)
   else if (i.eq.4 ) then
     allocate(model%level (length))
     status = nf90_get_var  (model%ncid,  varid , model%level)
-    elseif (i.eq.5 ) then
+  elseif (i.eq.5 ) then
     allocate(model%time (length) )
     status = nf90_get_var (model%ncid,  varid , model%time)
   endif
@@ -379,392 +390,392 @@ subroutine get_variable(model, date, huge, print)
   if (allocated(model%data)) deallocate(model%data)
   !  model%level=1
   allocate ( &
-    model%data ( &
-    size(model%lon), &
-    size(model%lat), &
-    size (model%level) &
-    ) &
-    )
+      model%data ( &
+      size(model%lon), &
+      size(model%lat), &
+      size (model%level) &
+      ) &
+      )
 
-    if (size(date).gt.0 .and. present(date)) then                       
-      index_time = get_time_index(model, date)
-      if (index_time.eq.0) then
-        if (.not. (present(print).and..not.print))then
-          write(log%unit,form%i3) "cannot find date:", date, &
+  if (size(date).gt.0 .and. present(date)) then                       
+    index_time = get_time_index(model, date)
+    if (index_time.eq.0) then
+      if (.not. (present(print).and..not.print))then
+        write(log%unit,form%i3) "cannot find date:", date, &
             "var:", trim(model%names(1)), "file:" , model%name
-        endif
-        model%data= sqrt(-1.)
-        return
       endif
-    else
-      index_time = 1
+      model%data= sqrt(-1.)
+      return
     endif
-    start = [1,1,index_time]
-    call check (nf90_get_var ( &
+  else
+    index_time = 1
+  endif
+  start = [1,1,index_time]
+  call check (nf90_get_var ( &
       ncid=model%ncid, &
       varid=varid, &
       values=model%data, &
       start=start) &
       )
-    call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
-    if (status == nf90_noerr) model%data = model%data*scale_factor + add_offset
+  call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
+  if (status == nf90_noerr) model%data = model%data*scale_factor + add_offset
 
-    if (trim(model%datanames(1)).ne."") then
-      do i =1, size(model%data,1)
-        do j =1, size(model%data,2)
-          do k =1, size(model%data,3)
-            model%data(i,j,k) = variable_modifer (model%data(i,j,k), model%datanames(1))
-          enddo
+  if (trim(model%datanames(1)).ne."") then
+    do i =1, size(model%data,1)
+      do j =1, size(model%data,2)
+        do k =1, size(model%data,3)
+          model%data(i,j,k) = variable_modifer (model%data(i,j,k), model%datanames(1))
         enddo
       enddo
-    endif
-  end subroutine
+    enddo
+  endif
+end subroutine
 
-  ! =============================================================================
-  !> \brief Unpack variable 
-  !!
-  !! from \cite netcdf
-  !! see http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
-  ! =============================================================================
-  subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
-    use netcdf
-    integer, intent(in) :: ncid
-    character(*) , intent(in)::varname
-    integer :: varid 
-    integer, intent(out) :: status
-    real(dp), intent(out) :: scale_factor , add_offset
+! =============================================================================
+!> \brief Unpack variable 
+!!
+!! from \cite netcdf
+!! see http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
+! =============================================================================
+subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
+  use netcdf
+  integer, intent(in) :: ncid
+  character(*) , intent(in)::varname
+  integer :: varid 
+  integer, intent(out) :: status
+  real(dp), intent(out) :: scale_factor , add_offset
 
-    call check(nf90_inq_varid(ncid, varname , varid))
-    status = nf90_get_att (ncid, varid , "scale_factor" , scale_factor) 
-    if (status /=nf90_noerr) return
+  call check(nf90_inq_varid(ncid, varname , varid))
+  status = nf90_get_att (ncid, varid , "scale_factor" , scale_factor) 
+  if (status /=nf90_noerr) return
 
-    status = nf90_get_att (ncid , varid , "add_offset" , add_offset) 
-    if (status /=nf90_noerr) return
-  end subroutine
+  status = nf90_get_att (ncid , varid , "add_offset" , add_offset) 
+  if (status /=nf90_noerr) return
+end subroutine
 
-  !
-  ! =============================================================================
-  !> Check the return code from netCDF manipulation
-  !!
-  !! \author From netcdf website \cite netcdf
-  !! \date 2013-03-04
-  ! =============================================================================
-  subroutine check(status)
-    use netcdf
-    use mod_printing
-    use iso_fortran_env
-    integer, intent (in) :: status
+!
+! =============================================================================
+!> Check the return code from netCDF manipulation
+!!
+!! \author From netcdf website \cite netcdf
+!! \date 2013-03-04
+! =============================================================================
+subroutine check(status)
+  use netcdf
+  use mod_printing
+  use iso_fortran_env
+  integer, intent (in) :: status
 
-    if(status /= nf90_noerr) then 
-      write(error_unit, form%i4), trim(nf90_strerror(status))
-    end if
-  end subroutine check  
+  if(status /= nf90_noerr) then 
+    write(error_unit, form%i4), trim(nf90_strerror(status))
+  end if
+end subroutine check  
 
-  ! =============================================================================
-  !> \brief Returns the value from model file
-  !! 
-  !! The ilustration explain optional \c method argument
-  !! \latexonly
-  !! \begin{center}
-  !!  \tikzsetfigurename{interpolation_ilustration}
-  !!  \input{/home/mrajner/src/grat/doc/rysunki/interpolation_ilustration}\\
-  !! \end{center}
-  !! \endlatexonly
-  !! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
-  ! =============================================================================
-  subroutine get_value(model, lat, lon, val, level, method, huge, date)
-    use mod_constants , only: dp 
-    use mod_cmdline
-    use mod_utilities, only: r2d
-    use netcdf
+! =============================================================================
+!> \brief Returns the value from model file
+!! 
+!! The ilustration explain optional \c method argument
+!! \latexonly
+!! \begin{center}
+!!  \tikzsetfigurename{interpolation_ilustration}
+!!  \input{/home/mrajner/src/grat/doc/rysunki/interpolation_ilustration}\\
+!! \end{center}
+!! \endlatexonly
+!! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
+! =============================================================================
+subroutine get_value(model, lat, lon, val, level, method, huge, date)
+  use mod_constants , only: dp 
+  use mod_cmdline
+  use mod_utilities, only: r2d
+  use netcdf
 
-    type(file) , intent (in) :: model
-    real(dp)  &
+  type(file) , intent (in) :: model
+  real(dp)  &
       !    , intent (in) &
-    :: lat, lon
-    real(dp) , intent(out) ::  val 
-    character(1), optional, intent(in) :: method
-    integer , optional , intent(in) :: level
-    integer :: i, j, ilevel = 1 
-    integer  :: ilon, ilat, ilon2, ilat2 , varid ,status
-    real(dp), dimension(4,3) :: array_aux 
-    real(dp) :: scale_factor, add_offset
-    character (*), intent(in), optional::huge
-    integer, intent(in), optional::date(6)
+  :: lat, lon
+  real(dp) , intent(out) ::  val 
+  character(1), optional, intent(in) :: method
+  integer , optional , intent(in) :: level
+  integer :: i, j, ilevel = 1 
+  integer  :: ilon, ilat, ilon2, ilat2 , varid ,status
+  real(dp), dimension(4,3) :: array_aux 
+  real(dp) :: scale_factor, add_offset
+  character (*), intent(in), optional::huge
+  integer, intent(in), optional::date(6)
 
-    if (present(level)) ilevel=level
+  if (present(level)) ilevel=level
 
-    ! check if inside model range
-    if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360 
-    if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
-    if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
+  ! check if inside model range
+  if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360 
+  if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
+  if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
       .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
       .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
       .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
       ) then
-      val = sqrt(-1.)
-      return
-    endif
-    if (model%if_constant_value) then
-      val = model%constant_value
-      return
-    end if
+    val = sqrt(-1.)
+    return
+  endif
+  if (model%if_constant_value) then
+    val = model%constant_value
+    return
+  end if
 
-    ilat = minloc(abs(model%lat-lat),1)
-    ilon = minloc(abs(model%lon-lon),1)
+  ilat = minloc(abs(model%lat-lat),1)
+  ilon = minloc(abs(model%lon-lon),1)
 
-    ! do not look into data array - get value directly 
-    if (present(huge)) then
-      if (huge.eq."huge") then
-        call check (nf90_inq_varid ( model%ncid , model%names(1) , varid ))
-        call check (nf90_get_var (model%ncid , varid, val, start = [ilon,ilat,get_time_index(model,date)]))
-        call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
-        if (status==nf90_noerr) val = val *scale_factor + add_offset
-        if (trim(model%datanames(1)).ne."") then
-          val = variable_modifer (val, model%datanames(1))
-        endif
-        return
+  ! do not look into data array - get value directly 
+  if (present(huge)) then
+    if (huge.eq."huge") then
+      call check (nf90_inq_varid ( model%ncid , model%names(1) , varid ))
+      call check (nf90_get_var (model%ncid , varid, val, start = [ilon,ilat,get_time_index(model,date)]))
+      call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
+      if (status==nf90_noerr) val = val *scale_factor + add_offset
+      if (trim(model%datanames(1)).ne."") then
+        val = variable_modifer (val, model%datanames(1))
       endif
+      return
     endif
+  endif
 
-    if (present(method) .and. method .eq. "l" ) then
-      ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
-      ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
+  if (present(method) .and. method .eq. "l" ) then
+    ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
+    ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
 
-      if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
-      else
-        array_aux (1, :) = [ model%lon(ilon) , model%lat(ilat) , model%data(ilon , ilat , ilevel) ]
-        array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, ilevel) ]
-        array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
-        array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
+    if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
+    else
+      array_aux (1, :) = [ model%lon(ilon) , model%lat(ilat) , model%data(ilon , ilat , ilevel) ]
+      array_aux (2, :) = [ model%lon(ilon) , model%lat(ilat2), model%data(ilon , ilat2, ilevel) ]
+      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat) , model%data(ilon2, ilat , ilevel) ]
+      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
 
-        if (ind%moreverbose%l.ne.0) then
-          write(moreverbose(ind%moreverbose%l)%unit ,  '(3f15.4," l")') , &
+      if (ind%moreverbose%l.ne.0) then
+        write(moreverbose(ind%moreverbose%l)%unit ,  '(3f15.4," l")') , &
             (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
-          write(moreverbose(ind%moreverbose%l)%unit ,  '(">")')
-        endif
-        val = bilinear ( lon , lat , array_aux )
-        return
+        write(moreverbose(ind%moreverbose%l)%unit ,  '(">")')
       endif
+      val = bilinear ( lon , lat , array_aux )
+      return
     endif
+  endif
 
-    ! if the last element is the neares then check if the firt is not nearer
-    ! i.e. search in 0-357.5E for 359E
-    if (ilon .eq. size (model%lon) ) then
-      if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
-    endif
-    if (ind%moreverbose%n.ne.0) then
-      write(moreverbose(ind%moreverbose%n)%unit ,  '(3f15.4," n")') , &
+  ! if the last element is the neares then check if the firt is not nearer
+  ! i.e. search in 0-357.5E for 359E
+  if (ilon .eq. size (model%lon) ) then
+    if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
+  endif
+  if (ind%moreverbose%n.ne.0) then
+    write(moreverbose(ind%moreverbose%n)%unit ,  '(3f15.4," n")') , &
         model%lat(ilat) , model%lon(ilon) , model%data(ilon,ilat,ilevel)
-      write(moreverbose(ind%moreverbose%n)%unit ,  '(">")')
-    endif
-    val = model%data (ilon , ilat, ilevel)
-  end subroutine 
+    write(moreverbose(ind%moreverbose%n)%unit ,  '(">")')
+  endif
+  val = model%data (ilon , ilat, ilevel)
+end subroutine 
 
-  ! =============================================================================
-  !> Performs bilinear interpolation
-  !! \author Marcin Rajner
-  !! \date 2013-05-07
-  ! =============================================================================
-  function bilinear (x , y , aux )
-    use mod_constants, only: dp
-    real(dp) :: bilinear
-    real(dp) :: x , y , aux(4,3) 
-    real(dp) :: a , b , c
-    a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
-    b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 
-    c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
-    bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
-  end function
-  !!! delteme
-  !!subroutine invspt(alp,del,b,rlong)
-  !!  real alp, del , b ,rlong
-  !!!      data dtr/.01745329251/
-  !!!      ca = cos(alp*dtr)
-  !!!      sa = sin(alp*dtr)
-  !!!      cd = cos(del*dtr)
-  !!!      sd = sin(del*dtr)
-  !!!      cb = cd*ct + sd*st*ca
-  !!!      sb = sqrt(1.-cb*cb)
-  !!!      b = acos(cb)/dtr
-  !!!      if(sb.le.1.e-3) then
-  !!!   rlong = 0
-  !!!   return
-  !!!      endif
-  !!!      sg = sd*sa/sb
-  !!!      cg = (st*cd-sd*ct*ca)/sb
-  !!!      g = atan2(sg,cg)/dtr
-  !!!     rlong = dlugosc_stacji + g
-  !!!     return
-  !!end subroutine
-  ! =============================================================================
-  !!> Counts number of properly specified models
-  !!!
-  !!! \date 2013-03-15
-  !!! \author M. Rajner
-  !!! TODO move to mod_data?
-  !! =============================================================================
-  !!integer function nmodels (model)
-  !!  type(file) , allocatable, dimension (:) :: model
-  !!  integer :: i
-  !!
-  !!  nmodels = 0
-  !!  do i = 1 , size (model)
-  !!    if (model(i)%if) nmodels =nmodels + 1
-  !!    if (model(i)%if_constant_value) nmodels =nmodels + 1
-  !!  enddo
-  !!end function
+! =============================================================================
+!> Performs bilinear interpolation
+!! \author Marcin Rajner
+!! \date 2013-05-07
+! =============================================================================
+function bilinear (x , y , aux )
+  use mod_constants, only: dp
+  real(dp) :: bilinear
+  real(dp) :: x , y , aux(4,3) 
+  real(dp) :: a , b , c
+  a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
+  b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 
+  c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
+  bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
+end function
+!!! delteme
+!!subroutine invspt(alp,del,b,rlong)
+!!  real alp, del , b ,rlong
+!!!      data dtr/.01745329251/
+!!!      ca = cos(alp*dtr)
+!!!      sa = sin(alp*dtr)
+!!!      cd = cos(del*dtr)
+!!!      sd = sin(del*dtr)
+!!!      cb = cd*ct + sd*st*ca
+!!!      sb = sqrt(1.-cb*cb)
+!!!      b = acos(cb)/dtr
+!!!      if(sb.le.1.e-3) then
+!!!   rlong = 0
+!!!   return
+!!!      endif
+!!!      sg = sd*sa/sb
+!!!      cg = (st*cd-sd*ct*ca)/sb
+!!!      g = atan2(sg,cg)/dtr
+!!!     rlong = dlugosc_stacji + g
+!!!     return
+!!end subroutine
+! =============================================================================
+!!> Counts number of properly specified models
+!!!
+!!! \date 2013-03-15
+!!! \author M. Rajner
+!!! TODO move to mod_data?
+!! =============================================================================
+!!integer function nmodels (model)
+!!  type(file) , allocatable, dimension (:) :: model
+!!  integer :: i
+!!
+!!  nmodels = 0
+!!  do i = 1 , size (model)
+!!    if (model(i)%if) nmodels =nmodels + 1
+!!    if (model(i)%if_constant_value) nmodels =nmodels + 1
+!!  enddo
+!!end function
 
-  ! =============================================================================
-  !> Attach full dataname by abbreviation
-  !!
-  !! \date 2013-03-21
-  !! \author M. Rajner
-  ! =============================================================================
-  function dataname(abbreviation)
-    character(len=40) :: dataname
-    character(*) :: abbreviation
+! =============================================================================
+!> Attach full dataname by abbreviation
+!!
+!! \date 2013-03-21
+!! \author M. Rajner
+! =============================================================================
+function dataname(abbreviation)
+  character(len=40) :: dataname
+  character(*) :: abbreviation
 
-    dataname="unknown"
-    if (abbreviation.eq."LS") dataname  = "Land-sea mask"
-    if (abbreviation.eq."SP") dataname  = "Surface pressure"
-    if (abbreviation.eq."T") dataname   = "Surface temperature"
-    if (abbreviation.eq."H") dataname   = "Surface height"
-    if (abbreviation.eq."RSP") dataname = "Reference surface pressure"
-    if (abbreviation.eq."EWT") dataname = "Equivalent water thickness"
-  end function
+  dataname="unknown"
+  if (abbreviation.eq."LS") dataname  = "Land-sea mask"
+  if (abbreviation.eq."SP") dataname  = "Surface pressure"
+  if (abbreviation.eq."T") dataname   = "Surface temperature"
+  if (abbreviation.eq."H") dataname   = "Surface height"
+  if (abbreviation.eq."RSP") dataname = "Reference surface pressure"
+  if (abbreviation.eq."EWT") dataname = "Equivalent water thickness"
+end function
 
-  !! =============================================================================
-  !!> Put netCDF COARDS compliant 
-  !!!
-  !!! for GMT drawing
-  !! =============================================================================
-  !subroutine put_grd (model, time , level , filename_opt )
-  !  use netcdf
-  !  use mod_cmdline, only : file, form_separator, log
-  !  type (file) :: model
-  !  integer  :: time , level , ncid
-  !  integer :: londimid, latdimid, dimids(2), varid, latvarid,lonvarid
-  !  character (*) , intent (in) , optional :: filename_opt
-  !  character(60) :: filename = "tmp_.grd"
-  !
-  !  if (present(filename_opt)) filename = filename_opt
-  !  write(log%unit, form_separator)
-  !  call check ( nf90_create ( filename , 0 , ncid ))
-  !
-  !  ! Define the dimensions. NetCDF will hand back an ID for each. 
-  !  call check( nf90_def_dim(ncid, "lon", size(model%lon) , londimid) )
-  !  call check( nf90_def_dim(ncid, "lat", size(model%lat) , latdimid) )
-  !
-  !  dimids =  (/ londimid, latdimid /)
-  !
-  !  call check( nf90_def_var(ncid, "lat", NF90_float , latdimid, latvarid) )
-  !  call check( nf90_def_var(ncid, "lon", NF90_float , londimid, lonvarid) )
-  !  call check( nf90_def_var(ncid, "data", NF90_float , dimids, varid) )
-  !  call check( nf90_enddef(ncid) )
-  !
-  !  call check( nf90_put_var(ncid, latvarid, model%lat ))
-  !  call check( nf90_put_var(ncid, lonvarid, model%lon ))
-  !  call check( nf90_put_var(ncid, varid, model%data(:,:,1)) )
-  !  call check( nf90_close(ncid) )
-  !end subroutine
-  !
+!! =============================================================================
+!!> Put netCDF COARDS compliant 
+!!!
+!!! for GMT drawing
+!! =============================================================================
+!subroutine put_grd (model, time , level , filename_opt )
+!  use netcdf
+!  use mod_cmdline, only : file, form_separator, log
+!  type (file) :: model
+!  integer  :: time , level , ncid
+!  integer :: londimid, latdimid, dimids(2), varid, latvarid,lonvarid
+!  character (*) , intent (in) , optional :: filename_opt
+!  character(60) :: filename = "tmp_.grd"
+!
+!  if (present(filename_opt)) filename = filename_opt
+!  write(log%unit, form_separator)
+!  call check ( nf90_create ( filename , 0 , ncid ))
+!
+!  ! Define the dimensions. NetCDF will hand back an ID for each. 
+!  call check( nf90_def_dim(ncid, "lon", size(model%lon) , londimid) )
+!  call check( nf90_def_dim(ncid, "lat", size(model%lat) , latdimid) )
+!
+!  dimids =  (/ londimid, latdimid /)
+!
+!  call check( nf90_def_var(ncid, "lat", NF90_float , latdimid, latvarid) )
+!  call check( nf90_def_var(ncid, "lon", NF90_float , londimid, lonvarid) )
+!  call check( nf90_def_var(ncid, "data", NF90_float , dimids, varid) )
+!  call check( nf90_enddef(ncid) )
+!
+!  call check( nf90_put_var(ncid, latvarid, model%lat ))
+!  call check( nf90_put_var(ncid, lonvarid, model%lon ))
+!  call check( nf90_put_var(ncid, varid, model%data(:,:,1)) )
+!  call check( nf90_close(ncid) )
+!end subroutine
+!
 
-  ! =============================================================================
-  !> If inverted barometer is set then averaga all pressure above the oceans
-  !
-  ! working only for regular grid!
-  ! =============================================================================
-  subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask)
-    use mod_utilities, only: d2r
-    use mod_cmdline,   only: ind, moreverbose
-    use mod_printing
-    use mod_polygon
-    use mod_mjd
-    type (file) :: model, landseamask
-    logical, intent(in):: inverted_landsea_mask
-    real(dp) ::  val, valls , total_area, ocean_area, valoceanarea
-    integer :: ilat, ilon 
-    integer(2) :: iok
-    integer, intent(in),optional :: date(6)
+! =============================================================================
+!> If inverted barometer is set then averaga all pressure above the oceans
+!
+! working only for regular grid!
+! =============================================================================
+subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask)
+  use mod_utilities, only: d2r
+  use mod_cmdline,   only: ind, moreverbose
+  use mod_printing
+  use mod_polygon
+  use mod_mjd
+  type (file) :: model, landseamask
+  logical, intent(in):: inverted_landsea_mask
+  real(dp) ::  val, valls , total_area, ocean_area, valoceanarea
+  integer :: ilat, ilon 
+  integer(2) :: iok
+  integer, intent(in),optional :: date(6)
 
-    total_area = 0
-    ocean_area = 0
-    valoceanarea    = 0
+  total_area = 0
+  ocean_area = 0
+  valoceanarea    = 0
 
-    do ilat = 1, size(model%lat)
-      do ilon =1,size(model%lon)
-        total_area = total_area + cos(d2r(model%lat(ilat)))
-        call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
-        if (ind%polygon%e.ne.0) then
-          call chkgon ( model%lon(ilon), model%lat(ilat) , polygon(ind%polygon%e) , iok)
-          if (iok.eq.0) cycle
-        endif
-        if ((valls.eq.0.and..not.inverted_landsea_mask) &
+  do ilat = 1, size(model%lat)
+    do ilon =1,size(model%lon)
+      total_area = total_area + cos(d2r(model%lat(ilat)))
+      call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
+      if (ind%polygon%e.ne.0) then
+        call chkgon ( model%lon(ilon), model%lat(ilat) , polygon(ind%polygon%e) , iok)
+        if (iok.eq.0) cycle
+      endif
+      if ((valls.eq.0.and..not.inverted_landsea_mask) &
           .or.(valls.eq.1 .and. inverted_landsea_mask)) then
-          call get_value(model, model%lat(ilat), model%lon(ilon), val)
-          ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
-          valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
-          model%data(ilon,ilat,1) = -9999
-        endif
-      enddo
-    enddo
-    where (model%data.eq.-9999)
-      model%data=valoceanarea/ ocean_area
-    end where
-
-    if (ind%moreverbose%o.ne.0) then
-      if (output%header)  then
-        if (present(date)) then
-          write (moreverbose(ind%moreverbose%o)%unit,'(a12,x,a14)', advance='no') , "mjd",  "date"
-        endif
-        write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "ocean[%]", "mean_val"
-      endif
-      if (present(date)) then
-        write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
-      endif
-      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
-        ocean_area/total_area*100.,                                & 
-        valoceanarea/ocean_area
-    endif
-  end subroutine
-
-  ! =============================================================================
-  !> Mean pressure all over the model area
-  !
-  ! working only for regular grid!
-  ! =============================================================================
-  subroutine total_mass (model, date)
-    use mod_utilities, only: d2r
-    use mod_cmdline,   only: ind, moreverbose
-    use mod_printing
-    use mod_mjd
-    type (file) :: model
-    real(dp) ::  val, valarea, totalarea
-    integer :: ilat, ilon
-    integer, intent(in),optional :: date(6)
-
-
-    totalarea = 0
-    valarea   = 0
-
-    do ilat = 1, size(model%lat)
-      do ilon =1,size(model%lon)
-        totalarea = totalarea + cos(d2r(model%lat(ilat)))
         call get_value(model, model%lat(ilat), model%lon(ilon), val)
-        valarea    = valarea + val * cos(d2r(model%lat(ilat)))
-      enddo
+        ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
+        valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
+        model%data(ilon,ilat,1) = -9999
+      endif
     enddo
+  enddo
+  where (model%data.eq.-9999)
+    model%data=valoceanarea/ ocean_area
+  end where
 
+  if (ind%moreverbose%o.ne.0) then
     if (output%header)  then
       if (present(date)) then
-        write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14)', advance='no') , "mjd",  "date"
+        write (moreverbose(ind%moreverbose%o)%unit,'(a12,x,a14)', advance='no') , "mjd",  "date"
       endif
-      write (moreverbose(ind%moreverbose%t)%unit,'(a12)') , "mean_val"
+      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') , "ocean[%]", "mean_val"
     endif
     if (present(date)) then
-      write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
+      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
     endif
-    write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)') ,  valarea/ totalarea
-  end subroutine
+    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
+        ocean_area/total_area*100.,                                & 
+        valoceanarea/ocean_area
+  endif
+end subroutine
+
+! =============================================================================
+!> Mean pressure all over the model area
+!
+! working only for regular grid!
+! =============================================================================
+subroutine total_mass (model, date)
+  use mod_utilities, only: d2r
+  use mod_cmdline,   only: ind, moreverbose
+  use mod_printing
+  use mod_mjd
+  type (file) :: model
+  real(dp) ::  val, valarea, totalarea
+  integer :: ilat, ilon
+  integer, intent(in),optional :: date(6)
+
+
+  totalarea = 0
+  valarea   = 0
+
+  do ilat = 1, size(model%lat)
+    do ilon =1,size(model%lon)
+      totalarea = totalarea + cos(d2r(model%lat(ilat)))
+      call get_value(model, model%lat(ilat), model%lon(ilon), val)
+      valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+    enddo
+  enddo
+
+  if (output%header)  then
+    if (present(date)) then
+      write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14)', advance='no') , "mjd",  "date"
+    endif
+    write (moreverbose(ind%moreverbose%t)%unit,'(a12)') , "mean_val"
+  endif
+  if (present(date)) then
+    write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
+  endif
+  write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)') ,  valarea/ totalarea
+end subroutine
 end module

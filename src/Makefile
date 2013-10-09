@@ -11,9 +11,9 @@
 
 o: mod_data.o mod_utilities.o value_check
 	value_check \
-		-F /home/mrajner/dat/gldas/GLDAS.nc@EWT:z@g2h@nan=10@scale=4 @offset = 4  , \
+		-F 25@SP , /home/mrajner/dat/gldas/GLDAS.nc@EWT: z@g2h @scale = 1 @nan=3, \
 		/home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time \
-		-Sj,o:0.2:0.3,u:50:0 -D20110115@~ -V
+		-Sj,o:0.2:0.3,u:50:0 -D20110115@~ 
 
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
