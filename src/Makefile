@@ -9,14 +9,12 @@
 #     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc.reanalysis1 :air \
 #     -S j -Dm:m -V
 
-ol: mod_parser.o value_check mod_data.o
-	value_check -F \
-		/home/mrajner/dat/ncep_reanalysis/hgt.sfc.nc:hgt@g2h@offset=1\
-		-S p : -89.9999:0 , j
 	
 o: mod_data.o mod_utilities.o value_check
 	value_check \
-		-F 25@SP , /home/mrajner/dat/gldas/GLDAS.nc@EWT: z@g2h @scale = 1 @nan=3, \
+		-F \
+		/home/mrajner/dat/gldas/GLDAS.nc@EWT: z@g2h @scale = 1 @nan=30, \
+		25@SP:@scale=100 ,\
 		/home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time \
 		-Sj,o:0.2:0.3,u:50:0 -D20110115@~ 
 
@@ -36,7 +34,7 @@ LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 FC = ifort
 
 # compiler flags
-FLAGS =   # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+# FLAGS = -warn   # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  

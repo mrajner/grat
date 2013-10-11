@@ -528,4 +528,24 @@ subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
   open (newunit = unit, file=name, action="write")
   if (present(filename)) filename = name
 end subroutine
+real function mean (vec, i, nan)
+  integer :: i
+  real(dp)  :: vec(i)
+  logical, intent(in), optional :: nan
+  if (present(nan).and.nan) then
+    mean = sum(vec, mask = .not.(isnan(vec))) / real(count(.not.isnan(vec)))
+  else
+    mean = sum(vec) / real(i)
+  endif
+end function
+real function stdev (vec,i, nan)
+  integer :: i
+  real(dp)  :: vec(i)
+  logical, intent(in), optional :: nan
+  if (present(nan).and.nan) then
+    stdev = sqrt(sum((vec - mean(vec,i,nan=nan))**2,mask=.not.isnan(vec))/real(size(vec)))
+  else
+    stdev = sqrt(sum((vec - mean(vec,i))**2)/real(size(vec)))
+  endif
+end function
 end module
