@@ -193,7 +193,7 @@ rmlib:
 rmlink:
 	-rm $(LINKS)
 
-clean: rmlib rmlink
+clean: rmlib 
 	rm -f *.o *.mod *.a fort?????? tmp*
 
 HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
