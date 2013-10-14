@@ -2,9 +2,13 @@
 # for example: OBJS  = libgrat.a
 
 
-i:value_check
-	value_check -D201101:2012:44@D 
-
+o: grat
+	value_check -F $(RSP) -Sj
+	grat \
+		-S l \
+		-F $(SP), $(T) , 100000 @ RSP:@scale=0.01  \
+		-G merriam@GNdt , merriam@GN, merriam@GE \
+		-D m:m :2@D    -o tmp3:nc 
 	
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
@@ -31,7 +35,7 @@ NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf
 DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
 SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
-T        = $(NCEP_DIR)/air.sig995.2011.nc@T:air:lon:lat:level:time
+T        = $(NCEP_DIR)/air.sig995.2011.nc.reanalysis1@T:air
 LS       = $(NCEP_DIR)/land.nc@LS:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
@@ -100,7 +104,8 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 # rules for programs files
 # todo - shorter
 .PHONY: $(PROGS_SHORTCUTS)
-$(PROGS_SHORTCUTS):  $(addprefix $(PROGS_DIR)/, $(PROGS_SHORTCUTS))
+$(PROGS_SHORTCUTS):
+	@make $(addprefix $(PROGS_DIR)/, $@)
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
 	$(FC) $(NETCDFLIB) $(FLAGS) $< -o $@ $(OBJS) 
@@ -114,20 +119,6 @@ all:          \
 	$(PROGS)    \
 	$(LINKS)    \
 	$(EXAMPLES) 
-
-example: 
-	$(PROGS_DIR)/grat                                 \
-		-F $(SP), $(ST)                                 \
-		, $(LS) ,101325@RS ,11                                        \
-		-G                                              \
-		merriam @GN \
-		-P ../polygon/baltyk.poly @ N:+, @E:-               \
-		-S j:52:21:10                          \
-		-D 2011 \
-		-V \
-		-L @r  \
-		-H \
-		-I 12.9 @rB : 26@rE: 1@DD : 1@AD : l@I
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
@@ -183,6 +174,5 @@ HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 HELPS=$(addprefix ../dat/, $(HELP_NAMES))
 helps: $(HELPS) 
 $(HELPS): $(PROGS)
-
 %.hlp: 
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@

@@ -84,6 +84,12 @@ subroutine parse_site(cmd_line_entry)
       site(start_index)%lat    = 49.17944
       site(start_index)%lon    = 20.088333
       site(start_index)%height = 2499
+    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."l") then
+      call more_sites (1,start_index)
+      site(start_index)%name   = "lama_a"
+      site(start_index)%lat    = 53.883
+      site(start_index)%lon    = 20.667
+      site(start_index)%height = 100
     else
       call print_warning ("site")
     endif

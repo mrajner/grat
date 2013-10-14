@@ -97,8 +97,7 @@ subroutine read_green (green, print)
     green%name="merriam"
   endif
   if (green%name.eq."merriam" &
-!  .or.     green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" & 
-) then
+    ) then
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]
@@ -118,7 +117,7 @@ subroutine read_green (green, print)
       green%column=[1,2]
     endif
   else if (green%name.eq."huang" .or. &
-   green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" ) then
+    green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" ) then
     green%name="/home/mrajner/src/grat/dat/huang_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]
@@ -133,8 +132,8 @@ subroutine read_green (green, print)
       green%column=[1,5]
     endif
   else if (green%name.eq."rajner" & 
-!    .or. green%name.eq."/home/mrajner/src/grat/dat/rajner_green.dat"
-) then
+    !    .or. green%name.eq."/home/mrajner/src/grat/dat/rajner_green.dat"
+  ) then
     green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
     if (green%dataname.eq."GN") then
       green%column=[1,2]
@@ -191,8 +190,8 @@ subroutine read_green (green, print)
 
   if (.not.present(print)) then
     write(log%unit, form_63) trim(green%name), trim(green%dataname), &
-    "columns:",green%column ,&
-    "lines:", size(green%distance)
+      "columns:",green%column ,&
+      "lines:", size(green%distance)
   endif
 
   if (green%columndataname(1).eq."R") then
@@ -205,7 +204,7 @@ subroutine read_green (green, print)
   endif
   if (green%columndataname(2).eq."f2m") then
     green%data= &
-    -green%data * green_normalization("f2m")
+      -green%data * green_normalization("f2m")
     write(log%unit, form_63) "conversion: farrell --> to merriam"
   endif
 
@@ -222,14 +221,14 @@ function green_normalization(method, psi)
 
   if (method.eq."f2m") then
     green_normalization = &
-    1e-3 &
-    / earth%gravity%mean  * earth%radius * 2 * pi * (1.- cos(d2r(dble(1.))))
+      1e-3 &
+      / earth%gravity%mean  * earth%radius * 2 * pi * (1.- cos(d2r(dble(1.))))
   else if (method.eq."m") then ! merriam normalization
     green_normalization =  &
-    psi * 1e15 * earth%radius**2 * 2 * pi * (1.- cos(d2r(dble(1.))))
+      psi * 1e15 * earth%radius**2 * 2 * pi * (1.- cos(d2r(dble(1.))))
   else if (method.eq."f") then ! farrell normalization
     green_normalization =  &
-    psi * 1e18 * earth%radius
+      psi * 1e18 * earth%radius
   endif
 end function
 
@@ -253,16 +252,16 @@ subroutine green_unification ()
     if (info(iinfo)%distance%step.eq.0) then
       do i = 1, size(green)
         tmp(i)= count(                                         & 
-        green(i)%distance.le.info(iinfo)%distance%stop       & 
-        .and.green(i)%distance.ge.info(iinfo)%distance%start & 
-        ) 
+          green(i)%distance.le.info(iinfo)%distance%stop       & 
+          .and.green(i)%distance.ge.info(iinfo)%distance%start & 
+          ) 
       enddo
       which_green(iinfo) = maxloc(tmp,1)
 
       imin=minloc( & 
-      abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start),1)-1 
+        abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start),1)-1 
       imax=minloc( &
-      abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop),1)+1
+        abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop),1)+1
 
       if (imin.lt.1) imin = 1
       if( imax.gt.size(green(which_green(iinfo))%distance)) then
@@ -270,34 +269,34 @@ subroutine green_unification ()
       endif
 
       allocate(tmpgreen%distance(                                   & 
-      size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) & 
-      ))
+        size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) & 
+        ))
       do ii = 1, imax - imin
         do j = 1, info(iinfo)%distance%denser
           tmpgreen%distance((ii-1)*info(iinfo)%distance%denser+j) = & 
-          green(which_green(iinfo))%distance(imin+ii-1)           & 
-          +(j-1)*(green(which_green(iinfo))%distance(imin+ii)     & 
-          -green(which_green(iinfo))%distance(imin+ii-1))         & 
-          /info(iinfo)%distance%denser
+            green(which_green(iinfo))%distance(imin+ii-1)           & 
+            +(j-1)*(green(which_green(iinfo))%distance(imin+ii)     & 
+            -green(which_green(iinfo))%distance(imin+ii-1))         & 
+            /info(iinfo)%distance%denser
         enddo
       enddo
 
       tmpgreen%distance(size(tmpgreen%distance)) = & 
-      green(which_green(iinfo))%distance(imax)
+        green(which_green(iinfo))%distance(imax)
 
       imin = count(tmpgreen%distance.le.info(iinfo)%distance%start) 
       imax = size(tmpgreen%distance) - &
-      count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
+        count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
 
       allocate(green_common(iinfo)%distance(imax-imin+1))
       green_common(iinfo)%distance =       & 
-      tmpgreen%distance(imin:imax)
+        tmpgreen%distance(imin:imax)
       green_common(iinfo)%distance(1) =    & 
-      (3/4.*info(iinfo)%distance%start+  & 
-      green_common(iinfo)%distance(2)/4)
+        (3/4.*info(iinfo)%distance%start+  & 
+        green_common(iinfo)%distance(2)/4)
       green_common(iinfo)%distance(size(green_common(iinfo)%distance)) =      & 
-      (3/4.*info(iinfo)%distance%stop+                                      & 
-      green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
+        (3/4.*info(iinfo)%distance%stop+                                      & 
+        green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
 
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
@@ -305,35 +304,35 @@ subroutine green_unification ()
       green_common(iinfo)%start=(green_common(iinfo)%distance)
       do i =1 , size(green_common(iinfo)%distance)
         green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
-        green_common(iinfo)%distance(i-1) ) / 2.
+          green_common(iinfo)%distance(i-1) ) / 2.
         green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
-        green_common(iinfo)%distance(i+1) ) / 2.
+          green_common(iinfo)%distance(i+1) ) / 2.
       enddo
 
       green_common(iinfo)%start(1)= info(iinfo)%distance%start
       green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
-      info(iinfo)%distance%stop
+        info(iinfo)%distance%stop
       deallocate(tmpgreen%distance)
       !todo distance as fractional part of spherical distance
     else if (info(iinfo)%distance_fractional_psi) then
       stop "Not supported yet"
     else
       allocate(green_common(iinfo)%distance( &
-      ceiling( &
-      (info(iinfo)%distance%stop - info(iinfo)%distance%start) &
-      /info(iinfo)%distance%step) &
-      ))
+        ceiling( &
+        (info(iinfo)%distance%stop - info(iinfo)%distance%start) &
+        /info(iinfo)%distance%step) &
+        ))
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
 
       green_common(iinfo)%start = &
-      [(info(iinfo)%distance%start + &
-      (i-1)*info(iinfo)%distance%step, &
-      i=1,size(green_common(iinfo)%distance)) ]
+        [(info(iinfo)%distance%start + &
+        (i-1)*info(iinfo)%distance%step, &
+        i=1,size(green_common(iinfo)%distance)) ]
       green_common(iinfo)%stop = green_common(iinfo)%start(2:) 
       green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = info(iinfo)%distance%stop
       green_common(iinfo)%distance = &
-      (green_common(iinfo)%stop + green_common(iinfo)%start)/2
+        (green_common(iinfo)%stop + green_common(iinfo)%start)/2
     endif
 
     allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance),size(green)))
@@ -341,17 +340,17 @@ subroutine green_unification ()
 
     do i = 1 ,  size(green_common(iinfo)%data,2)
       call  spline_interpolation(          & 
-      green(i)%distance,                 & 
-      green(i)%data,                     & 
-      size(green(i)%distance),           & 
-      green_common(iinfo)%distance,      & 
-      green_common(iinfo)%data(:,i),     & 
-      size(green_common(iinfo)%distance) & 
-      )
-      where( &
-        green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
-        .or.green_common(iinfo)%distance.lt.green(i)%distance(1) &
+        green(i)%distance,                 & 
+        green(i)%data,                     & 
+        size(green(i)%distance),           & 
+        green_common(iinfo)%distance,      & 
+        green_common(iinfo)%data(:,i),     & 
+        size(green_common(iinfo)%distance) & 
         )
+      where( &
+          green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
+          .or.green_common(iinfo)%distance.lt.green(i)%distance(1) &
+          )
         green_common(iinfo)%data(:,i)=0
       end where
       green_common(iinfo)%dataname(i) = green(i)%dataname
@@ -360,10 +359,10 @@ subroutine green_unification ()
     if(ind%moreverbose%g.ne.0) then
       do j = 1, size(green_common(iinfo)%distance)
         write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6,100f14.7)'), &
-        j, green_common(iinfo)%distance(j), &
-        green_common(iinfo)%start(j), &
-        green_common(iinfo)%stop(j), &
-        green_common(iinfo)%data(j,:)
+          j, green_common(iinfo)%distance(j), &
+          green_common(iinfo)%start(j), &
+          green_common(iinfo)%stop(j), &
+          green_common(iinfo)%data(j,:)
       enddo
     endif
   enddo
@@ -418,9 +417,9 @@ subroutine convolve (site , date)
       if (allocated(azimuths)) deallocate (azimuths)
       if (info(igreen)%azimuth%step.eq.0) then
         nazimuth = &
-        (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
-        max(int(360*sin(d2r(green_common(igreen)%distance(idist)))),100) * &
-        info(igreen)%azimuth%denser
+          (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
+          max(int(360*sin(d2r(green_common(igreen)%distance(idist)))),100) * &
+          info(igreen)%azimuth%denser
         if (nazimuth.eq.0) nazimuth=1
         dazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
       else
@@ -430,15 +429,15 @@ subroutine convolve (site , date)
 
       ! calculate area using spherical formulae
       area = spher_area(                        & 
-      d2r(green_common(igreen)%start(idist)), & 
-      d2r(green_common(igreen)%stop(idist)),  & 
-      d2r(dazimuth),                          & 
-      radius=earth%radius,                    & 
-      alternative_method=.true.)
+        d2r(green_common(igreen)%start(idist)), & 
+        d2r(green_common(igreen)%stop(idist)),  & 
+        d2r(dazimuth),                          & 
+        radius=earth%radius,                    & 
+        alternative_method=.true.)
 
       ! normalization according to Merriam (1992) 
       normalize= 1e8 / &
-      (green_normalization("m", psi = d2r(green_common(igreen)%distance(idist))))
+        (green_normalization("m", psi = d2r(green_common(igreen)%distance(idist))))
 
       allocate(azimuths(nazimuth))
       azimuths = [ (info(igreen)%azimuth%start + (i-1) * dazimuth , i =1, nazimuth)] 
@@ -452,8 +451,8 @@ subroutine convolve (site , date)
 
         ! get lat and lon of point
         call spher_trig &
-        (d2r(site%lat), d2r(site%lon), &
-        d2r(green_common(igreen)%distance(idist)), d2r(azimuth), lat, lon, domain=.true.)
+          (d2r(site%lat), d2r(site%lon), &
+          d2r(green_common(igreen)%distance(idist)), d2r(azimuth), lat, lon, domain=.true.)
 
         ! read polygons
         if (ind%polygon%e.ne.0 .or. ind%polygon%n.ne.0) then
@@ -467,8 +466,8 @@ subroutine convolve (site , date)
         ! get LS
         if (ind%model%ls.ne.0) then
           call get_value ( & 
-          model(ind%model%ls), r2d(lat), r2d(lon), val(ind%model%ls), & 
-          level=1, method = info(igreen)%interpolation)
+            model(ind%model%ls), r2d(lat), r2d(lon), val(ind%model%ls), & 
+            level=1, method = info(igreen)%interpolation)
         endif
 
         if (iok(1).eq.1 & .and. val(ind%model%ls).eq.1) then
@@ -477,21 +476,21 @@ subroutine convolve (site , date)
 
         ! GE, GN, ...
         if (                       & 
-        ind%green%gn.ne.0        & 
-        .or.ind%green%ge.ne.0    & 
-        .or.ind%green%gg.ne.0    & 
-        .or.ind%green%gegdt.ne.0 & 
-        ) then
+          ind%green%gn.ne.0        & 
+          .or.ind%green%ge.ne.0    & 
+          .or.ind%green%gg.ne.0    & 
+          .or.ind%green%gndt.ne.0 & 
+          ) then
 
           ! get SP (and RP if given)
           if (ind%model%sp.ne.0) then
             call get_value (                                              & 
-            model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
-            level=1, method = info(igreen)%interpolation)
+              model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
+              level=1, method = info(igreen)%interpolation)
             if (ind%model%rsp.ne.0) then
               call get_value (                                                & 
-              model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
-              level=1, method = info(igreen)%interpolation)
+                model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
+                level=1, method = info(igreen)%interpolation)
               val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
             endif
           endif
@@ -554,7 +553,7 @@ subroutine convolve (site , date)
                 result(ind%green%gndt) = result(ind%green%gndt) +    & 
                   val(ind%model%sp) *                                & 
                   green_common(igreen)%data(idist, ind%green%gndt) * & 
-                  val(ind%model%t) *                                 & 
+                  (val(ind%model%t)-atmosphere%temperature%standard)  *                                 & 
                   area * normalize
               endif
             endif

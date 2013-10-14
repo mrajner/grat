@@ -30,12 +30,13 @@ function aggfd ( &
     aggfdz,      & 
     aggfdt,      & 
     predefined,  & 
-    fels_type)
+    fels_type,   &
+    rough)
   use mod_constants, only: atmosphere, dp
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: delta
   real(dp), intent (in), optional :: dz
-  logical, intent (in), optional :: aggfdh , aggfdz , aggfdt, predefined
+  logical, intent (in), optional :: aggfdh , aggfdz , aggfdt, predefined, rough
   real(dp) :: aggfd
   real(dp) :: delta_ 
   character (len=*) , intent(in), optional  :: method, fels_type
@@ -50,13 +51,15 @@ function aggfd ( &
       dz=dz,                 & 
       method=method,         & 
       predefined=predefined, & 
-      fels_type=fels_type )  & 
+      fels_type=fels_type,   &
+      rough=rough)           & 
       - aggf (psi,           & 
       h=-delta_,             & 
       dz=dz,                 & 
       method=method,         & 
       predefined=predefined, & 
-      fels_type=fels_type))  & 
+      fels_type=fels_type,   &
+      rough=rough))          & 
       / ( 2. * delta_)
   else if(present(aggfdz).and.aggfdz) then
     aggfd = (                & 
@@ -65,13 +68,15 @@ function aggfd ( &
       dz=dz,                 & 
       method = method,       & 
       predefined=predefined, & 
-      fels_type=fels_type )  & 
+      fels_type=fels_type,   &
+      rough=rough)           & 
       - aggf (psi,           & 
       zmin = -delta_,        & 
       dz=dz,                 & 
       method = method,       & 
       predefined=predefined, & 
-      fels_type=fels_type))  & 
+      fels_type=fels_type,   &
+      rough=rough))          & 
       / ( 2. * delta_)
   else if(present(aggfdt).and.aggfdt) then
     aggfd = (                & 
@@ -80,13 +85,15 @@ function aggfd ( &
       dz=dz,                 & 
       method = method,       & 
       predefined=predefined, & 
-      fels_type=fels_type)   & 
+      fels_type=fels_type,   &
+      rough=rough)           & 
       - aggf (psi,           & 
       t_zero = -delta_,      & 
       dz=dz,                 & 
       method = method,       & 
       predefined=predefined, & 
-      fels_type=fels_type))  & 
+      fels_type=fels_type,   &
+      rough=rough))          & 
       / ( 2. * delta_)
   endif
 end function
@@ -173,7 +180,8 @@ function aggf (       &
         pressures(i) = standard_pressure ( & 
           heights(i),                      & 
           method=method,                   & 
-          dz=dz                            & 
+          dz=dz,                           & 
+          use_standard_temperature=.true.  &
           )
       enddo
     else
@@ -182,7 +190,10 @@ function aggf (       &
         method = method, &
         h_zero = zmin_ , &
         dz = dz, &
-        temperature = standard_temperature(zmin_, fels_type=fels_type) +deltat & 
+        fels_type=fels_type, &
+        use_standard_temperature=.true., &
+        temperature = standard_temperature( &
+        zmin_, fels_type=fels_type)+deltat & 
         )
       do i = 2 , size(heights)
         pressures(i) = standard_pressure(                                       & 
@@ -191,7 +202,10 @@ function aggf (       &
           h_zero = heights(i-1),                                                & 
           method = method,                                                      & 
           dz = dz,                                                              & 
-          temperature = standard_temperature(heights(i-1), fels_type=fels_type) +deltat & 
+          fels_type=fels_type, &
+          use_standard_temperature=.true., &
+          temperature = standard_temperature(heights(i-1), &
+          fels_type=fels_type)+deltat & 
           )
       enddo
     endif
@@ -218,11 +232,11 @@ function aggf (       &
       aggf = rho *( ((earth%radius + heights(i))*cos(psi)-(earth%radius + h_)) / (l**3)) 
     else
       ! GN microGal/hPa
-      aggf = aggf -  &
-        rho * ((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
+      aggf = aggf &
+        -rho*((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
     endif
   enddo
-  aggf = aggf / atmosphere%pressure%standard * gravity%constant * green_normalization("m", psi = psi) 
+  aggf = aggf/atmosphere%pressure%standard*gravity%constant*green_normalization("m", psi=psi) 
 end function
 
 ! ==============================================================================

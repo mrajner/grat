@@ -24,8 +24,9 @@ function standard_density (height, temperature, fels_type, method)
   else
     t = standard_temperature (height, fels_type=fels_type)
   endif
-  p = standard_pressure (height, temperature = t, method=method)
-  standard_density = p  / ( R_air * t )
+  standard_density = standard_pressure( &
+    height, temperature = t, method=method, fels_type=fels_type &
+    )/( R_air * t )
 end function
 ! =============================================================================
 !> \brief Compute gravity acceleration of the Earth
@@ -51,21 +52,25 @@ end function
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
 function standard_pressure ( &
-  height, &
-  p_zero, &
-  temperature, &
-  h_zero, &
-  method, &
-  dz)
+    height, &
+    p_zero, &
+    temperature, &
+    h_zero, &
+    method, &
+    dz, &
+    fels_type, &
+    use_standard_temperature)
 
   use mod_constants, only: dp, earth, atmosphere, R_air
+  use iso_fortran_env
   real(dp), intent(in), optional :: height
   real(dp), intent(in), optional :: temperature , p_zero , h_zero
-  character(*), intent(in) , optional :: method 
+  character(*), intent(in) , optional :: method, fels_type
   real(dp), intent(in) , optional :: dz
   real(dp) :: standard_pressure
   real(dp) :: lambda, sfc_height, sfc_temperature, sfc_gravity, alpha, sfc_pressure
   real(dp) :: z_, dz_
+  logical, intent(in), optional :: use_standard_temperature
 
   sfc_temperature = atmosphere%temperature%standard
   sfc_pressure    = atmosphere%pressure%standard
@@ -74,7 +79,7 @@ function standard_pressure ( &
 
   if (present(h_zero)) then
     sfc_height      = h_zero
-    sfc_temperature = standard_temperature (sfc_height)
+    sfc_temperature = standard_temperature (sfc_height, fels_type=fels_type)
     sfc_gravity     = standard_gravity (sfc_height)
   endif
 
@@ -92,8 +97,13 @@ function standard_pressure ( &
       standard_pressure = sfc_pressure *(1-0.0000226 * (height-sfc_height))**(5.225)
     case ("simple")
       standard_pressure = sfc_pressure &
-      *exp(-(height-sfc_height) * standard_gravity(height) / sfc_temperature / R_air) 
+        *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air) 
     case ("full")
+      if (.not.present(use_standard_temperature)) then
+        write(error_unit, '(a)' ) "error: you have to specify use_standard_temperature with &
+          full method in standard_pressure"
+        stop
+      endif
       standard_pressure=0.
       if (present(dz)) then
         dz_ = dz
@@ -103,7 +113,10 @@ function standard_pressure ( &
       if (sfc_height.gt.height) dz_=-dz_
       do z_=sfc_height+dz_/2, height, dz_
         standard_pressure = standard_pressure &
-        + standard_gravity(sfc_height)/(R_air * sfc_temperature )*dz_
+          + standard_gravity(sfc_height)/(R_air*sfc_temperature)*dz_
+        if (present(use_standard_temperature) .and. use_standard_temperature ) then
+          sfc_temperature=standard_temperature(z_,fels_type=fels_type)
+        endif
       enddo
       standard_pressure = sfc_pressure*exp(-standard_pressure)
     case default
@@ -112,11 +125,11 @@ function standard_pressure ( &
   else
     !http://en.wikipedia.org/wiki/Barometric_formula
     standard_pressure= sfc_pressure &
-    * (sfc_temperature /(sfc_temperature + alpha*(height-sfc_height))) &
-    **(earth%gravity%mean /R_air/alpha)
+      * (sfc_temperature /(sfc_temperature + alpha*(height-sfc_height))) &
+      **(earth%gravity%mean /R_air/alpha)
   endif 
   if (isnan(standard_pressure)) standard_pressure=0
-!  if (sfc_height.gt.height) standard_pressure=-standard_pressure
+  !  if (sfc_height.gt.height) standard_pressure=-standard_pressure
 end function
 
 
@@ -217,10 +230,10 @@ real(dp) function geop2geom (geopotential_height, inverse)
 
   if (present(inverse) .and. inverse) then
     geop2geom = geopotential_height * &
-    (earth%radius / (earth%radius + geopotential_height))**2
+      (earth%radius / (earth%radius + geopotential_height))**2
   else
     geop2geom = geopotential_height / &
-    (earth%radius / (earth%radius + geopotential_height))**2
+      (earth%radius / (earth%radius + geopotential_height))**2
   endif
 end function
 

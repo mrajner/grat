@@ -113,27 +113,25 @@ program grat
     do isite = 1, size(site)
       iprogress = iprogress + 1
 
+      ! if ocean land mask should be inverted
+      !todo
+      ! force topography to zero over oceans
+      !          if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
       do i = 1 , size(model)
         if(model(i)%if) then
           select case (model(i)%dataname)
-          case ("LS","RSP")
+          ! read only once Land-sea, reference surface pressure and heights
+          case ("LS","RSP", "H")
             if (idate.gt.start) then
               cycle
             else
               call get_variable (model(i))
-              if (inverted_landsea_mask) then
-                model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
-              endif
-            endif
-          case ("H")
-            if (idate.gt.start) then
-              cycle
-            else
-              call get_variable (model(i))
-              ! if ocean land mask should be inverted
-              !todo
-              ! force topography to zero over oceans
-              !          if (val(4).eq.0.and.val(3).lt.0) val(3) = 0.
+              select case (model(i)%dataname)
+              case ("LS")
+                if (inverted_landsea_mask) then
+                  model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
+                endif
+              endselect
             endif
           case default
             if (size(date).eq.0) then
@@ -149,13 +147,13 @@ program grat
       ! if ocean mass should be conserved (-O C)
       if (ocean_conserve_mass) then
         if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
-          if( size(date).eq.0) then
+          if(size(date).eq.0) then
             call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                inverted_landsea_mask = inverted_landsea_mask)
+              inverted_landsea_mask = inverted_landsea_mask)
           else
             call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                date = date(idate)%date, &
-                inverted_landsea_mask = inverted_landsea_mask)
+              date=date(idate)%date, &
+              inverted_landsea_mask = inverted_landsea_mask)
           endif
         endif
       endif
@@ -179,9 +177,9 @@ program grat
       if (output%unit.ne.output_unit) then 
         call cpu_time(cpu(2))
         call progress(                     & 
-            100*iprogress/(max(size(date),1) & 
-            *max(size(site),1)),             & 
-            cpu(2)-cpu(1))
+          100*iprogress/(max(size(date),1) & 
+          *max(size(site),1)),             & 
+          cpu(2)-cpu(1))
       endif
     enddo
   enddo

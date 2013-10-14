@@ -25,26 +25,6 @@ subroutine spline_interpolation(x,y,n, x_interpolated, y_interpolated, n2, metho
 
 end subroutine
 
-!the procedure below will be soon removed (just for backward compability)
-!subroutine spline_interpolation2 (x, y, x_interpolated, y_interpolated, method)
-!  real(dp) , allocatable , dimension (:), intent(in)  :: x, y, x_interpolated
-!  real(dp) , allocatable , dimension (:), intent(out) :: y_interpolated
-!  real(dp) , dimension (:) , allocatable :: b, c, d
-!  integer :: i
-!  character(*), optional :: method
-
-!  allocate (b (size(x)))
-!  allocate (c (size(x)))
-!  allocate (d (size(x)))
-!  allocate (y_interpolated (size(x_interpolated)))
-
-!  call spline ( x , y, b , c, d, size(x))
-!  
-!  do i=1, size(x_interpolated)
-!     y_interpolated(i) = ispline (x_interpolated(i) , x , y , b , c , d , size (x) , method = method )
-!  enddo
-!end subroutine
-
 ! ==============================================================================
 !> Compute coefficients for spline interpolation.
 !!

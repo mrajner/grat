@@ -24,6 +24,7 @@ program example_aggf
   call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
 
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat'  , method="full"       , predefined=.false.)
+  call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_rough.dat' , predefined=.false., rough=.true.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method="simple"     , predefined=.false.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat'       , predefined=.false. )
 
@@ -39,8 +40,7 @@ program example_aggf
   !  call mass_vs_height() !'/home/mrajner/src/grat/examples/mass_vs_height.dat')
 
   call cpu_time(cpu(2))
-  print * , "total", cpu(2)-cpu(1)
-
+  print '("Total time: ",f8.3,x,"[s]")', cpu(2)-cpu(1)
 
 contains 
 ! =============================================================================
@@ -137,7 +137,7 @@ end subroutine
 !! \date 2013-03-18
 ! ============================================================================
 subroutine compute_tabulated_green_functions (filename, method, dz, &
-  predefined,fels_type)
+  predefined,fels_type, rough)
   use mod_constants, only: dp
   use mod_aggf ,     only: aggf, aggfd
   use mod_green,     only: green, read_green
@@ -148,7 +148,7 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
   real(dp), optional :: dz
   character(*), optional :: fels_type
   character(*), optional :: method
-  logical, optional, intent(in) :: predefined
+  logical, optional, intent(in) :: predefined, rough
 
   if (file_exists(filename)) then
     return
@@ -184,10 +184,10 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
   do i= 1, size(green(1)%distance)
     write(file_unit, '(13f15.6)'), &
     green(1)%distance(i), &
-    aggf (d2r(green(1)%distance(i)), method=method, dz=dz                           , predefined=predefined, fels_type=fels_type), &
-    aggfd(d2r(green(1)%distance(i)), method=method, dz=dz, aggfdt=.true.            , predefined=predefined, fels_type=fels_type), &
-    aggf (d2r(green(1)%distance(i)), method=method, dz=dz, first_derivative_h=.true., predefined=predefined, fels_type=fels_type), &
-    aggf (d2r(green(1)%distance(i)), method=method, dz=dz, first_derivative_z=.true., predefined=predefined, fels_type=fels_type)
+    aggf (d2r(green(1)%distance(i)), method=method, dz=dz                           , predefined=predefined, fels_type=fels_type, rough=rough), &
+    aggfd(d2r(green(1)%distance(i)), method=method, dz=dz, aggfdt=.true.            , predefined=predefined, fels_type=fels_type, rough=rough), &
+    aggf (d2r(green(1)%distance(i)), method=method, dz=dz, first_derivative_h=.true., predefined=predefined, fels_type=fels_type, rough=rough), &
+    aggf (d2r(green(1)%distance(i)), method=method, dz=dz, first_derivative_z=.true., predefined=predefined, fels_type=fels_type, rough=rough)
   enddo
 
   close(file_unit)
@@ -206,15 +206,15 @@ subroutine aggf_resp_fels_profiles (filename)
   real(dp), dimension(:,:), allocatable :: table  
   character(*), intent(in) :: filename
 
-!  if (file_exists(filename)) then
-!    return
-!  else
+  if (file_exists(filename)) then
+    return
+  else
     print * , "aggf_resp_fels_profiles -->", filename
-!  endif
+  endif
   open  ( newunit = file_unit, &
-          file    = filename, &
-          action  = 'write' &
-        )
+    file    = filename, &
+    action  = 'write' &
+    )
 
   ! Get the spherical distances from Merriam92
   if(allocated(green)) deallocate(green)
@@ -224,24 +224,19 @@ subroutine aggf_resp_fels_profiles (filename)
   call read_green(green(1), print=.false.)
 
   ! All possible optional arguments for standard_temperature
-  fels_types = (/ "US1976"             , "tropical",   &
-                  "subtropical_summer" , "subtropical_winter" , &
-                  "subarctic_summer"   , "subarctic_winter"    /)
-
-
+  fels_types = (/ &
+    "US1976"             , "tropical",   &
+    "subtropical_summer" , "subtropical_winter" , &
+    "subarctic_summer"   , "subarctic_winter"     &
+    /)
   ! print header
-  file_unit=6
-  write ( file_unit , '(100(a20))') &
+  write (file_unit, '(100(a20))') &
     'psi', (trim(fels_types (i)), i = 1, size(fels_types))
 
   ! print results
-  do i = 1 , size (table(:,1))
-    write (file_unit, '(f20.6$)') table(i,1)
-!    do j = 1 , size(fels_types)
-!      call compute_aggf(table (i,1), val_aggf ,fels_type=fels_types(j))
-!      write (file_unit, '(f20.6$)') val_aggf
-!    enddo
-!    write(file_unit, *)
+  do i = 1, size(green(1)%distance)
+    write(file_unit, '(<size(fels_types)+1>f20.6)'), &
+      green(1)%distance(i) , (aggf (d2r(green(1)%distance(i)), fels_type=fels_types(j)), j = 1, size(fels_types) )
   enddo
   close(file_unit)
 end subroutine
@@ -266,14 +261,14 @@ subroutine compare_fels_profiles (filename)
 
   ! All possible optional arguments for standard_temperature
   fels_types = (/ "US1976"             , "tropical",   &
-  "subtropical_summer" , "subtropical_winter" , &
-  "subarctic_summer"   , "subarctic_winter"    /)
+    "subtropical_summer" , "subtropical_winter" , &
+    "subarctic_summer"   , "subarctic_winter"    /)
 
   if (present (filename)) then
     if (file_exists(filename)) return
     open ( newunit = file_unit , &
-    file =filename , &
-    action  = 'write' )
+      file =filename , &
+      action  = 'write' )
   else
     file_unit = output_unit
   endif
@@ -282,7 +277,7 @@ subroutine compare_fels_profiles (filename)
 
   ! Print header
   write ( file_unit , '(100(a20))' ) &
-  'height', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
+    'height', ( trim ( fels_types (i) ) , i = 1 , size (fels_types) )
 
   ! Print results
   do i_height = 0 , 70 , 1
@@ -475,8 +470,8 @@ subroutine standard1976(filename)
   use mod_utilities, only: file_exists
   use mod_constants, only : dp
   use mod_atmosphere, only: &
-  standard_temperature, standard_pressure , &
-  standard_gravity,     standard_density
+    standard_temperature, standard_pressure , &
+    standard_gravity,     standard_density
   integer :: file_unit
   character(*) , intent (in) , optional:: filename
   real(dp) :: height
@@ -484,8 +479,8 @@ subroutine standard1976(filename)
   if (present (filename)) then
     if (file_exists(filename)) return
     open ( newunit = file_unit , &
-    file =filename , &
-    action  = 'write' )
+      file =filename , &
+      action  = 'write' )
   else
     file_unit = output_unit
   endif
@@ -493,15 +488,15 @@ subroutine standard1976(filename)
   print * , "standard atmosphere --->", filename
   ! print header
   write ( file_unit , '(6(a15))' ) &
-  'height', 'T' , 'g' , 'p', 'rho'
+    'height', 'T' , 'g' , 'p', 'rho'
   do height=0.,68000. , 1000
     ! print results to file
     write( file_unit,'(5f15.5, e12.3)'), & 
-    height/1000.,                        & 
-    standard_temperature(height),        & 
-    standard_gravity(height),            & 
-    standard_pressure(height)/100.,      &  ! --> hPa
-    standard_density (height)
+      height/1000.,                        & 
+      standard_temperature(height),        & 
+      standard_gravity(height),            & 
+      standard_pressure(height)/100.,      &  ! --> hPa
+      standard_density (height)
   enddo
   close( file_unit )
 end subroutine
@@ -577,14 +572,14 @@ subroutine aggf_thin_layer (filename)
   write(*,*), "aggf_thin_layer ---> ",filename
   if (present (filename)) then
     open (newunit = file_unit , &
-    file =filename , &
-    action  = 'write' )
+      file =filename , &
+      action  = 'write' )
   else
     file_unit = output_unit
   endif
   do i = 1 , size (green(1)%distance)
     write(file_unit,*) green(1)%distance(i) ,green(1)%data(i), &
-    GN_thin_layer (d2r(green(1)%distance(i)))
+      GN_thin_layer (d2r(green(1)%distance(i)))
   enddo
 end subroutine
 
@@ -606,7 +601,7 @@ subroutine admit_niebauer(filename)
   do theta=0.5 , 180, 0.01
     b= 2*f*sin(d2r(theta/2))
     a= 2*pi * gravity%constant / earth%gravity%mean* &
-    (1 - b/(2*f) -1/b + 2/f)
+      (1 - b/(2*f) -1/b + 2/f)
     write(iun, *) , theta , a *1e10
   enddo
 end subroutine
@@ -647,8 +642,8 @@ subroutine green_newtonian_compute(filenames)
     method = filenames(k)(17:index(filenames(k),".")-1)
     write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
     write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
-    (green_newtonian(d2r(psi(i)), h= h(j), method = method), j=1,size(h)) , &
-    i=1,size(psi))
+      (green_newtonian(d2r(psi(i)), h= h(j), method = method), j=1,size(h)) , &
+      i=1,size(psi))
     close(iun)
   enddo
 end subroutine
