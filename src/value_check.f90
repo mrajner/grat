@@ -41,12 +41,12 @@ program value_check
     start=1
     ! print header
     if (output%header) then
-    write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
-  endif
+      write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
+    endif
   endif
 
   ! print header
-  if (output%header) then
+  if (output%header.and.size(site).gt.0) then
     write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
   endif
   do i = 1 ,size(model)
@@ -54,7 +54,7 @@ program value_check
       write (output%unit,'(a15)',advance='no') , trim( model(i)%dataname)
     endif
   enddo
-  if(output%header) write (output%unit , *)
+  if(output%header) write(output%unit, *)
 
   do j = start , size (date)
     do i = 1 , size(model)
@@ -63,21 +63,23 @@ program value_check
         ! for 'static' data files get_variable was performed
         ! during read_netCDF
         if (allocated(date)) then
-           call get_variable (model(i), date = date(j)%date , huge=model(i)%dataname)
+          call get_variable (model(i), date = date(j)%date , huge=model(i)%dataname)
         else
           call get_variable (model(i) , huge=model(i)%dataname)
         endif
       endif
     enddo
 
+    ! print only dates if no site given
+    if (j.gt.0 .and. size(site).lt.1) then
+      write (output%unit , '(f15.3,x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
+    endif
     do i = 1 , size(site)
       iprogress = iprogress + 1
-
       ! add time stamp if -D option was specified
       if (j.gt.0) then
         write (output%unit , '(f15.3,x,i4.4,5(i2.2))' , advance = "no" ) date(j)%mjd , date(j)%date
       endif
-
 
       ! if this point should not be used (polygon) leave as zero
       if (allocated(polygon).and.polygon(1)%if) then
@@ -91,7 +93,7 @@ program value_check
           imodel = imodel + 1
           if (iok.eq.1) then
             call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-              method=info(1)%interpolation, huge=model(ii)%dataname, date=date(j)%date)
+                method=info(1)%interpolation, huge=model(ii)%dataname, date=date(j)%date)
           else
             val (imodel) = 0
           endif
@@ -108,7 +110,7 @@ program value_check
   if (ind%moreverbose%d.ne.0) then
     do i = 1 , size(model)
       do  j =1,size(model(i)%time)
-      write (moreverbose(ind%moreverbose%d)%unit ,  '(g0,1x,i4,5i2.2)')  model(i)%time(j), model(i)%date(j,:)
+        write (moreverbose(ind%moreverbose%d)%unit ,  '(g0,1x,i4,5i2.2)')  model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif
@@ -116,7 +118,7 @@ program value_check
   call cpu_time(cpu(2))
   if (output%unit.ne.output_unit) then 
     call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
-   close(output_unit) 
+    close(output_unit) 
   endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
