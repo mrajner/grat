@@ -2,22 +2,10 @@
 # for example: OBJS  = libgrat.a
 
 
-# i:value_check
-#   value_check \
-#     -F \
-#      /home/mrajner/dat/ncep_reanalysis/air.2011.nc:air \
-#     , /home/mrajner/dat/ncep_reanalysis/air.sig995.2011.nc.reanalysis1 :air \
-#     -S j -Dm:m -V
+i:value_check
+	value_check -D201101:2012:44@D 
 
 	
-o: mod_data.o mod_utilities.o value_check
-	value_check \
-		-F \
-		/home/mrajner/dat/gldas/GLDAS.nc@EWT: z@g2h @scale = 1 @nan=30, \
-		25@SP:@scale=100 ,\
-		/home/mrajner/dat/gldas/GLDAS_NOAH_TWC.2001.2013.nc@EWT:Water_Thickness:Longitude:Latitude:level:Time \
-		-Sj,o:0.2:0.3,u:50:0 -D20110115@~ 
-
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
@@ -112,9 +100,7 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 # rules for programs files
 # todo - shorter
 .PHONY: $(PROGS_SHORTCUTS)
-value_check: ../bin/value_check
-polygon_check: ../bin/polygon_check
-grat: ../bin/grat
+$(PROGS_SHORTCUTS):  $(addprefix $(PROGS_DIR)/, $(PROGS_SHORTCUTS))
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
 	$(FC) $(NETCDFLIB) $(FLAGS) $< -o $@ $(OBJS) 
@@ -172,7 +158,6 @@ install: all $(PROGS) installlib
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
-# $(PROGS_SHORTCUTS):
 $(LINKS_DIR)/%: $(PROGS_DIR)/%
 	ln -sf $(realpath $<) $@
 

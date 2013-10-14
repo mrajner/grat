@@ -89,7 +89,7 @@ s syntax
       -D 20110304050600
     or dates range and interval [hours]
       -D 20110304050600 , 201105 , 6
-    If you ommit part of date specification the programm assumes as follow
+    If you ommit part of date specification the programme assumes as follow
       month=01; day=01 hour=00; minute=00; second=00;
       therfore
       -D 201204 , 2013
@@ -98,6 +98,12 @@ s syntax
     you can select reverse order
       -D 20110304050600   , 201105           , -6
       -D  201105          , 20110304050600   ,  6
+    using first model data
+      -D m 
+      -D m : m
+      -D 20110104~ (nearest to given date in firs model)
+    relaite
+      -D 2010 : 2 
     Default: first time field in data , for interval 6 hours
     optional parameter
 
