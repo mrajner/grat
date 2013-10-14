@@ -35,16 +35,6 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       write(log%unit, form_62) 'the log file was set:', log%name
     endif
-    if (any(cmd_line_entry%field(1)%subfield(2:)%name.eq."s")) then
-      log%sparse = .true.
-    endif
-    if (any(cmd_line_entry%field(1)%subfield(2:)%name.eq."nc")) then
-      log%noclobber = .true.
-    endif
-    if (file_exists(log%name).and.log%noclobber) then
-      write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
-      call exit(1)
-    endif
   case ('-S','-R')
     call parse_site(cmd_line_entry)
   case ("-I")
@@ -89,7 +79,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     endif
     write(log%unit, form_62), 'output file was set: ' , trim(output%name)
     if (file_exists(output%name).and.output%noclobber) then
-      write(log%unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
+      write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
       call exit(1)
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
@@ -121,6 +111,7 @@ end subroutine
 ! =============================================================================
 subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
   use mod_cmdline
+  use mod_utilities, only: file_exists
   character(len=*), intent(in) :: program_calling
   character(len=*) , intent (in), optional :: accepted_switches
   logical , intent (in), optional :: cmdlineargs
@@ -152,16 +143,23 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
       (program_calling=program_calling, version=version)
     call exit
   endif
-  if (.not.any(cmd_line%switch.eq.'-I')) then
-    call parse_info()
-  endif
   if (any(cmd_line%switch.eq.'-V')) then
     !if_verbose = .true.
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
+        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s")) then
+          log%sparse = .true.
+        endif
+        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
+          log%noclobber = .true.
+        endif
         if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
           log%if = .true.
           log%name = trim(cmd_line(i)%field(1)%subfield(1)%name)
+          if (file_exists(log%name).and.log%noclobber) then
+            write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry [log]"
+            call exit(1)
+          endif
           open (newunit=log%unit , file = log%name , action='write')
         else
           log%unit=output_unit
@@ -179,9 +177,9 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
   call print_version(program_calling=program_calling, version=version)
   call date_and_time (values = execution_date)
   write(log%unit, & 
-    '("Program started:", & 
-    1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
-    execution_date (1:3),execution_date(5:7),execution_date(4)/60
+      '("Program started:", & 
+      1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
+      execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
@@ -245,21 +243,21 @@ subroutine parse_moreverbose (cmd_line_entry)
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
           if (file_exists(moreverbose(i)%name)) then
-            write(log%unit,*) "I will not overwrite with -L : nc (noclobber) ... sorry"
+            write(error_unit,*) "I will not overwrite with -L : nc (noclobber) ... sorry"
             stop
           endif
         endif
         open(                            & 
-          newunit = moreverbose(i)%unit, & 
-          file    = moreverbose(i)%name, & 
-          action  = 'write'              & 
-          )
+            newunit = moreverbose(i)%unit, & 
+            file    = moreverbose(i)%name, & 
+            action  = 'write'              & 
+            )
       else
         moreverbose(i)%unit = output_unit
       endif
     endif
     write (log%unit , form_62), trim(moreverbose(i)%name) , &
-      "<-", dataname(moreverbose(i)%dataname)
+        "<-", dataname(moreverbose(i)%dataname)
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
     endif
@@ -325,17 +323,17 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-        "("//form%t3//" &
-        'DB:',f7.2, & 
-        '|DE:',f8.3, &
-        '|I:',a, &
-        '|DD:',i2, &
-        '|DS:',f6.2, &
-        '|DFP:',l, &
-        )") , &
-        info(i)%distance%start, info(i)%distance%stop, &
-        info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step, info(i)%distance_fractional_psi
+          "("//form%t3//" &
+          'DB:',f7.2, & 
+          '|DE:',f8.3, &
+          '|I:',a, &
+          '|DD:',i2, &
+          '|DS:',f6.2, &
+          '|DFP:',l, &
+          )") , &
+          info(i)%distance%start, info(i)%distance%stop, &
+          info(i)%interpolation, info(i)%distance%denser, &
+          info(i)%distance%step, info(i)%distance_fractional_psi
     enddo
   else
     allocate(info(1))
