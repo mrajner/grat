@@ -1,15 +1,28 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-
+NC=nc
 o: grat
-	value_check -F $(RSP) -Sj
+	-grat \
+		-S l \
+		-F $(SP), $(T)   \
+		-G merriam@GNdt , merriam@GN, merriam@GE \
+		-D m:m : 3@D -o tmp : $(NC)
+	-grat \
+		-S l \
+		-F $(SP), $(T), 1013@RSP:@scale=100   \
+		-G merriam@GNdt , merriam@GN, merriam@GE \
+		-D m:m : 3@D -o tmp2 : $(NC)
+	-grat \
+		-S l \
+		-F $(SP), $(T), $(RSP)   \
+		-G merriam@GNdt , merriam@GN, merriam@GE \
+		-D m:m : 3@D -o tmp3 : $(NC)
 	grat \
 		-S l \
-		-F $(SP), $(T) , 100000 @ RSP:@scale=0.01  \
+		-F $(SP), $(T), $(RSP)   \
 		-G merriam@GNdt , merriam@GN, merriam@GE \
-		-D m:m :2@D    -o tmp3:nc 
-	
+		-D m:m : 1@D -o tmp4 
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"

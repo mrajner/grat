@@ -82,9 +82,9 @@ subroutine progress(j, time)
     bar(6+k:6+k)="*"
   enddo
   if (present(time)) then
-    write(unit=6,fmt="(a1,a1,a27,f6.1,a1,<size(moreverbose)+1>(x,a))") &
+    write(unit=6,fmt="(a1,a1,a27,f6.1,a1,' [eta', i5,']', <size(moreverbose)+1>(x,a))") &
       '+',char(13), bar, &
-      time, "s" , trim(output%name) , &
+      time, "s" , int(100.*time/j), trim(output%name) , &
       (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
   else
     write(unit=6,fmt="(a1,a1,a27)") '+',char(13), bar
