@@ -143,6 +143,9 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
       (program_calling=program_calling, version=version)
     call exit
   endif
+  if (.not.any(cmd_line%switch.eq.'-I')) then
+    call parse_info()
+  endif
   if (any(cmd_line%switch.eq.'-V')) then
     !if_verbose = .true.
     do i=1,size(cmd_line)
