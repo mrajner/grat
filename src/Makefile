@@ -5,25 +5,12 @@ NC=nc
 o: grat
 	-grat \
 		-S l \
-		-F $(SP), $(T)   \
-		-G merriam@GNdt , merriam@GN, merriam@GE \
-		-D m:m : 3@D -o tmp : $(NC)
-	-grat \
-		-S l \
-		-F $(SP), $(T), 1013@RSP:@scale=100   \
-		-G merriam@GNdt , merriam@GN, merriam@GE \
-		-D m:m : 3@D -o tmp2 : $(NC)
-	-grat \
-		-S l \
 		-F $(SP), $(T), $(RSP)   \
-		-G merriam@GNdt , merriam@GN, merriam@GE \
-		-D m:m : 3@D -o tmp3 : $(NC)
-	grat \
-		-S l \
-		-F $(SP), $(T), $(RSP)   \
-		-G merriam@GNdt , merriam@GN, merriam@GE \
-		-D m:m : 1@D -o tmp4 
-
+		-G  merriam@GNdt , merriam@GN, merriam@GE \
+		-A 3.5 \
+		-M 1D \
+		-V \
+		-D m:m : 300@D -H # -o tmp3 : 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 

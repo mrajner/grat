@@ -94,6 +94,14 @@ module mod_cmdline
     type (poly_index) :: polygon
   end type
   type(index_info) :: ind
+
+  type admitance_info
+    logical :: if
+    real(dp):: value = -0.3
+  end type
+  type(admitance_info) :: admitance
+
+  character(10) :: method="2D"
 contains
 ! =============================================================================
 !> This routine collect command line arguments to one matrix depending on

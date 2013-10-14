@@ -89,6 +89,10 @@ subroutine read_green (green, print)
   type(green_functions) :: green
   logical, optional :: print 
 
+  if (green%dataname.eq."GA") then
+    write(log%unit, form%i3) "admitance:", trim(green%name), "uGal/hPa"
+    return
+  endif
   ! change the paths accordingly
   if (.not.file_exists(green%name) &
       .and. (.not. green%name.eq."merriam" &
@@ -189,7 +193,7 @@ subroutine read_green (green, print)
   endif
 
   if (.not.present(print)) then
-    write(log%unit, form_63) trim(green%name), trim(green%dataname), &
+    write(log%unit, form%i3) trim(green%name), trim(green%dataname), &
         "columns:",green%column ,&
         "lines:", size(green%distance)
   endif
@@ -447,7 +451,7 @@ subroutine convolve (site , date)
         azimuth = (iazimuth - 1) * dazimuth
         azimuth = azimuths(iazimuth)
 
-        tot_area=tot_area+ area
+        tot_area=tot_area+area
 
         ! get lat and lon of point
         call spher_trig &
@@ -483,17 +487,17 @@ subroutine convolve (site , date)
             ) then
 
           ! get SP (and RP if given)
-          if (ind%model%sp.ne.0) then
-            call get_value (                                              & 
-                model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
-                level=1, method = info(igreen)%interpolation)
-            if (ind%model%rsp.ne.0) then
-              call get_value (                                                & 
-                  model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
-                  level=1, method = info(igreen)%interpolation)
-              val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
-            endif
-          endif
+!          if (ind%model%sp.ne.0) then
+!            call get_value (                                              & 
+!                model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
+!                level=1, method = info(igreen)%interpolation)
+!            if (ind%model%rsp.ne.0) then
+!              call get_value (                                                & 
+!                  model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
+!                  level=1, method = info(igreen)%interpolation)
+!              val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+!            endif
+!          endif
 
           ! get T
           if (ind%model%t.ne.0) then
@@ -754,4 +758,18 @@ function green_newtonian (psi, h, z, method)
     return
   endif
 end function
+
+subroutine get_sp()
+!          if (ind%model%sp.ne.0) then
+!            call get_value (                                              & 
+!                model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
+!                level=1, method = info(igreen)%interpolation)
+!            if (ind%model%rsp.ne.0) then
+!              call get_value (                                                & 
+!                  model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
+!                  level=1, method = info(igreen)%interpolation)
+!              val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+!            endif
+!          endif
+end subroutine
 end module

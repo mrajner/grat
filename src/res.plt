@@ -3,7 +3,7 @@
 do minmax $i -C |awk '{for (i=0;i<=2;i++) printf "%10.4f", $(14+i*2)-$(13+i*2)}END{print ""}'; \
 done
 
-i=7
+i=8
 set multiplot lay 3,1
 plot 'tmp' us 1:i w l 
 plot 'tmp2' us 1:i w l 

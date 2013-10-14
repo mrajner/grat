@@ -15,9 +15,9 @@ program value_check
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
-  real (dp) :: cpu(2)
-  integer    :: i,ii ,j ,start , imodel, iprogress = 0
-  integer(2) :: iok 
+  real (dp)    :: cpu(2)
+  integer      :: i,ii ,j ,start , imodel, iprogress = 0
+  integer(2)   :: iok
   character(1) :: interpolation
 
   call cpu_time(cpu(1))

@@ -61,11 +61,10 @@ program grat
   use mod_parser
   use mod_data
   use mod_date
-  use mod_green, only : convolve, green, result
+  use mod_green, only : convolve, green, result, get_sp
   use mod_site
   use mod_polygon
   use mod_cmdline
-!  use mod_printing
 
   implicit none
   real(dp) :: x, y, z, lat, lon, cpu(2)
@@ -77,7 +76,7 @@ program grat
   ! gather cmd line option decide where to put output
   call intro & 
     (program_calling = "grat" , &
-    accepted_switches="VSBLGPpoFIDLvhRQO" , &
+    accepted_switches="VSBLGPpoFIDLvhRQOA" , &
     cmdlineargs=.true. &
     )
 
@@ -100,9 +99,11 @@ program grat
   endif
 
   if(output%header) then
-    do i = 1 ,size(green)
-      write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
-    enddo
+    if (method.eq."2D") then
+      do i = 1 ,size(green)
+        write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
+      enddo
+    endif
   endif
 
   if(output%header) then
@@ -121,53 +122,64 @@ program grat
         if(model(i)%if) then
           select case (model(i)%dataname)
           ! read only once Land-sea, reference surface pressure and heights
-          case ("LS","RSP", "H")
-            if (idate.gt.start) then
-              cycle
-            else
-              call get_variable (model(i))
-              select case (model(i)%dataname)
-              case ("LS")
-                if (inverted_landsea_mask) then
-                  model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
-                endif
-              endselect
-            endif
-          case default
-            if (size(date).eq.0) then
-              call get_variable (model(i))
-            else
-              call get_variable (model(i), date = date(idate)%date)
-            endif
-          endselect
-        endif
-      enddo
-
-
-      ! if ocean mass should be conserved (-O C)
-      if (ocean_conserve_mass) then
-        if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
-          if(size(date).eq.0) then
-            call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-              inverted_landsea_mask = inverted_landsea_mask)
+        case ("LS","RSP", "H")
+          if (idate.gt.start) then
+            cycle
           else
-            call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
+            call get_variable (model(i))
+            select case (model(i)%dataname)
+            case ("LS")
+              if (inverted_landsea_mask) then
+                model(ind%model%ls)%data = abs(model(ind%model%ls)%data-1)
+              endif
+            endselect
+          endif
+        case default
+          if (size(date).eq.0) then
+            call get_variable (model(i))
+          else
+            call get_variable (model(i), date = date(idate)%date)
+          endif
+        endselect
+      endif
+    enddo
+
+    ! if ocean mass should be conserved (-O C)
+    if (ocean_conserve_mass) then
+      if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
+        if(size(date).eq.0) then
+          call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
+              inverted_landsea_mask = inverted_landsea_mask)
+        else
+          call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
               date=date(idate)%date, &
               inverted_landsea_mask = inverted_landsea_mask)
-          endif
         endif
       endif
+    endif
 
-      ! calculate total mass if asked for
-      if (ind%moreverbose%t.ne.0) then
-        if (size(date).eq.0) then
-          call total_mass(model(ind%model%sp))
-        else
-          call total_mass(model(ind%model%sp), date=date(idate)%date)
-        endif
+    ! calculate total mass if asked for
+    if (ind%moreverbose%t.ne.0) then
+      if (size(date).eq.0) then
+        call total_mass(model(ind%model%sp))
+      else
+        call total_mass(model(ind%model%sp), date=date(idate)%date)
       endif
+    endif
 
 
+    if (method.eq."1D") then 
+      if (idate.gt.0) then
+      write(output%unit, '(f12.3,x,i4.4,5(i2.2))', advance="no") &
+          date(idate)%mjd, date(idate)%date
+      endif
+      write (output%unit, '(a8,3f15.4,10en15.5)' ), &
+          site(isite)%name, &
+          site(isite)%lat,  &
+          site(isite)%lon,  &
+          site(isite)%height
+
+    elseif (method.eq."2D") then 
       ! perform convolution
       if (idate.gt.0) then
         call convolve (site(isite) , date = date(idate))
@@ -177,19 +189,20 @@ program grat
       if (output%unit.ne.output_unit) then 
         call cpu_time(cpu(2))
         call progress(                     & 
-          100*iprogress/(max(size(date),1) & 
-          *max(size(site),1)),             & 
-          cpu(2)-cpu(1))
+            100*iprogress/(max(size(date),1) & 
+            *max(size(site),1)),             & 
+            cpu(2)-cpu(1))
       endif
-    enddo
+    endif
   enddo
+enddo
 
-  ! execution time-stamp
-  call cpu_time(cpu(2))
-  if (output%unit.ne.output_unit) then 
-    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
-    close(output_unit) 
-  endif
-  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
-  write(log%unit, form_separator)
+! execution time-stamp
+call cpu_time(cpu(2))
+if (output%unit.ne.output_unit) then 
+  call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
+  close(output_unit) 
+endif
+write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+write(log%unit, form_separator)
 end program 
