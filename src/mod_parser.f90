@@ -17,6 +17,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
   use mod_green,   only: parse_green
   use mod_cmdline
   use mod_utilities, only: file_exists
+  use mod_admit, only : parse_admit
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: program_calling, accepted_switches
@@ -59,6 +60,7 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     call parse_date(cmd_line_entry)
   case ('-A')
     admitance%if=.true.
+    call parse_admit(cmd_line_entry)
   case ('-F')
     call parse_model(cmd_line_entry)
   case ("-G")
@@ -508,6 +510,10 @@ subroutine get_index()
       ind%model%rsp = i
     case ("LS")
       ind%model%ls = i
+    case ("H")
+      ind%model%h = i
+    case ("HP")
+      ind%model%hp = i
     endselect
   enddo
   do i = 1 , size(moreverbose)
@@ -554,6 +560,8 @@ subroutine get_index()
       ind%green%gg = i
     case ("GNdt")
       ind%green%gndt = i
+    case ("GNdz")
+      ind%green%gndz = i
     endselect
   enddo
   do i = 1, size(polygon)

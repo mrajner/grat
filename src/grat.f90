@@ -61,10 +61,11 @@ program grat
   use mod_parser
   use mod_data
   use mod_date
-  use mod_green, only : convolve, green, result, get_sp
+  use mod_green, only : convolve, green, result
   use mod_site
   use mod_polygon
   use mod_cmdline
+  use mod_admit
 
   implicit none
   real(dp) :: x, y, z, lat, lon, cpu(2)
@@ -99,7 +100,9 @@ program grat
   endif
 
   if(output%header) then
-    if (method.eq."2D") then
+    if (method.eq."1D") then
+        write (output%unit,'(a15)',advance='no') , "admitance"
+    elseif (method.eq."2D") then
       do i = 1 ,size(green)
         write (output%unit,'(a15)',advance='no') , trim(green(i)%dataname)
       enddo
@@ -122,7 +125,7 @@ program grat
         if(model(i)%if) then
           select case (model(i)%dataname)
           ! read only once Land-sea, reference surface pressure and heights
-        case ("LS","RSP", "H")
+        case ("LS","RSP", "H", "HP")
           if (idate.gt.start) then
             cycle
           else
@@ -177,12 +180,17 @@ program grat
           site(isite)%name, &
           site(isite)%lat,  &
           site(isite)%lon,  &
-          site(isite)%height
+          site(isite)%height, &
+          admit( &
+          lat=site(isite)%lat, &
+          lon=site(isite)%lon, &
+          height=site(isite)%height  &
+          )
 
     elseif (method.eq."2D") then 
       ! perform convolution
       if (idate.gt.0) then
-        call convolve (site(isite) , date = date(idate))
+        call convolve (site(isite), date = date(idate))
       else
         call convolve (site(isite))
       endif

@@ -1,16 +1,16 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-NC=nc
+NC=n
 o: grat
 	-grat \
 		-S l \
-		-F $(SP), $(T), $(RSP)   \
-		-G  merriam@GNdt , merriam@GN, merriam@GE \
-		-A 3.5 \
-		-M 1D \
-		-V \
-		-D m:m : 300@D -H # -o tmp3 : 
+		-F $(SP) ,  $(H__)    \
+		-A : site \
+		-G merriam @GE \
+		-M 1D   \
+		-D m:m : 1@D  -o tmp0 : $(NC) -V
+
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 
@@ -38,9 +38,8 @@ SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
 T        = $(NCEP_DIR)/air.sig995.2011.nc.reanalysis1@T:air
 LS       = $(NCEP_DIR)/land.nc@LS:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-H__      = ../data/ncep_reanalysis/hgt.sfc.nc:hgt
-FNL      = /home/mrajner/meteo/fnl/sfc_hgt/
-fnl_     = /home/mrajner/meteo/fnl/sfc_pres/pres_sfc20090101_06_00.nc:PRES_P0_L1_GLL0:lon_0:lat_0
+H__      = $(NCEP_DIR)/hgt.sfc.nc@HP\!:hgt
+Hetopo   = /home/mrajner/dat/etopo/ETOPO1_Ice_c_gmt4.grd@H! : z : x: y
 #todo vienna
 
 SRCS  = mod_constants.f90  \
@@ -56,7 +55,8 @@ SRCS  = mod_constants.f90  \
 				mod_polygon.f90    \
 				mod_data.f90       \
 				mod_date.f90       \
-				mod_parser.f90
+				mod_parser.f90     \
+				mod_admit.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \

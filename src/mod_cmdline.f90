@@ -63,7 +63,7 @@ module mod_cmdline
   logical :: inverted_landsea_mask = .false.  
 
   type model_index
-    integer(2) :: sp, t, rsp , ewt , h , ls
+    integer(2) :: sp, t, rsp , ewt , h , ls, hp
   end type
   type poly_index
     integer(2) :: e, n
@@ -98,6 +98,7 @@ module mod_cmdline
   type admitance_info
     logical :: if
     real(dp):: value = -0.3
+    character(50) :: level
   end type
   type(admitance_info) :: admitance
 
