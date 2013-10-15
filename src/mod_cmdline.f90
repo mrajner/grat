@@ -85,7 +85,7 @@ module mod_cmdline
       gndh        = 0,  & ! first derivative respect to station height
       gndz        = 0,  & ! first derivative respect to column height
       gndz2 = 0     , & ! second derivative respect to column height
-      gnc =0 ! compute aggf every time
+      gnc =0             ! compute aggf every time
   end type
   type index_info
     type (model_index)       :: model

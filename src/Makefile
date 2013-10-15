@@ -2,14 +2,17 @@
 # for example: OBJS  = libgrat.a
 
 NC=n
+r: value_check
+	-value_check \
+		-S l \
+		-F $(SP) , $(H__) -V -Dm
 o: grat
 	-grat \
 		-S l \
-		-F $(SP) ,  $(H__)    \
-		-A : site \
-		-G merriam @GE \
+		-F $(SP) , $(H__) -V \
+		-A  \
 		-M 1D   \
-		-D m:m : 1@D  -o tmp0 : $(NC) -V
+		     # -o tmpt : $(NC)
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
@@ -34,11 +37,11 @@ NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf
 # data for computation
 DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
-SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP:pres
+SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP\:pres
 T        = $(NCEP_DIR)/air.sig995.2011.nc.reanalysis1@T:air
 LS       = $(NCEP_DIR)/land.nc@LS:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-H__      = $(NCEP_DIR)/hgt.sfc.nc@HP\!:hgt
+H__      = $(NCEP_DIR)/hgt.sfc.nc@HP\:hgt
 Hetopo   = /home/mrajner/dat/etopo/ETOPO1_Ice_c_gmt4.grd@H! : z : x: y
 #todo vienna
 
@@ -75,7 +78,7 @@ mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
 mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
 mod_date.o:mod_data.o

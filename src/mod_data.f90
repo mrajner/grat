@@ -73,7 +73,8 @@ subroutine parse_model (cmd_line_entry)
       if (index(model(i)%dataname,"!").ne.0) then
       model(i)%huge=.true.
       model(i)%dataname = & 
-      model(i)%dataname (1: index(model(i)%dataname,"!")-1)
+          model(i)%dataname (1: index(model(i)%dataname,"!")-1)
+      write(log%unit, form%i2) "!:huge"
     endif
   endif
 
@@ -381,22 +382,19 @@ end subroutine
 ! =============================================================================
 !> \brief Get variable from netCDF file for specified variables
 ! =============================================================================
-subroutine get_variable(model, date, huge, print)
+subroutine get_variable(model, date, print)
     use netcdf
     use mod_printing
     type (file), intent(inout) :: model
-    integer , optional , intent(in) ,dimension(6) ::date
-    integer :: varid ,status
+    integer, optional, intent(in), dimension(6) ::date
+    integer :: varid, status
     integer :: start(3)
     integer :: index_time, i , j , k
-    character(*), intent(in), optional :: huge
     real (dp) :: scale_factor, add_offset
     logical, optional :: print
 
-    if (present(huge)) then
-      if (huge.eq."huge") then
-        return
-      endif
+    if (model%huge) then
+!        return
     endif
 
     index_time = 0
@@ -498,7 +496,7 @@ end subroutine check
 !! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
 ! =============================================================================
-subroutine get_value(model, lat, lon, val, level, method, huge, date)
+subroutine get_value(model, lat, lon, val, level, method, date)
     use mod_constants , only: dp 
     use mod_cmdline
     use mod_utilities, only: r2d
@@ -515,7 +513,6 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
     integer  :: ilon, ilat, ilon2, ilat2 , varid ,status
     real(dp), dimension(4,3) :: array_aux 
     real(dp) :: scale_factor, add_offset
-    character (*), intent(in), optional::huge
     integer, intent(in), optional::date(6)
 
     if (present(level)) ilevel=level
@@ -540,18 +537,18 @@ subroutine get_value(model, lat, lon, val, level, method, huge, date)
     ilon = minloc(abs(model%lon-lon),1)
 
     ! do not look into data array - get value directly 
-    if (present(huge)) then
-      if (huge.eq."huge") then
-        call check (nf90_inq_varid ( model%ncid , model%names(1) , varid ))
-        call check (nf90_get_var (model%ncid , varid, val, start = [ilon,ilat,get_time_index(model,date)]))
-        call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
-        if (status==nf90_noerr) val = val *scale_factor + add_offset
-        if (trim(model%datanames(1)).ne."") then
-          val = variable_modifer (val, model%datanames(1))
-        endif
-        return
-      endif
-    endif
+!      if (model%huge) then
+!        call check (nf90_inq_varid ( model%ncid , model%names(1) , varid ))
+!        call check (nf90_get_var(model%ncid, varid, val, start = [ilon,ilat,get_time_index(model,date)]))
+!        stop "not yet supported: from mod_data"
+!        call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
+!        if (status==nf90_noerr) val = val *scale_factor + add_offset
+!        if (trim(model%datanames(1)).ne."") then
+!          val = variable_modifer (val, model%datanames(1))
+!        endif
+!        return
+!      endif
+!    endif
 
     if (present(method) .and. method .eq. "l" ) then
       ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
@@ -618,6 +615,7 @@ function dataname(abbreviation)
     if (abbreviation.eq."SP") dataname  = "Surface pressure"
     if (abbreviation.eq."T") dataname   = "Surface temperature"
     if (abbreviation.eq."H") dataname   = "Surface height"
+    if (abbreviation.eq."HP") dataname   = "Model height"
     if (abbreviation.eq."RSP") dataname = "Reference surface pressure"
     if (abbreviation.eq."EWT") dataname = "Equivalent water thickness"
 end function

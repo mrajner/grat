@@ -555,6 +555,14 @@ subroutine convolve (site , date)
                     (val(ind%model%t)-atmosphere%temperature%standard)  *                                 & 
                     area * normalize
               endif
+              ! GNC
+              if (ind%green%gnc.ne.0) then
+                result(ind%green%gndt) = result(ind%green%gndt) +    & 
+                    val(ind%model%sp) *                                & 
+                    green_common(igreen)%data(idist, ind%green%gndt) * & 
+                    (val(ind%model%t)-atmosphere%temperature%standard)  *                                 & 
+                    area * normalize
+              endif
               ! GNdz
               if (ind%green%gndz.ne.0) then
               endif
