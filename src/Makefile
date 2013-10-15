@@ -2,17 +2,16 @@
 # for example: OBJS  = libgrat.a
 
 NC=n
-r: value_check
-	-value_check \
-		-S l \
-		-F $(SP) , $(H__) -V -Dm
+# r: value_check
+#   -value_check \
+#     -S l \
+#     -F $(SP) , $(H__) -V -Dm
 o: grat
 	-grat \
 		-S l \
-		-F $(SP) , $(H__) -V \
-		-A  \
-		-M 1D   \
-		     # -o tmpt : $(NC)
+		-F $(SP) , $(T), $(RSP) -V \
+		-G merriam @GNdt, merriam@GN \
+		-D m : m :10 -o tmpt: $(NC)
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"

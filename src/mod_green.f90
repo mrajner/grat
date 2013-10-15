@@ -549,6 +549,9 @@ subroutine convolve (site , date)
 
               ! GNdt
               if (ind%green%gndt.ne.0) then
+                if (any( &
+                    [ind%model%sp, ind%model%t, ind%model%rsp &
+                    ].eq.0)) stop "not enougt data model"
                 result(ind%green%gndt) = result(ind%green%gndt) +    & 
                     val(ind%model%sp) *                                & 
                     green_common(igreen)%data(idist, ind%green%gndt) * & 
