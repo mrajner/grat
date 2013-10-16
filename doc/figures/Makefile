@@ -4,22 +4,31 @@ all: \
 	polygon_ilustration.pdf polygon_ilustration.png\
 	interpolation_ilustration.pdf\
 	interpolation_ilustration.svg \
-	logo_grat.pdf
+	logo_grat.pdf \
+	logo_gr@.pdf \
+	logo_grat.svg \
+	logo_gr@.svg
 
 %.pdf: %.tex
 	pdflatex $<
 
-logo_grat.svg: logo_grat.pdf
+logo_gr@.pdf: logo_grat.tex
+	pdflatex --jobname=logo_gr@ "\input{logo_grat.tex}"
+logo_grat.pdf: logo_grat.tex
+	pdflatex  "\def\grat{1}\input{logo_grat.tex}"
+
+logo_gr%.svg: logo_gr%.pdf
 	pdf2svg $< $@
 
 # google code accept only png
 logo_grat.png: logo_grat.pdf
 	convert -density 700 $< $@
 
-%.svg:%.pdf
-	inkscape $< --export-plain-svg=$@  # --export-text-to-path 
-%.png:%.pdf
-	convert -resize 900 $< $@
+# %.svg:%.pdf
+#   inkscape $< --export-plain-svg=$@  # --export-text-to-path 
+
+# %.png:%.pdf
+#   convert -resize 900 $< $@
 
 podklad.pdf podklad2.pdf: podklad_do_convolution.sh
 	bash $^

@@ -89,6 +89,7 @@ subroutine read_green (green, print)
   type(green_functions) :: green
   logical, optional :: print 
 
+   
   ! change the paths accordingly
   if (.not.file_exists(green%name) &
       .and. (.not. green%name.eq."merriam" &
@@ -207,6 +208,7 @@ subroutine read_green (green, print)
         -green%data * green_normalization("f2m")
     write(log%unit, form_63) "conversion: farrell --> to merriam"
   endif
+  if(green%dataname.eq."GNc") return
 
 end subroutine
 

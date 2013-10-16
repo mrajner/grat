@@ -34,7 +34,12 @@
     outer sep=0.2em
     ]
     at(\radius+1em,-\radius-1em)
-    {\color{white}grat}
+    {\color{white}%
+      \ifdefined\grat%
+      grat%
+      \else%
+        gr@%
+    \fi}
     ;
     
    

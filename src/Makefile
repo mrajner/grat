@@ -12,9 +12,10 @@ SSSS= $(SP), $(H__),$(Hetopo)
 j: grat
 	grat \
 		-S r \
-		-M 1D \
+		-M 2D \
+		-G @GNc, merriam@GN \
 		-F $(SSSS) \
-		-A 1
+		-V -L@g
 o: grat
 	-grat \
 		-S l \
