@@ -347,10 +347,14 @@ end subroutine
 function get_time_index(model,date)
     integer :: get_time_index
     type (file), intent(in) :: model
-    integer , intent(in) ,dimension(6) ::date
+    integer, intent(in), dimension(6), optional ::date
     integer :: i
 
     get_time_index=0
+    if (.not.present(date)) then
+      get_time_index=1
+      return
+    endif
     do i = 1 , size(model%date(:,1))
       if (all(model%date(i,1:6) .eq. date(1:6))) then
         get_time_index=i
@@ -394,7 +398,7 @@ subroutine get_variable(model, date, print)
     logical, optional :: print
 
     if (model%huge) then
-!        return
+        return
     endif
 
     index_time = 0
@@ -537,18 +541,16 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     ilon = minloc(abs(model%lon-lon),1)
 
     ! do not look into data array - get value directly 
-!      if (model%huge) then
-!        call check (nf90_inq_varid ( model%ncid , model%names(1) , varid ))
-!        call check (nf90_get_var(model%ncid, varid, val, start = [ilon,ilat,get_time_index(model,date)]))
-!        stop "not yet supported: from mod_data"
-!        call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
-!        if (status==nf90_noerr) val = val *scale_factor + add_offset
-!        if (trim(model%datanames(1)).ne."") then
-!          val = variable_modifer (val, model%datanames(1))
-!        endif
-!        return
-!      endif
-!    endif
+      if (model%huge) then
+        call check (nf90_inq_varid (model%ncid, model%names(1), varid))
+        call check (nf90_get_var(model%ncid, varid, val, start = [ilon,ilat,get_time_index(model,date)]))
+        call get_scale_and_offset(model%ncid, model%names(1) , scale_factor, add_offset,status)
+        if (status==nf90_noerr) val = val *scale_factor + add_offset
+        if (trim(model%datanames(1)).ne."") then
+          val = variable_modifer (val, model%datanames(1))
+        endif
+        return
+      endif
 
     if (present(method) .and. method .eq. "l" ) then
       ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))

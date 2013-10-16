@@ -46,7 +46,7 @@ subroutine print_warning (warn , unit)
   integer , optional :: unit
   integer :: def_unit
 
-  def_unit = log%unit
+  def_unit = error_unit
   if (present (unit) ) def_unit=unit
 
   if (warn .eq. "site_file_format") then

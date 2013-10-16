@@ -6,6 +6,15 @@ NC=n
 #   -value_check \
 #     -S l \
 #     -F $(SP) , $(H__) -V -Dm
+SSSS= $(SP)
+SSSS= $(SP), $(H__)
+SSSS= $(SP), $(H__),$(Hetopo)
+j: grat
+	grat \
+		-S r \
+		-M 1D \
+		-F $(SSSS) \
+		-A 1
 o: grat
 	-grat \
 		-S l \
@@ -36,11 +45,11 @@ NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf
 # data for computation
 DAT_DIR  = /home/mrajner/dat
 NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
-SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP\:pres
+SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP\!:pres
 T        = $(NCEP_DIR)/air.sig995.2011.nc.reanalysis1@T:air
 LS       = $(NCEP_DIR)/land.nc@LS:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-H__      = $(NCEP_DIR)/hgt.sfc.nc@HP\:hgt
+H__      = $(NCEP_DIR)/hgt.sfc.nc@HP:hgt@g2h
 Hetopo   = /home/mrajner/dat/etopo/ETOPO1_Ice_c_gmt4.grd@H! : z : x: y
 #todo vienna
 

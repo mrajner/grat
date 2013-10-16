@@ -13,8 +13,10 @@ real(dp) function admit(lat,lon, height)
   use mod_data, only: get_value, model
   use mod_utilities, only: r2d
   use mod_atmosphere, only: standard_pressure
-  real(dp) :: val, rsp, hp, t
+  real(dp) :: val, rsp, hp, t, h
   real(dp), intent(in) :: lat,lon, height
+
+  h=height
 
   if (ind%model%sp.ne.0) then
     call get_value (                   & 
@@ -27,7 +29,9 @@ real(dp) function admit(lat,lon, height)
         )
   endif
   if(admitance%level.eq."site" &
-      .or.admitance%level.eq."model") then
+      .or.admitance%level.eq."model" &
+      .or. any([ind%model%hp,ind%model%h].ne.0) &
+      ) then
     if (ind%model%hp.ne.0) then
       call get_value (                   & 
           model=model(ind%model%hp),     & 
@@ -40,13 +44,14 @@ real(dp) function admit(lat,lon, height)
     else
       stop "you want transfer pressure but no @HP model given"
     endif
-    if (admitance%level.eq."model") then
+    if (admitance%level.eq."model" &
+        .or. ind%model%h.ne.0) then
       if(ind%model%h.ne.0) then
         call get_value (                   & 
-            model=model(ind%model%hp),     & 
+            model=model(ind%model%h),     & 
             lat=lat,                       & 
             lon=lon,                       & 
-            val=hp,                       & 
+            val=h,                         & 
             level=1,                       & 
             method = info(1)%interpolation & 
             )
@@ -64,7 +69,7 @@ real(dp) function admit(lat,lon, height)
             method = info(1)%interpolation & 
             )
       val = standard_pressure(             & 
-          height=height,                   & 
+          height=h,                        & 
           h_zero=hp,                       & 
           p_zero=val,                      & 
           method="full",                   & 
@@ -73,7 +78,7 @@ real(dp) function admit(lat,lon, height)
           )
     else
       val = standard_pressure(             & 
-          height=height,                   & 
+          height=h,                        & 
           h_zero=hp,                       & 
           p_zero=val,                      & 
           method="full",                   & 
