@@ -104,6 +104,7 @@ PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
 
 # change to your path directory
 LINKS_DIR=/home/mrajner/.local/bin
+LINKS_DIR_ALL=/usr/sbin
 LINKS  = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
 
 EXAMPLES_DIR = ../examples
@@ -159,10 +160,15 @@ docman: doc
 
 install: all $(PROGS) installlib
 
+
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
 $(LINKS_DIR)/%: $(PROGS_DIR)/%
 	ln -sf $(realpath $<) $@
+$(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
+	sudo ln -sf $(realpath $<) $@
+
+install-allusers: $(LINKS_DIR_ALL)/grat
 
 # Change this path according to your system settings
 # This could require root privilages 
@@ -188,3 +194,6 @@ helps: $(HELPS)
 $(HELPS): $(PROGS)
 %.hlp: 
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+
+help:
+	egrep "^.*:" [Mm]akefile
