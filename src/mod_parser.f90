@@ -400,7 +400,7 @@ subroutine print_help (program_calling, accepted_switches)
   if_print_line=.false.
 
   ! change this path according to your settings
-  open(newunit=help_unit, file="~/src/grat/dat/help.hlp", action="read",status="old")
+  open(newunit=help_unit, file="/home/mrajner/src/grat/dat/help.hlp", action="read",status="old")
 
   write (log%unit ,"(a)" , advance="no" ) program_calling
   ! first loop - print only syntax with squre brackets if parameter is optional

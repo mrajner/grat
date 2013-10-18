@@ -188,3 +188,6 @@ helps: $(HELPS)
 $(HELPS): $(PROGS)
 %.hlp: 
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+
+tmpinstall:
+	cp /home/mrajner/src/grat/bin/grat /usr/local/bin/
