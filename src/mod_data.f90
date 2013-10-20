@@ -117,12 +117,11 @@ subroutine parse_model (cmd_line_entry)
     model(i)%lonrange=[  0,360]
     model(i)%latrange=[-90, 90]
   else
-    call print_warning ("model")
+    call print_warning ("model", more=trim(model(i)%name)//" : file do not exist", error=.true.)
     call exit(1)
   endif
 enddo
 end subroutine
-
 ! =============================================================================
 ! =============================================================================
 function variable_modifer (val, modifer)
