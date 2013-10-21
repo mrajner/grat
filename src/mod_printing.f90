@@ -40,11 +40,13 @@ contains
 
 ! =============================================================================
 ! =============================================================================
-subroutine print_warning (warn , unit)
+subroutine print_warning (warn , unit, more, error)
   use, intrinsic:: iso_fortran_env
   character (len=*)  :: warn
+  character (len=*), optional :: more
   integer , optional :: unit
   integer :: def_unit
+  logical, optional :: error
 
   def_unit = error_unit
   if (present (unit) ) def_unit=unit
@@ -65,6 +67,8 @@ subroutine print_warning (warn , unit)
   else if (warn .eq. "model") then
     write(def_unit, form%i3) "something wrong with -F."
   endif
+  if (present(more)) write(def_unit, form%i3) more
+  if (present(error) .and. error) stop "error"
 end subroutine
 
 ! =============================================================================

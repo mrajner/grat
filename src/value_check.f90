@@ -41,7 +41,7 @@ program value_check
     start=1
     ! print header
     if (output%header) then
-      write (output%unit , '(a15,x,a14)' , advance = "no" ) "#mjd" , "date"
+      write (output%unit , '(a15,x,a14,x)' , advance = "no" ) "#mjd" , "date"
     endif
   endif
 
@@ -78,12 +78,12 @@ program value_check
       iprogress = iprogress + 1
       ! add time stamp if -D option was specified
       if (j.gt.0) then
-        write (output%unit , '(f15.3,x,i4.4,5(i2.2))' , advance = "no" ) date(j)%mjd , date(j)%date
+        write (output%unit , '(f15.3,x,i4.4,5(i2.2),x)' , advance = "no" ) date(j)%mjd , date(j)%date
       endif
 
       ! if this point should not be used (polygon) leave as zero
       if (allocated(polygon).and.polygon(1)%if) then
-        call chkgon( site(i)%lon, site(i)%lat, polygon(1), iok)
+        call chkgon(site(i)%lon, site(i)%lat, polygon(1), iok)
       else
         iok=1
       endif

@@ -27,9 +27,9 @@
     \only<10>{\setcounter{komorkaa}{0}\def\cell{14}}
     \begin{tikzpicture}
       \node[use as bounding box,anchor=south west,inner sep=0] (image) at (0,0) 
-        {\includegraphics[width=\textwidth,height=\textheight]{/home/mrajner/src/grat/doc/rysunki/podklad}};
+        {\includegraphics[width=\textwidth,height=\textheight]{/home/mrajner/src/grat/doc/figures/podklad}};
       \node<3>[use as bounding box,anchor=south west,inner sep=0] (image) at (0,0) 
-        {\includegraphics[width=\textwidth,height=\textheight]{/home/mrajner/src/grat/doc/rysunki/podklad2}};
+        {\includegraphics[width=\textwidth,height=\textheight]{/home/mrajner/src/grat/doc/figures/podklad2}};
       \begin{scope}[x={(image.south east)},y={(image.north west)}]
         \fill<1->[fill=white,onslide=<{2-}>{fill=none},onslide=<2>{draw=color1},ultra 
           thick,even odd rule,opacity=1,

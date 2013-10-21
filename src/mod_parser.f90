@@ -91,6 +91,8 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     endif
   case ('-P')
     call parse_polygon(cmd_line_entry)
+  case ('-n')
+    dry_run=.true.
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
   endselect
@@ -377,14 +379,14 @@ subroutine print_version (program_calling,version)
   integer :: version_unit , io_stat
   character(*) , optional :: version
 
-  write(log%unit , form_header ) 
-  write(log%unit,form_inheader ) , trim(program_calling)
-  write(log%unit,form_inheader ) , version
-  write(log%unit , form_header ) 
-  write(log%unit,form_inheader ) , 'Copyright 2013 by Marcin Rajner'
-  write(log%unit,form_inheader ) , 'Warsaw University of Technology'
-  write(log%unit,form_inheader ) , 'License: GPL v3 or later'
-  write(log%unit , form_header ) 
+  write(log%unit, form_header )
+  write(log%unit, form_inheader ), trim(program_calling)
+  write(log%unit, form_inheader ), version
+  write(log%unit, form_header )
+  write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
+  write(log%unit, form_inheader ), 'Warsaw University of Technology'
+  write(log%unit, form_inheader ), 'License: GPL v3 or later'
+  write(log%unit, form_header )
 end subroutine
 
 !! =============================================================================

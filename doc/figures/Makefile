@@ -17,6 +17,8 @@ logo_gr@.pdf: logo_grat.tex
 logo_grat.pdf: logo_grat.tex
 	pdflatex  "\def\grat{1}\input{logo_grat.tex}"
 
+%.svg: %.pdf
+	pdf2svg $< $@
 logo_gr%.svg: logo_gr%.pdf
 	pdf2svg $< $@
 
@@ -27,8 +29,8 @@ logo_grat.png: logo_grat.pdf
 # %.svg:%.pdf
 #   inkscape $< --export-plain-svg=$@  # --export-text-to-path 
 
-# %.png:%.pdf
-#   convert -resize 900 $< $@
+%.png:%.pdf
+	convert -resize 900 $< $@
 
 podklad.pdf podklad2.pdf: podklad_do_convolution.sh
 	bash $^
