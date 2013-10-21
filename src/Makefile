@@ -195,5 +195,6 @@ $(HELPS): $(PROGS)
 %.hlp: 
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
-tmpinstall:
-	cp /home/mrajner/src/grat/bin/grat /usr/local/bin/
+grat_httpd:/usr/local/bin/grat
+/usr/local/bin/grat: ../bin/grat
+	sudo cp -uf /home/mrajner/src/grat/bin/grat /usr/local/bin/
