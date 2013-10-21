@@ -91,6 +91,8 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     endif
   case ('-P')
     call parse_polygon(cmd_line_entry)
+  case ('-n')
+    dry_run=.true.
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
   endselect
