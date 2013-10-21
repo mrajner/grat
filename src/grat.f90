@@ -82,7 +82,6 @@ program grat
       accepted_switches="VSBLGPpoFIDLvhRQOA" , &
       cmdlineargs=.true. &
       )
-    stop
 
     ! for progress bar
     if (output%unit.ne.output_unit) open (unit=output_unit, carriagecontrol='fortran')
