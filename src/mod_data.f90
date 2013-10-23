@@ -25,18 +25,18 @@ module mod_data
     logical :: if =.false.
 
     real(dp), allocatable, dimension(:) :: lat, lon, time, level
-    integer , allocatable, dimension(:,:) :: date
+    integer, allocatable, dimension(:,:) :: date
 
     real (dp), dimension(2) :: latrange , lonrange
 
     logical :: if_constant_value  !, if_time, if_level
     real(dp):: constant_value
 
-    real(dp) , allocatable , dimension(:,:,:) :: data
+    real(dp), allocatable , dimension(:,:,:) :: data
 
-    ! netcdf identifiers
     integer :: ncid
     logical :: huge=.false.
+    logical :: autoload=.false.
   end type
   type(file) , allocatable, dimension(:) :: model 
 
