@@ -2,6 +2,8 @@
 # for example: OBJS  = libgrat.a
 
 NC=n
+dddds: value_check
+	value_check -S aaa:100:-700:1000 
 # r: value_check
 #   -value_check \
 #     -S l \

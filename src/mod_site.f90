@@ -33,7 +33,6 @@ subroutine parse_site(cmd_line_entry)
   do i = 1 , size (cmd_line_entry%field)
     write(log%unit, form%i2) , trim(cmd_line_entry%field(i)%full)
 
-
     if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
       .or.&
       (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
@@ -55,6 +54,8 @@ subroutine parse_site(cmd_line_entry)
       read (cmd_line_entry%field(i)%subfield(3)%name,*) site(start_index)%lon
       if (site(start_index)%lon.ge.360.) &
         site(start_index)%lon = mod(site(start_index)%lon,360.)
+      if (site(start_index)%lon.lt.-180.) &
+        site(start_index)%lon = mod(site(start_index)%lon-180,360.)+180
       if (is_numeric(cmd_line_entry%field(i)%subfield(4)%name)) then
         read (cmd_line_entry%field(i)%subfield(4)%name, * ) &
           site(start_index)%height
