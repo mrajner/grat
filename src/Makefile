@@ -106,7 +106,7 @@ PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
 
 # change to your path directory
 LINKS_DIR=/home/mrajner/.local/bin
-LINKS_DIR_ALL=/usr/sbin
+LINKS_DIR_ALL=/usr/local/bin
 LINKS  = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
 
 EXAMPLES_DIR = ../examples
@@ -168,9 +168,9 @@ install: all $(PROGS) installlib
 $(LINKS_DIR)/%: $(PROGS_DIR)/%
 	ln -sf $(realpath $<) $@
 $(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
-	sudo ln -sf $(realpath $<) $@
+	sudo cp $(realpath $<) $@
 
-install-allusers: $(LINKS_DIR_ALL)/grat
+install-allusers: $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
 
 # Change this path according to your system settings
 # This could require root privilages 
