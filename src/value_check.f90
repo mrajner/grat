@@ -3,7 +3,6 @@
 !! \date 2013-01-09
 !! \author M. Rajner
 ! =============================================================================
-
 program value_check 
   use mod_cmdline 
   use mod_parser
@@ -59,9 +58,10 @@ program value_check
   do j = start , size (date)
     do i = 1 , size(model)
       if (model(i)%if) then
-        ! only read from multidate files for specific date
-        ! for 'static' data files get_variable was performed
-        ! during read_netCDF
+        if (model(i)%autoload) then
+          call model_aliases(model(i), year= date(j)%date(1))
+          exit
+        endif
         if (allocated(date)) then
           call get_variable (model(i), date = date(j)%date)
         else

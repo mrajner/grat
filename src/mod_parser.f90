@@ -9,7 +9,7 @@ contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
+subroutine parse_option (cmd_line_entry, program_calling, accepted_switches)
   use mod_site,    only: parse_site
   use mod_date,    only: parse_date
   use mod_polygon, only: parse_polygon
@@ -91,8 +91,8 @@ subroutine parse_option (cmd_line_entry , program_calling ,accepted_switches)
     endif
   case ('-P')
     call parse_polygon(cmd_line_entry)
-  case ('-n')
-    dry_run=.true.
+  ! case ('-n')
+    ! dry_run=.true.
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
   endselect
@@ -115,7 +115,7 @@ end subroutine
 !!    (-S -11... was previously treated as two cmmand line entries, now only -? 
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
+subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   use mod_cmdline
   use mod_utilities, only: file_exists
   character(len=*), intent(in) :: program_calling
@@ -156,7 +156,11 @@ subroutine intro (program_calling, accepted_switches , cmdlineargs , version)
     !if_verbose = .true.
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
-        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s")) then
+        if ( &
+            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
+            .or. &
+            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
+            ) then
           log%sparse = .true.
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then

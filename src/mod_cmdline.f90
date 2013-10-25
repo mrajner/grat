@@ -61,7 +61,7 @@ module mod_cmdline
   logical :: inverted_barometer    = .true.  
   logical :: ocean_conserve_mass   = .false.  
   logical :: inverted_landsea_mask = .false.  
-  logical :: dry_run = .false.  
+  ! logical :: dry_run = .false.  
 
   type model_index
     integer(2) :: sp, t, rsp , ewt , h , ls, hp

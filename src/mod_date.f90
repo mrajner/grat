@@ -8,14 +8,12 @@ module mod_date
   !----------------------------------------------------
   type dateandmjd
     real(dp) :: mjd
-    integer,dimension (6) :: date
+    integer, dimension(6) :: date
   end type
-  real(dp) :: cpu_start , cpu_finish  
-  type(dateandmjd) , allocatable,dimension (:) :: date
-
+  real(dp) :: cpu_start, cpu_finish  
+  type(dateandmjd), allocatable, dimension (:) :: date
 
 contains
-
 ! =============================================================================
 !> Parse date given as 20110503020103  to yy mm dd hh mm ss and mjd
 !! 
@@ -25,12 +23,11 @@ subroutine parse_date (cmd_line_entry)
   use mod_cmdline
   use mod_mjd, only: mjd, invmjd
   use mod_data
-  integer , dimension(6) :: start , stop , swap 
+  integer, dimension(6) :: start, stop, swap 
   real (dp) :: step 
   integer :: i_, i, start_index, i_aux
   character(1) :: interval_unit
-  type(cmd_line_arg)  :: cmd_line_entry
-
+  type(cmd_line_arg) :: cmd_line_entry
 
   if (allocated(date)) then
     call print_warning ("repeated")
@@ -40,7 +37,6 @@ subroutine parse_date (cmd_line_entry)
     interval_unit = "h"
     write(log%unit,form%i2) trim(cmd_line_entry%field(i_)%full)
     call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
-
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
       if (size(model(1)%date).eq.0) then

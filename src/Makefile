@@ -1,9 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-NC=n
-dddds: value_check
-	value_check -S aaa:100:-700:1000 
+eeee:value_check
+	value_check \
+		-F  /home/mrajner/dat/ncep_reanalysis/mslp.2011.nc:mslp, \
+		/home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc:pres,  \
+		/home/mrajner/dat/ncep_reanalysis/pres.sfc.2012.nc:pres,  \
+		NCEP@SP \
+		-Sj -D20111231:20120102 -V : sparse
 # r: value_check
 #   -value_check \
 #     -S l \
