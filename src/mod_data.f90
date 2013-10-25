@@ -54,7 +54,6 @@ subroutine parse_model (cmd_line_entry)
   use mod_cmdline
   use mod_printing
   use mod_utilities, only: file_exists, is_numeric
-  use mod_date, only: date
   type(cmd_line_arg)  :: cmd_line_entry
   integer :: i , j
 
