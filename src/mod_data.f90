@@ -228,6 +228,7 @@ end function
 subroutine read_netCDF (model, print)
   use netcdf
   use mod_printing
+  use mod_cmdline, only: ind
   type (file) :: model
   logical, optional :: print
   integer :: i 
@@ -293,16 +294,16 @@ subroutine get_dimension (model , i, print)
     allocate(model%lat (length))
     call check(nf90_get_var  (model%ncid,  varid , model%lat))
     status = nf90_get_att ( model%ncid ,varid , &
-        "actual_range" , model%latrange) 
+      "actual_range" , model%latrange) 
     if (status /= nf90_noerr ) model%latrange &
-        =[model%lat(1), model%lat(size(model%lat)) ]
+      =[model%lat(1), model%lat(size(model%lat)) ]
   else if (i.eq.2 ) then
     allocate(model%lon (length))
     call check(nf90_get_var  (model%ncid,  varid , model%lon))
     status = nf90_get_att ( model%ncid ,varid , &
-        "actual_range" , model%lonrange) 
+      "actual_range" , model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
-        =[model%lon(1) , model%lon(size(model%lon)) ]
+      =[model%lon(1) , model%lon(size(model%lon)) ]
     !if(index(model%name,"ncep_reanalysis").ne.0) then
     where (model%lonrange.ge.357.5) 
       model%lonrange=360
@@ -311,7 +312,7 @@ subroutine get_dimension (model , i, print)
   else if (i.eq.4 ) then
     allocate(model%level (length))
     status = nf90_get_var  (model%ncid,  varid , model%level)
-  elseif (i.eq.5 ) then
+    elseif (i.eq.5 ) then
     allocate(model%time (length) )
     status = nf90_get_var (model%ncid,  varid , model%time)
   endif
@@ -453,12 +454,12 @@ subroutine get_variable(model, date, print)
   if (allocated(model%data)) deallocate(model%data)
   !  model%level=1
   allocate ( &
-      model%data ( &
-      size(model%lon), &
-      size(model%lat), &
-      size (model%level) &
-      ) &
-      )
+    model%data ( &
+    size(model%lon), &
+    size(model%lat), &
+    size (model%level) &
+    ) &
+    )
 
   if (size(date).gt.0 .and. present(date)) then                       
     index_time = get_time_index(model, date)
@@ -466,7 +467,7 @@ subroutine get_variable(model, date, print)
       if (.not. (present(print).and..not.print))then
         if (.not.log%sparse) then
           write(log%unit,form%i3) "cannot find date:", date, &
-              "var:", trim(model%names(1)), "file:" , model%name
+            "var:", trim(model%names(1)), "file:" , model%name
         endif
       endif
       model%data= sqrt(-1.)
@@ -477,11 +478,11 @@ subroutine get_variable(model, date, print)
   endif
   start = [1,1,index_time]
   call check (nf90_get_var ( &
-      ncid=model%ncid, &
-      varid=varid, &
-      values=model%data, &
-      start=start) &
-      )
+    ncid=model%ncid, &
+    varid=varid, &
+    values=model%data, &
+    start=start) &
+    )
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
   model%data = model%data*scale_factor + add_offset
@@ -556,7 +557,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   type(file) , intent (in) :: model
   real(dp)  &
-      !    , intent (in) &
+    !    , intent (in) &
   :: lat, lon
   real(dp) , intent(out) ::  val 
   character(1), optional, intent(in) :: method
@@ -573,10 +574,10 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360 
   if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
   if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
-      .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
-      .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
-      .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
-      ) then
+    .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
+    .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
+    .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
+    ) then
     val = sqrt(-1.)
     return
   endif
@@ -612,9 +613,9 @@ subroutine get_value(model, lat, lon, val, level, method, date)
       array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
 
       if (ind%moreverbose%l.ne.0) then
-        write(moreverbose(ind%moreverbose%l)%unit ,  '(3f15.4," l")') , &
-            (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
-        write(moreverbose(ind%moreverbose%l)%unit ,  '(">")')
+        write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")') , &
+          (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1 ,4)
+        write(moreverbose(ind%moreverbose%l)%unit, '(">")')
       endif
       val = bilinear ( lon , lat , array_aux )
       return
@@ -628,7 +629,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   endif
   if (ind%moreverbose%n.ne.0) then
     write(moreverbose(ind%moreverbose%n)%unit ,  '(3f15.4," n")') , &
-        model%lat(ilat) , model%lon(ilon) , model%data(ilon,ilat,ilevel)
+      model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
     write(moreverbose(ind%moreverbose%n)%unit ,  '(">")')
   endif
   val = model%data (ilon , ilat, ilevel)
@@ -737,7 +738,7 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask)
         if (iok.eq.0) cycle
       endif
       if ((valls.eq.0.and..not.inverted_landsea_mask) &
-          .or.(valls.eq.1 .and. inverted_landsea_mask)) then
+        .or.(valls.eq.1 .and. inverted_landsea_mask)) then
         call get_value(model, model%lat(ilat), model%lon(ilon), val)
         ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
         valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
@@ -760,8 +761,8 @@ subroutine conserve_mass (model, landseamask , date, inverted_landsea_mask)
       write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') , mjd(date) , date
     endif
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
-        ocean_area/total_area*100.,                                & 
-        valoceanarea/ocean_area
+      ocean_area/total_area*100.,                                & 
+      valoceanarea/ocean_area
   endif
 end subroutine
 

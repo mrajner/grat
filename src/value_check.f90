@@ -21,10 +21,11 @@ program value_check
 
   call cpu_time(cpu(1))
 
-
-  call intro (program_calling = "value_check", &
-    accepted_switches="VFoShvIDLPR" , &
-    cmdlineargs=.true.)
+  call intro ( &
+    program_calling   = "value_check", &
+    accepted_switches = "VFoShvIDLPR", &
+    cmdlineargs       = .true.         &
+    )
 
   call get_index()
 
@@ -108,9 +109,10 @@ program value_check
   enddo
 
   if (ind%moreverbose%d.ne.0) then
-    do i = 1 , size(model)
-      do  j =1,size(model(i)%time)
-        write (moreverbose(ind%moreverbose%d)%unit ,  '(g0,1x,i4,5i2.2)')  model(i)%time(j), model(i)%date(j,:)
+    do i = 1, size(model)
+      do j = 1, size(model(i)%time)
+        write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
+          model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif

@@ -69,9 +69,8 @@ subroutine parse_option (cmd_line_entry, program_calling, accepted_switches)
     write(log%unit, form%i3) 'header'
     output%header=.true.
   case ('-M')
-    !    !> \todo rozbudować
-        method = cmd_line_entry%field(1)%subfield(1)%name
-        write(log%unit, form_62), 'method was set: ' , method
+    method = cmd_line_entry%field(1)%subfield(1)%name
+    write(log%unit, form_62), 'method was set: ' , method
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
@@ -91,7 +90,7 @@ subroutine parse_option (cmd_line_entry, program_calling, accepted_switches)
     endif
   case ('-P')
     call parse_polygon(cmd_line_entry)
-  ! case ('-n')
+    ! case ('-n')
     ! dry_run=.true.
   case default
     write(log%unit,form_62), "unknown argument: IGNORING"
@@ -157,10 +156,10 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
         if ( &
-            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
-            .or. &
-            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
-            ) then
+          any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
+          .or. &
+          any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
+          ) then
           log%sparse = .true.
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
@@ -170,7 +169,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
           log%if = .true.
           log%name = trim(cmd_line(i)%field(1)%subfield(1)%name)
           if (file_exists(log%name).and.log%noclobber) then
-            write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry [log]"
+            write(error_unit,*) "I will not overwrite with -V : nc (noclobber) ... sorry"
             call exit(1)
           endif
           open (newunit=log%unit , file = log%name , action='write')
@@ -190,9 +189,9 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   call print_version(program_calling=program_calling, version=version)
   call date_and_time (values = execution_date)
   write(log%unit, & 
-      '("Program started:", & 
-      1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
-      execution_date (1:3),execution_date(5:7),execution_date(4)/60
+    '("Program started:", & 
+    1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
+    execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
@@ -261,16 +260,16 @@ subroutine parse_moreverbose (cmd_line_entry)
           endif
         endif
         open(                            & 
-            newunit = moreverbose(i)%unit, & 
-            file    = moreverbose(i)%name, & 
-            action  = 'write'              & 
-            )
+          newunit = moreverbose(i)%unit, & 
+          file    = moreverbose(i)%name, & 
+          action  = 'write'              & 
+          )
       else
         moreverbose(i)%unit = output_unit
       endif
     endif
     write (log%unit , form_62), trim(moreverbose(i)%name) , &
-        "<-", dataname(moreverbose(i)%dataname)
+      "<-", dataname(moreverbose(i)%dataname)
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
     endif
@@ -336,17 +335,17 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-          "("//form%t3//" &
-          'DB:',f7.2, & 
-          '|DE:',f8.3, &
-          '|I:',a, &
-          '|DD:',i2, &
-          '|DS:',f6.2, &
-          '|DFP:',l, &
-          )") , &
-          info(i)%distance%start, info(i)%distance%stop, &
-          info(i)%interpolation, info(i)%distance%denser, &
-          info(i)%distance%step, info(i)%distance_fractional_psi
+        "("//form%t3//" &
+        'DB:',f7.2, & 
+        '|DE:',f8.3, &
+        '|I:',a, &
+        '|DD:',i2, &
+        '|DS:',f6.2, &
+        '|DFP:',l, &
+        )") , &
+        info(i)%distance%start, info(i)%distance%stop, &
+        info(i)%interpolation, info(i)%distance%denser, &
+        info(i)%distance%step, info(i)%distance_fractional_psi
     enddo
   else
     allocate(info(1))
