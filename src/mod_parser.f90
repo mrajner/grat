@@ -70,7 +70,7 @@ subroutine parse_option (cmd_line_entry, program_calling, accepted_switches)
     output%header=.true.
   case ('-M')
     method = cmd_line_entry%field(1)%subfield(1)%name
-    write(log%unit, form_62), 'method was set: ' , method
+    write(log%unit, form_62), 'method was set: ', method
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
@@ -185,7 +185,6 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     ! support this name
     open (newunit=log%unit, file = "/dev/null", action = "write" )
   endif
-
   call print_version(program_calling=program_calling, version=version)
   call date_and_time (values = execution_date)
   write(log%unit, & 
@@ -211,7 +210,16 @@ end subroutine
 subroutine check_arguments
   use mod_date, only: date
   use mod_data, only: model
+  use mod_cmdline, only: cmd_line, method
   integer :: i
+
+  if (.not.any(cmd_line%switch.eq.'-M')) then
+    write(log%unit, form%i1) "-M (warning) no method was set, assuming 1D"
+    method="1D"
+  endif
+  if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
+    call print_warning("green_missing", error=.true.)
+  endif
   do i=1, size(model)
   if (model(i)%autoload) then
     if (.not. allocated(date)) then

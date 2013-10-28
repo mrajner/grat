@@ -14,10 +14,11 @@ program polygon_check
   integer(2) , allocatable , dimension (:) :: iok 
 
   call intro  ( &
-    program_calling   = "polygon_check" ,  &
-    accepted_switches = "VfABLPoShvIiR" , &
-    cmdlineargs       = .true. &
-      )
+      program_calling   = "polygon_check" , &
+        accepted_switches = "VfABLPoShvIiR" , &
+        version           = "beta",           &
+        cmdlineargs       = .true.            &
+        )
 
     allocate(iok(size(polygon)))
 

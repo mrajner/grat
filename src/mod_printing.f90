@@ -69,6 +69,8 @@ subroutine print_warning (warn , unit, more, error)
     write(def_unit, form%i3) "something wrong with -F."
   case("alias_without_date")
     write(def_unit, form_62) "-D is required with aliased data"
+  case("green_missing")
+    write(def_unit, form_62) "-G is required"
 
   case default 
     write(def_unit, form_62) "error ---"

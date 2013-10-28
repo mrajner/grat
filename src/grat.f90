@@ -127,7 +127,7 @@ program grat
           if(model(i)%if) then
             select case (model(i)%dataname)
             ! read only once Land-sea, reference surface pressure and heights
-          case ("LS","RSP", "H", "HP")
+          case ("LS", "RSP", "H", "HP")
             if (idate.gt.start) then
               cycle
             else
@@ -140,8 +140,9 @@ program grat
               endselect
             endif
           case default
-             if (model(i)%autoload &
-                 .and. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
+             if (idate.eq.1 .and. model(i)%autoload &
+             .or.( model(i)%autoload &
+                 .and. .not. date(idate)%date(1).eq.date(idate-1)%date(1)) &
                  ) then
              call model_aliases(model(i), year= date(idate)%date(1))
              endif

@@ -24,6 +24,7 @@ program value_check
   call intro ( &
     program_calling   = "value_check", &
     accepted_switches = "VFoShvIDLPR", &
+    version           = "beta",        &
     cmdlineargs       = .true.         &
     )
 
@@ -59,8 +60,10 @@ program value_check
   do j = start , size (date)
     do i = 1 , size(model)
       if (model(i)%if) then
-        if (model(i)%autoload &
-            .and. .not. date(j)%date(1).eq.date(j-1)%date(1) &
+        if ( &
+            j.eq. 1 .and. model(i)%autoload &
+            .or. (model(i)%autoload &
+            .and. .not. date(j)%date(1).eq.date(j-1)%date(1)) &
             ) then
           call model_aliases(model(i), year= date(j)%date(1))
         endif
@@ -94,8 +97,8 @@ program value_check
         if (model(ii)%if .or. model(ii)%if_constant_value) then
           imodel = imodel + 1
           if (iok.eq.1) then
-             call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                 method=info(1)%interpolation, date=date(j)%date)
+            call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
+                method=info(1)%interpolation, date=date(j)%date)
           else
             val (imodel) = 0
           endif
@@ -113,7 +116,7 @@ program value_check
     do i = 1, size(model)
       do j = 1, size(model(i)%time)
         write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
-          model(i)%time(j), model(i)%date(j,:)
+            model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif

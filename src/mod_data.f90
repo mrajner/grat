@@ -120,7 +120,7 @@ subroutine parse_model (cmd_line_entry)
   else
     !check autoload
     call model_aliases(model(i), dryrun=.true.)
-    if (.not.model(i)%autoload) then
+    if (.not.model(i)%if) then
       call print_warning ("model", more=trim(model(i)%name)//" : file do not exist", error=.true.)
       call exit(1)
     endif
@@ -145,9 +145,6 @@ subroutine model_aliases(model, dryrun, year)
   endif
 
   if(.not. model%autoload) model%autoloadname=model%name
-  if (present(dryrun).and.dryrun) then 
-    write(log%unit, form%i2) model%autoloadname
-  endif
 
   select case (model%autoloadname)
   case ("NCEP", "NCEP2", "NCEP1")
@@ -165,6 +162,10 @@ subroutine model_aliases(model, dryrun, year)
     case ("T")
       model%names(1)="temp"
       write(model%name,'(a,a,i4,a)') trim(prefix),"air.sig995.",year_,".nc"
+    case ("HP")
+      model%names(1)="hgt"
+      write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.sfc.nc"
+      model%autoload=.false.
     case default
       model%autoload=.false.
     end select
@@ -179,13 +180,32 @@ subroutine model_aliases(model, dryrun, year)
     case ("T")
       model%names(1)="v2t"
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
+    case ("HP")
+      model%names(1)="z"
+      model%datanames(1) = "gp2h"
+      write(model%name,'(a,a,i4,a)') trim(prefix),"gp.nc"
+      model%autoload=.false.
     case default
       model%autoload=.false.
     end select
+  case ("VIENNA")
+    model%if=.true.
+    prefix="/home/mrajner/dat/refpres/"
+    select case (model%dataname)
+    case ("RSP")
+      model%names(1)="rp"
+      write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
+    case ("H")
+      model%names(1)="height"
+      write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
+    case default
+      model%if=.false.
+    end select
   end select
-
+  if (model%if .and. .not. model%autoload) call read_netCDF(model)
 
   if(present(dryrun) .and. dryrun) return
+
   if (.not.file_exists(model%name)) then
     call print_warning ("model", more=trim(model%name)//" : file do not exist", error=.true.)
   endif
@@ -430,7 +450,7 @@ function get_time_index(model,date)
     integer :: i
 
     get_time_index=0
-    if (.not.present(date)) then
+    if (.not.present(date).or. size(model%date(:,1)).le.1) then
       get_time_index=1
       return
     endif

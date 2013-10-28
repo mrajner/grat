@@ -1,12 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-eeee: mod_data.o grat
-	grat \
-		-Sj -M1D \
-		-F\
-		$(SP), ERA@SP ,ERA@T \
-		 -V -A1 -D2012
+eeee: value_check
+	value_check -F  ERA@HP!, VIENNA@RSP! , NCEP1@HP -Sj  -V -D2012:2013
 
 # r: value_check
 #   -value_check \
