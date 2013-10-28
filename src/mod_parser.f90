@@ -204,6 +204,21 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     call parse_option(cmd_line(i))
   enddo
   call get_index()
+  call check_arguments()
+end subroutine
+! =============================================================================
+! =============================================================================
+subroutine check_arguments
+  use mod_date, only: date
+  use mod_data, only: model
+  integer :: i
+  do i=1, size(model)
+  if (model(i)%autoload) then
+    if (.not. allocated(date)) then
+      call print_warning("alias_without_date", error=.true.)
+    endif
+  endif
+enddo
 end subroutine
 
 ! =============================================================================

@@ -1,13 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-eeee:value_check
-	value_check \
-		-F  /home/mrajner/dat/ncep_reanalysis/mslp.2011.nc:mslp, \
-		/home/mrajner/dat/ncep_reanalysis/pres.sfc.2011.nc:pres,  \
-		/home/mrajner/dat/ncep_reanalysis/pres.sfc.2012.nc:pres,  \
-		NCEP@SP \
-		-Sj -D20111231:20120102 -V : sparse
+eeee: mod_data.o grat
+	grat \
+		-Sj -M1D \
+		-F\
+		$(SP), ERA@SP ,ERA@T \
+		 -V -A1 -D2012
+
 # r: value_check
 #   -value_check \
 #     -S l \
@@ -93,7 +93,7 @@ mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
 mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
 mod_date.o: mod_data.o

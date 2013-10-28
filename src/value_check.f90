@@ -41,13 +41,13 @@ program value_check
     start=1
     ! print header
     if (output%header) then
-      write (output%unit , '(a15,x,a14,x)' , advance = "no" ) "#mjd" , "date"
+      write (output%unit , '(a15,x,a14,x)' , advance = "no" ) "#mjd", "date"
     endif
   endif
 
   ! print header
   if (output%header.and.size(site).gt.0) then
-    write (output%unit , '(a8,30a15)', advance ="no"  ) "name", "lat" , "lon"
+    write (output%unit, '(a8,30a15)', advance ="no"  ) "name", "lat", "lon"
   endif
   do i = 1 ,size(model)
     if ((model(i)%if .or. model(i)%if_constant_value) .and. output%header ) then
@@ -59,9 +59,10 @@ program value_check
   do j = start , size (date)
     do i = 1 , size(model)
       if (model(i)%if) then
-        if (model(i)%autoload) then
+        if (model(i)%autoload &
+            .and. .not. date(j)%date(1).eq.date(j-1)%date(1) &
+            ) then
           call model_aliases(model(i), year= date(j)%date(1))
-          exit
         endif
         if (allocated(date)) then
           call get_variable (model(i), date = date(j)%date)
@@ -93,8 +94,8 @@ program value_check
         if (model(ii)%if .or. model(ii)%if_constant_value) then
           imodel = imodel + 1
           if (iok.eq.1) then
-            call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                method=info(1)%interpolation, date=date(j)%date)
+             call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
+                 method=info(1)%interpolation, date=date(j)%date)
           else
             val (imodel) = 0
           endif

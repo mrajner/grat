@@ -51,22 +51,28 @@ subroutine print_warning (warn , unit, more, error)
   def_unit = error_unit
   if (present (unit) ) def_unit=unit
 
-  if (warn .eq. "site_file_format") then
+  select case(warn)
+  case("site_file_format")
     write(def_unit, form_63) "Some records were rejected"
     write(def_unit, form_63) "you should specify for each &
       line at least 3[4] parameters in free format:"
     write(def_unit, form_63) "name lat lon [H=0] (skipped)"
-  else if (warn .eq. "boundaries") then
-    write(def_unit, form_62) "something wrong with boundaries. IGNORED"
-  else if (warn .eq. "site") then
+  case("boundaries")
+     write(def_unit, form_62) "something wrong with boundaries. IGNORED"
+   case("site")
     write(def_unit, form_62) "something wrong with -S|-R specification. IGNORED"
-  else if (warn .eq. "repeated") then
+  case ("repeated") 
     write(def_unit, form_62) "reapeted specification. IGNORED"
-  else if (warn .eq. "date") then
+  case ("date") 
     write(def_unit, form_62) "something wrong with date format -D. IGNORED"
-  else if (warn .eq. "model") then
+  case ("model") 
     write(def_unit, form%i3) "something wrong with -F."
-  endif
+  case("alias_without_date")
+    write(def_unit, form_62) "-D is required with aliased data"
+
+  case default 
+    write(def_unit, form_62) "error ---"
+  end select
   if (present(more)) write(def_unit, form%i3) more
   if (present(error) .and. error) stop "error"
 end subroutine
@@ -74,25 +80,25 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine progress(j, time)
-  use mod_constants, only:dp
-  use mod_cmdline, only:moreverbose
-  implicit none
-  integer(kind=4)::j,k
-  integer:: ii
-  character(len=27)::bar="???% |                    |"
-  real(dp) , optional :: time
-  write(unit=bar(1:3),fmt="(i3)") j
-  do k=1, j/5
-    bar(6+k:6+k)="*"
-  enddo
-  if (present(time)) then
-    write(unit=6,fmt="(a1,a1,a27,f6.1,a1,' [eta', i5,']', <size(moreverbose)+1>(x,a))") &
-      '+',char(13), bar, &
-      time, "s" , int(100.*time/j), trim(output%name) , &
-      (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
-  else
-    write(unit=6,fmt="(a1,a1,a27)") '+',char(13), bar
-  endif
-  return
+    use mod_constants, only:dp
+    use mod_cmdline, only:moreverbose
+    implicit none
+    integer(kind=4)::j,k
+    integer:: ii
+    character(len=27)::bar="???% |                    |"
+    real(dp) , optional :: time
+    write(unit=bar(1:3),fmt="(i3)") j
+    do k=1, j/5
+      bar(6+k:6+k)="*"
+    enddo
+    if (present(time)) then
+      write(unit=6,fmt="(a1,a1,a27,f6.1,a1,' [eta', i5,']', <size(moreverbose)+1>(x,a))") &
+          '+',char(13), bar, &
+          time, "s" , int(100.*time/j), trim(output%name) , &
+          (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
+    else
+      write(unit=6,fmt="(a1,a1,a27)") '+',char(13), bar
+    endif
+    return
 end subroutine progress
 end module mod_printing
