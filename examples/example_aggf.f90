@@ -10,7 +10,6 @@ program example_aggf
   use mod_utilities
   use mod_printing, only: log
   implicit none
-  character(20):: host
   real(dp) :: cpu(2)
 
 
@@ -53,7 +52,7 @@ subroutine mass_vs_height (filename)
   use mod_atmosphere
   character(*) , intent (in) , optional:: filename
   real(dp) :: max_height,dh, percent
-  real(dp) , allocatable, dimension(:):: mass, mass2, height
+  real(dp) , allocatable, dimension(:):: mass, height
   integer::i,j,file_unit
 
   if (present (filename)) then
@@ -201,9 +200,7 @@ subroutine aggf_resp_fels_profiles (filename)
   use mod_aggf, only : aggf
   use mod_green, only: read_green, green
   character (len=255) ,dimension (6) :: fels_types
-  real (dp) :: val_aggf
   integer :: i , j, file_unit
-  real(dp), dimension(:,:), allocatable :: table  
   character(*), intent(in) :: filename
 
   if (file_exists(filename)) then
@@ -255,7 +252,7 @@ subroutine compare_fels_profiles (filename)
   use mod_constants, only: dp
   use mod_atmosphere, only : standard_temperature
   character (len=255) ,dimension (6) :: fels_types
-  real (dp) :: height , temperature
+  real (dp) :: height
   integer :: i , file_unit , i_height
   character(*), intent (in),optional:: filename
 
@@ -559,7 +556,6 @@ subroutine aggf_thin_layer (filename)
   use mod_green
 
   integer :: file_unit , i
-  real(dp) , dimension (:,:), allocatable :: table
   character(*) , intent (in) , optional:: filename
 
   if (file_exists(filename)) return

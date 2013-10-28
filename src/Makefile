@@ -7,11 +7,11 @@ SSSS= $(SP)
 #  SSSS= $(SP), $(H__),$(Hetopo)
 j: grat
 	grat \
-		-S r,b,j \
+		-S r,b \
 		-M 2D \
 		-G m@GN, compute@C \
 		-F $(SSSS) \
-		-H -V -I 240@AS : 130@DS -L@g
+		-H -V -I 240@AS : 60@DS -L@g
 	#  grat \
 		#  -S r \
 		#  -M 2D \
@@ -40,7 +40,7 @@ LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 FC = ifort
 
 # compiler flags
-# FLAGS = -warn   # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+#  FLAGS = -warn -y   # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
@@ -88,16 +88,17 @@ OBJS = $(SRCS:.f90=.o)
 ifdef DEP
 mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o
-mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
+mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o 
+mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.f90
 mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
 mod_date.o: mod_data.o
 mod_mjd.o: mod_constants.o
 mod_polygon.o:mod_printing.o mod_cmdline.o
 mod_printing.o: mod_cmdline.o
 mod_cmdline.o: mod_utilities.o
+mod_normalization.o: mod_constants.o mod_utilities.o
 endif
 
 

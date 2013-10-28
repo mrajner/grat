@@ -82,7 +82,8 @@ subroutine read_green (green, print)
   use mod_utilities, only: file_exists, skip_header, r2d, d2r
   use iso_fortran_env
   use mod_printing
-  use mod_constants, only:earth, pi
+  use mod_constants, only: earth, pi
+  use mod_normalization, only: green_normalization
 
   integer :: lines, fileunit, io_status, i
   real (dp), allocatable, dimension(:) :: tmp
@@ -212,28 +213,6 @@ subroutine read_green (green, print)
 end subroutine
 
 ! =============================================================================
-! =============================================================================
-function green_normalization(method, psi)
-  use mod_constants, only:pi, earth, gravity
-  use mod_utilities, only: d2r
-  real(dp):: green_normalization
-  character(*) :: method
-  real(dp), optional :: psi
-
-  if (method.eq."f2m") then
-    green_normalization = &
-        1e-3 &
-        / earth%gravity%mean  * earth%radius * 2 * pi * (1.- cos(d2r(dble(1.))))
-  else if (method.eq."m") then ! merriam normalization
-    green_normalization =  &
-        psi * 1e15 * earth%radius**2 * 2 * pi * (1.- cos(d2r(dble(1.))))
-  else if (method.eq."f") then ! farrell normalization
-    green_normalization =  &
-        psi * 1e18 * earth%radius
-  endif
-end function
-
-! =============================================================================
 !> Unification:
 ! =============================================================================
 subroutine green_unification ()
@@ -242,11 +221,8 @@ subroutine green_unification ()
   use mod_printing
   use iso_fortran_env
   type(green_functions) :: tmpgreen
-  integer :: i, denser, iinfo, imin, imax, j, ii
+  integer :: i, iinfo, imin, imax, j, ii
   integer, allocatable, dimension(:):: which_green, tmp
-  integer :: ndenser=10
-  integer :: n
-  real(dp), allocatable, dimension(:):: b, c, d
 
   allocate (green_common(size(info)))
   allocate (which_green(size(info)))
@@ -355,16 +331,6 @@ subroutine green_unification ()
       end where
       green_common(iinfo)%dataname(i) = green(i)%dataname
     enddo
-
-    if(ind%moreverbose%g.ne.0) then
-      do j = 1, size(green_common(iinfo)%distance)
-        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6,100f14.7)'), &
-            j, green_common(iinfo)%distance(j), &
-            green_common(iinfo)%start(j), &
-            green_common(iinfo)%stop(j), &
-            green_common(iinfo)%data(j,:)
-      enddo
-    endif
   enddo
 end subroutine
 
@@ -385,35 +351,38 @@ subroutine convolve(site, date)
   use mod_date, only : dateandmjd
   use mod_polygon
   use mod_printing
+  use mod_normalization, only: green_normalization
+  use mod_aggf, only: aggf
   type(site_info), intent(in) :: site
   type(dateandmjd),intent(in), optional :: date
 
-  integer  ::  ndenser, igreen, idist, iazimuth, nazimuth
-  integer  :: imodel
+  integer  :: igreen, idist, iazimuth, nazimuth
   real(dp) :: azimuth,dazimuth
   real(dp) :: lat, lon, area, tot_area, tot_area_used
-  real(dp) :: val(size(model)), ref_p
+  real(dp) :: val(size(model))
   integer  :: i, j, npoints
   integer(2) :: iok(size(polygon))
 
   real(dp) :: normalize, aux
   real(dp), allocatable, dimension(:) :: azimuths
-  logical :: header_p = .true., tmp
+  logical :: header_p = .true.
 
   if(.not.allocated(green_common)) then
     call green_unification()
   endif
 
-  !compute green function, do not use tabulated values
   if(ind%green%c.ne.0) then
-    ! write(log%unit, form%i1) "computing aggf, this can take a while..."
-    ! write(log%unit, *)
-    ! open (unit=output_unit, carriagecontrol='fortran')
-    ! do i = 1, size(green_common(iinfo)%distance)
-    ! green_common(iinfo)%data(i,ind%green%c)= &
-    ! aggf(d2r(green_common(iinfo)%distance(i)))
-    ! call progress(100*i/size(green_common(iinfo)%distance))
-    ! enddo
+    write(log%unit, form%i1) "computing aggf, this can take a while..."
+    write(log%unit, *)
+    open (unit=output_unit, carriagecontrol='fortran')
+    do i = 1, size(green_common)
+      do j=1, size(green_common(i)%distance)
+        green_common(i)%data(j,ind%green%c)= &
+            aggf(d2r(green_common(i)%distance(j)))
+        call progress(100*i/size(green_common(i)%distance))
+      enddo
+    enddo
+    close(output_unit)
   endif
 
   if (.not. allocated(result)) allocate(result(size(green)))
@@ -568,7 +537,7 @@ subroutine convolve(site, date)
                 result(ind%green%gndt) = result(ind%green%gndt) +    & 
                     val(ind%model%sp) *                                & 
                     green_common(igreen)%data(idist, ind%green%gndt) * & 
-                    (val(ind%model%t)-atmosphere%temperature%standard)  *                                 & 
+                    (val(ind%model%t)-atmosphere%temperature%standard)* & 
                     area * normalize
               endif
               !C
@@ -693,6 +662,17 @@ subroutine convolve(site, date)
     write(moreverbose(ind%moreverbose%s)%unit,'(a8,i8,3en12.2)') &
         site%name, npoints, tot_area, tot_area/earth%radius**2, tot_area_used
   endif
+  if(ind%moreverbose%g.ne.0) then
+    do i = 1, size(green_common)
+      do j=1,size(green_common(i)%distance)
+        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6,100f14.7)'), &
+            j, green_common(i)%distance(j), &
+            green_common(i)%start(j), &
+            green_common(i)%stop(j), &
+            green_common(i)%data(j,:)
+      enddo
+    enddo
+  endif
 end subroutine
 
 ! =============================================================================
@@ -730,7 +710,8 @@ end subroutine
 !!    olssson see \cite olsson2009
 !! =============================================================================
 function green_newtonian (psi, h, z, method)
-  use mod_constants, only : earth, gravity
+  use mod_constants, only: earth, gravity
+  use mod_normalization, only: green_normalization
   real(dp) :: green_newtonian
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: h

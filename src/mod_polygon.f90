@@ -85,7 +85,6 @@ subroutine read_polygon (polygon)
 
   type(polygon_info) :: polygon
   integer :: i , j , number_of_polygons , nvertex
-  character(80) :: dummy
   character (1)  :: pm
 
   if (polygon%if) then
@@ -164,7 +163,7 @@ end subroutine
 ! ==============================================================================
 subroutine chkgon (rlong , rlat , polygon , iok)
   real(dp),intent (in) :: rlong, rlat
-  integer :: i ,ii , ianyok
+  integer :: i, ianyok
   integer(2) , intent (out) :: iok
   real(dp) :: rlong2
   type(polygon_info) , intent (in) :: polygon

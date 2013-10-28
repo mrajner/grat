@@ -616,7 +616,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     real(dp) , intent(out) ::  val 
     character(1), optional, intent(in) :: method
     integer , optional , intent(in) :: level
-    integer :: i, j, ilevel = 1 
+    integer :: j, ilevel = 1 
     integer  :: ilon, ilat, ilon2, ilat2 , varid ,status
     real(dp), dimension(4,3) :: array_aux 
     real(dp) :: scale_factor, add_offset

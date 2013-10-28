@@ -17,7 +17,7 @@ function standard_density (height, temperature, fels_type, method)
   character(len = 22) , optional :: fels_type
   character(len = *) , optional :: method
   real(dp) :: standard_density 
-  real(dp) :: p ,t
+  real(dp) :: t
 
   if (present(temperature)) then
     t = temperature
@@ -68,7 +68,7 @@ function standard_pressure ( &
   character(*), intent(in) , optional :: method, fels_type
   real(dp), intent(in) , optional :: dz
   real(dp) :: standard_pressure
-  real(dp) :: lambda, sfc_height, sfc_temperature, sfc_gravity, alpha, sfc_pressure
+  real(dp) :: sfc_height, sfc_temperature, sfc_gravity, alpha, sfc_pressure
   real(dp) :: z_, dz_
   logical, intent(in), optional :: use_standard_temperature
 

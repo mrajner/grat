@@ -1,4 +1,4 @@
-program check_transfer
+program barometric_formula
   use mod_constants
   use mod_utilities ,only: linspace, spline, ispline
   use mod_atmosphere
@@ -6,12 +6,10 @@ program check_transfer
   implicit none
 
   real (dp), allocatable, dimension(:) :: heights , pressures, pressures2
-  integer :: i, nheight, oporowe_unit, iostat , oporowe_unit2
+  integer :: i, nheight
 
-  real(dp) :: dz , a (600000,2) , a2(600000,2)
-  real(dp), dimension(600000):: b,c,d, b2,c2,d2
+  real(dp) :: dz
   real(dp) :: cpu(2)
-  character(20):: method
 
   call cpu_time(cpu(1))
 

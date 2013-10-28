@@ -92,7 +92,6 @@ subroutine progress(j, time)
     integer:: ii
     character(len=27)::bar="???% |                    |"
     real(dp), optional :: time
-    integer :: unit_
 
     write(unit=bar(1:3),fmt="(i3)") j
     do k=1, j/5

@@ -9,7 +9,7 @@ contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry, program_calling, accepted_switches)
+subroutine parse_option (cmd_line_entry, accepted_switches)
   use mod_site,    only: parse_site
   use mod_date,    only: parse_date
   use mod_polygon, only: parse_polygon
@@ -20,8 +20,7 @@ subroutine parse_option (cmd_line_entry, program_calling, accepted_switches)
   use mod_admit, only : parse_admit
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
-  character(len=*), optional :: program_calling, accepted_switches
-  integer :: i
+  character(len=*), optional :: accepted_switches
 
   write(log%unit, form_61) cmd_line_entry%switch , "{", trim(cmd_line_entry%full) ,"}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches= accepted_switches)) &
@@ -125,7 +124,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   logical , intent (in), optional :: cmdlineargs
   character(*) , intent (in), optional :: version
   integer :: i
-  character(len=355) :: dummy,dummy_cleaned
+  character(len=355) :: dummy
   integer,dimension(8):: execution_date 
 
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
@@ -266,7 +265,7 @@ subroutine parse_moreverbose (cmd_line_entry)
   use mod_cmdline
   use mod_utilities, only: file_exists
   type (cmd_line_arg)  :: cmd_line_entry
-  integer :: i,j
+  integer :: i
 
   if(allocated(moreverbose)) then
     call print_warning ("repeated")
@@ -397,9 +396,8 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
-subroutine print_version (program_calling,version)
+subroutine print_version (program_calling, version)
   character(*) :: program_calling 
-  integer :: version_unit , io_stat
   character(*) , optional :: version
 
   write(log%unit, form_header )
@@ -521,7 +519,7 @@ subroutine get_index()
   use mod_green
   use mod_cmdline
 
-  integer :: i, aux
+  integer :: i
 
   do i = 1, size(model)
     select case (model(i)%dataname)

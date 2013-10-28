@@ -1,18 +1,18 @@
 ! ==============================================================================
 !> \file
-!! This program
-!!
-!! \todo put description
 ! ==============================================================================
 program real_vs_standard
 !  use mod_constants, only :dp
   use mod_parser
   use mod_data
 !  use mod_aggf,      only : geop2geom
-  
-  call cpu_time(cpu_start)
+  implicit none
 
-!  call intro (program_calling="real_vs_standard")
+  real(dp) :: cpu(2)
+  
+  call cpu_time(cpu(1))
+
+ call intro (program_calling="real_vs_standard")
   
 
 !    do ii = 1 , min(2,size(model))

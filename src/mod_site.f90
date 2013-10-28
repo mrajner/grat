@@ -24,7 +24,7 @@ subroutine parse_site(cmd_line_entry)
   type(cmd_line_arg),intent(in):: cmd_line_entry
   integer :: start_index
 
-  integer :: i, j
+  integer :: i
   if (allocated(site)) then
     call print_warning ("repeated")
     return
@@ -128,7 +128,6 @@ subroutine parse_GMT_like_boundaries (field)
 
   real(dp) :: limits (4) , resolution (2) 
   real(dp) :: range_lon , range_lat , lat , lon
-  character(10) :: dummy
   integer :: i , ii , indeks_slash
   character(:) ,allocatable :: text
   integer :: n_lon , n_lat , start_index

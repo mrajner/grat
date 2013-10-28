@@ -68,8 +68,8 @@ program grat
   use mod_admit
 
   implicit none
-  real(dp) :: x, y, z, lat, lon, cpu(2)
-  integer :: isite, i, ii , iii , idate, start , iok  , iprogress = 0
+  real(dp) :: cpu(2)
+  integer :: isite, i, idate, start, iprogress = 0
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
@@ -83,8 +83,6 @@ program grat
       cmdlineargs=.true. &
       )
 
-    ! for progress bar
-    if (output%unit.ne.output_unit) open(unit=output_unit, carriagecontrol='fortran')
 
     start = 0
 
@@ -203,6 +201,7 @@ program grat
           call convolve (site(isite))
         endif
         if (output%unit.ne.output_unit) then 
+          open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
               100*iprogress/(max(size(date),1) & 

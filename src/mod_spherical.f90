@@ -55,7 +55,7 @@ subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout, do
   real(dp) , intent(in)  :: distance 
   real(dp) , intent(in)  :: latin , lonin , azimuth
   real(dp) , intent(out) :: latout, lonout 
-  real(dp):: sg, cg , saz ,caz , st ,ct , cd ,sd  , cb , sb
+  real(dp) :: saz, caz, st, ct, cd, sd, cb, sb
   logical, intent(in), optional :: domain
 
   ct  = cos (pi/2.-latin)
@@ -90,7 +90,7 @@ end subroutine
 subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, haversine)
   real(dp) , intent (in)         :: lat1 , lon1 , lat2 , lon2
   real(dp) , intent (out)        :: distance , azimuth
-  real(dp)                       :: dlat , dlon ,  distancetmp , a
+  real(dp)                       :: dlat , dlon, a
   logical, intent(in) , optional :: haversine
 
   dlon = lon2 - lon1

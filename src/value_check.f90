@@ -17,7 +17,6 @@ program value_check
   real (dp)    :: cpu(2)
   integer      :: i,ii ,j ,start , imodel, iprogress = 0
   integer(2)   :: iok
-  character(1) :: interpolation
 
   call cpu_time(cpu(1))
 
@@ -42,7 +41,7 @@ program value_check
     start=1
     ! print header
     if (output%header) then
-      write (output%unit , '(a15,x,a14,x)' , advance = "no" ) "#mjd", "date"
+      write (output%unit , '(a15,1x,a14,1x)' , advance = "no" ) "#mjd", "date"
     endif
   endif
 
@@ -52,7 +51,7 @@ program value_check
   endif
   do i = 1 ,size(model)
     if ((model(i)%if .or. model(i)%if_constant_value) .and. output%header ) then
-      write (output%unit,'(a15)',advance='no') , trim( model(i)%dataname)
+      write (output%unit,'(a15)',advance='no') trim( model(i)%dataname)
     endif
   enddo
   if(output%header) write(output%unit, *)
@@ -77,13 +76,13 @@ program value_check
 
     ! print only dates if no site given
     if (j.gt.0 .and. size(site).lt.1) then
-      write (output%unit , '(f15.3,x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
+      write (output%unit , '(f15.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
     endif
     do i = 1 , size(site)
       iprogress = iprogress + 1
       ! add time stamp if -D option was specified
       if (j.gt.0) then
-        write (output%unit , '(f15.3,x,i4.4,5(i2.2),x)' , advance = "no" ) date(j)%mjd , date(j)%date
+        write (output%unit , '(f15.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
       endif
 
       ! if this point should not be used (polygon) leave as zero
@@ -104,7 +103,7 @@ program value_check
           endif
         endif
       enddo
-      write (output%unit , '(a8,2f15.4,20en15.4)') , site(i)%name, site(i)%lat, site(i)%lon, val
+      write (output%unit , '(a8,2f15.4,20en15.4)') site(i)%name, site(i)%lat, site(i)%lon, val
       if (output%unit.ne.output_unit) then 
         call cpu_time(cpu(2))
         call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))

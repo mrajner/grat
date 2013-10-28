@@ -134,9 +134,9 @@ function aggf (       &
   character (len=*), intent(in), optional  :: fels_type, method
   character (len=20) :: old_method
   real(dp) :: aggf
-  real(dp) :: zmin_, zmax_, dz_, h_, old_t_zero
+  real(dp) :: zmin_, zmax_, dz_, h_
   real(dp) :: J_aux
-  real(dp) :: dA, z_, rho, l, z, deltat
+  real(dp) :: rho, l, deltat
 
   real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
