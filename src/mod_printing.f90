@@ -20,6 +20,7 @@ module mod_printing
       i3        = "(6x,a,100(1x,g0))",  & 
       i4        = "(8x,a,100(1x,g0))",  & 
       i5        = "(10x,a,100(1x,g0))", & 
+      t1        = "2x",                 & 
       t2        = "4x",                 & 
       t3        = "6x",                 & 
       separator = '("#",71("-"))'
@@ -53,27 +54,28 @@ subroutine print_warning (warn , unit, more, error)
 
   select case(warn)
   case("site_file_format")
-    write(def_unit, form_63) "Some records were rejected"
-    write(def_unit, form_63) "you should specify for each &
+    write(def_unit, form%i1) "Some records were rejected"
+    write(def_unit, form%i1) "you should specify for each &
       line at least 3[4] parameters in free format:"
-    write(def_unit, form_63) "name lat lon [H=0] (skipped)"
+    write(def_unit, form%i1) "name lat lon [H=0] (skipped)"
   case("boundaries")
-     write(def_unit, form_62) "something wrong with boundaries. IGNORED"
+     write(def_unit, form%i1) "something wrong with boundaries. IGNORED"
    case("site")
-    write(def_unit, form_62) "something wrong with -S|-R specification. IGNORED"
+    write(def_unit, form%i1) "something wrong with -S|-R specification. IGNORED"
   case ("repeated") 
-    write(def_unit, form_62) "reapeted specification. IGNORED"
+    write(def_unit, form%i1) "reapeted specification. IGNORED"
   case ("date") 
-    write(def_unit, form_62) "something wrong with date format -D. IGNORED"
+    write(def_unit, form%i1) "something wrong with date format -D. IGNORED"
   case ("model") 
     write(def_unit, form%i3) "something wrong with -F."
   case("alias_without_date")
-    write(def_unit, form_62) "-D is required with aliased data"
+    write(def_unit, form%i1) "-D is required with aliased data"
   case("green_missing")
-    write(def_unit, form_62) "-G is required"
-
+    write(def_unit, form%i1) "-G is required"
+  case("method")
+    write(def_unit, form%i1) "-M not known"
   case default 
-    write(def_unit, form_62) "error ---"
+    write(def_unit, form%i1) "error ---"
   end select
   if (present(more)) write(def_unit, form%i3) more
   if (present(error) .and. error) stop "error"
@@ -82,24 +84,27 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine progress(j, time)
-    use mod_constants, only:dp
-    use mod_cmdline, only:moreverbose
+    use mod_constants, only: dp
+    use mod_cmdline, only: moreverbose
+    use iso_fortran_env, only: output_unit
     implicit none
     integer(kind=4)::j,k
     integer:: ii
     character(len=27)::bar="???% |                    |"
-    real(dp) , optional :: time
+    real(dp), optional :: time
+    integer :: unit_
+
     write(unit=bar(1:3),fmt="(i3)") j
     do k=1, j/5
       bar(6+k:6+k)="*"
     enddo
     if (present(time)) then
-      write(unit=6,fmt="(a1,a1,a27,f6.1,a1,' [eta', i5,']', <size(moreverbose)+1>(x,a))") &
+      write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i5,']', <size(moreverbose)+1>(x,a))") &
           '+',char(13), bar, &
           time, "s" , int(100.*time/j), trim(output%name) , &
           (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
     else
-      write(unit=6,fmt="(a1,a1,a27)") '+',char(13), bar
+      write(unit=output_unit,fmt="(a1,a1,a27)") '+',char(13), bar
     endif
     return
 end subroutine progress

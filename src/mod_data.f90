@@ -168,6 +168,8 @@ subroutine model_aliases(model, dryrun, year)
       model%autoload=.false.
     case default
       model%autoload=.false.
+      model%if=.false.
+      return
     end select
   case ("ERA")
     model%if=.true.

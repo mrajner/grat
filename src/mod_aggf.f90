@@ -36,10 +36,10 @@ function aggfd ( &
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: delta
   real(dp), intent (in), optional :: dz
-  logical, intent (in), optional :: aggfdh , aggfdz , aggfdt, predefined, rough
+  logical, intent (in), optional :: aggfdh, aggfdz, aggfdt, predefined, rough
   real(dp) :: aggfd
   real(dp) :: delta_ 
-  character (len=*) , intent(in), optional  :: method, fels_type
+  character (len=*), intent(in), optional  :: method, fels_type
 
   delta_ = 10. ! Default value
   if (present(delta))  delta_ = delta
@@ -120,21 +120,21 @@ function aggf (       &
   use mod_constants, only: dp, pi, earth, gravity, atmosphere, R_air
   use mod_utilities, only: d2r
   use mod_atmosphere 
-  use mod_green, only : green_normalization
+  use mod_normalization, only : green_normalization
 
-  real(dp), intent(in)          :: psi       ! spherical distance from site   [degree]
+  real(dp), intent(in)          :: psi       ! spherical distance from site [rad]
   real(dp), intent(in),optional :: & 
-    zmin ,  & ! minimum height, starting point [m]     (default = 0)
-    zmax ,  & ! maximum height, ending point   [m]     (default = 60000)
-    dz ,    & ! integration step               [m]     (default = 0.1 -> 10 cm)
+    zmin,   & ! minimum height, starting point [m]     (default = 0)
+    zmax,   & ! maximum height, ending point   [m]     (default = 60000)
+    dz,     & ! integration step               [m]     (default = 0.1 -> 10 cm)
     t_zero, & ! temperature at the surface     [K]     (default = 288.15=t0)
     h         ! station height                 [m]     (default = 0)
   logical, intent(in), optional :: &
     first_derivative_h, first_derivative_z, predefined, rough
-  character (len=*), intent(in), optional  :: fels_type , method
+  character (len=*), intent(in), optional  :: fels_type, method
   character (len=20) :: old_method
   real(dp) :: aggf
-  real(dp) :: zmin_, zmax_, dz_ , h_ , old_t_zero
+  real(dp) :: zmin_, zmax_, dz_, h_, old_t_zero
   real(dp) :: J_aux
   real(dp) :: dA, z_, rho, l, z, deltat
 
@@ -188,14 +188,14 @@ function aggf (       &
       pressures(1) = standard_pressure( &
         heights(1), &
         method = method, &
-        h_zero = zmin_ , &
+        h_zero = zmin_,  &
         dz = dz, &
         fels_type=fels_type, &
         use_standard_temperature=.true., &
         temperature = standard_temperature( &
         zmin_, fels_type=fels_type)+deltat & 
         )
-      do i = 2 , size(heights)
+      do i = 2, size(heights)
         pressures(i) = standard_pressure(                                       & 
           heights(i),                                                           & 
           p_zero = pressures(i-1),                                              & 
@@ -286,7 +286,7 @@ end function
 ! ==============================================================================
 function simple_def (R)
   use mod_constants, only: dp, earth
-  real(dp) :: R ,delta
+  real(dp) :: R, delta
   real(dp) :: simple_def
 
   delta = 0.22e-11 * R 

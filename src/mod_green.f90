@@ -14,9 +14,9 @@ module mod_green
     real(dp),allocatable,dimension(:) :: distance
     real(dp),allocatable,dimension(:) :: data
   end type
-  type(green_functions), allocatable , dimension(:) :: green
+  type(green_functions), allocatable, dimension(:) :: green
 
-  real(dp) , allocatable, dimension(:) :: result
+  real(dp), allocatable, dimension(:) :: result
 
   type green_common_info
     real(dp),allocatable,dimension(:) :: distance
@@ -24,7 +24,7 @@ module mod_green
     real(dp),allocatable,dimension(:) :: stop
     real(dp),allocatable,dimension(:,:) :: data
     character (len=25), allocatable, dimension(:) :: dataname
-    logical ,allocatable,dimension(:) :: elastic
+    logical, allocatable,dimension(:) :: elastic
   end type
   type(green_common_info), allocatable, dimension(:) :: green_common
 
@@ -43,7 +43,7 @@ subroutine parse_green (cmd_line_entry)
   use mod_cmdline
   use mod_printing
   type (cmd_line_arg)  :: cmd_line_entry
-  integer :: i , ii 
+  integer :: i, ii 
 
   if (allocated(green)) then
     call print_warning ("repeated")
@@ -51,7 +51,7 @@ subroutine parse_green (cmd_line_entry)
   endif
 
   allocate (green (size(cmd_line_entry%field)))
-  do i = 1 , size(cmd_line_entry%field)
+  do i = 1, size(cmd_line_entry%field)
     write(log%unit, form%i2) trim(cmd_line_entry%field(i)%full)
     green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
     if (i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
@@ -79,13 +79,13 @@ end subroutine
 !> This subroutine read  green file
 ! =============================================================================
 subroutine read_green (green, print)
-  use mod_utilities, only: file_exists, skip_header, r2d , d2r
+  use mod_utilities, only: file_exists, skip_header, r2d, d2r
   use iso_fortran_env
   use mod_printing
-  use mod_constants, only:earth , pi
+  use mod_constants, only:earth, pi
 
-  integer :: lines , fileunit, io_status, i
-  real (dp) , allocatable , dimension(:) :: tmp
+  integer :: lines, fileunit, io_status, i
+  real (dp), allocatable, dimension(:) :: tmp
   type(green_functions) :: green
   logical, optional :: print 
 
@@ -93,11 +93,12 @@ subroutine read_green (green, print)
   ! change the paths accordingly
   if (.not.file_exists(green%name) &
       .and. (.not. green%name.eq."merriam" &
+      .and.  .not. green%name.eq."compute" &
       .and.  .not. green%name.eq."huang" &
       .and.  .not. green%name.eq."rajner" )) then
     green%name="merriam"
   endif
-  if (green%name.eq."merriam" &
+  if (green%name.eq."merriam" .or. green%name.eq."compute" &
       ) then
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
     if (green%dataname.eq."GN") then
@@ -156,7 +157,7 @@ subroutine read_green (green, print)
     open (newunit =fileunit, file=green%name, action="read", status="old")
     do 
       call skip_header (fileunit)
-      read (fileunit , * , iostat = io_status) tmp
+      read (fileunit, *, iostat = io_status) tmp
       if (io_status == iostat_end) exit
       lines = lines + 1
     enddo
@@ -168,7 +169,7 @@ subroutine read_green (green, print)
     do 
       call skip_header (fileunit)
       lines = lines + 1
-      read (fileunit , * , iostat = io_status) tmp
+      read (fileunit, *, iostat = io_status) tmp
       if (io_status == iostat_end) then
         close(fileunit) 
         exit
@@ -191,7 +192,7 @@ subroutine read_green (green, print)
 
   if (.not.present(print)) then
     write(log%unit, form%i3) trim(green%name), trim(green%dataname), &
-        "columns:",green%column ,&
+        "columns:",green%column,&
         "lines:", size(green%distance)
   endif
 
@@ -208,8 +209,6 @@ subroutine read_green (green, print)
         -green%data * green_normalization("f2m")
     write(log%unit, form_63) "conversion: farrell --> to merriam"
   endif
-  if(green%dataname.eq."GNc") return
-
 end subroutine
 
 ! =============================================================================
@@ -238,14 +237,16 @@ end function
 !> Unification:
 ! =============================================================================
 subroutine green_unification ()
-  use mod_utilities, only: size_ntimes_denser, spline_interpolation
+  use mod_utilities, only: size_ntimes_denser, spline_interpolation, d2r
   use mod_cmdline, only: info, moreverbose, ind
+  use mod_printing
+  use iso_fortran_env
   type(green_functions) :: tmpgreen
-  integer :: i , denser , iinfo , imin, imax , j, ii
-  integer , allocatable, dimension(:):: which_green , tmp
+  integer :: i, denser, iinfo, imin, imax, j, ii
+  integer, allocatable, dimension(:):: which_green, tmp
   integer :: ndenser=10
   integer :: n
-  real(dp) , allocatable, dimension(:):: b, c, d
+  real(dp), allocatable, dimension(:):: b, c, d
 
   allocate (green_common(size(info)))
   allocate (which_green(size(info)))
@@ -266,7 +267,7 @@ subroutine green_unification ()
           abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop),1)+1
 
       if (imin.lt.1) imin = 1
-      if( imax.gt.size(green(which_green(iinfo))%distance)) then
+      if (imax.gt.size(green(which_green(iinfo))%distance)) then
         imax = size(green(which_green(iinfo))%distance)
       endif
 
@@ -304,7 +305,7 @@ subroutine green_unification ()
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
 
       green_common(iinfo)%start=(green_common(iinfo)%distance)
-      do i =1 , size(green_common(iinfo)%distance)
+      do i =1, size(green_common(iinfo)%distance)
         green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
             green_common(iinfo)%distance(i-1) ) / 2.
         green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
@@ -315,9 +316,6 @@ subroutine green_unification ()
       green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
           info(iinfo)%distance%stop
       deallocate(tmpgreen%distance)
-      !todo distance as fractional part of spherical distance
-    else if (info(iinfo)%distance_fractional_psi) then
-      stop "Not supported yet"
     else
       allocate(green_common(iinfo)%distance( &
           ceiling( &
@@ -340,7 +338,7 @@ subroutine green_unification ()
     allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance),size(green)))
     allocate(green_common(iinfo)%dataname(size(green)))
 
-    do i = 1 ,  size(green_common(iinfo)%data,2)
+    do i = 1,  size(green_common(iinfo)%data,2)
       call  spline_interpolation(          & 
           green(i)%distance,                 & 
           green(i)%data,                     & 
@@ -376,7 +374,7 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve (site , date)
+subroutine convolve(site, date)
   use mod_constants
   use iso_fortran_env
   use mod_site, only : site_info
@@ -388,22 +386,34 @@ subroutine convolve (site , date)
   use mod_polygon
   use mod_printing
   type(site_info), intent(in) :: site
-  type(dateandmjd),intent(in) , optional :: date
+  type(dateandmjd),intent(in), optional :: date
 
-  integer  ::  ndenser , igreen , idist  , iazimuth , nazimuth
-  integer :: imodel
-  real(dp) :: azimuth ,dazimuth
-  real(dp) :: lat , lon , area , tot_area , tot_area_used
-  real(dp) :: val(size(model)) , ref_p
-  integer :: i, j, npoints
+  integer  ::  ndenser, igreen, idist, iazimuth, nazimuth
+  integer  :: imodel
+  real(dp) :: azimuth,dazimuth
+  real(dp) :: lat, lon, area, tot_area, tot_area_used
+  real(dp) :: val(size(model)), ref_p
+  integer  :: i, j, npoints
   integer(2) :: iok(size(polygon))
 
-  real(dp) :: normalize , aux
+  real(dp) :: normalize, aux
   real(dp), allocatable, dimension(:) :: azimuths
-  logical :: header_p = .true. , tmp
+  logical :: header_p = .true., tmp
 
   if(.not.allocated(green_common)) then
     call green_unification()
+  endif
+
+  !compute green function, do not use tabulated values
+  if(ind%green%c.ne.0) then
+    ! write(log%unit, form%i1) "computing aggf, this can take a while..."
+    ! write(log%unit, *)
+    ! open (unit=output_unit, carriagecontrol='fortran')
+    ! do i = 1, size(green_common(iinfo)%distance)
+    ! green_common(iinfo)%data(i,ind%green%c)= &
+    ! aggf(d2r(green_common(iinfo)%distance(i)))
+    ! call progress(100*i/size(green_common(iinfo)%distance))
+    ! enddo
   endif
 
   if (.not. allocated(result)) allocate(result(size(green)))
@@ -442,9 +452,9 @@ subroutine convolve (site , date)
           (green_normalization("m", psi = d2r(green_common(igreen)%distance(idist))))
 
       allocate(azimuths(nazimuth))
-      azimuths = [ (info(igreen)%azimuth%start + (i-1) * dazimuth , i =1, nazimuth)] 
+      azimuths = [ (info(igreen)%azimuth%start + (i-1) * dazimuth, i =1, nazimuth)] 
 
-      do iazimuth  = 1 , nazimuth
+      do iazimuth  = 1, nazimuth
         npoints = npoints + 1
         azimuth = (iazimuth - 1) * dazimuth
         azimuth = azimuths(iazimuth)
@@ -459,7 +469,7 @@ subroutine convolve (site , date)
         if (ind%polygon%e.ne.0 .or. ind%polygon%n.ne.0) then
           do i =1,size(polygon)
             if (polygon(i)%if) then
-              call chkgon (r2d(lon), r2d(lat) , polygon(i) , iok(i))
+              call chkgon (r2d(lon), r2d(lat), polygon(i), iok(i))
             endif
           enddo
         endif
@@ -481,6 +491,7 @@ subroutine convolve (site , date)
             .or.ind%green%ge.ne.0    & 
             .or.ind%green%gg.ne.0    & 
             .or.ind%green%gndt.ne.0 & 
+            .or.ind%green%c.ne.0 & 
             ) then
 
           ! get SP (and RP if given)
@@ -560,12 +571,11 @@ subroutine convolve (site , date)
                     (val(ind%model%t)-atmosphere%temperature%standard)  *                                 & 
                     area * normalize
               endif
-              ! GNC
-              if (ind%green%gnc.ne.0) then
-                result(ind%green%gndt) = result(ind%green%gndt) +    & 
+              !C
+              if (ind%green%c.ne.0) then
+                result(ind%green%c) = result(ind%green%c) +    & 
                     val(ind%model%sp) *                                & 
-                    green_common(igreen)%data(idist, ind%green%gndt) * & 
-                    (val(ind%model%t)-atmosphere%temperature%standard)  *                                 & 
+                    green_common(igreen)%data(idist, ind%green%c) * & 
                     area * normalize
               endif
               ! GNdz
@@ -613,19 +623,19 @@ subroutine convolve (site , date)
         if(ind%moreverbose%p.ne.0) then
           if (header_p.and. output%header) then
             write(moreverbose(ind%moreverbose%p)%unit,                                         & 
-                '(a8,8a12,<size(result)>a12)' , advance='no' )                                   & 
+                '(a8,8a12,<size(result)>a12)', advance='no' )                                   & 
                 "name", "lat", "lon", "distance", "azimuth", "lat", "lon",                       & 
                 "area", "totarea",  (trim(green(i)%dataname), i=lbound(green,1),ubound(green,1))
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               write(moreverbose(ind%moreverbose%p)%unit,                     & 
-                  '(<size(model)>a12)' , advance='no' )                        & 
+                  '(<size(model)>a12)', advance='no' )                        & 
                   (trim(model(i)%dataname), i=lbound(model,1),ubound(model,1))
             endif
             if (size(iok).gt.0) then
-              write(moreverbose(ind%moreverbose%p)%unit ,             & 
+              write(moreverbose(ind%moreverbose%p)%unit,             & 
                   '(<size(iok)>(a3,i1))'), ("ok",i, i =1,ubound(iok,1))
             else
-              write(moreverbose(ind%moreverbose%p)%unit , * )
+              write(moreverbose(ind%moreverbose%p)%unit, * )
             endif
             header_p=.false.
           endif
@@ -636,7 +646,7 @@ subroutine convolve (site , date)
               .and.(azimuth==azimuths(ubound(azimuths,1))) & 
               )                                            & 
               ) then
-            write(moreverbose(ind%moreverbose%p)%unit ,                                     & 
+            write(moreverbose(ind%moreverbose%p)%unit,                                     & 
                 '(a8,6en12.2,2en12.2,<size(result)>en13.3,a)', advance = 'no'),                & 
                 site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, & 
                 r2d(lat),r2d(lon), area, tot_area, result
@@ -647,13 +657,13 @@ subroutine convolve (site , date)
                     level=1, method = info(igreen)%interpolation)
               enddo
               write(moreverbose(ind%moreverbose%p)%unit,     & 
-                  '(<size(model)>en12.2)' , advance='no' ) val
+                  '(<size(model)>en12.2)', advance='no' ) val
             endif
             if (size(iok).gt.0) then
-              write(moreverbose(ind%moreverbose%p)%unit ,    & 
+              write(moreverbose(ind%moreverbose%p)%unit,    & 
                   '(<size(iok)>(i4))'), iok
             else
-              write(moreverbose(ind%moreverbose%p)%unit , * )
+              write(moreverbose(ind%moreverbose%p)%unit, * )
             endif
           endif
         endif
@@ -679,9 +689,9 @@ subroutine convolve (site , date)
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then
     if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8,3a12)' ) &
-        "station", "npoints" ,"area" ,"area/R2", "t_area_used"
+        "station", "npoints", "area", "area/R2", "t_area_used"
     write(moreverbose(ind%moreverbose%s)%unit,'(a8,i8,3en12.2)') &
-        site%name, npoints , tot_area, tot_area/earth%radius**2, tot_area_used
+        site%name, npoints, tot_area, tot_area/earth%radius**2, tot_area_used
   endif
 end subroutine
 
@@ -695,8 +705,8 @@ subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, dista
   use mod_cmdline,   only : moreverbose, ind
   use mod_utilities, only : r2d
 
-  real(dp), intent(in) :: azimuth ,azstep, latin, lonin
-  real(dp) ::  lat , lon , distancestart ,distancestop
+  real(dp), intent(in) :: azimuth, azstep, latin, lonin
+  real(dp) ::  lat, lon, distancestart, distancestop
 
   call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
   write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
@@ -723,10 +733,10 @@ function green_newtonian (psi, h, z, method)
   use mod_constants, only : earth, gravity
   real(dp) :: green_newtonian
   real(dp), intent (in) :: psi
-  real(dp), intent (in) , optional :: h
-  real(dp), intent (in) , optional :: z
+  real(dp), intent (in), optional :: h
+  real(dp), intent (in), optional :: z
   character(*), optional :: method
-  real(dp) :: h_, z_ , eps, t
+  real(dp) :: h_, z_, eps, t
   if (present(h)) then
     h_=h
   else
@@ -759,10 +769,10 @@ function green_newtonian (psi, h, z, method)
       return
     endif
   else
-    green_newtonian =                                   & 
-        ((earth%radius + h_) - (earth%radius + z_) * cos(psi))     & 
+    green_newtonian =                                                 & 
+        ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        & 
         / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
-        -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.) 
+        -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
 
     green_newtonian = green_newtonian &
         * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)

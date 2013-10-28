@@ -1,23 +1,23 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-eeee: value_check
-	value_check -F  ERA@HP!, VIENNA@RSP! , NCEP1@HP -Sj  -V -D2012:2013
 
-# r: value_check
-#   -value_check \
-#     -S l \
-#     -F $(SP) , $(H__) -V -Dm
 SSSS= $(SP)
-SSSS= $(SP), $(H__)
-SSSS= $(SP), $(H__),$(Hetopo)
+#  SSSS= $(SP), $(H__)
+#  SSSS= $(SP), $(H__),$(Hetopo)
 j: grat
 	grat \
-		-S r \
+		-S r,b,j \
 		-M 2D \
-		-G @GNc, merriam@GN \
+		-G m@GN, compute@C \
 		-F $(SSSS) \
-		-V -L@g
+		-H -V -I 240@AS : 130@DS -L@g
+	#  grat \
+		#  -S r \
+		#  -M 2D \
+		#  -G merriam@GN \
+		#  -F $(SSSS) \
+		#  -H
 o: grat
 	-grat \
 		-S l \
@@ -56,21 +56,22 @@ H__      = $(NCEP_DIR)/hgt.sfc.nc@HP:hgt@g2h
 Hetopo   = /home/mrajner/dat/etopo/ETOPO1_Ice_c_gmt4.grd@H! : z : x: y
 #todo vienna
 
-SRCS  = mod_constants.f90  \
-				mod_utilities.f90  \
-				mod_printing.f90   \
-				mod_cmdline.f90    \
-				mod_site.f90       \
-				mod_spherical.f90  \
-				mod_mjd.f90        \
-				mod_atmosphere.f90 \
-				mod_aggf.f90       \
-				mod_green.f90      \
-				mod_polygon.f90    \
-				mod_data.f90       \
-				mod_date.f90       \
-				mod_parser.f90     \
-				mod_admit.f90
+SRCS  = mod_constants.f90     \
+				mod_utilities.f90     \
+				mod_printing.f90      \
+				mod_cmdline.f90       \
+				mod_site.f90          \
+				mod_spherical.f90     \
+				mod_mjd.f90           \
+				mod_atmosphere.f90    \
+				mod_aggf.f90          \
+				mod_green.f90         \
+				mod_polygon.f90       \
+				mod_data.f90          \
+				mod_date.f90          \
+				mod_parser.f90        \
+				mod_admit.f90         \
+				mod_normalization.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -90,7 +91,7 @@ mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_green.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o 
 mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
 mod_date.o: mod_data.o
 mod_mjd.o: mod_constants.o

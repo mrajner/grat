@@ -77,7 +77,7 @@ subroutine parse_site(cmd_line_entry)
       site(start_index)%name   = "balt_a"
       site(start_index)%lat    = 57
       site(start_index)%lon    = 21
-      site(start_index)%height = 110
+      site(start_index)%height = 0
       ! and point on Rysy
     else if (cmd_line_entry%field(i)%subfield(1)%name.eq."r") then
       call more_sites (1,start_index)

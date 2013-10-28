@@ -84,7 +84,7 @@ program grat
       )
 
     ! for progress bar
-    if (output%unit.ne.output_unit) open (unit=output_unit, carriagecontrol='fortran')
+    if (output%unit.ne.output_unit) open(unit=output_unit, carriagecontrol='fortran')
 
     start = 0
 

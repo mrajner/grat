@@ -71,6 +71,9 @@ subroutine parse_option (cmd_line_entry, program_calling, accepted_switches)
   case ('-M')
     method = cmd_line_entry%field(1)%subfield(1)%name
     write(log%unit, form_62), 'method was set: ', method
+    if (.not.any(method.eq.(["1D", "2D", "3D"]))) then
+      call print_warning("method", more=method, error=.true.)
+    endif
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
@@ -336,9 +339,6 @@ subroutine parse_info (cmd_line_entry)
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
           case ("DS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
-          case ("DFP")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
-            info(i)%distance_fractional_psi=.true.
           case ("DD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
           case ("AD")
@@ -350,8 +350,6 @@ subroutine parse_info (cmd_line_entry)
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
           case ("I")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
-          case ("DFP")
-            info(i)%distance_fractional_psi=.true.
           endselect
         end if
       enddo
@@ -364,11 +362,10 @@ subroutine parse_info (cmd_line_entry)
         '|I:',a, &
         '|DD:',i2, &
         '|DS:',f6.2, &
-        '|DFP:',l, &
         )") , &
         info(i)%distance%start, info(i)%distance%stop, &
         info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step, info(i)%distance_fractional_psi
+        info(i)%distance%step
     enddo
   else
     allocate(info(1))
@@ -576,8 +573,8 @@ subroutine get_index()
       ind%green%gegdt = i 
     case ("GN")
       ind%green%gn = i
-    case ("GNc")
-      ind%green%gnc = i
+    case ("C")
+      ind%green%c = i
     case ("GR")
       ind%green%gr = i
     case ("GHN")
