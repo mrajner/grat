@@ -138,12 +138,13 @@ program grat
               endselect
             endif
           case default
-             if (idate.eq.1 .and. model(i)%autoload &
-             .or.( model(i)%autoload &
-                 .and. .not. date(idate)%date(1).eq.date(idate-1)%date(1)) &
-                 ) then
-             call model_aliases(model(i), year= date(idate)%date(1))
-             endif
+            if (idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
+              .or.(model(i)%autoload &
+              .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
+              .and.idate.ne.1 &
+              ) then
+              call model_aliases(model(i), year= date(idate)%date(1))
+            endif
             if (size(date).eq.0) then
               call get_variable (model(i))
             else
@@ -158,11 +159,11 @@ program grat
         if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
           if(size(date).eq.0) then
             call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                inverted_landsea_mask = inverted_landsea_mask)
+              inverted_landsea_mask = inverted_landsea_mask)
           else
             call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                date=date(idate)%date, &
-                inverted_landsea_mask = inverted_landsea_mask)
+              date=date(idate)%date, &
+              inverted_landsea_mask = inverted_landsea_mask)
           endif
         endif
       endif
@@ -180,20 +181,20 @@ program grat
       if (method.eq."1D") then 
         if (idate.gt.0) then
           write(output%unit, '(f12.3,x,i4.4,5(i2.2))', advance="no") &
-              date(idate)%mjd, date(idate)%date
+            date(idate)%mjd, date(idate)%date
         endif
         write (output%unit, '(a8,3f15.4,10en15.5)' ), &
-            site(isite)%name, &
-            site(isite)%lat,  &
-            site(isite)%lon,  &
-            site(isite)%height, &
-            admit( &
-            lat=site(isite)%lat, &
-            lon=site(isite)%lon, &
-            height=site(isite)%height  &
-            )
+          site(isite)%name, &
+          site(isite)%lat,  &
+          site(isite)%lon,  &
+          site(isite)%height, &
+          admit( &
+          lat=site(isite)%lat, &
+          lon=site(isite)%lon, &
+          height=site(isite)%height  &
+          )
 
-      elseif (method.eq."2D") then 
+        elseif (method.eq."2D") then 
         ! perform convolution
         if (idate.gt.0) then
           call convolve (site(isite), date = date(idate))
@@ -204,9 +205,9 @@ program grat
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
-              100*iprogress/(max(size(date),1) & 
-              *max(size(site),1)),             & 
-              cpu(2)-cpu(1))
+            100*iprogress/(max(size(date),1) & 
+            *max(size(site),1)),             & 
+            cpu(2)-cpu(1))
         endif
       endif
     enddo

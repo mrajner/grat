@@ -1,14 +1,16 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-ggg: value_check
-	value_check \
-		-F NCEP@LS , LANDSEA @LS! , ERA @ LS \
-		-Sb
+#  ggg: $(OBJS) value_check
+	#  value_check \
+		#  -F NCEP@LS , LANDSEA @LS! , ERA @ LS \
+		#  -Sb -V
 
 SSSS= $(SP)
 #  SSSS= $(SP), $(H__)
 #  SSSS= $(SP), $(H__),$(Hetopo)
+u: grat
+	grat -F NCEP@SP -Sj,r -D2009 -V
 j: grat
 	grat \
 		-S r:1:2:0 \
@@ -44,7 +46,7 @@ LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 FC = ifort
 
 # compiler flags
-FLAGS = -warn all -traceback     # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+FLAGS = -fpp -warn all -traceback     # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
