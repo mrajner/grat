@@ -1,17 +1,21 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+ggg: value_check
+	value_check \
+		-F NCEP@LS , LANDSEA @LS! , ERA @ LS \
+		-Sb
 
 SSSS= $(SP)
 #  SSSS= $(SP), $(H__)
 #  SSSS= $(SP), $(H__),$(Hetopo)
 j: grat
 	grat \
-		-S r,b \
+		-S r:1:2:0 \
 		-M 2D \
 		-G m@GN, compute@C \
 		-F $(SSSS) \
-		-H -V -I 240@AS : 60@DS -L@g
+		-H -V -I 240@AS : 22@DS -L@g -D2011:2011:1
 	#  grat \
 		#  -S r \
 		#  -M 2D \
@@ -40,7 +44,7 @@ LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 FC = ifort
 
 # compiler flags
-#  FLAGS = -warn -y   # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+FLAGS = -warn all -traceback     # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
@@ -91,7 +95,7 @@ mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.f90
+mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
 mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
 mod_date.o: mod_data.o
 mod_mjd.o: mod_constants.o
@@ -125,7 +129,7 @@ $(PROGS_SHORTCUTS):
 	@make $(addprefix $(PROGS_DIR)/, $@)
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
-	$(FC) $(NETCDFLIB) $(FLAGS) $< -o $@ $(OBJS) 
+	$(FC) $(FLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)

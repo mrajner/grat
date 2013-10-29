@@ -1,4 +1,6 @@
 module mod_printing
+  use iso_fortran_env, only: output_unit
+
   !----------------------------------------------------
   ! For preety printing
   !----------------------------------------------------
@@ -29,7 +31,7 @@ module mod_printing
 
   ! where to print
   type output_info
-    integer :: unit = 6
+    integer :: unit = output_unit
     character (255) :: name
     logical :: if, header, tee, &
       noclobber = .false., &

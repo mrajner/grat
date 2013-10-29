@@ -1,5 +1,5 @@
 module mod_utilities
-  use, intrinsic:: iso_fortran_env
+  use, intrinsic :: iso_fortran_env
   use mod_constants, only: dp, pi
   implicit none
 contains
@@ -11,16 +11,16 @@ contains
 ! ==============================================================================
 subroutine spline_interpolation(x,y,n, x_interpolated, y_interpolated, n2, method)
   integer,intent(in) :: n, n2
-  real(dp) , intent(in) :: x(n), y(n) , x_interpolated(n2)
-  real(dp) , intent(out) :: y_interpolated(n2)
+  real(dp), intent(in) :: x(n), y(n), x_interpolated(n2)
+  real(dp), intent(out) :: y_interpolated(n2)
   real(dp)  :: b(n), c(n), d(n)
   integer :: i
   character(*), optional :: method
 
-  call spline ( x , y, b , c, d, size(x))
+  call spline (x, y, b, c, d, size(x))
   
   do i=1, size(x_interpolated)
-     y_interpolated(i) = ispline (x_interpolated(i) , x , y , b , c , d , size (x) , method = method )
+     y_interpolated(i) = ispline (x_interpolated(i), x, y, b, c, d, size (x), method = method )
   enddo
 
 end subroutine
@@ -143,7 +143,7 @@ real (dp) function ispline(u, x, y, b, c, d, n, method)
   real(dp)::  u, x(n), y(n), b(n), c(n), d(n)
   integer ::  i, j, k
   real(dp) :: dx
-  character(*) , optional :: method
+  character(*), optional :: method
 
 ! if u is ouside the x() interval take a boundary value (left or right)
 if(u <= x(1)) then
@@ -228,9 +228,9 @@ end function ntokens
 !> This routine skips the lines with comment chars (default '#')
 !! from opened files (unit) to read
 ! ==============================================================================
-subroutine skip_header ( unit , comment_char_optional )
-  integer , intent (in) :: unit 
-  character (len = 1) , optional :: comment_char_optional
+subroutine skip_header (unit, comment_char_optional )
+  integer, intent (in) :: unit 
+  character (len = 1), optional :: comment_char_optional
   character (len = 60 ) :: dummy
   character (len = 1)  :: comment_char
   integer :: io_stat
@@ -241,11 +241,11 @@ subroutine skip_header ( unit , comment_char_optional )
     comment_char = '#'
   endif
 
-  read ( unit, * , iostat = io_stat) dummy
+  read ( unit, *, iostat = io_stat) dummy
   if(io_stat == iostat_end) return
 
   do while ( dummy(1:1) .eq. comment_char ) 
-    read ( unit, * , iostat = io_stat ) dummy
+    read ( unit, *, iostat = io_stat ) dummy
     if(io_stat == iostat_end) return
   enddo
   backspace(unit)
@@ -282,11 +282,12 @@ end function
 !! \author M. Rajner (based on www)
 !! \date 2013-03-04
 ! =============================================================================
-logical function file_exists(string, double_check, verbose)
+function file_exists(string, double_check, verbose)
   character(len=*), intent(in) :: string
   logical, intent(in), optional :: double_check, verbose
   logical :: verbose_, double_check_
   real :: randomnumber
+  logical :: file_exists
 
   verbose_=.false.
 
@@ -330,7 +331,7 @@ end function
 !! \date 2013-03-04
 ! =============================================================================
 function d2r (degree)
-  real(dp) , intent (in) :: degree
+  real(dp), intent (in) :: degree
   real(dp) :: d2r
   d2r= pi / 180.0 * degree
 end function
@@ -358,10 +359,10 @@ end function
 !! \author M. Rajner
 ! =============================================================================
 subroutine count_records_to_read (file_name, rows, columns, comment_char)
-  integer , optional , intent (out) :: rows, columns
+  integer, optional, intent (out) :: rows, columns
   character(*) :: file_name
   character(255) :: line
-  integer :: file_unit, n_rows , n_columns , io_stat
+  integer :: file_unit, n_rows, n_columns, io_stat
   character(len=1), optional, intent(in):: comment_char
   character(len=1) :: comment_char_
 
@@ -374,10 +375,10 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
     comment_char_='#'
   endif
 
-  open (newunit = file_unit,  file=file_name, status = "old" , action ="read")
+  open (newunit = file_unit,  file=file_name, status = "old", action ="read")
   do 
     call skip_header (file_unit, comment_char_)
-    read (file_unit, '(a)' , iostat=io_stat) line
+    read (file_unit, '(a)', iostat=io_stat) line
     if (io_stat == iostat_end) exit
     n_columns = max (n_columns, ntokens(line))
     n_rows = n_rows + 1
@@ -394,7 +395,7 @@ end subroutine
 ! ==============================================================================
 function size_ntimes_denser (size_original, ndenser)
   integer :: size_ntimes_denser 
-  integer, intent(in) :: size_original , ndenser
+  integer, intent(in) :: size_original, ndenser
 
   size_ntimes_denser= (size_original - 1) * (ndenser) + 1
 end function
@@ -403,7 +404,7 @@ end function
 !> Counts occurence of character (separator, default comma) in string
 ! =============================================================================
 integer function count_separator (dummy, separator)
-  character(*) , intent(in) ::dummy
+  character(*), intent(in) ::dummy
   character(1), intent(in), optional  :: separator
   character(1)  :: sep
   character(:), allocatable :: dummy2
@@ -426,7 +427,7 @@ end function
 function datanameunit (dataname, datanames, count)
   integer:: datanameunit
   character(*), intent(in):: dataname
-  integer , intent (in):: count
+  integer, intent (in):: count
   character(*), intent(in)  :: datanames(count)
   integer :: i
 
@@ -484,7 +485,7 @@ end function
 
 ! ==============================================================================
 ! This subroutine open new file with optional prefix name (default = tmp), and 
-! consecutive number with optional digits (default=3) , start is optional 
+! consecutive number with optional digits (default=3), start is optional 
 ! start number
 ! ==============================================================================
 subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)

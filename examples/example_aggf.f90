@@ -625,7 +625,7 @@ subroutine green_newtonian_compute(filenames)
   psi = logspace(real(1e-6,dp) , real(180,dp),n) 
 
   allocate(h(11))
-  h = [ 0. , 1. , 10. , 100., 1000. , 10000., -1., -10. , -100., -1000., -10000]
+  h = [ 0. , 1. , 10. , 100., 1000. , 10000., -1., -10. , -100., -1000., -10000.]
 
   allocate(column_name(size(h)))
   write(column_name, '(f0.0)' ) (h(i),i=1,11)

@@ -28,7 +28,7 @@ module mod_cmdline
       dimension(:) :: field
     character (len=455) :: full
   end type
-  type(cmd_line_arg) , allocatable , dimension(:) :: cmd_line
+  type(cmd_line_arg), allocatable, dimension(:) :: cmd_line
 
   private :: check_if_switch_or_minus 
 
@@ -40,7 +40,7 @@ module mod_cmdline
     integer :: unit
     logical :: noclobber = .false.
   end type
-  type(moreverbose_info), allocatable , dimension(:) :: moreverbose
+  type(moreverbose_info), allocatable, dimension(:) :: moreverbose
 
   !----------------------------------------------------
   ! info
@@ -63,18 +63,18 @@ module mod_cmdline
   ! logical :: dry_run = .false.  
 
   type model_index
-    integer(2) :: sp, t, rsp , ewt , h , ls, hp
+    integer(2) :: sp, t, rsp, ewt, h, ls, hp
   end type
   type poly_index
     integer(2) :: e, n
   end type
   type moreverbose_index
-    integer(2) :: p, g , t, a , d, l, n, r , s, o, b 
+    integer(2) :: p, g, t, a, d, l, n, r, s, o, b 
   end type
   type green_index
     integer(2) :: & 
       gn          = 0,  & ! green newtonian   - with SP  in Pa
-      ge          = 0 , & ! green elastic     - with SP  in Pa
+      ge          = 0,  & ! green elastic     - with SP  in Pa
       gegdt       = 0,  & ! green elastic     - first derivative of gravity part respect to temp (see Guo et al., 2004)
       gr          = 0,  & ! green radial      - with EWT in mm
       ghn         = 0,  & ! green horizontal  - with EWT in mm
@@ -84,8 +84,8 @@ module mod_cmdline
       gndt        = 0,  & ! first derivative respect to temperature
       gndh        = 0,  & ! first derivative respect to station height
       gndz        = 0,  & ! first derivative respect to column height
-      gndz2 = 0     , & ! second derivative respect to column height
-      c =0             ! compute aggf every time
+      gndz2       = 0,  & ! second derivative respect to column height
+      c = 0               ! compute aggf every time
   end type
   type index_info
     type (model_index)       :: model
@@ -114,9 +114,9 @@ contains
 subroutine collect_args (dummy)
   use mod_utilities, only: ntokens, count_separator
   character(*) :: dummy 
-  character(455) :: dummy_aux ,dummy_aux2
+  character(455) :: dummy_aux, dummy_aux2
   integer :: i, j, n
-  integer :: indeks_space,indeks_comma, indeks_at , indeks_colon
+  integer :: indeks_space, indeks_comma, indeks_at, indeks_colon
 
   allocate(cmd_line(ntokens(dummy)))
   do i=1, ntokens(dummy)
@@ -137,7 +137,7 @@ subroutine collect_args (dummy)
       allocate(cmd_line(i)%field(j)%subfield &
         (count_separator (cmd_line(i)%field(j)%full,":") + 1))
       dummy_aux2 = cmd_line(i)%field(j)%full
-      do n = 1 , count_separator(cmd_line(i)%field(j)%full,":")+1
+      do n = 1, count_separator(cmd_line(i)%field(j)%full,":")+1
         indeks_colon=index(dummy_aux2,":")
         if (indeks_colon.gt.0) then
           cmd_line(i)%field(j)%subfield(n)%name=dummy_aux2(1:indeks_colon-1)
@@ -171,11 +171,11 @@ end subroutine
 !! but  if -[\s,:] do not start next command line option
 ! ==============================================================================
 subroutine get_command_cleaned(dummy)
-  character(*) , intent(out) :: dummy
-  character(355) :: a , b , arg
+  character(*), intent(out) :: dummy
+  character(355) :: a, b, arg
   integer :: i
   dummy=" " 
-  do i = 1 , iargc()
+  do i = 1, iargc()
     call get_command_argument(i,a)
     call get_command_argument(i+1,b)
     if (check_if_switch_or_minus(a)) then

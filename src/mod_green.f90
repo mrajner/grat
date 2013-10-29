@@ -376,10 +376,11 @@ subroutine convolve(site, date)
     write(log%unit, *)
     open (unit=output_unit, carriagecontrol='fortran')
     do i = 1, size(green_common)
-      do j=1, size(green_common(i)%distance)
+      do j = 1, size(green_common(i)%distance)
         green_common(i)%data(j,ind%green%c)= &
             aggf(d2r(green_common(i)%distance(j)))
-        call progress(100*i/size(green_common(i)%distance))
+        print *, i, j,green_common(i)%data(j,ind%green%c), d2r(green_common(i)%distance(j))
+        call progress(100*j/size(green_common(i)%distance))
       enddo
     enddo
     close(output_unit)

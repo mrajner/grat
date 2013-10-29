@@ -12,7 +12,7 @@ module mod_site
     real(dp)                 :: lat,lon,height
   end type
 
-  type(site_info) , allocatable , dimension(:) :: site
+  type(site_info), allocatable, dimension(:) :: site
 
 contains
 ! =============================================================================
@@ -30,8 +30,8 @@ subroutine parse_site(cmd_line_entry)
     return
   endif
 
-  do i = 1 , size (cmd_line_entry%field)
-    write(log%unit, form%i2) , trim(cmd_line_entry%field(i)%full)
+  do i = 1, size (cmd_line_entry%field)
+    write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
 
     if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
       .or.&
@@ -91,6 +91,12 @@ subroutine parse_site(cmd_line_entry)
       site(start_index)%lat    = 53.883
       site(start_index)%lon    = 20.667
       site(start_index)%height = 100
+    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."o") then
+      call more_sites (1,start_index)
+      site(start_index)%name   = "mar__a"
+      site(start_index)%lat    = 11.317
+      site(start_index)%lon    = 142.25
+      site(start_index)%height = 0
     else
       call print_warning ("site")
     endif
@@ -108,10 +114,10 @@ subroutine print_site_summary()
     write(log%unit, form%i2 ) "Processing:", size(site), "site(s)"
     if (size(site).le.15) then
       write(log%unit, '(t6,4a10)') &
-        "Name" , "lat [deg]" , "lon [deg]" ,"H [m]"
+        "Name", "lat [deg]", "lon [deg]", "H [m]"
       do j = 1,size(site)
         write(log%unit, '(t6,a10,3f10.4)') &
-          site(j)%name, site(j)%lat, site(j)%lon , site(j)%height
+          site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
       enddo
     endif
   endif
@@ -126,11 +132,11 @@ subroutine parse_GMT_like_boundaries (field)
   use mod_data, only : model
   type(field_info),intent(in) :: field
 
-  real(dp) :: limits (4) , resolution (2) 
-  real(dp) :: range_lon , range_lat , lat , lon
-  integer :: i , ii , indeks_slash
-  character(:) ,allocatable :: text
-  integer :: n_lon , n_lat , start_index
+  real(dp) :: limits (4), resolution (2) 
+  real(dp) :: range_lon, range_lat, lat, lon
+  integer :: i, ii, indeks_slash
+  character(:),allocatable :: text
+  integer :: n_lon, n_lat, start_index
 
   resolution =[1,1]
   text = field%subfield(1)%name
@@ -139,17 +145,17 @@ subroutine parse_GMT_like_boundaries (field)
     indeks_slash=index(text,"/")
     if (indeks_slash.eq.0) indeks_slash=len(text)+1
     if ( is_numeric (text(1:indeks_slash-1)) ) then
-      read ( text(1:indeks_slash-1) , * )  limits(i)
+      read ( text(1:indeks_slash-1), * )  limits(i)
     else
       if (text.eq."g" ) then
-        limits=[0. , 359.9999 , -90 , 90. ]
+        limits=[0., 359.9999, -90, 90. ]
         exit
       endif
     endif
     text=text(index(text,"/")+1:)
   enddo
 
-  do i = 1 ,2 
+  do i = 1, 2 
     if (limits(i).lt. -180. .or. limits(i).gt.360. ) then
       call print_warning ("boundaries")
       return
@@ -188,7 +194,7 @@ subroutine parse_GMT_like_boundaries (field)
       maxval(model(1)%lat) &
       ]
     if (size(field%subfield).eq.1) then
-      call more_sites (size(model(1)%lon) * size(model(1)%lat) , start_index)
+      call more_sites (size(model(1)%lon) * size(model(1)%lat), start_index)
       
       do i =1, size(model(1)%lon)
         do ii =1, size(model(1)%lat)
@@ -206,12 +212,12 @@ subroutine parse_GMT_like_boundaries (field)
   range_lat = limits(4) - limits(3)
   n_lon = floor (range_lon / resolution(1)) + 1
   n_lat = floor (range_lat / resolution(2)) + 1  
-  call more_sites (n_lon * n_lat , start_index)
+  call more_sites (n_lon * n_lat, start_index)
 
-  do i = 1 , n_lon
+  do i = 1, n_lon
     lon = limits (1) + (i-1) * resolution(1)
     if (lon.ge.360.) lon = lon - 360. 
-    do ii = 1 , n_lat
+    do ii = 1, n_lat
       lat = limits (3) + (ii-1) * resolution (2)
       site(start_index -1 + (i-1) * n_lat + ii)%lon = lon
       site(start_index -1 + (i-1) * n_lat + ii)%lat = lat
@@ -226,10 +232,10 @@ end subroutine
 subroutine more_sites (number, start_index)
   integer, intent(in)  :: number
   integer, intent(out) :: start_index
-  type(site_info),allocatable , dimension(:) :: tmpsite
+  type(site_info),allocatable, dimension(:) :: tmpsite
 
   if (allocated(site)) then
-    write(log%unit, form%i3) ,"added site(s):", number
+    write(log%unit, form%i3), "added site(s):", number
     start_index=size(site) + 1
     call move_alloc(site,tmpsite)
     allocate(site(size(tmpsite)+number))
@@ -248,36 +254,36 @@ end subroutine
 ! =============================================================================
 subroutine read_site_file (file_name)
   use mod_utilities, only: is_numeric, ntokens
-  !  use mod_cmdline,    only: cmd_line_arg, form_63 , log
-  character(len=*) , intent(in) ::  file_name
-  integer :: io_status , i , good_lines = 0 , number_of_lines = 0 , nloop
-  integer :: fileunit_site , start_index
-  character(len=255) ,dimension(4)  :: dummy
+  !  use mod_cmdline,    only: cmd_line_arg, form_63, log
+  character(len=*), intent(in) ::  file_name
+  integer :: io_status, i, good_lines = 0, number_of_lines = 0, nloop
+  integer :: fileunit_site, start_index
+  character(len=255), dimension(4)  :: dummy
   character(len=255) :: line_of_file
   type(site_info) :: aux
 
-  open ( newunit = fileunit_site , file = file_name, &
-    iostat = io_status ,status = "old" , action="read" )
+  open ( newunit = fileunit_site, file = file_name, &
+    iostat = io_status, status = "old", action="read" )
 
   ! two loops, first count good lines and print rejected
   ! second allocate array of sites and read coordinates into it
   do nloop = 1, 2
-    if (nloop.eq.2) call more_sites(good_lines ,start_index)
+    if (nloop.eq.2) call more_sites(good_lines, start_index)
     if (number_of_lines.ne.good_lines) then
       call print_warning ("site_file_format")
     endif
     good_lines=0
     do 
-      read ( fileunit_site , '(a)' , iostat = io_status ) line_of_file 
+      read ( fileunit_site, '(a)', iostat = io_status ) line_of_file 
       if ( io_status == iostat_end)  exit
       number_of_lines = number_of_lines + 1
-      !  ! we need at least 3 parameter for site (name , B , L )
+      !  ! we need at least 3 parameter for site (name, B, L )
       if (ntokens(line_of_file).ge.3) then
-        ! but no more than 4 parameters (name , B , L, H)
+        ! but no more than 4 parameters (name, B, L, H)
         if (ntokens(line_of_file).gt.4) then
-          read ( line_of_file , * ) dummy(1:4)
+          read ( line_of_file, * ) dummy(1:4)
         else
-          read ( line_of_file , * ) dummy(1:3)
+          read ( line_of_file, * ) dummy(1:3)
           ! if site height was not given we set it to zero
           dummy(4)="0."
         endif
@@ -303,18 +309,18 @@ subroutine read_site_file (file_name)
             endif
           else
             if (nloop.eq.2) then 
-              write ( log%unit, form_63) "rejecting (lon limits):" , line_of_file
+              write ( log%unit, form_63) "rejecting (lon limits):", line_of_file
             endif
           endif
         else 
           if (nloop.eq.2) then
-            write ( log%unit, form_63) "rejecting (lat limits):" , line_of_file
+            write ( log%unit, form_63) "rejecting (lat limits):", line_of_file
           endif
         endif
       else
         ! print it only once
         if (nloop.eq.2) then
-          write ( log%unit, form_63) "rejecting (args):      " , line_of_file
+          write ( log%unit, form_63) "rejecting (args):      ", line_of_file
         endif
       endif
     enddo
