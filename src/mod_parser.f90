@@ -217,6 +217,7 @@ subroutine check_arguments
 
   if (.not.any(cmd_line%switch.eq.'-M')) then
     write(log%unit, form%i1) "-M (warning) no method was set, assuming 1D"
+    stop "choose method explcitly"
     method="1D"
   endif
   if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
