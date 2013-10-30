@@ -22,7 +22,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
 
-  write(log%unit, form_61) cmd_line_entry%switch , "{", trim(cmd_line_entry%full) ,"}"
+  write(log%unit, form_61) cmd_line_entry%switch, "{", trim(cmd_line_entry%full), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches= accepted_switches)) &
     then
     write(log%unit, form_62) 'this switch is not accepted'
@@ -82,13 +82,13 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
       output%noclobber=.true.
     endif
-    write(log%unit, form_62), 'output file was set: ' , trim(output%name)
+    write(log%unit, form_62), 'output file was set: ', trim(output%name)
     if (file_exists(output%name).and.output%noclobber) then
       write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
       call exit(1)
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
-      open (newunit = output%unit , file = output%name , action = "write" )
+      open (newunit = output%unit, file = output%name, action = "write" )
     endif
   case ('-P')
     call parse_polygon(cmd_line_entry)
@@ -120,15 +120,15 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   use mod_cmdline
   use mod_utilities, only: file_exists
   character(len=*), intent(in) :: program_calling
-  character(len=*) , intent (in), optional :: accepted_switches
-  logical , intent (in), optional :: cmdlineargs
-  character(*) , intent (in), optional :: version
+  character(len=*), intent (in), optional :: accepted_switches
+  logical, intent (in), optional :: cmdlineargs
+  character(*), intent (in), optional :: version
   integer :: i
   character(len=355) :: dummy
   integer,dimension(8):: execution_date 
 
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
-    write(output_unit , '(a)' ) , &
+    write(output_unit, '(a)' ), &
       'No cmd line args! Try: ./'//program_calling//' -h' 
     call exit(1)
   endif
@@ -174,7 +174,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
             write(error_unit,*) "I will not overwrite with -V : nc (noclobber) ... sorry"
             call exit(1)
           endif
-          open (newunit=log%unit , file = log%name , action='write')
+          open (newunit=log%unit, file = log%name, action='write')
         else
           log%unit=output_unit
         endif
@@ -201,30 +201,34 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   enddo
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command parsing:"
-  do i =1 , size(cmd_line)
+  do i =1, size(cmd_line)
     call parse_option(cmd_line(i))
   enddo
   call get_index()
-  call check_arguments()
+  call check_arguments(program_calling=program_calling)
 end subroutine
 ! =============================================================================
 ! =============================================================================
-subroutine check_arguments
+subroutine check_arguments (program_calling)
   use mod_date, only: date
   use mod_data, only: model
   use mod_cmdline, only: cmd_line, method
+  use mod_site, only: gather_site_model_info
+  character(len=*), intent(in) :: program_calling
   integer :: i
 
-  if (.not.any(cmd_line%switch.eq.'-M')) then
-    if (any(cmd_line%switch.eq.'-G')) then
-      method="2D"
-    else
-      method="1D"
+  if (program_calling.eq."grat") then
+    if (.not.any(cmd_line%switch.eq.'-M')) then
+      if (any(cmd_line%switch.eq.'-G')) then
+        method="2D"
+      else
+        method="1D"
+      endif
+      call print_warning("method", more="assuming "//method)
     endif
-    call print_warning("method", more="assuming "//method)
-  endif
-  if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
-    call print_warning("green_missing", error=.true.)
+    if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
+      call print_warning("green_missing", error=.true.)
+    endif
   endif
   do i=1, size(model)
     if (model(i)%autoload) then
@@ -233,13 +237,14 @@ subroutine check_arguments
       endif
     endif
   enddo
+  call gather_site_model_info()
 end subroutine
 
 ! =============================================================================
 !> This function is true if switch is used by calling program or false if it
 !! is not
 ! =============================================================================
-logical function if_accepted_switch (switch , accepted_switches)
+logical function if_accepted_switch (switch, accepted_switches)
   character(len= *), intent (in) :: switch 
   character(len= *), intent (in), optional :: accepted_switches
   integer :: i
@@ -289,16 +294,16 @@ subroutine parse_moreverbose (cmd_line_entry)
           endif
         endif
         open(                            & 
-            newunit = moreverbose(i)%unit, & 
-            file    = moreverbose(i)%name, & 
-            action  = 'write'              & 
-            )
+          newunit = moreverbose(i)%unit, & 
+          file    = moreverbose(i)%name, & 
+          action  = 'write'              & 
+          )
       else
         moreverbose(i)%unit = output_unit
       endif
     endif
-    write (log%unit , form_62), trim(moreverbose(i)%name) , &
-        "<-", dataname(moreverbose(i)%dataname)
+    write (log%unit, form_62), trim(moreverbose(i)%name), &
+      "<-", dataname(moreverbose(i)%dataname)
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
     endif
@@ -326,10 +331,10 @@ subroutine parse_info (cmd_line_entry)
   if (present(cmd_line_entry)) then
 
     allocate (info(size(cmd_line_entry%field)))
-    do i = 1 , size(cmd_line_entry%field)
-      write(log%unit, form%i2) , "Range:" , i
+    do i = 1, size(cmd_line_entry%field)
+      write(log%unit, form%i2), "Range:", i
       call info_defaults(info(i))
-      do j = 1 , size(cmd_line_entry%field(i)%subfield)
+      do j = 1, size(cmd_line_entry%field(i)%subfield)
         if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
           case ("DB")
@@ -359,16 +364,16 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-          "("//form%t3//" &
-          'DB:',f7.2, & 
-          '|DE:',f8.3, &
-          '|I:',a, &
-          '|DD:',i2, &
-          '|DS:',f6.2, &
-          )") , &
-          info(i)%distance%start, info(i)%distance%stop, &
-          info(i)%interpolation, info(i)%distance%denser, &
-          info(i)%distance%step
+        "("//form%t3//" &
+        'DB:',f7.2, & 
+        '|DE:',f8.3, &
+        '|I:',a, &
+        '|DD:',i2, &
+        '|DS:',f6.2, &
+        )"), &
+        info(i)%distance%start, info(i)%distance%stop, &
+        info(i)%interpolation, info(i)%distance%denser, &
+        info(i)%distance%step
     enddo
   else
     allocate(info(1))
@@ -402,14 +407,14 @@ end subroutine
 ! =============================================================================
 subroutine print_version (program_calling, version)
   character(*) :: program_calling 
-  character(*) , optional :: version
+  character(*), optional :: version
 
   write(log%unit, form_header )
   write(log%unit, form_inheader ), trim(program_calling)
   write(log%unit, form_inheader ), version
   write(log%unit, form_inheader ), "compiled on "//__DATE__
   write(log%unit, form_inheader_n ), &
-      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
   write(log%unit, form_inheader ), 'Warsaw University of Technology'
@@ -420,9 +425,9 @@ end subroutine
 !! =============================================================================
 !! =============================================================================
 subroutine print_help (program_calling, accepted_switches)
-  character(*) , intent(in) :: program_calling
-  character(*) , intent(in),optional :: accepted_switches
-  integer :: help_unit , io_stat
+  character(*), intent(in) :: program_calling
+  character(*), intent(in),optional :: accepted_switches
+  integer :: help_unit, io_stat
   character(500)::line
   character(255)::syntax
   logical:: if_print_line = .false., if_optional=.true.
@@ -432,14 +437,14 @@ subroutine print_help (program_calling, accepted_switches)
   ! change this path according to your settings
   open(newunit=help_unit, file="/home/mrajner/src/grat/dat/help.hlp", action="read",status="old")
 
-  write (log%unit ,"(a)" , advance="no" ) program_calling
+  write (log%unit, "(a)", advance="no" ) program_calling
   ! first loop - print only syntax with squre brackets if parameter is optional
   do 
-    read (help_unit , '(a)', iostat=io_stat) line
+    read (help_unit, '(a)', iostat=io_stat) line
     if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
-      if (if_optional) write(log%unit, '(a)' , advance="no") " ["
-      if (if_optional) write(log%unit, '(a)' , advance="no") trim(syntax)
-      if (if_optional) write(log%unit, '(a)' , advance="no") "]"
+      if (if_optional) write(log%unit, '(a)', advance="no") " ["
+      if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
+      if (if_optional) write(log%unit, '(a)', advance="no") "]"
     endif
     if (io_stat==iostat_end) then
       write(log%unit, *) " " 
@@ -465,26 +470,26 @@ subroutine print_help (program_calling, accepted_switches)
   enddo
   rewind(help_unit)
 
-  write(log%unit , form_60) , 'Summary of available options for program '//program_calling
+  write(log%unit, form_60), 'Summary of available options for program '//program_calling
   ! second loop - print informations
   do 
-    read (help_unit , '(a)', iostat=io_stat) line
+    read (help_unit, '(a)', iostat=io_stat) line
     if (io_stat==iostat_end) exit
 
     if(line(1:1)=="-") then
       !todo
       if(if_accepted_switch (line(1:2),accepted_switches )) then
         if_print_line = .true.
-        write (log%unit , form_61 ) trim(line)
+        write (log%unit, form_61 ) trim(line)
       else
         if(line(1:1)=="-") if_print_line=.false.
       endif
     else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
       if (if_print_line) then
-        write (log%unit , form_61 ) "  "//trim(line(3:))
+        write (log%unit, form_61 ) "  "//trim(line(3:))
       endif
     else if (line(2:2)=="") then
-      if (if_print_line) write (log%unit , form_61 ) trim(line)
+      if (if_print_line) write (log%unit, form_61 ) trim(line)
     endif
   enddo
   close(help_unit)
@@ -546,7 +551,7 @@ subroutine get_index()
       ind%model%hp = i
     endselect
   enddo
-  do i = 1 , size(moreverbose)
+  do i = 1, size(moreverbose)
     select case (moreverbose(i)%dataname)
     case ("p")
       ind%moreverbose%p = i

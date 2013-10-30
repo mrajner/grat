@@ -79,6 +79,8 @@ subroutine parse_date (cmd_line_entry)
         endif
       case('D')
         call invmjd (mjd(start)+stop(1) , stop)
+      case('H')
+        call invmjd (mjd(start)+stop(1)/24. , stop)
       case default
       endselect
     else

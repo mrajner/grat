@@ -1,16 +1,12 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-ggg: $(OBJS) value_check
-	value_check \
-		-F NCEP@LS , LANDSEA @LS! , ERA @ LS \
-		-Sb -V
+dfdsfd:
+	grat -F NCEP @SP 
 
 SSSS= $(SP)
-#  SSSS= $(SP), $(H__)
+SSSS= $(SP), $(H__)
 #  SSSS= $(SP), $(H__),$(Hetopo)
-u: grat
-	grat -F NCEP@SP -Sj,r -D2009 -V
 j: grat
 	grat \
 		-S r:1:2:0 \
@@ -33,14 +29,6 @@ o: grat
 
 RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
 LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
-
-	#     -S j : 52 : 21   \
-	#     -F  /home/mrajner/dat/ncep_reanalysis/pres.sfc.2010.nc @SP :pres , $(RSP) , $(LS) \
-	#     , 1000 @EWT \
-	#     -BI  \
-	#     -G /home/mrajner/dat/green/green_ce_aplo.dat@GR:1:2@aplo , m@GN, m @GE   -H -V \
-	#     -P ../polygon/baltyk.poly:- \
-	#     -Dm  -L@s , p@p:s
 
 # compiler
 FC = ifort
@@ -95,7 +83,7 @@ ifdef DEP
 mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
 mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o

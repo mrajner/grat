@@ -281,7 +281,7 @@ subroutine compare_fels_profiles (filename)
     height=dble(i_height)
     write ( file_unit , '(f20.3$)' ) , height
     do i = 1 , size (fels_types)
-      write ( file_unit , '(f20.3$)' ),  standard_temperature (height, fels_type=fels_types(i))
+      write ( file_unit , '(f20.3$)' ),  standard_temperature (height*1000, fels_type=fels_types(i))
     enddo
     write ( file_unit , * )
   enddo

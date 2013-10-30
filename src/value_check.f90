@@ -101,6 +101,7 @@ program value_check
           else
             val (imodel) = 0
           endif
+          if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
         endif
       enddo
       write (output%unit , '(a8,2f15.4,20en15.4)') site(i)%name, site(i)%lat, site(i)%lon, val

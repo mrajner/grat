@@ -80,7 +80,7 @@ subroutine print_warning (warn , unit, more, error)
     write(def_unit, form%i1) "error ---"
   end select
   if (present(more)) write(def_unit, form%i2) more
-  if (present(error) .and. error) stop "error"
+  if (present(error) .and. error) call exit(1)
 end subroutine
 
 ! =============================================================================

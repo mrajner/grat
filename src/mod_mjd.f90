@@ -13,10 +13,10 @@ contains
 !! Modified Julian Day
 !! \date 2013-03-04
 ! ==============================================================================
-subroutine invmjd (mjd , date)
+subroutine invmjd (mjd, date)
   real(dp), intent (in) :: mjd
-  integer , intent (out):: date (6)
-  integer :: t1 ,t4 , h , t2 , t3 , ih1 , ih2
+  integer, intent (out):: date (6)
+  integer :: t1, t4, h, t2, t3, ih1, ih2
   real(dp) :: dayfrac
 
   date =0
@@ -55,7 +55,7 @@ end subroutine
 function jd (year,month,day, hh,mm,ss)
   integer, intent(in) ::  year,month,day
   integer, intent(in) :: hh,mm, ss
-  integer :: i , j , k
+  integer :: i, j, k
   real(dp) :: jd 
 
   i= year
@@ -73,11 +73,11 @@ end function
 !! !integers. Seconds also as integers!
 !! \date 2013-03-04
 ! ==============================================================================
-function mjd  (date)
-  integer ,intent(in) :: date (6)
+function mjd (date)
+  integer, intent(in) :: date (6)
   integer :: aux (6)
-  integer :: i , k
-  real(dp) :: dayfrac , mjd
+  integer :: i, k
+  real(dp) :: dayfrac, mjd
 
   aux=date
   if ( aux(2) .le.  2) then

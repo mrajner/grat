@@ -7,9 +7,14 @@ module mod_site
   !---------------------------------------------------
   ! site information
   !---------------------------------------------------
+  type more_site_heights
+    real(dp) :: val
+    logical  :: if
+  end type
   type site_info 
     character(:),allocatable :: name
     real(dp)                 :: lat,lon,height
+    type(more_site_heights)  :: hp, h
   end type
 
   type(site_info), allocatable, dimension(:) :: site
@@ -96,12 +101,11 @@ subroutine parse_site(cmd_line_entry)
       site(start_index)%name   = "mar__a"
       site(start_index)%lat    = 11.317
       site(start_index)%lon    = 142.25
-      site(start_index)%height = 0
+      site(start_index)%height = -9910
     else
       call print_warning ("site")
     endif
   enddo
-  call print_site_summary()
 
 end subroutine
 
@@ -109,15 +113,27 @@ end subroutine
 !> 
 ! =============================================================================
 subroutine print_site_summary()
+  use mod_data
   integer :: j
   if (size(site).ge.1) then
     write(log%unit, form%i2 ) "Processing:", size(site), "site(s)"
     if (size(site).le.15) then
-      write(log%unit, '(t6,4a10)') &
-        "Name", "lat [deg]", "lon [deg]", "H [m]"
+      write(log%unit, '(t6,6a10)') &
+        "Name", "lat [deg]", "lon [deg]", "H [m]" , "Hp [m]", "H* [m]"
       do j = 1,size(site)
-        write(log%unit, '(t6,a10,3f10.4)') &
+        write(log%unit, '(t6,a10,3f10.4)', advance="no") &
           site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
+        if (site(j)%hp%if) then 
+          write(log%unit, "(f10.4)", advance="no") site(j)%hp%val
+        else
+          write(log%unit, "(a10)", advance="no") "--"
+        endif
+        if (site(j)%h%if) then 
+          write(log%unit, "(f10.4)", advance="no") site(j)%h%val
+        else
+          write(log%unit, "(a10)", advance="no") "--"
+        endif
+        write(log%unit,*)
       enddo
     endif
   endif
@@ -334,4 +350,40 @@ subroutine read_site_file (file_name)
   enddo
 end subroutine
 
+! =============================================================================
+! =============================================================================
+subroutine gather_site_model_info()
+  use mod_cmdline, only: ind, info
+  use mod_data, only: get_value, model, get_variable
+  integer :: i
+
+  do i = 1 , size(site)
+    if (ind%model%hp.ne.0) then
+      call get_variable( model(ind%model%hp))
+      site(i)%hp%if=.true.
+      call get_value (                        & 
+        model=model(ind%model%hp),            & 
+        lat=site(i)%lat,                      & 
+        lon=site(i)%lon,                      & 
+        val=site(i)%hp%val,                   & 
+        level=1,                              & 
+        method = info(1)%interpolation        & 
+        )
+    endif
+    if(ind%model%h.ne.0) then
+      site(i)%h%if=.true.
+      call get_variable( model(ind%model%h))
+      call get_value (                       & 
+        model=model(ind%model%h),              & 
+        lat=site(i)%lat,                       & 
+        lon=site(i)%lon,                       & 
+        val=site(i)%h%val,                     & 
+        level=1,                               & 
+        method = info(1)%interpolation         & 
+        )
+    endif
+  enddo
+  write(log%unit, form%separator)
+  call print_site_summary
+end subroutine
 end module
