@@ -222,7 +222,6 @@ subroutine model_aliases(model, dryrun, year)
     endselect
   case ("LANDSEA", "LANDSEA_CLOSED")
     prefix="/home/mrajner/dat/landsea/"
-    stop "DD"
     select case (model%dataname)
     case ("LS")
       model%names(1:3)=["z", "x", "y"]

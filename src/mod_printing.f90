@@ -75,11 +75,11 @@ subroutine print_warning (warn , unit, more, error)
   case("green_missing")
     write(def_unit, form%i1) "-G is required"
   case("method")
-    write(def_unit, form%i1) "-M not known"
+    write(def_unit, form%i1) "-M no method was set"
   case default 
     write(def_unit, form%i1) "error ---"
   end select
-  if (present(more)) write(def_unit, form%i3) more
+  if (present(more)) write(def_unit, form%i2) more
   if (present(error) .and. error) stop "error"
 end subroutine
 

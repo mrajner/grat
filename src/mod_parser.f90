@@ -216,20 +216,23 @@ subroutine check_arguments
   integer :: i
 
   if (.not.any(cmd_line%switch.eq.'-M')) then
-    write(log%unit, form%i1) "-M (warning) no method was set, assuming 1D"
-    stop "choose method explcitly"
-    method="1D"
+    if (any(cmd_line%switch.eq.'-G')) then
+      method="2D"
+    else
+      method="1D"
+    endif
+    call print_warning("method", more="assuming "//method)
   endif
   if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
     call print_warning("green_missing", error=.true.)
   endif
   do i=1, size(model)
-  if (model(i)%autoload) then
-    if (.not. allocated(date)) then
-      call print_warning("alias_without_date", error=.true.)
+    if (model(i)%autoload) then
+      if (.not. allocated(date)) then
+        call print_warning("alias_without_date", error=.true.)
+      endif
     endif
-  endif
-enddo
+  enddo
 end subroutine
 
 ! =============================================================================
@@ -286,16 +289,16 @@ subroutine parse_moreverbose (cmd_line_entry)
           endif
         endif
         open(                            & 
-          newunit = moreverbose(i)%unit, & 
-          file    = moreverbose(i)%name, & 
-          action  = 'write'              & 
-          )
+            newunit = moreverbose(i)%unit, & 
+            file    = moreverbose(i)%name, & 
+            action  = 'write'              & 
+            )
       else
         moreverbose(i)%unit = output_unit
       endif
     endif
     write (log%unit , form_62), trim(moreverbose(i)%name) , &
-      "<-", dataname(moreverbose(i)%dataname)
+        "<-", dataname(moreverbose(i)%dataname)
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
     endif
@@ -356,16 +359,16 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-        "("//form%t3//" &
-        'DB:',f7.2, & 
-        '|DE:',f8.3, &
-        '|I:',a, &
-        '|DD:',i2, &
-        '|DS:',f6.2, &
-        )") , &
-        info(i)%distance%start, info(i)%distance%stop, &
-        info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step
+          "("//form%t3//" &
+          'DB:',f7.2, & 
+          '|DE:',f8.3, &
+          '|I:',a, &
+          '|DD:',i2, &
+          '|DS:',f6.2, &
+          )") , &
+          info(i)%distance%start, info(i)%distance%stop, &
+          info(i)%interpolation, info(i)%distance%denser, &
+          info(i)%distance%step
     enddo
   else
     allocate(info(1))
@@ -406,7 +409,7 @@ subroutine print_version (program_calling, version)
   write(log%unit, form_inheader ), version
   write(log%unit, form_inheader ), "compiled on "//__DATE__
   write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
   write(log%unit, form_inheader ), 'Warsaw University of Technology'

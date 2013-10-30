@@ -1,10 +1,10 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-#  ggg: $(OBJS) value_check
-	#  value_check \
-		#  -F NCEP@LS , LANDSEA @LS! , ERA @ LS \
-		#  -Sb -V
+ggg: $(OBJS) value_check
+	value_check \
+		-F NCEP@LS , LANDSEA @LS! , ERA @ LS \
+		-Sb -V
 
 SSSS= $(SP)
 #  SSSS= $(SP), $(H__)
