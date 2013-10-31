@@ -51,14 +51,14 @@ end function
 !!
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
-function standard_pressure ( &
-    height, &
-    p_zero, &
-    temperature, &
-    h_zero, &
-    method, &
-    dz, &
-    fels_type, &
+function standard_pressure (  & 
+    height,                   & 
+    p_zero,                   & 
+    temperature,              & 
+    h_zero,                   & 
+    method,                   & 
+    dz,                       & 
+    fels_type,                & 
     use_standard_temperature)
 
   use mod_constants, only: dp, earth, atmosphere, R_air

@@ -77,7 +77,7 @@ subroutine print_warning (warn , unit, more, error)
   case("method")
     write(def_unit, form%i1) "-M no method was set"
   case default 
-    write(def_unit, form%i1) "error ---"
+    write(def_unit, form%i1) warn
   end select
   if (present(more)) write(def_unit, form%i2) more
   if (present(error) .and. error) call exit(1)

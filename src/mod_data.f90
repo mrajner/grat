@@ -162,10 +162,11 @@ subroutine model_aliases(model, dryrun, year)
     case ("T")
       if (model%autoloadname.eq."NCEP1") then
         model%names(1)="air"
+        write(model%name,'(a,a,i4,a)') trim(prefix),"air.sig995.",year_,".nc"
       else
         model%names(1)="temp"
+        call print_warning ("not yet NCEP@T" , error=.true.)
       endif
-      write(model%name,'(a,a,i4,a)') trim(prefix),"air.sig995.",year_,".nc"
     case ("HP")
       model%names(1)="hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.sfc.nc"

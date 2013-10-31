@@ -98,10 +98,16 @@ subroutine parse_site(cmd_line_entry)
       site(start_index)%height = 100
     else if (cmd_line_entry%field(i)%subfield(1)%name.eq."o") then
       call more_sites (1,start_index)
-      site(start_index)%name   = "mar__a"
+      site(start_index)%name   = "mari_a"
       site(start_index)%lat    = 11.317
       site(start_index)%lon    = 142.25
       site(start_index)%height = -9910
+    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."e") then
+      call more_sites (1,start_index)
+      site(start_index)%name   = "ever_a"
+      site(start_index)%lat    = 27.988056
+      site(start_index)%lon    = 86.925278
+      site(start_index)%height = 8848
     else
       call print_warning ("site")
     endif
