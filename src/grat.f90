@@ -1,4 +1,3 @@
-! ==============================================================================
 !> \file
 !! \mainpage grat overview
 !! \section Purpose
@@ -79,7 +78,7 @@ program grat
     ( &
     program_calling = "grat", &
       version = "pre-alpha", &
-      accepted_switches="VSBLGPpoFIDLvhRQOA", &
+      accepted_switches="VSBLGPpoFIDLvhRMOAHU", &
       cmdlineargs=.true. &
       )
     write(log%unit, form%separator)
@@ -183,7 +182,8 @@ program grat
             site(isite)%lon,  &
             site(isite)%height, &
             admit( &
-            site(isite) &
+            site(isite), &
+            date=date(idate)%date &
             )
 
         else if (method.eq."2D") then 
@@ -195,23 +195,23 @@ program grat
           endif
         endif
 
-        if (output%unit.ne.output_unit) then 
+        if (output%unit.ne.output_unit.and..not.quiet) then 
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
-            100*iprogress/(max(size(date),1) & 
-            *max(size(site),1)),             & 
-            cpu(2)-cpu(1))
+              100*iprogress/(max(size(date),1) & 
+              *max(size(site),1)),             & 
+              cpu(2)-cpu(1))
         endif
       enddo
     enddo
 
     ! execution time-stamp
     call cpu_time(cpu(2))
-    if (output%unit.ne.output_unit) then 
+    if (output%unit.ne.output_unit.and..not.quiet) then 
       call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
       close(output_unit) 
     endif
-    write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+    write(log%unit, '("Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
     write(log%unit, form_separator)
-  end program 
+end program 

@@ -1,5 +1,5 @@
 module mod_parser
-  use mod_constants, only : dp
+  use mod_constants, only: dp
   use iso_fortran_env
   use mod_printing
 
@@ -22,18 +22,18 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
 
-  write(log%unit, form_61) cmd_line_entry%switch, "{", trim(cmd_line_entry%full), "}"
-  if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches= accepted_switches)) &
-    then
-    write(log%unit, form_62) 'this switch is not accepted'
+  write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(cmd_line_entry%full), "}"
+  if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
+      then
+    call print_warning ("not accepted switch", error=.true.)
     return
   endif
 
   select case (cmd_line_entry%switch)
   case ('-V')
-    write(log%unit, form%i3) 'verbose mode' 
+    if (.not.log%sparse) write(log%unit, form%i3) 'verbose mode' 
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
-      write(log%unit, form_62) 'the log file was set:', log%name
+      if (.not.log%sparse) write(log%unit, form_62) 'the log file was set:', log%name
     endif
   case ('-S','-R')
     call parse_site(cmd_line_entry)
@@ -43,17 +43,17 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_moreverbose(cmd_line_entry)
   case ("-B")
     if (cmd_line_entry%field(1)%subfield(1)%name.eq."N" ) &
-      inverted_barometer = .false.
-    write(log%unit, form%i3) "inverted barometer assumption [T/F]:", &
-      inverted_barometer
+        inverted_barometer = .false.
+    if (.not.log%sparse) write(log%unit, form%i3) "inverted barometer assumption [T/F]:", &
+        inverted_barometer
   case ("-O")
     if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."C")) then
       ocean_conserve_mass = .true.
-      write(log%unit, form%i3) "conservation ocean mass"
+      if (.not.log%sparse) write(log%unit, form%i3) "conservation ocean mass"
     endif
     if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."I")) then
       inverted_landsea_mask = .true.
-      write(log%unit, form%i3) "inverted landsea mask"
+      if (.not.log%sparse) write(log%unit, form%i3) "inverted landsea mask"
     endif
   case ('-D')
     call parse_date(cmd_line_entry)
@@ -65,11 +65,11 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ("-G")
     call parse_green(cmd_line_entry)
   case ("-H")
-    write(log%unit, form%i3) 'header'
+    if (.not.log%sparse) write(log%unit, form%i3) 'header'
     output%header=.true.
   case ('-M')
     method = cmd_line_entry%field(1)%subfield(1)%name
-    write(log%unit, form_62), 'method was set: ', method
+    if (.not.log%sparse) write(log%unit, form_62), 'method was set: ', method
     if (.not.any(method.eq.(["1D", "2D", "3D"]))) then
       call print_warning("method", more=method, error=.true.)
     endif
@@ -82,9 +82,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
       output%noclobber=.true.
     endif
-    write(log%unit, form_62), 'output file was set: ', trim(output%name)
+    if (.not.log%sparse) write(log%unit, form_62), 'output file was set: ', trim(output%name)
     if (file_exists(output%name).and.output%noclobber) then
-      write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
+      if (.not.log%sparse) write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
       call exit(1)
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
@@ -94,8 +94,13 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_polygon(cmd_line_entry)
     ! case ('-n')
     ! dry_run=.true.
+  case ('-q')
+    quiet=.true.
+  case ('-U')
+      if (.not.log%sparse) write(log%unit,form%i3) "force transfer surface pressure from @HP to @H"
+      transfer_sp = .true.
   case default
-    write(log%unit,form_62), "unknown argument: IGNORING"
+    if (.not.log%sparse) write(log%unit,form%i3), "unknown argument: IGNORING"
   endselect
 end subroutine 
 
@@ -128,26 +133,24 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   integer,dimension(8):: execution_date 
 
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
-    write(output_unit, '(a)' ), &
-      'No cmd line args! Try: ./'//program_calling//' -h' 
-    call exit(1)
+    call print_warning("args", program_calling=program_calling, error=.true.)
   endif
 
   call get_command_cleaned(dummy)
   call collect_args(dummy)
 
   if (any(cmd_line%switch.eq.'-h') &
-    .and.if_accepted_switch("-h",accepted_switches)) &
-    then
+      .and.if_accepted_switch("-h",accepted_switches)) &
+      then
     call print_help(program_calling=program_calling, &
-      accepted_switches = accepted_switches)
+        accepted_switches = accepted_switches)
     call exit
   endif
   if (any(cmd_line%switch.eq.'-v') &
-    .and.if_accepted_switch("-v",accepted_switches)) &
-    then
+      .and.if_accepted_switch("-v",accepted_switches)) &
+      then
     call print_version &
-      (program_calling=program_calling, version=version)
+        (program_calling=program_calling, version=version)
     call exit
   endif
   if (.not.any(cmd_line%switch.eq.'-I')) then
@@ -158,10 +161,10 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
         if ( &
-          any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
-          .or. &
-          any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
-          ) then
+            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
+            .or. &
+            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
+            ) then
           log%sparse = .true.
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
@@ -187,12 +190,12 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     ! support this name
     open (newunit=log%unit, file = "/dev/null", action = "write" )
   endif
-  call print_version(program_calling=program_calling, version=version)
+  if (.not. log%sparse) call print_version(program_calling=program_calling, version=version)
   call date_and_time (values = execution_date)
   write(log%unit, & 
-    '("Program started:", & 
-    1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
-    execution_date (1:3),execution_date(5:7),execution_date(4)/60
+      '("Program started:", & 
+      1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
+      execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
@@ -202,7 +205,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command parsing:"
   do i =1, size(cmd_line)
-    call parse_option(cmd_line(i))
+    call parse_option(cmd_line(i), accepted_switches)
   enddo
   call get_index()
   call check_arguments(program_calling=program_calling)
@@ -212,7 +215,7 @@ end subroutine
 subroutine check_arguments (program_calling)
   use mod_date, only: date
   use mod_data, only: model
-  use mod_cmdline, only: cmd_line, method
+  use mod_cmdline, only: cmd_line, method, quiet, ind, transfer_sp
   use mod_site, only: gather_site_model_info
   character(len=*), intent(in) :: program_calling
   integer :: i
@@ -224,7 +227,9 @@ subroutine check_arguments (program_calling)
       else
         method="1D"
       endif
-      call print_warning("method", more="assuming "//method)
+      if (.not.quiet) then 
+        call print_warning("method", more="assuming "//method)
+      endif
     endif
     if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
       call print_warning("green_missing", error=.true.)
@@ -238,6 +243,12 @@ subroutine check_arguments (program_calling)
     endif
   enddo
   call gather_site_model_info()
+  if (ind%model%hp.ne.0.and. .not. transfer_sp) then
+    call print_warning ("maybe use -U")
+  endif
+  if (transfer_sp .and. ind%model%hp.eq.0) then
+    call print_warning ("-U but no @HP found")
+  endif
 end subroutine
 
 ! =============================================================================
@@ -294,16 +305,16 @@ subroutine parse_moreverbose (cmd_line_entry)
           endif
         endif
         open(                            & 
-          newunit = moreverbose(i)%unit, & 
-          file    = moreverbose(i)%name, & 
-          action  = 'write'              & 
-          )
+            newunit = moreverbose(i)%unit, & 
+            file    = moreverbose(i)%name, & 
+            action  = 'write'              & 
+            )
       else
         moreverbose(i)%unit = output_unit
       endif
     endif
     write (log%unit, form_62), trim(moreverbose(i)%name), &
-      "<-", dataname(moreverbose(i)%dataname)
+        "<-", dataname(moreverbose(i)%dataname)
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
     endif
@@ -364,16 +375,16 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-        "("//form%t3//" &
-        'DB:',f7.2, & 
-        '|DE:',f8.3, &
-        '|I:',a, &
-        '|DD:',i2, &
-        '|DS:',f6.2, &
-        )"), &
-        info(i)%distance%start, info(i)%distance%stop, &
-        info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step
+          "("//form%t3//" &
+          'DB:',f7.2, & 
+          '|DE:',f8.3, &
+          '|I:',a, &
+          '|DD:',i2, &
+          '|DS:',f6.2, &
+          )"), &
+          info(i)%distance%start, info(i)%distance%stop, &
+          info(i)%interpolation, info(i)%distance%denser, &
+          info(i)%distance%step
     enddo
   else
     allocate(info(1))
@@ -414,7 +425,7 @@ subroutine print_version (program_calling, version)
   write(log%unit, form_inheader ), version
   write(log%unit, form_inheader ), "compiled on "//__DATE__
   write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
   write(log%unit, form_inheader ), 'Warsaw University of Technology'

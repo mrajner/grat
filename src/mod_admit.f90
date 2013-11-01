@@ -7,15 +7,17 @@ module mod_admit
 contains
 ! =============================================================================
 ! =============================================================================
-real(dp) function admit(site_)
+real(dp) function admit(site_, date)
   use mod_cmdline, only: ind, info, admitance
   use mod_data, only: get_value, model
   use mod_utilities, only: r2d
   use mod_atmosphere, only: standard_pressure
   use mod_site
+  use mod_cmdline, only: transfer_sp
 
   real(dp) :: val, rsp, t
   type(site_info) :: site_
+  integer, optional :: date(6)
 
   if (ind%model%sp.ne.0) then
     call get_value (                 & 
@@ -24,11 +26,12 @@ real(dp) function admit(site_)
       lon=site_%lon,                 & 
       val=val,                       & 
       level=1,                       & 
-      method = info(1)%interpolation & 
+      method = info(1)%interpolation, & 
+      date=date &
       )
   endif
  
-  if (site_%hp%if) then
+  if (site_%hp%if .and. transfer_sp ) then
     if (site_%h%if) then
       site_%height = site_%h%val
     endif
@@ -40,9 +43,10 @@ real(dp) function admit(site_)
         lon=site_%lon,                 & 
         val=t,                         & 
         level=1,                       & 
-        method = info(1)%interpolation & 
+        method = info(1)%interpolation, & 
+        date=date &
         )
-
+    
       val = standard_pressure(           & 
         height=site_%height,             & 
         h_zero=site_%hp%val,             & 

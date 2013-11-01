@@ -569,11 +569,11 @@ subroutine get_variable(model, date, print)
     index_time = 1
   endif
   start = [1,1,index_time]
-  call check (nf90_get_var ( &
-    ncid=model%ncid, &
-    varid=varid, &
-    values=model%data, &
-    start=start) &
+  call check (nf90_get_var ( & 
+    ncid=model%ncid,         & 
+    varid=varid,             & 
+    values=model%data,       & 
+    start=start)             & 
     )
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)

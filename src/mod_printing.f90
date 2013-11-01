@@ -5,10 +5,10 @@ module mod_printing
   ! For preety printing
   !----------------------------------------------------
   character(len=255), parameter ::                     & 
-    form_header     = '(72("#"))' ,                    & 
-    form_separator  = '("#",71("-"))' ,                & 
-    form_inheader   = '(("#"),1x,a68,1x,("#"))' ,      & 
-    form_inheader_n = '(("#"),1x,a55,1x,i2.2,"(",i8,")",x,("#"))' , & 
+    form_header     = '(72("#"))',                    & 
+    form_separator  = '("#",71("-"))',                & 
+    form_inheader   = '(("#"),1x,a68,1x,("#"))',      & 
+    form_inheader_n = '(("#"),1x,a55,1x,i2.2,"(",i8,")",x,("#"))', & 
     form_60         = "(a,100(1x,g0))",                & 
     form_61         = "(2x,a,100(1x,g0))",             & 
     form_62         = "(4x,a,100(1x,g0))",             & 
@@ -43,11 +43,11 @@ module mod_printing
 contains
 ! =============================================================================
 ! =============================================================================
-subroutine print_warning (warn , unit, more, error)
+subroutine print_warning (warn, unit, more, error, program_calling)
   use, intrinsic:: iso_fortran_env
   character (len=*)  :: warn
-  character (len=*), optional :: more
-  integer , optional :: unit
+  character (len=*), optional :: more, program_calling
+  integer, optional :: unit
   integer :: def_unit
   logical, optional :: error
 
@@ -55,6 +55,8 @@ subroutine print_warning (warn , unit, more, error)
   if (present (unit) ) def_unit=unit
 
   select case(warn)
+  case("args")
+    write(def_unit, form%i0) "no cmd line args! try: "// program_calling // " -h"
   case("site_file_format")
     write(def_unit, form%i1) "Some records were rejected"
     write(def_unit, form%i1) "you should specify for each &
@@ -102,7 +104,7 @@ subroutine progress(j, time)
     if (present(time)) then
       write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i5,']', <size(moreverbose)+1>(x,a))") &
           '+',char(13), bar, &
-          time, "s" , int(100.*time/j), trim(output%name) , &
+          time, "s", int(100.*time/j), trim(output%name), &
           (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
     else
       write(unit=output_unit,fmt="(a1,a1,a27)") '+',char(13), bar

@@ -1,8 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-dfdsfd:
-	grat -F NCEP @SP 
+dfdsfd: grat
+	@grat   \
+		-Sj \
+		-F ERA@SP\! , ERA@HP\! , ETOPO@H\!  \
+		-G rrr@GN \
+		-A1 -D2012:2013:2@D   \
+		-U 
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)
@@ -48,7 +53,7 @@ LS       = $(NCEP_DIR)/land.nc@LS:land
 GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
 H__      = $(NCEP_DIR)/hgt.sfc.nc@HP:hgt@g2h
 Hetopo   = /home/mrajner/dat/etopo/ETOPO1_Ice_c_gmt4.grd@H! : z : x: y
-#todo vienna
+	#todo vienna
 
 SRCS  = mod_constants.f90     \
 				mod_utilities.f90     \
@@ -80,19 +85,19 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 ifdef DEP
-mod_utilities.o: mod_constants.o
-mod_atmosphere.o: mod_printing.o mod_utilities.o
-mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
-mod_date.o: mod_data.o
-mod_mjd.o: mod_constants.o
-mod_polygon.o:mod_printing.o mod_cmdline.o
-mod_printing.o: mod_cmdline.o
-mod_cmdline.o: mod_utilities.o
-mod_normalization.o: mod_constants.o mod_utilities.o
+	mod_utilities.o: mod_constants.o
+	mod_atmosphere.o: mod_printing.o mod_utilities.o
+	mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
+	mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
+	mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
+	mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
+	mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
+	mod_date.o: mod_data.o
+	mod_mjd.o: mod_constants.o
+	mod_polygon.o:mod_printing.o mod_cmdline.o
+	mod_printing.o: mod_cmdline.o
+	mod_cmdline.o: mod_utilities.o
+	mod_normalization.o: mod_constants.o mod_utilities.o
 endif
 
 
@@ -163,7 +168,7 @@ install: all $(PROGS) installlib
 # Make sure that target path is in your system serch $PATH
 $(LINKS_DIR)/%: $(PROGS_DIR)/%
 	ln -sf $(realpath $<) $@
-$(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
+	$(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
 	sudo cp $(realpath $<) $@
 
 install-allusers: $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check

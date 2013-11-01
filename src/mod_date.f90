@@ -81,7 +81,9 @@ subroutine parse_date (cmd_line_entry)
         call invmjd (mjd(start)+stop(1) , stop)
       case('H')
         call invmjd (mjd(start)+stop(1)/24. , stop)
+      case('')
       case default
+        call print_warning ("unit not valid", error=.true.)
       endselect
     else
       stop = start
@@ -89,8 +91,10 @@ subroutine parse_date (cmd_line_entry)
     if (size(cmd_line_entry%field(i_)%subfield).ge.3)then
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
-      case("M","D","Y")
+      case("M","D","Y", "H")
         read (cmd_line_entry%field(i_)%subfield(3)%dataname,* ) interval_unit
+      case default
+        call print_warning ("interval unit not valid", error=.true.)
       endselect
     else
       step=6
