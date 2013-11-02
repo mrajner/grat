@@ -2,12 +2,8 @@
 # for example: OBJS  = libgrat.a
 
 dfdsfd: grat
-	@grat   \
-		-Sj \
-		-F ERA@SP\! , ERA@HP\! , ETOPO@H\!  \
-		-G rrr@GN \
-		-A1 -D2012:2013:2@D   \
-		-U 
+	time grat -Sj -G @C -F NCEP@SP  -D2010
+
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)

@@ -21,10 +21,10 @@ program value_check
   call cpu_time(cpu(1))
 
   call intro ( &
-    program_calling   = "value_check", &
-    accepted_switches = "VFoShvIDLPR", &
-    version           = "beta",        &
-    cmdlineargs       = .true.         &
+    program_calling   = "value_check",   &
+    accepted_switches = "VFoShvIDLPRqw", &
+    version           = "beta",          &
+    cmdlineargs       = .true.           &
     )
 
   call get_index()

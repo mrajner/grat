@@ -20,47 +20,47 @@ real(dp) function admit(site_, date)
   integer, optional :: date(6)
 
   if (ind%model%sp.ne.0) then
-    call get_value (                 & 
-      model=model(ind%model%sp),     & 
-      lat=site_%lat,                 & 
-      lon=site_%lon,                 & 
-      val=val,                       & 
-      level=1,                       & 
+    call get_value (                  & 
+      model=model(ind%model%sp),      & 
+      lat=site_%lat,                  & 
+      lon=site_%lon,                  & 
+      val=val,                        & 
+      level=1,                        & 
       method = info(1)%interpolation, & 
-      date=date &
+      date=date                       & 
       )
   endif
  
-  if (site_%hp%if .and. transfer_sp ) then
+  if (site_%hp%if .and. transfer_sp%if) then
     if (site_%h%if) then
       site_%height = site_%h%val
     endif
 
     if (ind%model%t.ne.0) then
-      call get_value (                 & 
-        model=model(ind%model%t),      & 
-        lat=site_%lat,                 & 
-        lon=site_%lon,                 & 
-        val=t,                         & 
-        level=1,                       & 
-        method = info(1)%interpolation, & 
-        date=date &
+      call get_value (                  & 
+        model=model(ind%model%t),       & 
+        lat=site_%lat,                  & 
+        lon=site_%lon,                  & 
+        val=t,                          & 
+        level=1,                        & 
+        method=info(1)%interpolation,   & 
+        date=date                       & 
         )
     
       val = standard_pressure(           & 
         height=site_%height,             & 
         h_zero=site_%hp%val,             & 
         p_zero=val,                      & 
-        method="full",                   & 
-        temperature = t,                 & 
+        method=transfer_sp%method,       & 
+        temperature=t,                   & 
         use_standard_temperature=.false. & 
         )
     else
-      val = standard_pressure(           & 
-        height=site_%height,             & 
-        h_zero=site_%hp%val,             & 
-        p_zero=val,                      & 
-        method="full",                   & 
+      val = standard_pressure(          & 
+        height=site_%height,            & 
+        h_zero=site_%hp%val,            & 
+        p_zero=val,                     & 
+        method=transfer_sp%method,      & 
         use_standard_temperature=.true. & 
         )
     endif

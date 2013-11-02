@@ -378,8 +378,9 @@ subroutine convolve(site, date)
     do i = 1, size(green_common)
       do j = 1, size(green_common(i)%distance)
         green_common(i)%data(j,ind%green%c)= &
-            aggf(d2r(green_common(i)%distance(j)))
-        print *, i, j,green_common(i)%data(j,ind%green%c), d2r(green_common(i)%distance(j))
+            aggf(d2r(green_common(i)%distance(j)), method="full")
+        stop "UUUUUUUUUUUUUUUUUUUUUUU"
+        ! print *, i, j,green_common(i)%data(j,ind%green%c), d2r(green_common(i)%distance(j))
         call progress(100*j/size(green_common(i)%distance))
       enddo
     enddo
@@ -500,7 +501,7 @@ subroutine convolve(site, date)
 
           if (ind%model%sp.ne.0) then
             ! transfer SP if necessary
-            if (transfer_sp) then
+            if (transfer_sp%if) then
               if (ind%model%hp.eq.0) call print_warning("no @HP with -U",error=.true.)
               if (ind%model%h.eq.0) call print_warning("no @H with -U",error=.true.)
 
@@ -509,17 +510,17 @@ subroutine convolve(site, date)
                     height=val(ind%model%h),           & 
                     h_zero=val(ind%model%hp),          & 
                     p_zero=val(ind%model%sp),          & 
-                    method="full",                     & 
-                    temperature = val(ind%model%t),    & 
+                    method=transfer_sp%method,         & 
+                    temperature=val(ind%model%t),      & 
                     use_standard_temperature=.false.   & 
                     )
               else
-                val(ind%model%sp) = standard_pressure( & 
-                    height=val(ind%model%h),           & 
-                    h_zero=val(ind%model%hp),          & 
-                    p_zero=val(ind%model%sp),          & 
-                    method="full",                     & 
-                    use_standard_temperature=.true.    & 
+                val(ind%model%sp)=standard_pressure( & 
+                    height=val(ind%model%h),         & 
+                    h_zero=val(ind%model%hp),        & 
+                    p_zero=val(ind%model%sp),        & 
+                    method=transfer_sp%method,       & 
+                    use_standard_temperature=.true.  & 
                     )
               endif
             endif
@@ -557,13 +558,13 @@ subroutine convolve(site, date)
               endif
             endif
 
-            if ( &
-                (ind%polygon%n.ne.0.and.iok(ind%polygon%n).ne.0) &
-                .or.(ind%polygon%n.eq.0) &
-                ) then 
+            if (                                                     & 
+                (ind%polygon%n.ne.0.and.iok(ind%polygon%n).ne.0)     & 
+                .or.(ind%polygon%n.eq.0)                             & 
+                ) then
               ! GN
               if (ind%green%gn.ne.0) then
-                result(ind%green%gn) = result(ind%green%gn) +      & 
+                result(ind%green%gn) = result(ind%green%gn) +        & 
                     val(ind%model%sp) *                              & 
                     green_common(igreen)%data(idist, ind%green%gn) * & 
                     area * normalize
@@ -571,21 +572,21 @@ subroutine convolve(site, date)
 
               ! GNdt
               if (ind%green%gndt.ne.0) then
-                if (any( &
-                    [ind%model%sp, ind%model%t, ind%model%rsp &
+                if (any(                                                & 
+                    [ind%model%sp, ind%model%t, ind%model%rsp           & 
                     ].eq.0)) stop "not enougt data model"
-                result(ind%green%gndt) = result(ind%green%gndt) +    & 
-                    val(ind%model%sp) *                                & 
-                    green_common(igreen)%data(idist, ind%green%gndt) * & 
+                result(ind%green%gndt) = result(ind%green%gndt) +       & 
+                    val(ind%model%sp) *                                 & 
+                    green_common(igreen)%data(idist, ind%green%gndt) *  & 
                     (val(ind%model%t)-atmosphere%temperature%standard)* & 
                     area * normalize
               endif
               !C
               if (ind%green%c.ne.0) then
-                result(ind%green%c) = result(ind%green%c)  & 
-                  +  val(ind%model%sp)                   & 
-                  *  green_common(igreen)%data(idist, ind%green%c)  & 
-                  *  area * normalize
+                result(ind%green%c) = result(ind%green%c)              & 
+                  + val(ind%model%sp)                                  & 
+                  * green_common(igreen)%data(idist, ind%green%c)      & 
+                  * area * normalize
               endif
               ! GNdz
               if (ind%green%gndz.ne.0) then
@@ -595,33 +596,33 @@ subroutine convolve(site, date)
         endif
 
         ! surface loads from EWT
-        if ( &
-            ind%green%gr.ne.0 &
-            .or.ind%green%ghn.ne.0 &
-            .or.ind%green%ghe.ne.0 &
+        if (                                                                                          & 
+            ind%green%gr.ne.0                                                                         & 
+            .or.ind%green%ghn.ne.0                                                                    & 
+            .or.ind%green%ghe.ne.0                                                                    & 
             ) then
-          if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
+          if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
             if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
-              call get_value (                                  & 
-                  model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), & 
+              call get_value (                                                                        & 
+                  model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt),                       & 
                   level=1, method = info(igreen)%interpolation, date=date%date)
-              aux = (val(ind%model%ewt))  *                      & 
-                  area/d2r(green_common(igreen)%distance(idist)) * & 
+              aux = (val(ind%model%ewt))  *                                                           & 
+                  area/d2r(green_common(igreen)%distance(idist)) *                                    & 
                   1./earth%radius/1e12* 1e3 ! m -> mm
               if (isnan(aux)) aux = 0
               if (ind%green%gr.ne.0) then
-                result(ind%green%gr) = result(ind%green%gr) +     & 
-                    green_common(igreen)%data(idist,ind%green%gr) * & 
-                    aux 
+                result(ind%green%gr) = result(ind%green%gr) +                                         & 
+                    green_common(igreen)%data(idist,ind%green%gr) *                                   & 
+                    aux
 
                 if (ind%green%ghn.ne.0) then
-                  result(ind%green%ghn) = result(ind%green%ghn) +    & 
-                      green_common(igreen)%data(idist,ind%green%ghn) * & 
+                  result(ind%green%ghn) = result(ind%green%ghn) +                                & 
+                      green_common(igreen)%data(idist,ind%green%ghn) *                           & 
                       aux * (- cos (d2r(azimuth)))
                 endif
                 if (ind%green%ghe.ne.0) then
-                  result(ind%green%ghe) = result(ind%green%ghe) +    & 
-                      green_common(igreen)%data(idist,ind%green%ghe) * & 
+                  result(ind%green%ghe) = result(ind%green%ghe) +                                & 
+                      green_common(igreen)%data(idist,ind%green%ghe) *                           & 
                       aux * (- sin (d2r(azimuth)))
                 endif
               endif
@@ -631,45 +632,45 @@ subroutine convolve(site, date)
         ! moreverbose point: -L@p
         if(ind%moreverbose%p.ne.0) then
           if (header_p.and. output%header) then
-            write(moreverbose(ind%moreverbose%p)%unit,                                         & 
-                '(a8,8a12,<size(result)>a12)', advance='no' )                                   & 
+            write(moreverbose(ind%moreverbose%p)%unit,                                           & 
+                '(a8,8a12,<size(result)>a12)', advance='no' )                                    & 
                 "name", "lat", "lon", "distance", "azimuth", "lat", "lon",                       & 
                 "area", "totarea",  (trim(green(i)%dataname), i=lbound(green,1),ubound(green,1))
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
-              write(moreverbose(ind%moreverbose%p)%unit,                     & 
-                  '(<size(model)>a12)', advance='no' )                        & 
+              write(moreverbose(ind%moreverbose%p)%unit,                                         & 
+                  '(<size(model)>a12)', advance='no' )                                           & 
                   (trim(model(i)%dataname), i=lbound(model,1),ubound(model,1))
             endif
             if (size(iok).gt.0) then
-              write(moreverbose(ind%moreverbose%p)%unit,             & 
+              write(moreverbose(ind%moreverbose%p)%unit,                                         & 
                   '(<size(iok)>(a3,i1))'), ("ok",i, i =1,ubound(iok,1))
             else
               write(moreverbose(ind%moreverbose%p)%unit, * )
             endif
             header_p=.false.
           endif
-          if (                                           & 
-              .not.moreverbose(ind%moreverbose%p)%sparse   & 
-              .or.                                         & 
-              (moreverbose(ind%moreverbose%p)%sparse       & 
-              .and.(azimuth==azimuths(ubound(azimuths,1))) & 
-              )                                            & 
+          if (                                                                                   & 
+              .not.moreverbose(ind%moreverbose%p)%sparse                                         & 
+              .or.                                                                               & 
+              (moreverbose(ind%moreverbose%p)%sparse                                             & 
+              .and.(azimuth==azimuths(ubound(azimuths,1)))                                       & 
+              )                                                                                  & 
               ) then
-            write(moreverbose(ind%moreverbose%p)%unit,                                     & 
-                '(a8,6en12.2,2en12.2,<size(result)>en13.3,a)', advance = 'no'),                & 
-                site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth, & 
+            write(moreverbose(ind%moreverbose%p)%unit,                                           & 
+                '(a8,6en12.2,2en12.2,<size(result)>en13.3,a)', advance = 'no'),                  & 
+                site%name, site%lat, site%lon, green_common(igreen)%distance(idist), azimuth,    & 
                 r2d(lat),r2d(lon), area, tot_area, result
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               do i=1,size(val)
-                call get_value (                                              & 
-                    model(i), r2d(lat), r2d(lon), val(i), & 
+                call get_value (                                                  & 
+                    model(i), r2d(lat), r2d(lon), val(i),                         & 
                     level=1, method = info(igreen)%interpolation, date=date%date)
               enddo
-              write(moreverbose(ind%moreverbose%p)%unit,     & 
+              write(moreverbose(ind%moreverbose%p)%unit,      & 
                   '(<size(model)>en12.2)', advance='no' ) val
             endif
             if (size(iok).gt.0) then
-              write(moreverbose(ind%moreverbose%p)%unit,    & 
+              write(moreverbose(ind%moreverbose%p)%unit, & 
                   '(<size(iok)>(i4))'), iok
             else
               write(moreverbose(ind%moreverbose%p)%unit, * )
@@ -679,7 +680,7 @@ subroutine convolve(site, date)
 
         ! moreverbose auxilary to draw: -L@a
         if(ind%moreverbose%a.ne.0) then
-          call printmoreverbose (                                      & 
+          call printmoreverbose (                                        & 
               d2r(site%lat), d2r(site%lon), d2r(azimuth), d2r(dazimuth), & 
               d2r(green_common(igreen)%start(idist)),                    & 
               d2r(green_common(igreen)%stop(idist))                      & 
@@ -687,7 +688,7 @@ subroutine convolve(site, date)
         endif
       enddo
     enddo
-  enddo 
+  enddo
 
   ! results to output
   if (present(date)) then

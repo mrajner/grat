@@ -96,9 +96,26 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     ! dry_run=.true.
   case ('-q')
     quiet=.true.
+  case ('-w')
+    select case (cmd_line_entry%field(1)%subfield(1)%name)
+    case ("n","N")
+      warnings=.false.
+    case default
+      warnings=.true.
+    end select
   case ('-U')
-      if (.not.log%sparse) write(log%unit,form%i3) "force transfer surface pressure from @HP to @H"
-      transfer_sp = .true.
+    if (.not.log%sparse) write(log%unit,form%i3) "force transfer surface pressure from @HP to @H"
+    select case (cmd_line_entry%field(1)%subfield(1)%name)
+    case ("n","N")
+      transfer_sp%if = .false.
+    case default
+      transfer_sp%if = .true.
+    end select
+      if (cmd_line_entry%field(1)%subfield(1)%name.ne."") then
+        transfer_sp%method=cmd_line_entry%field(1)%subfield(1)%name
+      endif
+    if (.not. log%sparse) &
+        write(log%unit, "("//form%t2//"l1,': ',a)") transfer_sp%if, trim(transfer_sp%method)
   case default
     if (.not.log%sparse) write(log%unit,form%i3), "unknown argument: IGNORING"
   endselect
@@ -210,6 +227,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   call get_index()
   call check_arguments(program_calling=program_calling)
 end subroutine
+
 ! =============================================================================
 ! =============================================================================
 subroutine check_arguments (program_calling)
@@ -243,10 +261,10 @@ subroutine check_arguments (program_calling)
     endif
   enddo
   call gather_site_model_info()
-  if (ind%model%hp.ne.0.and. .not. transfer_sp) then
+  if (ind%model%hp.ne.0.and. .not.transfer_sp%if) then
     call print_warning ("maybe use -U")
   endif
-  if (transfer_sp .and. ind%model%hp.eq.0) then
+  if (transfer_sp%if .and. ind%model%hp.eq.0) then
     call print_warning ("-U but no @HP found")
   endif
 end subroutine

@@ -78,7 +78,7 @@ program grat
     ( &
     program_calling = "grat", &
       version = "pre-alpha", &
-      accepted_switches="VSBLGPpoFIDLvhRMOAHU", &
+      accepted_switches="VSBLGPqoFIDLvhRMOAHUw", &
       cmdlineargs=.true. &
       )
     write(log%unit, form%separator)

@@ -45,44 +45,47 @@ contains
 ! =============================================================================
 subroutine print_warning (warn, unit, more, error, program_calling)
   use, intrinsic:: iso_fortran_env
+  use :: mod_cmdline, only: warnings
   character (len=*)  :: warn
   character (len=*), optional :: more, program_calling
   integer, optional :: unit
   integer :: def_unit
   logical, optional :: error
 
-  def_unit = error_unit
-  if (present (unit) ) def_unit=unit
+  if (present(error).and.error.or.warnings) then
+    def_unit = error_unit
+    if (present (unit) ) def_unit=unit
 
-  select case(warn)
-  case("args")
-    write(def_unit, form%i0) "no cmd line args! try: "// program_calling // " -h"
-  case("site_file_format")
-    write(def_unit, form%i1) "Some records were rejected"
-    write(def_unit, form%i1) "you should specify for each &
-      line at least 3[4] parameters in free format:"
-    write(def_unit, form%i1) "name lat lon [H=0] (skipped)"
-  case("boundaries")
-     write(def_unit, form%i1) "something wrong with boundaries. IGNORED"
-   case("site")
-    write(def_unit, form%i1) "something wrong with -S|-R specification. IGNORED"
-  case ("repeated") 
-    write(def_unit, form%i1) "reapeted specification. IGNORED"
-  case ("date") 
-    write(def_unit, form%i1) "something wrong with date format -D. IGNORED"
-  case ("model") 
-    write(def_unit, form%i3) "something wrong with -F."
-  case("alias_without_date")
-    write(def_unit, form%i1) "-D is required with aliased data"
-  case("green_missing")
-    write(def_unit, form%i1) "-G is required"
-  case("method")
-    write(def_unit, form%i1) "-M no method was set"
-  case default 
-    write(def_unit, form%i1) warn
-  end select
-  if (present(more)) write(def_unit, form%i2) more
-  if (present(error) .and. error) call exit(1)
+    select case(warn)
+    case("args")
+      write(def_unit, form%i0) "no cmd line args! try: "// program_calling // " -h"
+    case("site_file_format")
+      write(def_unit, form%i1) "Some records were rejected"
+      write(def_unit, form%i1) "you should specify for each &
+          line at least 3[4] parameters in free format:"
+      write(def_unit, form%i1) "name lat lon [H=0] (skipped)"
+    case("boundaries")
+      write(def_unit, form%i1) "something wrong with boundaries. IGNORED"
+    case("site")
+      write(def_unit, form%i1) "something wrong with -S|-R specification. IGNORED"
+    case ("repeated") 
+      write(def_unit, form%i1) "reapeted specification. IGNORED"
+    case ("date") 
+      write(def_unit, form%i1) "something wrong with date format -D. IGNORED"
+    case ("model") 
+      write(def_unit, form%i3) "something wrong with -F."
+    case("alias_without_date")
+      write(def_unit, form%i1) "-D is required with aliased data"
+    case("green_missing")
+      write(def_unit, form%i1) "-G is required"
+    case("method")
+      write(def_unit, form%i1) "-M no method was set"
+    case default 
+      write(def_unit, form%i1) warn
+    end select
+    if (present(more)) write(def_unit, form%i2) more
+    if (present(error) .and. error) call exit(1)
+  endif
 end subroutine
 
 ! =============================================================================
