@@ -271,7 +271,7 @@ subroutine check_arguments (program_calling)
         method="1D"
       endif
       if (.not.quiet) then 
-        call print_warning("method", more="assuming "//method)
+        call print_warning("method")
       endif
     endif
     if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then

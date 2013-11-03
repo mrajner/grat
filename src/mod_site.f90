@@ -9,15 +9,15 @@ module mod_site
   !---------------------------------------------------
   type more_site_heights
     real(dp) :: val
-    logical  :: if
+    logical  :: if=.false.
   end type
   type site_info 
     character(:),allocatable :: name
     real(dp)                 :: lat,lon,height
     type(more_site_heights)  :: hp, h
   end type
-
   type(site_info), allocatable, dimension(:) :: site
+  logical :: site_height_from_model=.false.
 
 contains
 ! =============================================================================
@@ -35,42 +35,42 @@ subroutine parse_site(cmd_line_entry)
     return
   endif
 
-  do i = 1, size (cmd_line_entry%field)
+  do i = 1, size(cmd_line_entry%field)
     if (.not.log%sparse) write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
     if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
-      .or.&
-      (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
-      .or.&
-      (cmd_line_entry%field(i)%subfield(1)%name.eq. "m" )  &
-      .or.&
-      (cmd_line_entry%field(i)%subfield(1)%name.eq. "pl" )  &
-      ) &
-      then
+        .or.&
+        (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
+        .or.&
+        (cmd_line_entry%field(i)%subfield(1)%name.eq. "m" )  &
+        .or.&
+        (cmd_line_entry%field(i)%subfield(1)%name.eq. "pl" )  &
+        ) &
+        then
       call parse_GMT_like_boundaries (cmd_line_entry%field(i))
     else if ( &
-      size(cmd_line_entry%field(i)%subfield).ge.3 &
-      .and. is_numeric(cmd_line_entry%field(i)%subfield(2)%name) &
-      .and. is_numeric(cmd_line_entry%field(i)%subfield(3)%name) &
-      ) then
+        size(cmd_line_entry%field(i)%subfield).ge.3 &
+        .and. is_numeric(cmd_line_entry%field(i)%subfield(2)%name) &
+        .and. is_numeric(cmd_line_entry%field(i)%subfield(3)%name) &
+        ) then
       call more_sites (1,start_index)
       site(start_index)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
       read (cmd_line_entry%field(i)%subfield(2)%name, * ) site(start_index)%lat
       if (abs(site(start_index)%lat).gt.90.) &
-        site(start_index)%lat = sign(90.,site(start_index)%lat) 
+          site(start_index)%lat = sign(90.,site(start_index)%lat) 
       read (cmd_line_entry%field(i)%subfield(3)%name,*) site(start_index)%lon
       if (site(start_index)%lon.ge.360.) &
-        site(start_index)%lon = mod(site(start_index)%lon,360.)
+          site(start_index)%lon = mod(site(start_index)%lon,360.)
       if (site(start_index)%lon.lt.-180.) &
-        site(start_index)%lon = mod(site(start_index)%lon-180,360.)+180
+          site(start_index)%lon = mod(site(start_index)%lon-180,360.)+180
       if (is_numeric(cmd_line_entry%field(i)%subfield(4)%name)) then
         read (cmd_line_entry%field(i)%subfield(4)%name, * ) &
-          site(start_index)%height
+            site(start_index)%height
       endif
     else if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
       write(log%unit, form%i3) 'reading from file:', &
-        cmd_line_entry%field(i)%subfield(1)%name
+          cmd_line_entry%field(i)%subfield(1)%name
       call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
-    ! this is shortcut for Józefosław -Sj
+      ! this is shortcut for Józefosław -Sj
     else if (cmd_line_entry%field(i)%subfield(1)%name.eq."j") then
       call more_sites (1,start_index)
       site(start_index)%name   = "joze_a"
@@ -112,6 +112,8 @@ subroutine parse_site(cmd_line_entry)
     else
       call print_warning ("site")
     endif
+   if (any(cmd_line_entry%field(i)%subfield%dataname.eq."H")) &
+       site_height_from_model=.true.
   enddo
 
 end subroutine
@@ -125,11 +127,11 @@ subroutine print_site_summary()
   if (size(site).ge.1) then
     write(log%unit, form%i2 ) "Processing:", size(site), "site(s)"
     if (size(site).le.15) then
-      write(log%unit, '(t6,6a10)') &
-        "Name", "lat [deg]", "lon [deg]", "H [m]" , "Hp [m]", "H* [m]"
+      write(log%unit, '(t6,3a10,3a10)') &
+          "Name", "lat [deg]", "lon [deg]", "H [m]" , "Hp [m]", "H* [m]"
       do j = 1,size(site)
         write(log%unit, '(t6,a10,3f10.4)', advance="no") &
-          site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
+            site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
         if (site(j)%hp%if) then 
           write(log%unit, "(f10.4)", advance="no") site(j)%hp%val
         else
@@ -213,11 +215,11 @@ subroutine parse_GMT_like_boundaries (field)
   endif
   if (text.eq."m" ) then
     limits = [ &
-      minval(model(1)%lon), &
-      maxval(model(1)%lon), &
-      minval(model(1)%lat), &
-      maxval(model(1)%lat) &
-      ]
+        minval(model(1)%lon), &
+        maxval(model(1)%lon), &
+        minval(model(1)%lat), &
+        maxval(model(1)%lat) &
+        ]
     if (size(field%subfield).eq.1) then
       call more_sites (size(model(1)%lon) * size(model(1)%lat), start_index)
 
@@ -288,7 +290,7 @@ subroutine read_site_file (file_name)
   type(site_info) :: aux
 
   open ( newunit = fileunit_site, file = file_name, &
-    iostat = io_status, status = "old", action="read" )
+      iostat = io_status, status = "old", action="read" )
 
   ! two loops, first count good lines and print rejected
   ! second allocate array of sites and read coordinates into it
@@ -315,10 +317,10 @@ subroutine read_site_file (file_name)
       endif
       !  ! check the values given
       if(    is_numeric(trim(dummy(2)))   &
-        .and.is_numeric(trim(dummy(3)))   &
-        .and.is_numeric(trim(dummy(4)))   &
-        .and.ntokens(line_of_file).ge.3 ) &
-        then
+          .and.is_numeric(trim(dummy(3)))   &
+          .and.is_numeric(trim(dummy(4)))   &
+          .and.ntokens(line_of_file).ge.3 ) &
+          then
         aux%name= trim(dummy(1))
         read( dummy(2),*) aux%lat
         read(dummy(3),*) aux%lon 
@@ -366,35 +368,41 @@ subroutine gather_site_model_info()
   use mod_data, only: get_value, model, get_variable
   integer :: i
 
+  if (site_height_from_model.and. ind%model%h.eq.0) then
+    call print_warning("site @H but not model @H was given", error=.true.)
+  endif
   do i = 1 , size(site)
     if (ind%model%hp.ne.0) then
       call get_variable( model(ind%model%hp))
       site(i)%hp%if=.true.
       call get_value (                        & 
-        model=model(ind%model%hp),            & 
-        lat=site(i)%lat,                      & 
-        lon=site(i)%lon,                      & 
-        val=site(i)%hp%val,                   & 
-        level=1,                              & 
-        method = info(1)%interpolation        & 
-        )
+          model=model(ind%model%hp),            & 
+          lat=site(i)%lat,                      & 
+          lon=site(i)%lon,                      & 
+          val=site(i)%hp%val,                   & 
+          level=1,                              & 
+          method = info(1)%interpolation        & 
+          )
     endif
     if(ind%model%h.ne.0) then
       site(i)%h%if=.true.
-      call get_variable( model(ind%model%h))
+      call get_variable(model(ind%model%h))
       call get_value (                       & 
-        model=model(ind%model%h),              & 
-        lat=site(i)%lat,                       & 
-        lon=site(i)%lon,                       & 
-        val=site(i)%h%val,                     & 
-        level=1,                               & 
-        method = info(1)%interpolation         & 
-        )
+          model=model(ind%model%h),              & 
+          lat=site(i)%lat,                       & 
+          lon=site(i)%lon,                       & 
+          val=site(i)%h%val,                     & 
+          level=1,                               & 
+          method = info(1)%interpolation         & 
+          )
     endif
   enddo
+  if (site_height_from_model) then
+    site%height=site%h%val
+  endif
   write(log%unit, form%separator)
   if(.not.log%sparse) then
-    call print_site_summary
+    call print_site_summary()
     write(log%unit, form%separator)
   endif
 end subroutine

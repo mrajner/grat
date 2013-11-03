@@ -2,7 +2,7 @@
 # for example: OBJS  = libgrat.a
 
 dfdsfd: grat
-	grat -Sr  -F NCEP@SP  -D2010121200  -M1D -U -wt:s
+	grat -Sr,j,e,o,pl:100@H  -F NCEP@SP\!, NCEP@HP\!, ETOPO @ H \!  -D2010121200  -M1D -U -wt -V
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)

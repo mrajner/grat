@@ -32,7 +32,7 @@ program value_check
   write(log%unit, form_separator) 
 
   ! for progress bar
-  if (output%unit.ne.output_unit) open (unit=output_unit, carriagecontrol='fortran')
+  if (output%unit.ne.output_unit.and..not.quiet) open (unit=output_unit, carriagecontrol='fortran')
 
   allocate (val (size(model)))
 
@@ -105,7 +105,7 @@ program value_check
         endif
       enddo
       write (output%unit , '(a8,2f15.4,20en15.4)') site(i)%name, site(i)%lat, site(i)%lon, val
-      if (output%unit.ne.output_unit) then 
+      if (output%unit.ne.output_unit.and..not.quiet) then 
         call cpu_time(cpu(2))
         call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
       endif
@@ -122,7 +122,7 @@ program value_check
   endif
 
   call cpu_time(cpu(2))
-  if (output%unit.ne.output_unit) then 
+  if (output%unit.ne.output_unit.and..not.quiet) then 
     call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
     close(output_unit) 
   endif
