@@ -1,5 +1,5 @@
 module mod_site
-  use mod_constants, only:dp
+  use mod_constants, only: dp
   use mod_printing
   use, intrinsic :: iso_fortran_env
 
@@ -36,13 +36,14 @@ subroutine parse_site(cmd_line_entry)
   endif
 
   do i = 1, size (cmd_line_entry%field)
-    write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
-
+    if (.not.log%sparse) write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
     if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
       .or.&
       (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
       .or.&
       (cmd_line_entry%field(i)%subfield(1)%name.eq. "m" )  &
+      .or.&
+      (cmd_line_entry%field(i)%subfield(1)%name.eq. "pl" )  &
       ) &
       then
       call parse_GMT_like_boundaries (cmd_line_entry%field(i))
@@ -149,9 +150,9 @@ end subroutine
 !> 
 ! =============================================================================
 subroutine parse_GMT_like_boundaries (field)
-  use mod_utilities, only : is_numeric
-  use mod_cmdline, only : field_info
-  use mod_data, only : model
+  use mod_utilities, only: is_numeric
+  use mod_cmdline, only: field_info
+  use mod_data, only: model
   type(field_info),intent(in) :: field
 
   real(dp) :: limits (4), resolution (2) 
@@ -166,13 +167,15 @@ subroutine parse_GMT_like_boundaries (field)
   do i=1,4
     indeks_slash=index(text,"/")
     if (indeks_slash.eq.0) indeks_slash=len(text)+1
-    if ( is_numeric (text(1:indeks_slash-1)) ) then
-      read ( text(1:indeks_slash-1), * )  limits(i)
+    if (is_numeric (text(1:indeks_slash-1))) then
+      read (text(1:indeks_slash-1), *)  limits(i)
     else
       if (text.eq."g" ) then
-        limits=[0., 359.9999, -90, 90. ]
-        exit
+        limits=[0., 359.9999, -90, 90.]
+      else if (text.eq."pl" ) then
+        limits=[14.0, 24.2, 48.7, 55.]
       endif
+      exit
     endif
     text=text(index(text,"/")+1:)
   enddo
@@ -217,7 +220,7 @@ subroutine parse_GMT_like_boundaries (field)
       ]
     if (size(field%subfield).eq.1) then
       call more_sites (size(model(1)%lon) * size(model(1)%lat), start_index)
-      
+
       do i =1, size(model(1)%lon)
         do ii =1, size(model(1)%lat)
           site(start_index -1 + (i-1) * size(model(1)%lat) + ii)%lon = model(1)%lon(i)
@@ -390,6 +393,9 @@ subroutine gather_site_model_info()
     endif
   enddo
   write(log%unit, form%separator)
-  call print_site_summary
+  if(.not.log%sparse) then
+    call print_site_summary
+    write(log%unit, form%separator)
+  endif
 end subroutine
 end module

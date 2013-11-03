@@ -64,15 +64,20 @@ module mod_cmdline
       inverted_barometer    = .true.  , &
       ocean_conserve_mass   = .false. , & 
       inverted_landsea_mask = .false. , & 
-      quiet = .false., &
-      warnings = .true.
-      ! logical :: dry_run = .false.  
+      quiet = .false.
 
       type transfer_sp_info
         logical :: if = .false.
         character(20) :: method="full"
       end type
       type(transfer_sp_info) transfer_sp
+
+      type warnings_info
+        logical :: if = .true., &
+          strict=.false., &
+          time=.false.
+      end type
+      type(warnings_info) warnings
 
       type model_index
         integer(2) :: sp, t, rsp, ewt, h, ls, hp

@@ -81,7 +81,6 @@ program grat
       accepted_switches="VSBLGPqoFIDLvhRMOAHUw", &
       cmdlineargs=.true. &
       )
-    write(log%unit, form%separator)
 
     start = 0
 

@@ -2,8 +2,7 @@
 # for example: OBJS  = libgrat.a
 
 dfdsfd: grat
-	grat -Sj -G @C -F NCEP@SP  -D2010 -o /home/mrajner/src/grat/src/tmp@xxx.out   -V 
-
+	grat -Sr  -F NCEP@SP  -D2010121200  -M1D -U -wt:s
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)
