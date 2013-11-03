@@ -33,8 +33,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-V')
     if (.not.log%sparse) write(log%unit, form%i3) 'verbose mode' 
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
-      if (.not.log%sparse) write(log%unit, form_62) 'the log file was set'
-      if (.not.log%sparse) write(log%unit, form_62) trim(log%name)
+      if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
     endif
   case ('-S','-R')
     call parse_site(cmd_line_entry)
@@ -86,7 +85,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
       output%noclobber=.true.
     endif
-    if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', basename(trim(output%name))
+    if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
     if (file_exists(output%name).and.output%noclobber) then
       if (.not.log%sparse) then
         call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
