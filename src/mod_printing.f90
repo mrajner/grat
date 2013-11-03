@@ -36,6 +36,7 @@ module mod_printing
     character (255) :: name
     logical :: if, header, tee, & 
       noclobber = .false.,      & 
+      full      = .false.,      & 
       sparse    = .false.
   end type
   type(output_info) :: log, output 
@@ -46,6 +47,7 @@ contains
 subroutine print_warning (warn, unit, more, error, program_calling)
   use, intrinsic:: iso_fortran_env
   use :: mod_cmdline, only: warnings
+  integer, dimension(8):: execution_date  
   character (len=*)  :: warn
   character (len=*), optional :: more, program_calling
   integer, optional :: unit
@@ -81,10 +83,17 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     case("method")
       write(def_unit, form%i1) "-M no method was set"
     case default 
-      write(def_unit, form%i1) warn
+      write(def_unit, form%i0) warn
     end select
     if (present(more)) write(def_unit, form%i2) more
-    if (present(error) .and. error) call exit(1)
+    if (present(error).and.error) then
+      call date_and_time (values = execution_date)
+      write(def_unit, & 
+          '(i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
+          execution_date (1:3),execution_date(5:7),execution_date(4)/60
+
+      call exit(1)
+    endif
   endif
 end subroutine
 
@@ -114,4 +123,17 @@ subroutine progress(j, time)
     endif
     return
 end subroutine progress
+
+! =============================================================================
+! =============================================================================
+function basename (file)
+    character(200) :: basename
+    character(*) :: file
+
+    if (log%full) then
+      basename=file
+    else
+      basename=file(index(file,'/', back=.true.)+1:)
+    endif
+end function
 end module mod_printing

@@ -22,7 +22,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
 
-  write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(cmd_line_entry%full), "}"
+  write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
       then
     call print_warning ("not accepted switch", error=.true.)
@@ -33,7 +33,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-V')
     if (.not.log%sparse) write(log%unit, form%i3) 'verbose mode' 
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
-      if (.not.log%sparse) write(log%unit, form_62) 'the log file was set:', log%name
+      if (.not.log%sparse) write(log%unit, form_62) 'the log file was set'
+      if (.not.log%sparse) write(log%unit, form_62) trim(log%name)
     endif
   case ('-S','-R')
     call parse_site(cmd_line_entry)
@@ -76,16 +77,21 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
+    if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
+      output%name=trim(cmd_line_entry%field(1)%subfield(1)%name)//"@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
+    endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
       output%tee=.true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
       output%noclobber=.true.
     endif
-    if (.not.log%sparse) write(log%unit, form_62), 'output file was set: ', trim(output%name)
+    if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', basename(trim(output%name))
     if (file_exists(output%name).and.output%noclobber) then
-      if (.not.log%sparse) write(error_unit,*) "I will not overwrite with -o : nc (noclobber) ... sorry"
-      call exit(1)
+      if (.not.log%sparse) then
+        call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
+            error=.true.)
+      endif
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit, file = output%name, action = "write" )
@@ -187,11 +193,17 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
           log%noclobber = .true.
         endif
+        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."full")) then
+          log%full = .true.
+        endif
         if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
           log%if = .true.
-          log%name = trim(cmd_line(i)%field(1)%subfield(1)%name)
+          log%name=cmd_line(i)%field(1)%subfield(1)%name
+          if(cmd_line(i)%field(1)%subfield(1)%dataname.ne."") then
+            log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
+          endif
           if (file_exists(log%name).and.log%noclobber) then
-            write(error_unit,*) "I will not overwrite with -V : nc (noclobber) ... sorry"
+            call print_warning ("I will not overwrite with -V : nc (noclobber) ... sorry", error=.true.)
             call exit(1)
           endif
           open (newunit=log%unit, file = log%name, action='write')
@@ -318,8 +330,7 @@ subroutine parse_moreverbose (cmd_line_entry)
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
           if (file_exists(moreverbose(i)%name)) then
-            write(error_unit,*) "I will not overwrite with -L : nc (noclobber) ... sorry"
-            stop
+            call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
           endif
         endif
         open(                            & 

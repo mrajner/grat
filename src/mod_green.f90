@@ -51,7 +51,7 @@ subroutine parse_green (cmd_line_entry)
 
   allocate (green (size(cmd_line_entry%field)))
   do i = 1, size(cmd_line_entry%field)
-    write(log%unit, form%i2) trim(cmd_line_entry%field(i)%full)
+    write(log%unit, form%i2) trim(basename(trim(cmd_line_entry%field(i)%full)))
     green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
     if (i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
       green(i)%name = green(i-1)%name
@@ -191,7 +191,7 @@ subroutine read_green (green, print)
   endif
 
   if (.not.present(print)) then
-    write(log%unit, form%i3) trim(green%name), trim(green%dataname), &
+    write(log%unit, form%i3) trim(basename(trim(green%name))), trim(green%dataname), &
         "columns:",green%column,&
         "lines:", size(green%distance)
   endif

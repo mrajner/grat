@@ -2,7 +2,7 @@
 # for example: OBJS  = libgrat.a
 
 dfdsfd: grat
-	time grat -Sj -G @C -F NCEP@SP  -D2010
+	grat -Sj -G @C -F NCEP@SP  -D2010 -o /home/mrajner/src/grat/src/tmp@xxx.out   -V 
 
 
 SSSS= $(SP)
@@ -81,19 +81,19 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 ifdef DEP
-	mod_utilities.o: mod_constants.o
-	mod_atmosphere.o: mod_printing.o mod_utilities.o
-	mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
-	mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
-	mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-	mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-	mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
-	mod_date.o: mod_data.o
-	mod_mjd.o: mod_constants.o
-	mod_polygon.o:mod_printing.o mod_cmdline.o
-	mod_printing.o: mod_cmdline.o
-	mod_cmdline.o: mod_utilities.o
-	mod_normalization.o: mod_constants.o mod_utilities.o
+mod_utilities.o: mod_constants.o
+mod_atmosphere.o: mod_printing.o mod_utilities.o
+mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
+mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
+mod_date.o: mod_data.o
+mod_mjd.o: mod_constants.o
+mod_polygon.o:mod_printing.o mod_cmdline.o
+mod_printing.o: mod_cmdline.o
+mod_cmdline.o: mod_utilities.o
+mod_normalization.o: mod_constants.o mod_utilities.o
 endif
 
 
@@ -164,10 +164,11 @@ install: all $(PROGS) installlib
 # Make sure that target path is in your system serch $PATH
 $(LINKS_DIR)/%: $(PROGS_DIR)/%
 	ln -sf $(realpath $<) $@
-	$(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
+
+$(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
 	sudo cp $(realpath $<) $@
 
-install-allusers: $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
+install-httpd: $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
 
 # Change this path according to your system settings
 # This could require root privilages 
