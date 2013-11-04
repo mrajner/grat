@@ -1,2 +1,3 @@
 get_value etopo for -90 is nan??
 force topo in grat
+value_check -F ERA@SP!, ERA@LS -Sj -V -D2011
