@@ -91,7 +91,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     case default 
       write(def_unit, form%i0, advance="no") warn
     end select
-    if (present(more)) write(def_unit, form%i0) more
+    if (present(more)) write(def_unit, form%i0, advance="no") more
     if (present(error).and.error.or.warnings%strict) then
       if ((.not. warn.eq. "args").and. warnings%time) then
         call date_and_time (values=execution_date)

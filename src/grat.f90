@@ -94,12 +94,12 @@ program grat
       if(output%header) write (output%unit, '(a2)', advance = "no" ) "i"
     endif
     if(output%header) then
-      write (output%unit, '(a8,30a15)', advance ="no"  ) "name", "lat", "lon", "h"
+      write (output%unit, '(a8,3a10)', advance ="no"  ) "name", "lat", "lon", "h"
     endif
 
     if(output%header) then
       if (method.eq."1D") then
-        write (output%unit,'(a15)',advance='no'), "admitance"
+        write (output%unit,'(a14)',advance='no'), "admitance"
         elseif (method.eq."2D") then
         do i = 1, size(green)
           write (output%unit,'(a15)',advance='no'), trim(green(i)%dataname)
@@ -137,9 +137,9 @@ program grat
                 ) then
                 call model_aliases(model(i), year= date(idate)%date(1))
               endif
-              if (size(date).eq.0) then
+              if (size(date).eq.0.and.model(i)%exist) then
                 call get_variable (model(i))
-              else
+              elseif (model(i)%exist) then
                 call get_variable (model(i), date = date(idate)%date)
               endif
             endselect
@@ -175,7 +175,7 @@ program grat
             write(output%unit, '(f12.3,x,i4.4,5(i2.2))', advance="no") &
               date(idate)%mjd, date(idate)%date
           endif
-          write (output%unit, '(a8,3f15.4,10en15.5)' ), &
+          write (output%unit, '(a8,2f10.4,f10.3,1en14.4)' ), &
             site(isite)%name, &
             site(isite)%lat,  &
             site(isite)%lon,  &
@@ -184,7 +184,6 @@ program grat
             site(isite), &
             date=date(idate)%date &
             )
-
         else if (method.eq."2D") then 
           ! perform convolution
           if (idate.gt.0) then

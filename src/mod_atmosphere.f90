@@ -58,7 +58,8 @@ function standard_pressure (  &
     method,                   & 
     dz,                       & 
     fels_type,                & 
-    use_standard_temperature)
+    use_standard_temperature, &
+    nan_as_zero)
 
   use mod_constants, only: dp, earth, atmosphere, R_air
   use iso_fortran_env
@@ -70,7 +71,7 @@ function standard_pressure (  &
   real(dp) :: standard_pressure
   real(dp) :: sfc_height, sfc_temperature, sfc_gravity, alpha, sfc_pressure
   real(dp) :: z_, dz_
-  logical, intent(in), optional :: use_standard_temperature
+  logical, intent(in), optional :: use_standard_temperature, nan_as_zero
 
   sfc_temperature = atmosphere%temperature%standard
   sfc_pressure    = atmosphere%pressure%standard
@@ -130,7 +131,9 @@ function standard_pressure (  &
   else
     call print_warning("standard_pressure: set method explicitly",error=.true.)
   endif
-  if (isnan(standard_pressure)) standard_pressure=0
+  if (present(nan_as_zero).and.nan_as_zero) then
+    if (isnan(standard_pressure)) standard_pressure=0
+  endif
   !  if (sfc_height.gt.height) standard_pressure=-standard_pressure
 end function
 

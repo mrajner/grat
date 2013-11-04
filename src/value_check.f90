@@ -22,7 +22,7 @@ program value_check
 
   call intro ( &
     program_calling   = "value_check",   &
-    accepted_switches = "VFoShvIDLPRqw", &
+    accepted_switches = "VFoShvIDLPRqwH",&
     version           = "beta",          &
     cmdlineargs       = .true.           &
     )
@@ -47,7 +47,7 @@ program value_check
 
   ! print header
   if (output%header.and.size(site).gt.0) then
-    write (output%unit, '(a8,30a15)', advance ="no"  ) "name", "lat", "lon"
+    write (output%unit, '(a8,2a10)', advance ="no"  ) "name", "lat", "lon"
   endif
   do i = 1 ,size(model)
     if ((model(i)%if .or. model(i)%if_constant_value) .and. output%header ) then
@@ -56,7 +56,7 @@ program value_check
   enddo
   if(output%header) write(output%unit, *)
 
-  do j = start , size (date)
+  do j = start, size(date)
     do i = 1 , size(model)
       if (model(i)%if) then
         if ( &
@@ -66,9 +66,9 @@ program value_check
             ) then
           call model_aliases(model(i), year= date(j)%date(1))
         endif
-        if (allocated(date)) then
+        if (allocated(date).and.model(i)%exist) then
           call get_variable (model(i), date = date(j)%date)
-        else
+        elseif (model(i)%exist) then
           call get_variable (model(i))
         endif
       endif
@@ -104,7 +104,7 @@ program value_check
           if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
         endif
       enddo
-      write (output%unit , '(a8,2f15.4,20en15.4)') site(i)%name, site(i)%lat, site(i)%lon, val
+      write (output%unit , '(a8,2f10.4,20en15.4)') site(i)%name, site(i)%lat, site(i)%lon, val
       if (output%unit.ne.output_unit.and..not.quiet) then 
         call cpu_time(cpu(2))
         call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))

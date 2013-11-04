@@ -1,8 +1,16 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+f:grat
+	bash /var/www/html/queries/20131104-mrajner@wp-O2jJNJ.sh
+
 dfdsfd: grat
-	grat -Sr,j,e,o,pl:100@H  -F NCEP@SP\!, NCEP@HP\!, ETOPO @ H \!  -D2010121200  -M1D -U -wt -V
+	  @for y in {2012..2015}; do \
+		  grat -Sj \
+		  -F ERA@SP!, NCEP@HP\!, ETOPO@H\! -U -A1 \
+		  -D$${y}1212 \
+		  -M1D   -w ; \
+		  done
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)
@@ -86,7 +94,7 @@ mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o
+mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
 mod_date.o: mod_data.o
 mod_mjd.o: mod_constants.o
 mod_polygon.o:mod_printing.o mod_cmdline.o

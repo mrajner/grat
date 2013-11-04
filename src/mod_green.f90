@@ -691,10 +691,11 @@ subroutine convolve(site, date)
   enddo
 
   ! results to output
+  stop
   if (present(date)) then
     write (output%unit, '(f12.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
   endif
-  write (output%unit, '(a8,3f15.4,10en15.5)' ), site%name, site%lat, site%lon, site%height, result
+  write (output%unit, '(a8,3f10.4,10en13.4)' ), site%name, site%lat, site%lon, site%height, result
 
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then

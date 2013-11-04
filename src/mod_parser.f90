@@ -71,7 +71,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     method = cmd_line_entry%field(1)%subfield(1)%name
     if (.not.log%sparse) write(log%unit, form_62), 'method was set: ', method
     if (.not.any(method.eq.(["1D", "2D", "3D"]))) then
-      call print_warning("method", more=method, error=.true.)
+      call print_warning("method not found", more=method, error=.true.)
     endif
   case ('-o')
     output%if=.true.
@@ -169,25 +169,27 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     call exit
   endif
   if (any(cmd_line%switch.eq.'-w') &
-    .and.if_accepted_switch("-w",accepted_switches)) &
-    then
+      .and.if_accepted_switch("-w",accepted_switches)) &
+      then
     do i=1,size(cmd_line)
-    if ( &
-      any(cmd_line(i)%field(1)%subfield(1:)%name.eq."n") &
-      ) then
-      warnings%if=.false.
-    endif
-    if ( &
-      any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &
-      ) then
-      warnings%strict=.true.
-    endif
-    if ( &
-      any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
-      ) then
-      warnings%time=.true.
-    endif
-  enddo
+      if (cmd_line(i).switch.eq."-w") then
+        if ( &
+            any(cmd_line(i)%field(1)%subfield(1:)%name.eq."n") &
+            ) then
+          warnings%if=.false.
+        endif
+        if ( &
+            any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &
+            ) then
+          warnings%strict=.true.
+        endif
+        if ( &
+            any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
+            ) then
+          warnings%time=.true.
+        endif
+      endif
+    enddo
   endif
   if (.not.any(cmd_line%switch.eq.'-I')) then
     call parse_info()
@@ -197,10 +199,10 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
         if ( &
-          any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
-          .or. &
-          any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
-          ) then
+            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
+            .or. &
+            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
+            ) then
           log%sparse = .true.
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
@@ -235,9 +237,9 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   if (.not. log%sparse) call print_version(program_calling=program_calling, version=version)
   call date_and_time (values = execution_date)
   write(log%unit, & 
-    '("Program started:", & 
-    1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
-    execution_date (1:3),execution_date(5:7),execution_date(4)/60
+      '("Program started:", & 
+      1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
+      execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
@@ -256,42 +258,42 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine check_arguments (program_calling)
-  use mod_date, only: date
-  use mod_data, only: model
-  use mod_cmdline, only: cmd_line, method, quiet, ind, transfer_sp
-  use mod_site, only: gather_site_model_info
-  character(len=*), intent(in) :: program_calling
-  integer :: i
+    use mod_date, only: date
+    use mod_data, only: model
+    use mod_cmdline, only: cmd_line, method, quiet, ind, transfer_sp
+    use mod_site, only: gather_site_model_info
+    character(len=*), intent(in) :: program_calling
+    integer :: i
 
-  if (program_calling.eq."grat") then
-    if (.not.any(cmd_line%switch.eq.'-M')) then
-      if (any(cmd_line%switch.eq.'-G')) then
-        method="2D"
-      else
-        method="1D"
+    if (program_calling.eq."grat") then
+      if (.not.any(cmd_line%switch.eq.'-M')) then
+        if (any(cmd_line%switch.eq.'-G')) then
+          method="2D"
+        else
+          method="1D"
+        endif
+        if (.not.quiet) then 
+          call print_warning("method")
+        endif
       endif
-      if (.not.quiet) then 
-        call print_warning("method")
-      endif
-    endif
-    if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
-      call print_warning("green_missing", error=.true.)
-    endif
-  endif
-  do i=1, size(model)
-    if (model(i)%autoload) then
-      if (.not. allocated(date)) then
-        call print_warning("alias_without_date", error=.true.)
+      if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
+        call print_warning("green_missing", error=.true.)
       endif
     endif
-  enddo
-  call gather_site_model_info()
-  if (ind%model%hp.ne.0.and. .not.transfer_sp%if) then
-    call print_warning ("maybe use -U")
-  endif
-  if (transfer_sp%if .and. ind%model%hp.eq.0) then
-    call print_warning ("-U but no @HP found")
-  endif
+    do i=1, size(model)
+      if (model(i)%autoload) then
+        if (.not. allocated(date)) then
+          call print_warning("alias_without_date", error=.true.)
+        endif
+      endif
+    enddo
+    call gather_site_model_info()
+    if (ind%model%hp.ne.0.and. .not.transfer_sp%if) then
+      call print_warning ("maybe use -U")
+    endif
+    if (transfer_sp%if .and. ind%model%hp.eq.0) then
+      call print_warning ("-U but no @HP found")
+    endif
 end subroutine
 
 ! =============================================================================
@@ -299,23 +301,23 @@ end subroutine
 !! is not
 ! =============================================================================
 logical function if_accepted_switch (switch, accepted_switches)
-  character(len= *), intent (in) :: switch 
-  character(len= *), intent (in), optional :: accepted_switches
-  integer :: i
+    character(len= *), intent (in) :: switch 
+    character(len= *), intent (in), optional :: accepted_switches
+    integer :: i
 
-  if (.not.present(accepted_switches)) then
-    if_accepted_switch=.true.
-    return
-  endif
-  ! default
-  if_accepted_switch=.false.
-  ! loop trough accepted switches
-  do i =1, len(accepted_switches)
-    if (switch(2:2).eq.accepted_switches(i:i)) then
+    if (.not.present(accepted_switches)) then
       if_accepted_switch=.true.
       return
     endif
-  enddo
+    ! default
+    if_accepted_switch=.false.
+    ! loop trough accepted switches
+    do i =1, len(accepted_switches)
+      if (switch(2:2).eq.accepted_switches(i:i)) then
+        if_accepted_switch=.true.
+        return
+      endif
+    enddo
 end function
 
 ! =============================================================================
@@ -325,42 +327,42 @@ end function
 !! \date 2013.05.24
 ! =============================================================================
 subroutine parse_moreverbose (cmd_line_entry)
-  use mod_cmdline
-  use mod_utilities, only: file_exists
-  type (cmd_line_arg)  :: cmd_line_entry
-  integer :: i
+    use mod_cmdline
+    use mod_utilities, only: file_exists
+    type (cmd_line_arg)  :: cmd_line_entry
+    integer :: i
 
-  if(allocated(moreverbose)) then
-    call print_warning ("repeated")
-    return
-  endif
-  allocate(moreverbose(size(cmd_line_entry%field)))
-  do i = 1, size(cmd_line_entry%field)
-    moreverbose(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
-    moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
-    if (dataname(moreverbose(i)%dataname).ne."unknown") then 
-      if (moreverbose(i)%name.ne."") then
-        if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
-          moreverbose(i)%noclobber=.true.
-          if (file_exists(moreverbose(i)%name)) then
-            call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
+    if(allocated(moreverbose)) then
+      call print_warning ("repeated")
+      return
+    endif
+    allocate(moreverbose(size(cmd_line_entry%field)))
+    do i = 1, size(cmd_line_entry%field)
+      moreverbose(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
+      moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
+      if (dataname(moreverbose(i)%dataname).ne."unknown") then 
+        if (moreverbose(i)%name.ne."") then
+          if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
+            moreverbose(i)%noclobber=.true.
+            if (file_exists(moreverbose(i)%name)) then
+              call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
+            endif
           endif
+          open(                            & 
+              newunit = moreverbose(i)%unit, & 
+              file    = moreverbose(i)%name, & 
+              action  = 'write'              & 
+              )
+        else
+          moreverbose(i)%unit = output_unit
         endif
-        open(                            & 
-          newunit = moreverbose(i)%unit, & 
-          file    = moreverbose(i)%name, & 
-          action  = 'write'              & 
-          )
-      else
-        moreverbose(i)%unit = output_unit
       endif
-    endif
-    write (log%unit, form_62), trim(moreverbose(i)%name), &
-      "<-", dataname(moreverbose(i)%dataname)
-    if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
-      moreverbose(i)%sparse=.true.
-    endif
-  enddo
+      write (log%unit, form_62), trim(moreverbose(i)%name), &
+          "<-", dataname(moreverbose(i)%dataname)
+      if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
+        moreverbose(i)%sparse=.true.
+      endif
+    enddo
 end subroutine
 
 
@@ -371,84 +373,84 @@ end subroutine
 !! \date 2013-05-17
 ! =============================================================================
 subroutine parse_info (cmd_line_entry)
-  use mod_utilities, only:is_numeric
-  use mod_cmdline
-  type (cmd_line_arg), intent(in),optional :: cmd_line_entry
-  integer :: i,j
+    use mod_utilities, only:is_numeric
+    use mod_cmdline
+    type (cmd_line_arg), intent(in),optional :: cmd_line_entry
+    integer :: i,j
 
-  if(allocated(info)) then
-    call print_warning ("repeated")
-    return
-  endif
+    if(allocated(info)) then
+      call print_warning ("repeated")
+      return
+    endif
 
-  if (present(cmd_line_entry)) then
+    if (present(cmd_line_entry)) then
 
-    allocate (info(size(cmd_line_entry%field)))
-    do i = 1, size(cmd_line_entry%field)
-      write(log%unit, form%i2), "Range:", i
-      call info_defaults(info(i))
-      do j = 1, size(cmd_line_entry%field(i)%subfield)
-        if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
-          select case (cmd_line_entry%field(i)%subfield(j)%dataname)
-          case ("DB")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
-          case ("DE")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
-          case ("AB")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
-          case ("AE")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
-          case ("DS")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
-          case ("DD")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
-          case ("AD")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
-          case ("AS")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
-          endselect
-        else 
-          select case (cmd_line_entry%field(i)%subfield(j)%dataname)
-          case ("I")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
-          endselect
-        end if
+      allocate (info(size(cmd_line_entry%field)))
+      do i = 1, size(cmd_line_entry%field)
+        write(log%unit, form%i2), "Range:", i
+        call info_defaults(info(i))
+        do j = 1, size(cmd_line_entry%field(i)%subfield)
+          if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
+            select case (cmd_line_entry%field(i)%subfield(j)%dataname)
+            case ("DB")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
+            case ("DE")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
+            case ("AB")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
+            case ("AE")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
+            case ("DS")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
+            case ("DD")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
+            case ("AD")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
+            case ("AS")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
+            endselect
+          else 
+            select case (cmd_line_entry%field(i)%subfield(j)%dataname)
+            case ("I")
+              read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
+            endselect
+          end if
+        enddo
+
+        if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
+        write(log%unit, &
+            "("//form%t3//" &
+            'DB:',f7.2, & 
+            '|DE:',f8.3, &
+            '|I:',a, &
+            '|DD:',i2, &
+            '|DS:',f6.2, &
+            )"), &
+            info(i)%distance%start, info(i)%distance%stop, &
+            info(i)%interpolation, info(i)%distance%denser, &
+            info(i)%distance%step
       enddo
-
-      if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
-      write(log%unit, &
-        "("//form%t3//" &
-        'DB:',f7.2, & 
-        '|DE:',f8.3, &
-        '|I:',a, &
-        '|DD:',i2, &
-        '|DS:',f6.2, &
-        )"), &
-        info(i)%distance%start, info(i)%distance%stop, &
-        info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step
-    enddo
-  else
-    allocate(info(1))
-    call info_defaults(info(1))
-  endif
+    else
+      allocate(info(1))
+      call info_defaults(info(1))
+    endif
 end subroutine
 
 ! =============================================================================
 ! =============================================================================
 subroutine info_defaults(info)
-  use mod_cmdline, only: info_info
-  type(info_info),intent(inout) :: info
+    use mod_cmdline, only: info_info
+    type(info_info),intent(inout) :: info
 
-  info%interpolation="n"
-  info%distance%start=0.
-  info%distance%stop=180.
-  info%azimuth%start=0.
-  info%azimuth%stop=360.
-  info%distance%denser=1
-  info%distance%step=0
-  info%azimuth%step=0
-  info%azimuth%denser=1
+    info%interpolation="n"
+    info%distance%start=0.
+    info%distance%stop=180.
+    info%azimuth%start=0.
+    info%azimuth%stop=360.
+    info%distance%denser=1
+    info%distance%step=0
+    info%azimuth%step=0
+    info%azimuth%denser=1
 
 end subroutine
 
@@ -459,93 +461,93 @@ end subroutine
 !! \date 2013-03-06
 ! =============================================================================
 subroutine print_version (program_calling, version)
-  character(*) :: program_calling 
-  character(*), optional :: version
+    character(*) :: program_calling 
+    character(*), optional :: version
 
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), trim(program_calling)
-  write(log%unit, form_inheader ), version
-  write(log%unit, form_inheader ), "compiled on "//__DATE__
-  write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
-  write(log%unit, form_inheader ), 'Warsaw University of Technology'
-  write(log%unit, form_inheader ), 'License: GPL v3 or later'
-  write(log%unit, form_header )
+    write(log%unit, form_header )
+    write(log%unit, form_inheader ), trim(program_calling)
+    write(log%unit, form_inheader ), version
+    write(log%unit, form_inheader ), "compiled on "//__DATE__
+    write(log%unit, form_inheader_n ), &
+        "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+    write(log%unit, form_header )
+    write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
+    write(log%unit, form_inheader ), 'Warsaw University of Technology'
+    write(log%unit, form_inheader ), 'License: GPL v3 or later'
+    write(log%unit, form_header )
 end subroutine
 
 !! =============================================================================
 !! =============================================================================
 subroutine print_help (program_calling, accepted_switches)
-  character(*), intent(in) :: program_calling
-  character(*), intent(in),optional :: accepted_switches
-  integer :: help_unit, io_stat
-  character(500)::line
-  character(255)::syntax
-  logical:: if_print_line = .false., if_optional=.true.
+    character(*), intent(in) :: program_calling
+    character(*), intent(in),optional :: accepted_switches
+    integer :: help_unit, io_stat
+    character(500)::line
+    character(255)::syntax
+    logical:: if_print_line = .false., if_optional=.true.
 
-  if_print_line=.false.
+    if_print_line=.false.
 
-  ! change this path according to your settings
-  open(newunit=help_unit, file="/home/mrajner/src/grat/dat/help.hlp", action="read",status="old")
+    ! change this path according to your settings
+    open(newunit=help_unit, file="/home/mrajner/src/grat/dat/help.hlp", action="read",status="old")
 
-  write (log%unit, "(a)", advance="no" ) program_calling
-  ! first loop - print only syntax with squre brackets if parameter is optional
-  do 
-    read (help_unit, '(a)', iostat=io_stat) line
-    if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
-      if (if_optional) write(log%unit, '(a)', advance="no") " ["
-      if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
-      if (if_optional) write(log%unit, '(a)', advance="no") "]"
-    endif
-    if (io_stat==iostat_end) then
-      write(log%unit, *) " " 
-      if_print_line = .false.
-      exit
-    endif
-    if(line(1:1)=="-") then
-      if(if_accepted_switch (line(1:2),accepted_switches )) then
-        if_print_line = .true.
-      else
-        if(line(1:1)=="-") if_print_line=.false.
+    write (log%unit, "(a)", advance="no" ) program_calling
+    ! first loop - print only syntax with squre brackets if parameter is optional
+    do 
+      read (help_unit, '(a)', iostat=io_stat) line
+      if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
+        if (if_optional) write(log%unit, '(a)', advance="no") " ["
+        if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
+        if (if_optional) write(log%unit, '(a)', advance="no") "]"
       endif
-    endif
-
-    if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
-      if_optional=.true.
-    else if (line(5:13) == "mandatory") then
-      if_optional=.false.
-    endif
-    if (line(2:2)=="s") then
-      syntax = trim(adjustl(line(3:)))
-    endif
-  enddo
-  rewind(help_unit)
-
-  write(log%unit, form_60), 'Summary of available options for program '//program_calling
-  ! second loop - print informations
-  do 
-    read (help_unit, '(a)', iostat=io_stat) line
-    if (io_stat==iostat_end) exit
-
-    if(line(1:1)=="-") then
-      !todo
-      if(if_accepted_switch (line(1:2),accepted_switches )) then
-        if_print_line = .true.
-        write (log%unit, form_61 ) trim(line)
-      else
-        if(line(1:1)=="-") if_print_line=.false.
+      if (io_stat==iostat_end) then
+        write(log%unit, *) " " 
+        if_print_line = .false.
+        exit
       endif
-    else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
-      if (if_print_line) then
-        write (log%unit, form_61 ) "  "//trim(line(3:))
+      if(line(1:1)=="-") then
+        if(if_accepted_switch (line(1:2),accepted_switches )) then
+          if_print_line = .true.
+        else
+          if(line(1:1)=="-") if_print_line=.false.
+        endif
       endif
-    else if (line(2:2)=="") then
-      if (if_print_line) write (log%unit, form_61 ) trim(line)
-    endif
-  enddo
-  close(help_unit)
+
+      if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
+        if_optional=.true.
+      else if (line(5:13) == "mandatory") then
+        if_optional=.false.
+      endif
+      if (line(2:2)=="s") then
+        syntax = trim(adjustl(line(3:)))
+      endif
+    enddo
+    rewind(help_unit)
+
+    write(log%unit, form_60), 'Summary of available options for program '//program_calling
+    ! second loop - print informations
+    do 
+      read (help_unit, '(a)', iostat=io_stat) line
+      if (io_stat==iostat_end) exit
+
+      if(line(1:1)=="-") then
+        !todo
+        if(if_accepted_switch (line(1:2),accepted_switches )) then
+          if_print_line = .true.
+          write (log%unit, form_61 ) trim(line)
+        else
+          if(line(1:1)=="-") if_print_line=.false.
+        endif
+      else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
+        if (if_print_line) then
+          write (log%unit, form_61 ) "  "//trim(line(3:))
+        endif
+      else if (line(2:2)=="") then
+        if (if_print_line) write (log%unit, form_61 ) trim(line)
+      endif
+    enddo
+    close(help_unit)
 end subroutine
 
 ! =============================================================================
@@ -556,21 +558,21 @@ end subroutine
 ! =============================================================================
 ! todo split to appropriate modules and call
 function dataname(abbreviation)
-  character(len=40) :: dataname
-  character(len=2) :: abbreviation
+    character(len=40) :: dataname
+    character(len=2) :: abbreviation
 
-  dataname="unknown"
-  if (abbreviation.eq."n")  dataname = "nearest"
-  if (abbreviation.eq."l")  dataname = "bilinear"
-  if (abbreviation.eq."g")  dataname = "green function used"
-  if (abbreviation.eq."p")  dataname = "points"
-  if (abbreviation.eq."r")  dataname = "results"
-  if (abbreviation.eq."a")  dataname = "auxiliary"
-  if (abbreviation.eq."d")  dataname = "dates"
-  if (abbreviation.eq."s")  dataname = "summary"
-  if (abbreviation.eq."o")  dataname = "ocean conserve mass"
-  if (abbreviation.eq."t")  dataname = "total mass"
-  if (abbreviation.eq."b")  dataname = "progress bar"
+    dataname="unknown"
+    if (abbreviation.eq."n")  dataname = "nearest"
+    if (abbreviation.eq."l")  dataname = "bilinear"
+    if (abbreviation.eq."g")  dataname = "green function used"
+    if (abbreviation.eq."p")  dataname = "points"
+    if (abbreviation.eq."r")  dataname = "results"
+    if (abbreviation.eq."a")  dataname = "auxiliary"
+    if (abbreviation.eq."d")  dataname = "dates"
+    if (abbreviation.eq."s")  dataname = "summary"
+    if (abbreviation.eq."o")  dataname = "ocean conserve mass"
+    if (abbreviation.eq."t")  dataname = "total mass"
+    if (abbreviation.eq."b")  dataname = "progress bar"
 end function
 
 
@@ -579,88 +581,88 @@ end function
 !! functions, polygon etc.
 ! =============================================================================
 subroutine get_index()
-  use mod_polygon, only: polygon
-  use mod_data,    only: model
-  use mod_green
-  use mod_cmdline
+    use mod_polygon, only: polygon
+    use mod_data,    only: model
+    use mod_green
+    use mod_cmdline
 
-  integer :: i
+    integer :: i
 
-  do i = 1, size(model)
-    select case (model(i)%dataname)
-    case ("SP")
-      ind%model%sp = i
-    case ("EWT")
-      ind%model%ewt = i
-    case ("T")
-      ind%model%t = i
-    case ("RSP")
-      ind%model%rsp = i
-    case ("LS")
-      ind%model%ls = i
-    case ("H")
-      ind%model%h = i
-    case ("HP")
-      ind%model%hp = i
-    endselect
-  enddo
-  do i = 1, size(moreverbose)
-    select case (moreverbose(i)%dataname)
-    case ("p")
-      ind%moreverbose%p = i
-    case ("g")
-      ind%moreverbose%g = i
-    case ("a")
-      ind%moreverbose%a = i
-    case ("d")
-      ind%moreverbose%d = i
-    case ("r")
-      ind%moreverbose%r = i
-    case ("s")
-      ind%moreverbose%s = i
-    case ("o")
-      ind%moreverbose%o = i
-    case ("t")
-      ind%moreverbose%t = i
-    case ("b")
-      ind%moreverbose%b = i
-    case ("n")
-      ind%moreverbose%n = i
-    end select
-  enddo
-  do i = 1, size(green)
-    select case (green(i)%dataname)
-    case ("GE")
-      ind%green%ge = i 
-    case ("GEGdt")
-      ind%green%gegdt = i 
-    case ("GN")
-      ind%green%gn = i
-    case ("C")
-      ind%green%c = i
-    case ("GR")
-      ind%green%gr = i
-    case ("GHN")
-      ind%green%ghn = i
-    case ("GHE")
-      ind%green%ghe = i
-    case ("GG")
-      ind%green%gg = i
-    case ("GNdt")
-      ind%green%gndt = i
-    case ("GNdz")
-      ind%green%gndz = i
-    endselect
-  enddo
-  do i = 1, size(polygon)
-    select case (polygon(i)%dataname)
-    case ("E","")
-      ! assume polygon is for elastic part
-      ind%polygon%e = i
-    case ("N")
-      ind%polygon%n = i
-    endselect
-  enddo
+    do i = 1, size(model)
+      select case (model(i)%dataname)
+      case ("SP")
+        ind%model%sp = i
+      case ("EWT")
+        ind%model%ewt = i
+      case ("T")
+        ind%model%t = i
+      case ("RSP")
+        ind%model%rsp = i
+      case ("LS")
+        ind%model%ls = i
+      case ("H")
+        ind%model%h = i
+      case ("HP")
+        ind%model%hp = i
+      endselect
+    enddo
+    do i = 1, size(moreverbose)
+      select case (moreverbose(i)%dataname)
+      case ("p")
+        ind%moreverbose%p = i
+      case ("g")
+        ind%moreverbose%g = i
+      case ("a")
+        ind%moreverbose%a = i
+      case ("d")
+        ind%moreverbose%d = i
+      case ("r")
+        ind%moreverbose%r = i
+      case ("s")
+        ind%moreverbose%s = i
+      case ("o")
+        ind%moreverbose%o = i
+      case ("t")
+        ind%moreverbose%t = i
+      case ("b")
+        ind%moreverbose%b = i
+      case ("n")
+        ind%moreverbose%n = i
+      end select
+    enddo
+    do i = 1, size(green)
+      select case (green(i)%dataname)
+      case ("GE")
+        ind%green%ge = i 
+      case ("GEGdt")
+        ind%green%gegdt = i 
+      case ("GN")
+        ind%green%gn = i
+      case ("C")
+        ind%green%c = i
+      case ("GR")
+        ind%green%gr = i
+      case ("GHN")
+        ind%green%ghn = i
+      case ("GHE")
+        ind%green%ghe = i
+      case ("GG")
+        ind%green%gg = i
+      case ("GNdt")
+        ind%green%gndt = i
+      case ("GNdz")
+        ind%green%gndz = i
+      endselect
+    enddo
+    do i = 1, size(polygon)
+      select case (polygon(i)%dataname)
+      case ("E","")
+        ! assume polygon is for elastic part
+        ind%polygon%e = i
+      case ("N")
+        ind%polygon%n = i
+      endselect
+    enddo
 
 end subroutine
 
