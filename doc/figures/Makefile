@@ -1,4 +1,5 @@
-all: \
+all: favicon.ico
+#  all: \
 	spher_area.pdf spher_area.svg \
 	podklad.pdf podklad2.pdf \
 	polygon_ilustration.pdf polygon_ilustration.png\
@@ -54,3 +55,11 @@ clean:
 	rm -f interp{b,l,n}1.dat *.ps
 	rm -f podklad*.{grd,dat}
 	latexmk -c -quiet
+
+favicon.ico: logo_gr@.pdf
+	convert $<  -bordercolor white -border 0 \
+          \( -clone 0 -resize 16x16 \) \
+          \( -clone 0 -resize 32x32 \) \
+          \( -clone 0 -resize 48x48 \) \
+          \( -clone 0 -resize 64x64 \) \
+          -delete 0 -alpha off -colors 256 favicon.ico

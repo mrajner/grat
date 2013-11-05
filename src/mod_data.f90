@@ -331,7 +331,7 @@ subroutine read_netCDF (model, print, force)
   endif
 
   if (.not. (present(print).and. .not. print)) then
-    write (log%unit, form%i3) "Opening file:", trim(model%name)
+    write (log%unit, form%i3) "Opening file:", trim(basename(trim(model%name)))
   endif
   call check (nf90_open (model%name, nf90_nowrite, model%ncid))
 
@@ -561,8 +561,10 @@ subroutine get_variable(model, date, print)
     if (index_time.eq.0) then
       if (.not. (present(print).and..not.print))then
         if (.not.log%sparse) then
-          write(log%unit,form%i3) "cannot find date:", date, &
-              "var:", trim(model%names(1)), "file:", model%name
+          !TODO
+          stop "TODO"
+          call print_warning("cannot find date: TODO")
+          ! // date // "var:" // trim(model%names(1)) // "file:" // model%name)
         endif
       endif
       model%data= sqrt(-1.)
