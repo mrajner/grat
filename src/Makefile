@@ -1,6 +1,10 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+ff: grat value_check
+	grat -M1D -D dfd , 20103322, 201402 , 2005 05 05 02  
+	value_check -Mn -D dfd , 20103322, 201402 , 2005 05 05 02  
+
 f:grat
 	bash /var/www/html/queries/20131104-mrajner@wp-O2jJNJ.sh
 

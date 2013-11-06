@@ -71,7 +71,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
       write(def_unit, form%i0, advance="no") "Some records were rejected"
       write(def_unit, form%i0, advance="no") "you should specify for each &
           line at least 3[4] parameters in free format:"
-      write(def_unit, form%i0, advance="no") "name lat lon [H=0] (skipped)"
+      write(def_unit, form%i0, advance="no") "name lat lon [height] (rest will be skipped)"
     case("boundaries")
       write(def_unit, form%i0, advance="no") "something wrong with boundaries. IGNORED"
     case("site")

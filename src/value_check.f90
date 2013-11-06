@@ -22,7 +22,7 @@ program value_check
 
   call intro ( &
     program_calling   = "value_check",   &
-    accepted_switches = "VFoShvIDLPRqwH",&
+    accepted_switches = "VFoShvIDLPRqwHM",&
     version           = "beta",          &
     cmdlineargs       = .true.           &
     )
@@ -76,7 +76,12 @@ program value_check
 
     ! print only dates if no site given
     if (j.gt.0 .and. size(site).lt.1) then
+      if (method.eq."n") then
+      write (output%unit , '(i4.4,5(i2.2),$)') date(j)%date
+      if (j.lt.size(date)) write (output%unit , '(", ",$)')
+    else
       write (output%unit , '(f15.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
+    endif
     endif
     do i = 1 , size(site)
       iprogress = iprogress + 1

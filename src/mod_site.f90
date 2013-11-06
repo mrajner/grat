@@ -37,7 +37,11 @@ subroutine parse_site(cmd_line_entry)
 
   do i = 1, size(cmd_line_entry%field)
     if (.not.log%sparse) write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
-    if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
+    if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
+      write(log%unit, form%i3) 'reading from file:', &
+          cmd_line_entry%field(i)%subfield(1)%name
+      call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
+    else if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
         .or.&
         (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
         .or.&
@@ -66,10 +70,6 @@ subroutine parse_site(cmd_line_entry)
         read (cmd_line_entry%field(i)%subfield(4)%name, * ) &
             site(start_index)%height
       endif
-    else if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
-      write(log%unit, form%i3) 'reading from file:', &
-          cmd_line_entry%field(i)%subfield(1)%name
-      call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
       ! this is shortcut for Józefosław -Sj
     else if (cmd_line_entry%field(i)%subfield(1)%name.eq."j") then
       call more_sites (1,start_index)
@@ -112,8 +112,8 @@ subroutine parse_site(cmd_line_entry)
     else
       call print_warning ("site")
     endif
-   if (any(cmd_line_entry%field(i)%subfield%dataname.eq."H")) &
-       site_height_from_model=.true.
+    if (any(cmd_line_entry%field(i)%subfield%dataname.eq."H")) &
+        site_height_from_model=.true.
   enddo
 
 end subroutine
@@ -121,9 +121,11 @@ end subroutine
 ! =============================================================================
 !> 
 ! =============================================================================
-subroutine print_site_summary()
+subroutine print_site_summary(site_parsing)
   use mod_data
   integer :: j
+  logical, optional :: site_parsing
+
   if (size(site).ge.1) then
     write(log%unit, form%i2 ) "Processing:", size(site), "site(s)"
     if (size(site).le.15) then
@@ -131,6 +133,9 @@ subroutine print_site_summary()
           "Name", "lat [deg]", "lon [deg]", "H [m]" , "Hp [m]", "H* [m]"
       do j = 1,size(site)
         write(log%unit, '(t6,a10,3f10.4)', advance="no") &
+            site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
+        if(present(site_parsing).and.site_parsing) &
+            write(output%unit, '(t6,a10,3f10.4)') &
             site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
         if (site(j)%hp%if) then 
           write(log%unit, "(f10.4)", advance="no") site(j)%hp%val
@@ -258,21 +263,21 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine more_sites (number, start_index)
-    integer, intent(in)  :: number
-    integer, intent(out) :: start_index
-    type(site_info),allocatable, dimension(:) :: tmpsite
+  integer, intent(in)  :: number
+  integer, intent(out) :: start_index
+  type(site_info),allocatable, dimension(:) :: tmpsite
 
-    if (allocated(site)) then
-      write(log%unit, form%i3), "added site(s):", number
-      start_index=size(site) + 1
-      call move_alloc(site,tmpsite)
-      allocate(site(size(tmpsite)+number))
-      site=tmpsite
-      deallocate(tmpsite)
-    else 
-      allocate(site(number))
-      start_index=1
-    endif
+  if (allocated(site)) then
+    write(log%unit, form%i3), "added site(s):", number
+    start_index=size(site) + 1
+    call move_alloc(site,tmpsite)
+    allocate(site(size(tmpsite)+number))
+    site=tmpsite
+    deallocate(tmpsite)
+  else 
+    allocate(site(number))
+    start_index=1
+  endif
 end subroutine
 
 ! =============================================================================
@@ -281,130 +286,131 @@ end subroutine
 !! checks for arguments and put it into array \c sites
 ! =============================================================================
 subroutine read_site_file (file_name)
-    use mod_utilities, only: is_numeric, ntokens
-    !  use mod_cmdline,    only: cmd_line_arg, form_63, log
-    character(len=*), intent(in) ::  file_name
-    integer :: io_status, i, good_lines = 0, number_of_lines = 0, nloop
-    integer :: fileunit_site, start_index
-    character(len=255), dimension(4)  :: dummy
-    character(len=255) :: line_of_file
-    type(site_info) :: aux
+  use mod_utilities, only: is_numeric, ntokens, skip_header
+  use mod_cmdline, only: method
+  character(len=*), intent(in) ::  file_name
+  integer :: io_status, i, good_lines = 0, number_of_lines = 0, nloop
+  integer :: fileunit_site, start_index
+  character(len=255), dimension(4)  :: dummy
+  character(len=255) :: line_of_file
+  type(site_info) :: aux
 
-    open ( newunit = fileunit_site, file = file_name, &
-        iostat = io_status, status = "old", action="read" )
+  open ( newunit = fileunit_site, file = file_name, &
+      iostat = io_status, status = "old", action="read" )
 
-    ! two loops, first count good lines and print rejected
-    ! second allocate array of sites and read coordinates into it
-    do nloop = 1, 2
-      if (nloop.eq.2) call more_sites(good_lines, start_index)
-      if (number_of_lines.ne.good_lines) then
-        call print_warning ("site_file_format")
-      endif
-      good_lines=0
-      do 
-        read ( fileunit_site, '(a)', iostat = io_status ) line_of_file 
-        if ( io_status == iostat_end)  exit
-        number_of_lines = number_of_lines + 1
-        !  ! we need at least 3 parameter for site (name, B, L )
-        if (ntokens(line_of_file).ge.3) then
-          ! but no more than 4 parameters (name, B, L, H)
-          if (ntokens(line_of_file).gt.4) then
-            read ( line_of_file, * ) dummy(1:4)
-          else
-            read ( line_of_file, * ) dummy(1:3)
-            ! if site height was not given we set it to zero
-            dummy(4)="0."
-          endif
-        endif
-        !  ! check the values given
-        if(    is_numeric(trim(dummy(2)))   &
-            .and.is_numeric(trim(dummy(3)))   &
-            .and.is_numeric(trim(dummy(4)))   &
-            .and.ntokens(line_of_file).ge.3 ) &
-            then
-          aux%name= trim(dummy(1))
-          read( dummy(2),*) aux%lat
-          read(dummy(3),*) aux%lon 
-          read(dummy(4),*) aux%height 
-          if (aux%lat.ge.-90 .and. aux%lat.le.90) then
-            if (aux%lon.ge.-180 .and. aux%lon.le.360) then
-              good_lines=good_lines+1
-              if (nloop.eq.2) then
-                site(good_lines-1+start_index)%name= trim(dummy(1))
-                read(dummy(2),*) site(good_lines-1+start_index)%lat 
-                read(dummy(3),*) site(good_lines-1+start_index)%lon 
-                read(dummy(4),*) site(good_lines-1+start_index)%height 
-              endif
-            else
-              if (nloop.eq.2) then 
-                write ( log%unit, form_63) "rejecting (lon limits):", line_of_file
-              endif
-            endif
-          else 
-            if (nloop.eq.2) then
-              write ( log%unit, form_63) "rejecting (lat limits):", line_of_file
-            endif
-          endif
+  ! two loops, first count good lines and print rejected
+  ! second allocate array of sites and read coordinates into it
+  do nloop = 1, 2
+    if (nloop.eq.2) call more_sites(good_lines, start_index)
+    if (number_of_lines.ne.good_lines) then
+      call print_warning ("site_file_format")
+    endif
+    good_lines=0
+    do 
+      call skip_header(fileunit_site)
+      read ( fileunit_site, '(a)', iostat = io_status ) line_of_file 
+      if ( io_status == iostat_end)  exit
+      number_of_lines = number_of_lines + 1
+      !  ! we need at least 3 parameter for site (name, B, L )
+      if (ntokens(line_of_file).ge.3) then
+        ! but no more than 4 parameters (name, B, L, H)
+        if (ntokens(line_of_file).gt.4) then
+          read ( line_of_file, * ) dummy(1:4)
         else
-          ! print it only once
+          read ( line_of_file, * ) dummy(1:3)
+          ! if site height was not given we set it to zero
+          dummy(4)="0."
+        endif
+      endif
+      !  ! check the values given
+      if(    is_numeric(trim(dummy(2)))   &
+          .and.is_numeric(trim(dummy(3)))   &
+          .and.is_numeric(trim(dummy(4)))   &
+          .and.ntokens(line_of_file).ge.3 ) &
+          then
+        aux%name= trim(dummy(1))
+        read( dummy(2),*) aux%lat
+        read(dummy(3),*) aux%lon 
+        read(dummy(4),*) aux%height 
+        if (aux%lat.ge.-90 .and. aux%lat.le.90) then
+          if (aux%lon.ge.-180 .and. aux%lon.le.360) then
+            good_lines=good_lines+1
+            if (nloop.eq.2) then
+              site(good_lines-1+start_index)%name= trim(dummy(1))
+              read(dummy(2),*) site(good_lines-1+start_index)%lat 
+              read(dummy(3),*) site(good_lines-1+start_index)%lon 
+              read(dummy(4),*) site(good_lines-1+start_index)%height 
+            endif
+          else
+            if (nloop.eq.2) then 
+              call print_warning("rejecting: " // line_of_file // "  [lon limits]")
+            endif
+          endif
+        else 
           if (nloop.eq.2) then
-            write ( log%unit, form_63) "rejecting (args):      ", line_of_file
+            call print_warning("rejecting: " // trim(line_of_file)//  " [lat limits]")
           endif
         endif
-      enddo
-      if (nloop.eq.1) rewind(fileunit_site)
+      else
+        ! print it only once
+        if (nloop.eq.2) then
+          call print_warning("rejecting: " // trim(line_of_file) // " [args]")
+        endif
+      endif
     enddo
+    if (nloop.eq.1) rewind(fileunit_site)
+  enddo
 
-    ! if longitude <-180, 180> change to <0,360) domain
-    do i =1, size (site)
-      if (site(i)%lon.lt.0) site(i)%lon= site(i)%lon + 360.
-      if (site(i)%lon.eq.360) site(i)%lon= 0.
-    enddo
+  ! if longitude <-180, 180> change to <0,360) domain
+  do i =1, size (site)
+    if (site(i)%lon.lt.0) site(i)%lon= site(i)%lon + 360.
+    if (site(i)%lon.eq.360) site(i)%lon= 0.
+  enddo
 end subroutine
 
 ! =============================================================================
 ! =============================================================================
 subroutine gather_site_model_info()
-    use mod_cmdline, only: ind, info
-    use mod_data, only: get_value, model, get_variable
-    integer :: i
+  use mod_cmdline, only: ind, info
+  use mod_data, only: get_value, model, get_variable
+  integer :: i
 
-    if (site_height_from_model.and. ind%model%h.eq.0) then
-      call print_warning("site @H but not model @H was given", error=.true.)
+  if (site_height_from_model.and. ind%model%h.eq.0) then
+    call print_warning("site @H but not model @H was given", error=.true.)
+  endif
+  do i = 1 , size(site)
+    if (ind%model%hp.ne.0) then
+      call get_variable( model(ind%model%hp))
+      site(i)%hp%if=.true.
+      call get_value (                        & 
+          model=model(ind%model%hp),            & 
+          lat=site(i)%lat,                      & 
+          lon=site(i)%lon,                      & 
+          val=site(i)%hp%val,                   & 
+          level=1,                              & 
+          method = info(1)%interpolation        & 
+          )
     endif
-    do i = 1 , size(site)
-      if (ind%model%hp.ne.0) then
-        call get_variable( model(ind%model%hp))
-        site(i)%hp%if=.true.
-        call get_value (                        & 
-            model=model(ind%model%hp),            & 
-            lat=site(i)%lat,                      & 
-            lon=site(i)%lon,                      & 
-            val=site(i)%hp%val,                   & 
-            level=1,                              & 
-            method = info(1)%interpolation        & 
-            )
-      endif
-      if(ind%model%h.ne.0) then
-        site(i)%h%if=.true.
-        call get_variable(model(ind%model%h))
-        call get_value (                       & 
-            model=model(ind%model%h),              & 
-            lat=site(i)%lat,                       & 
-            lon=site(i)%lon,                       & 
-            val=site(i)%h%val,                     & 
-            level=1,                               & 
-            method = info(1)%interpolation         & 
-            )
-      endif
-    enddo
-    if (site_height_from_model) then
-      site%height=site%h%val
+    if(ind%model%h.ne.0) then
+      site(i)%h%if=.true.
+      call get_variable(model(ind%model%h))
+      call get_value (                       & 
+          model=model(ind%model%h),              & 
+          lat=site(i)%lat,                       & 
+          lon=site(i)%lon,                       & 
+          val=site(i)%h%val,                     & 
+          level=1,                               & 
+          method = info(1)%interpolation         & 
+          )
     endif
+  enddo
+  if (site_height_from_model) then
+    site%height=site%h%val
+  endif
+  write(log%unit, form%separator)
+  if(.not.log%sparse) then
+    call print_site_summary()
     write(log%unit, form%separator)
-    if(.not.log%sparse) then
-      call print_site_summary()
-      write(log%unit, form%separator)
-    endif
+  endif
 end subroutine
 end module
