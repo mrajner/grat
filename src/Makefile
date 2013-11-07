@@ -2,7 +2,9 @@
 # for example: OBJS  = libgrat.a
 
 f:grat
-	bash /var/www/html/queries/20131104-mrajner@wp-O2jJNJ.sh
+	grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP , NCEP1 @ HP , ETOPO @ H \! -G merriam@GE -H -M2D -ws -U -D 20120101000000 
+	#  grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP -G merriam@GE -H -M2D -ws -BN -D 20120101000000 -o dat/nib_20120101000000_nib.dat :nc -V
+	#  grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP -G merriam@GE -H -M2D -ws -D 20120101000000 -o dat/ib_20120101000000_ib.dat :nc -V
 
 dfdsfd: grat
 	  @for y in {2012..2015}; do \

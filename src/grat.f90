@@ -94,7 +94,7 @@ program grat
       if(output%header) write (output%unit, '(a2)', advance = "no" ) "i"
     endif
     if(output%header) then
-      write (output%unit, '(a8,3a10)', advance ="no"  ) "name", "lat", "lon", "h"
+      write (output%unit, '(a8,3a10)', advance="no") "name", "lat", "lon", "h"
     endif
 
     if(output%header) then
@@ -102,7 +102,7 @@ program grat
         write (output%unit,'(a14)',advance='no'), "admitance"
         elseif (method.eq."2D") then
         do i = 1, size(green)
-          write (output%unit,'(a15)',advance='no'), trim(green(i)%dataname)
+          write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)
         enddo
       endif
     endif
@@ -130,11 +130,12 @@ program grat
           if(model(i)%if) then
             select case (model(i)%dataname)
             case ("SP", "T")
-              if (idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
-                .or.(model(i)%autoload &
-                .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
-                .and.idate.ne.1 &
-                ) then
+              if ( &
+                  idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
+                  .or.(model(i)%autoload &
+                  .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
+                  .and.idate.ne.1 &
+                  ) then
                 call model_aliases(model(i), year= date(idate)%date(1))
               endif
               if (size(date).eq.0.and.model(i)%exist) then
@@ -151,11 +152,11 @@ program grat
           if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
             if(size(date).eq.0) then
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  inverted_landsea_mask = inverted_landsea_mask)
             else
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                date=date(idate)%date, &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  date=date(idate)%date, &
+                  inverted_landsea_mask = inverted_landsea_mask)
             endif
           endif
         endif
@@ -173,17 +174,17 @@ program grat
         if (method.eq."1D") then 
           if (idate.gt.0) then
             write(output%unit, '(f12.3,x,i4.4,5(i2.2))', advance="no") &
-              date(idate)%mjd, date(idate)%date
+                date(idate)%mjd, date(idate)%date
           endif
           write (output%unit, '(a8,2f10.4,f10.3,1en14.4)' ), &
-            site(isite)%name, &
-            site(isite)%lat,  &
-            site(isite)%lon,  &
-            site(isite)%height, &
-            admit( &
-            site(isite), &
-            date=date(idate)%date &
-            )
+              site(isite)%name, &
+              site(isite)%lat,  &
+              site(isite)%lon,  &
+              site(isite)%height, &
+              admit( &
+              site(isite), &
+              date=date(idate)%date &
+              )
         else if (method.eq."2D") then 
           ! perform convolution
           if (idate.gt.0) then
@@ -212,4 +213,4 @@ program grat
     endif
     write(log%unit, '("Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
     write(log%unit, form_separator)
-end program 
+  end program 

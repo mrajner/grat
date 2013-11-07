@@ -691,11 +691,10 @@ subroutine convolve(site, date)
   enddo
 
   ! results to output
-  stop
   if (present(date)) then
-    write (output%unit, '(f12.3,x,i4.4,5(i2.2))', advance = "no" ) date%mjd, date%date 
+    write (output%unit, '(f12.3,x,i4.4,5(i2.2))', advance ="no") date%mjd, date%date 
   endif
-  write (output%unit, '(a8,3f10.4,10en13.4)' ), site%name, site%lat, site%lon, site%height, result
+  write (output%unit, '(a8,2f10.4, f10.3,10en13.3)'), site%name, site%lat, site%lon, site%height, result
 
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then
@@ -723,22 +722,22 @@ end subroutine
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, distancestop)
-    use mod_spherical, only : spher_trig
-    use mod_cmdline,   only : moreverbose, ind
-    use mod_utilities, only : r2d
+  use mod_spherical, only : spher_trig
+  use mod_cmdline,   only : moreverbose, ind
+  use mod_utilities, only : r2d
 
-    real(dp), intent(in) :: azimuth, azstep, latin, lonin
-    real(dp) ::  lat, lon, distancestart, distancestop
+  real(dp), intent(in) :: azimuth, azstep, latin, lonin
+  real(dp) ::  lat, lon, distancestart, distancestop
 
-    call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
-    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
-    call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
-    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-    call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
-    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-    call spher_trig (latin, lonin, distancestart, azimuth + azstep/2, lat, lon)
-    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-    write(moreverbose(ind%moreverbose%a)%unit, '(">")')
+  call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
+  call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+  call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+  call spher_trig (latin, lonin, distancestart, azimuth + azstep/2, lat, lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(">")')
 end subroutine
 
 ! =============================================================================
@@ -752,54 +751,54 @@ end subroutine
 !!    olssson see \cite olsson2009
 !! =============================================================================
 function green_newtonian (psi, h, z, method)
-    use mod_constants, only: earth, gravity
-    use mod_normalization, only: green_normalization
-    real(dp) :: green_newtonian
-    real(dp), intent (in) :: psi
-    real(dp), intent (in), optional :: h
-    real(dp), intent (in), optional :: z
-    character(*), optional :: method
-    real(dp) :: h_, z_, eps, t
-    if (present(h)) then
-      h_=h
-    else
-      h_=0.
-    endif
-    if (present(z)) then
-      z_=z
-    else
-      z_=0.
-    endif
-    if (present(method) &
-        .and. (method.eq."spotl" .or. method.eq."olsson")) then
-      if(method.eq."spotl") then
-        eps = h_/ earth%radius
-        green_newtonian =                                      & 
-            1. /earth%radius**2                                  & 
-            *(eps + 2. * (sin(psi/2.))**2 )                      & 
-            /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) & 
-            * gravity%constant                                   & 
-            * green_normalization("f",psi=psi)
-        return
-      else if (method.eq."olsson") then
-        t = earth%radius/(earth%radius +h_)
-        green_newtonian =                      & 
-            1 / earth%radius**2 * t**2 *         & 
-            (1. - t * cos (psi) ) /              & 
-            ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) & 
-            * gravity%constant                   & 
-            * green_normalization("f",psi=psi)
-        return
-      endif
-    else
-      green_newtonian =                                                 & 
-          ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        & 
-          / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
-          -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
-
-      green_newtonian = green_newtonian &
-          * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
+  use mod_constants, only: earth, gravity
+  use mod_normalization, only: green_normalization
+  real(dp) :: green_newtonian
+  real(dp), intent (in) :: psi
+  real(dp), intent (in), optional :: h
+  real(dp), intent (in), optional :: z
+  character(*), optional :: method
+  real(dp) :: h_, z_, eps, t
+  if (present(h)) then
+    h_=h
+  else
+    h_=0.
+  endif
+  if (present(z)) then
+    z_=z
+  else
+    z_=0.
+  endif
+  if (present(method) &
+      .and. (method.eq."spotl" .or. method.eq."olsson")) then
+    if(method.eq."spotl") then
+      eps = h_/ earth%radius
+      green_newtonian =                                      & 
+          1. /earth%radius**2                                  & 
+          *(eps + 2. * (sin(psi/2.))**2 )                      & 
+          /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) & 
+          * gravity%constant                                   & 
+          * green_normalization("f",psi=psi)
+      return
+    else if (method.eq."olsson") then
+      t = earth%radius/(earth%radius +h_)
+      green_newtonian =                      & 
+          1 / earth%radius**2 * t**2 *         & 
+          (1. - t * cos (psi) ) /              & 
+          ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) & 
+          * gravity%constant                   & 
+          * green_normalization("f",psi=psi)
       return
     endif
+  else
+    green_newtonian =                                                 & 
+        ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        & 
+        / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
+        -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
+
+    green_newtonian = green_newtonian &
+        * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
+    return
+  endif
 end function
 end module
