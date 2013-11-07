@@ -97,12 +97,12 @@ program grat
       if(output%header) write (output%unit, '(a2)', advance = "no" ) "i"
     endif
     if(output%header) then
-      write (output%unit, '(a8,3a11)', advance="no") "name", "lat_[°]", "lon_[°]", "h_[°]"
+      write (output%unit, '(a8,3a10)', advance="no") "name", "lat", "lon", "h"
     endif
 
     if(output%header) then
       if (method.eq."1D") then
-        write (output%unit,'(a15)',advance='no'), "G1_[μGal]"
+        write (output%unit,'(a14)',advance='no'), "G1_[muGal]"
         elseif (method.eq."2D") then
         do i = 1, size(green)
           write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)
