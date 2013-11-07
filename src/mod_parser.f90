@@ -70,7 +70,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-M')
     method = cmd_line_entry%field(1)%subfield(1)%name
     if (.not.log%sparse) write(log%unit, form_62), 'method was set: ', method
-    if (.not.any(method.eq.(["1D", "2D", "3D"]))) then
+    if (.not.any(method.eq.(["1D", "2D", "3D", "n"]))) then
       call print_warning("method not found", more=method, error=.true.)
     endif
   case ('-o')

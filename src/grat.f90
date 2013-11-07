@@ -81,8 +81,11 @@ program grat
       accepted_switches="VSBLGPqoFIDLvhRMOAHUw", &
       cmdlineargs=.true. &
       )
-
     start = 0
+    if (method.eq."n") then
+      call print_site_summary (site_parsing=.true.)
+      call exit (0) 
+    endif 
 
     if (size(date).gt.0) then
       if(output%header) then

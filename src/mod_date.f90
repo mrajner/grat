@@ -206,15 +206,16 @@ end subroutine
 ! =============================================================================
 subroutine string2date (string, date)
   use mod_utilities, only: is_numeric
+  use mod_cmdline, only: method
   character (*) , intent(in) :: string
   integer , dimension(6) ,intent(out):: date 
   integer :: start_char , end_char , j
 
   ! this allow to specify !st Jan of year simple as -Dyyyy
-  date = [2000 , 1 , 1 , 0 ,0 ,0]
+  date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
-  do j = 1 , 6 
+  do j = 1, 6 
     if (j.eq.1) then
       end_char=min(len(string),start_char+3)
     else
@@ -222,9 +223,16 @@ subroutine string2date (string, date)
     endif
     if (is_numeric(string(start_char : end_char) )) then
       read(string(start_char : end_char),*) date(j)
+    else
+      call print_warning ("bad date " // string)
+      return
     endif
     start_char=end_char+1
+    if (end_char.eq.len(trim(string))) exit
   enddo 
+  ! if (method.eq."n") then
+    ! write (output%unit, '(i4.4,5(x,i2.2))') date
+  ! endif
 end subroutine
 
 end module mod_date

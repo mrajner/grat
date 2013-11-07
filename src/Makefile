@@ -1,6 +1,10 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+ff: grat value_check
+	grat -M1D -D dfd , 20103322, 201402 , 2005 05 05 02  
+	value_check -Mn -D dfd , 20103322, 201402 , 2005 05 05 02  
+
 f:grat
 	grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP , NCEP1 @ HP , ETOPO @ H \! -G merriam@GE -H -M2D -ws -U -D 20120101000000 
 	#  grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP -G merriam@GE -H -M2D -ws -BN -D 20120101000000 -o dat/nib_20120101000000_nib.dat :nc -V
