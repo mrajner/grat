@@ -2,8 +2,7 @@
 # for example: OBJS  = libgrat.a
 
 ff: grat value_check
-	grat -M1D -D dfd , 20103322, 201402 , 2005 05 05 02  
-	value_check -Mn -D dfd , 20103322, 201402 , 2005 05 05 02  
+	grat -F NCEP@SP  -ws -M1D -D 2011  -Sj -H
 
 f:grat
 	grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP , NCEP1 @ HP , ETOPO @ H \! -G merriam@GE -H -M2D -ws -U -D 20120101000000 

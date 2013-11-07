@@ -22,6 +22,7 @@ contains
 subroutine parse_date (cmd_line_entry) 
   use mod_cmdline
   use mod_mjd, only: mjd, invmjd
+  use mod_utilities, only: is_numeric
   use mod_data
   integer, dimension(6) :: start, stop, swap 
   real (dp) :: step 
@@ -34,6 +35,11 @@ subroutine parse_date (cmd_line_entry)
     return
   endif
   do i_ = 1, size(cmd_line_entry%field)
+    if (trim(cmd_line_entry%field(i_)%full).eq."" &
+      ) then
+      call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
+      cycle
+    endif
     interval_unit = "h"
     write(log%unit,form%i2) trim(cmd_line_entry%field(i_)%full)
     call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
@@ -230,9 +236,6 @@ subroutine string2date (string, date)
     start_char=end_char+1
     if (end_char.eq.len(trim(string))) exit
   enddo 
-  ! if (method.eq."n") then
-    ! write (output%unit, '(i4.4,5(x,i2.2))') date
-  ! endif
 end subroutine
 
 end module mod_date

@@ -59,7 +59,7 @@ subroutine parse_model (cmd_line_entry)
   integer :: i, j
 
   if (allocated(model)) then
-    call print_warning ("repeated")
+    call print_warning ("repeated", more="-F")
     return
   endif
 
@@ -165,7 +165,7 @@ subroutine model_aliases(model, dryrun, year)
         write(model%name,'(a,a,i4,a)') trim(prefix),"air.sig995.",year_,".nc"
       else
         model%names(1)="temp"
-        call print_warning ("not yet NCEP@T" , error=.true.)
+        call print_warning ("not yet NCEP@T", error=.true.)
       endif
     case ("HP")
       model%names(1)="hgt"

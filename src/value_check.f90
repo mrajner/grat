@@ -77,11 +77,11 @@ program value_check
     ! print only dates if no site given
     if (j.gt.0 .and. size(site).lt.1) then
       if (method.eq."n") then
-      write (output%unit , '(i4.4,5(i2.2),$)') date(j)%date
-      if (j.lt.size(date)) write (output%unit , '(", ",$)')
-    else
-      write (output%unit , '(f15.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
-    endif
+        write (output%unit , '(i4.4,5(i2.2),$)') date(j)%date
+        if (j.lt.size(date)) write (output%unit , '(", ",$)')
+      else
+        write (output%unit , '(f15.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
+      endif
     endif
     do i = 1 , size(site)
       iprogress = iprogress + 1
@@ -102,7 +102,7 @@ program value_check
           imodel = imodel + 1
           if (iok.eq.1) then
             call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                method=info(1)%interpolation, date=date(j)%date)
+              method=info(1)%interpolation, date=date(j)%date)
           else
             val (imodel) = 0
           endif
@@ -121,7 +121,7 @@ program value_check
     do i = 1, size(model)
       do j = 1, size(model(i)%time)
         write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
-            model(i)%time(j), model(i)%date(j,:)
+          model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif

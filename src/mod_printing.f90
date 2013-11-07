@@ -77,7 +77,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     case("site")
       write(def_unit, form%i0, advance="no") "something wrong with -S|-R specification. IGNORED"
     case ("repeated") 
-      write(def_unit, form%i0, advance="no") "reapeted specification. IGNORED"
+      write(def_unit, form%i0, advance="no") "reapeted specification"
     case ("date") 
       write(def_unit, form%i0, advance="no") "something wrong with date format -D. IGNORED"
     case ("model") 
