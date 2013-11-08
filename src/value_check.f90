@@ -76,7 +76,7 @@ program value_check
 
     ! print only dates if no site given
     if (j.gt.0 .and. size(site).lt.1) then
-      if (method.eq."n") then
+      if (dryrun) then
         write (output%unit , '(i4.4,5(i2.2),$)') date(j)%date
         if (j.lt.size(date)) write (output%unit , '(", ",$)')
       else

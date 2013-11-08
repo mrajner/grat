@@ -21,6 +21,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
+  integer(2) :: i
 
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
@@ -68,10 +69,24 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (.not.log%sparse) write(log%unit, form%i3) 'header'
     output%header=.true.
   case ('-M')
-    method = cmd_line_entry%field(1)%subfield(1)%name
+    method=.false.
+    do i =1, size(cmd_line_entry%field)
+      select case (cmd_line_entry%field(i)%subfield(1)%name)
+      case ("n")
+        dryrun = .true.
+      case ("1D", "1")
+        method(1) =.true.
+      case ("2D", "2")
+        method(2) =.true.
+      case ("3D", "3")
+        method(3) =.true.
+      case default
+        call print_warning("method not known" // cmd_line_entry%field(i)%subfield(1)%name)
+      end select
+    enddo
     if (.not.log%sparse) write(log%unit, form_62), 'method was set: ', method
-    if (.not.any(method.eq.(["1D", "2D", "3D", "n"]))) then
-      call print_warning("method not found", more=method, error=.true.)
+    if (.not.any(method).and..not.dryrun) then
+      call print_warning("no correct method found", error=.true.)
     endif
   case ('-o')
     output%if=.true.
@@ -276,7 +291,7 @@ subroutine check_arguments (program_calling)
           call print_warning("method")
         endif
       endif
-      if (method.eq."2D" .and. .not.any(cmd_line%switch.eq.'-G')) then
+      if (method(2) .and. .not.any(cmd_line%switch.eq.'-G')) then
         call print_warning("green_missing", error=.true.)
       endif
     endif

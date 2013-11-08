@@ -119,7 +119,8 @@ module mod_cmdline
       end type
       type(admitance_info) :: admitance
 
-      character(10) :: method
+      logical :: method(3)
+      logical :: dryrun
   contains
     ! =============================================================================
     !> This routine collect command line arguments to one matrix depending on

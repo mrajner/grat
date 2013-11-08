@@ -87,7 +87,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     case("green_missing")
       write(def_unit, form%i0, advance="no") "-G is required"
     case("method")
-      write(def_unit, form%i0, advance="no") "-M no method was set, assuming " // method
+      write(def_unit, form%i0, advance="no") "-M no method was set, assuming..TODO " 
     case default 
       write(def_unit, form%i0, advance="no") warn
     end select

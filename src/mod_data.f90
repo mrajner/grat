@@ -538,6 +538,7 @@ subroutine get_variable(model, date, print)
   integer :: index_time, i, j, k
   real (dp) :: scale_factor, add_offset
   logical, optional :: print
+  character (20) :: aux
 
   if (model%huge) then
     return
@@ -561,10 +562,9 @@ subroutine get_variable(model, date, print)
     if (index_time.eq.0) then
       if (.not. (present(print).and..not.print))then
         if (.not.log%sparse) then
-          !TODO
-          stop "TODO"
-          call print_warning("cannot find date: TODO")
-          ! // date // "var:" // trim(model%names(1)) // "file:" // model%name)
+          write(aux, '(i4.4,5i2.2)') date
+          call print_warning("cannot find date: "// aux & 
+          // "var: " // trim(model%names(1)) // " in file: " // trim(model%name))
         endif
       endif
       model%data= sqrt(-1.)

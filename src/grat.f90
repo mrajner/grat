@@ -82,7 +82,7 @@ program grat
       cmdlineargs=.true. &
       )
     start = 0
-    if (method.eq."n") then
+    if (dryrun) then
       call print_site_summary (site_parsing=.true.)
       call exit (0) 
     endif 
@@ -101,11 +101,12 @@ program grat
     endif
 
     if(output%header) then
-      if (method.eq."1D") then
-        write (output%unit,'(a14)',advance='no'), "G1_[muGal]"
-        elseif (method.eq."2D") then
+      if (method(1)) then
+        write (output%unit,'(a13)',advance='no'), "G1_[muGal]"
+      endif
+        if (method(2)) then
         do i = 1, size(green)
-          write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)
+          write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)//"_[muGal]"
         enddo
       endif
     endif
@@ -174,21 +175,23 @@ program grat
         endif
 
 
-        if (method.eq."1D") then 
-          if (idate.gt.0) then
-            write(output%unit, '(f12.3,x,i4.4,5(i2.2))', advance="no") &
-                date(idate)%mjd, date(idate)%date
-          endif
-          write (output%unit, '(a8,2f10.4,f10.3,1en14.4)' ), &
-              site(isite)%name, &
-              site(isite)%lat,  &
-              site(isite)%lon,  &
-              site(isite)%height, &
+        if (idate.gt.0) then
+          write(output%unit, '(f12.3,x,i4.4,5(i2.2))', advance="no") &
+              date(idate)%mjd, date(idate)%date
+        endif
+        write (output%unit, '(a8,2f10.4,f10.3,$)' ), &
+            site(isite)%name, &
+            site(isite)%lat,  &
+            site(isite)%lon,  &
+            site(isite)%height 
+        if (method(1)) then 
+          write (output%unit, '(1en13.3,$)' ), &
               admit( &
               site(isite), &
               date=date(idate)%date &
               )
-        else if (method.eq."2D") then 
+        endif
+        if (method(2)) then 
           ! perform convolution
           if (idate.gt.0) then
             call convolve (site(isite), date = date(idate))
@@ -196,6 +199,7 @@ program grat
             call convolve (site(isite))
           endif
         endif
+        write(output%unit,*)
 
         if (output%unit.ne.output_unit.and..not.quiet) then 
           open(unit=output_unit, carriagecontrol='fortran')
@@ -216,4 +220,4 @@ program grat
     endif
     write(log%unit, '("Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
     write(log%unit, form_separator)
-  end program 
+end program 
