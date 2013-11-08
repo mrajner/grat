@@ -1,12 +1,18 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+fd: grat
+	grat -FNCEP@SP! , 101300@RSP ,1@HRSP \
+		-V \
+		-Sj \
+		-D2011:2012:1@M \
+		-H -r nc,t -o :free -M1 -w -U
 ff: grat value_check
-	grat -M 1D,2 -G @GN, @GE \
+	grat -M 1D -V -G @GN, @GE \
 		-Sr :32 :22 @H \
 		-F ERA@SP , ERA@HP , ETOPO@H! , \
 		VIENNA @RSP , VIENNA @ HRSP -w -D 2010:2012:400@D  \
-		-H  -U standard  -o :free
+		-H  -U standard  -o :free -r nc
 
 f:grat
 	grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP , NCEP1 @ HP , ETOPO @ H \! -G merriam@GE -H -M2D -ws -U -D 20120101000000 

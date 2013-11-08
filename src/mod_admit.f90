@@ -15,7 +15,7 @@ real(dp) function admit(site_, date)
   use mod_site
   use mod_cmdline, only: transfer_sp
 
-  real(dp) :: val, rsp, t
+  real(dp) :: val, rsp, t, hrsp
   type(site_info) :: site_
   integer, optional :: date(6)
 
@@ -33,10 +33,6 @@ real(dp) function admit(site_, date)
 
   if (.not.isnan(val)) then
     if (site_%hp%if .and. transfer_sp%if) then
-      ! if (site_%h%if) then
-        ! site_%height = site_%h%val
-      ! endif
-
       if (ind%model%t.ne.0) then
         call get_value (                  & 
             model=model(ind%model%t),       & 
@@ -76,11 +72,39 @@ real(dp) function admit(site_, date)
           level=1,                       & 
           method = info(1)%interpolation & 
           )
+    if (ind%model%hrsp.ne.0) then
+       call get_value (                 & 
+           model=model(ind%model%hrsp),    & 
+           lat=site_%lat,                 & 
+           lon=site_%lon,                 & 
+           val=hrsp,                      & 
+           level=1,                       & 
+           method = info(1)%interpolation & 
+           )
+      if (ind%model%t.ne.0) then
+        rsp = standard_pressure(            & 
+            height=site_%height,              & 
+            h_zero=hrsp,              & 
+            p_zero=rsp,                       & 
+            method=transfer_sp%method,        & 
+            temperature=t,                    & 
+            use_standard_temperature=.false., & 
+            nan_as_zero=.false.)
+      else
+        val = standard_pressure(           & 
+            height=site_%height,             & 
+            h_zero=hrsp,             & 
+            p_zero=rsp,                      & 
+            method=transfer_sp%method,       & 
+            use_standard_temperature=.true., & 
+            nan_as_zero=.false.)
+      endif
+      endif
       val=val-rsp
     endif
   endif
 
-  admit = admitance%value*1e-2 * val
+  admit = admitance%value*1.e-2 * val
 end function
 
 ! =============================================================================

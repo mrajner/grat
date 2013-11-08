@@ -78,7 +78,7 @@ program grat
     ( &
     program_calling = "grat", &
       version = "pre-alpha", &
-      accepted_switches="VSBLGPqoFIDLvhRMOAHUw", &
+      accepted_switches="VSBLGPqoFIDLvhRrMOAHUw", &
       cmdlineargs=.true. &
       )
     start = 0
@@ -102,13 +102,15 @@ program grat
 
     if(output%header) then
       if (method(1)) then
-        write (output%unit,'(a13)',advance='no'), "G1_[muGal]"
+        write (output%unit,'(a13)',advance='no'), "G1D[muGal]"
       endif
-        if (method(2)) then
-        do i = 1, size(green)
-          write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)//"_[muGal]"
-        enddo
-          write (output%unit,'(a13)',advance='no'), "total"//"[muGal]"
+      if (method(2)) then
+        if (result_component) then
+          do i = 1, size(green)
+            write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)//"[muGal]"
+          enddo
+        endif
+        if (result_total) write (output%unit,'(a13)',advance='no'), "G2D"//"[muGal]"
       endif
     endif
 
@@ -221,4 +223,4 @@ program grat
     endif
     write(log%unit, '("Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
     write(log%unit, form_separator)
-end program 
+  end program 

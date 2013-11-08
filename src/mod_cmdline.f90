@@ -80,7 +80,7 @@ module mod_cmdline
       type(warnings_info) warnings
 
       type model_index
-        integer(2) :: sp, t, rsp, ewt, h, ls, hp
+        integer(2) :: sp, t, rsp, ewt, h, ls, hp , hrsp
       end type
       type poly_index
         integer(2) :: e, n
@@ -121,6 +121,8 @@ module mod_cmdline
 
       logical :: method(3)
       logical :: dryrun
+
+      logical :: result_total=.false., result_component=.true.
   contains
     ! =============================================================================
     !> This routine collect command line arguments to one matrix depending on

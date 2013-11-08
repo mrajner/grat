@@ -36,7 +36,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
     endif
-  case ('-S','-R')
+  case ('-r')
+    do i =1, size(cmd_line_entry%field)
+      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t")) result_total=.true.
+      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."nc")) result_component=.false.
+    enddo
+  case ('-S', '-R')
     call parse_site(cmd_line_entry)
   case ("-I")
     call parse_info(cmd_line_entry)
@@ -93,13 +98,16 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     output%name=cmd_line_entry%field(1)%subfield(1)%name
     if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
       output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) & 
-        // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
+          // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
       output%tee=.true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
       output%noclobber=.true.
+    endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
+      output%form="f13.3"
     endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
     if (file_exists(output%name).and.output%noclobber) then
@@ -125,9 +133,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     case default
       transfer_sp%if = .true.
     end select
-      if (cmd_line_entry%field(1)%subfield(1)%name.ne."") then
-        transfer_sp%method=cmd_line_entry%field(1)%subfield(1)%name
-      endif
+    if (cmd_line_entry%field(1)%subfield(1)%name.ne."") then
+      transfer_sp%method=cmd_line_entry%field(1)%subfield(1)%name
+    endif
     if (.not. log%sparse) &
         write(log%unit, "("//form%t2//"l1,': ',a)") transfer_sp%if, trim(transfer_sp%method)
   case default
@@ -153,124 +161,124 @@ end subroutine
 !!    non-numeric terminates input argument)
 ! =============================================================================
 subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
-  use mod_cmdline
-  use mod_utilities, only: file_exists
-  character(len=*), intent(in) :: program_calling
-  character(len=*), intent (in), optional :: accepted_switches
-  logical, intent (in), optional :: cmdlineargs
-  character(*), intent (in), optional :: version
-  integer :: i
-  character(len=355) :: dummy
-  integer,dimension(8):: execution_date 
+    use mod_cmdline
+    use mod_utilities, only: file_exists
+    character(len=*), intent(in) :: program_calling
+    character(len=*), intent (in), optional :: accepted_switches
+    logical, intent (in), optional :: cmdlineargs
+    character(*), intent (in), optional :: version
+    integer :: i
+    character(len=355) :: dummy
+    integer,dimension(8):: execution_date 
 
-  if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
-    call print_warning("args", program_calling=program_calling, error=.true.)
-  endif
+    if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
+      call print_warning("args", program_calling=program_calling, error=.true.)
+    endif
 
-  call get_command_cleaned(dummy)
-  call collect_args(dummy)
+    call get_command_cleaned(dummy)
+    call collect_args(dummy)
 
-  if (any(cmd_line%switch.eq.'-h') &
-      .and.if_accepted_switch("-h",accepted_switches)) &
-      then
-    call print_help(program_calling=program_calling, &
-        accepted_switches = accepted_switches)
-    call exit
-  endif
-  if (any(cmd_line%switch.eq.'-v') &
-      .and.if_accepted_switch("-v",accepted_switches)) &
-      then
-    call print_version &
-        (program_calling=program_calling, version=version)
-    call exit
-  endif
-  if (any(cmd_line%switch.eq.'-w') &
-      .and.if_accepted_switch("-w",accepted_switches)) &
-      then
-    do i=1,size(cmd_line)
-      if (cmd_line(i).switch.eq."-w") then
-        if ( &
-            any(cmd_line(i)%field(1)%subfield(1:)%name.eq."n") &
-            ) then
-          warnings%if=.false.
-        endif
-        if ( &
-            any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &
-            ) then
-          warnings%strict=.true.
-          output%noclobber=.true.
-          log%noclobber=.true.
-        endif
-        if ( &
-            any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
-            ) then
-          warnings%time=.true.
-        endif
-      endif
-    enddo
-  endif
-  if (.not.any(cmd_line%switch.eq.'-I')) then
-    call parse_info()
-  endif
-  if (any(cmd_line%switch.eq.'-V')) then
-    !if_verbose = .true.
-    do i=1,size(cmd_line)
-      if (cmd_line(i).switch.eq."-V") then
-        if ( &
-            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
-            .or. &
-            any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
-            ) then
-          log%sparse = .true.
-        endif
-        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
-          log%noclobber = .true.
-        endif
-        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."full")) then
-          log%full = .true.
-        endif
-        if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
-          log%if = .true.
-          log%name=cmd_line(i)%field(1)%subfield(1)%name
-          if(cmd_line(i)%field(1)%subfield(1)%dataname.ne."") then
-            log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
+    if (any(cmd_line%switch.eq.'-h') &
+        .and.if_accepted_switch("-h",accepted_switches)) &
+        then
+      call print_help(program_calling=program_calling, &
+          accepted_switches = accepted_switches)
+      call exit
+    endif
+    if (any(cmd_line%switch.eq.'-v') &
+        .and.if_accepted_switch("-v",accepted_switches)) &
+        then
+      call print_version &
+          (program_calling=program_calling, version=version)
+      call exit
+    endif
+    if (any(cmd_line%switch.eq.'-w') &
+        .and.if_accepted_switch("-w",accepted_switches)) &
+        then
+      do i=1,size(cmd_line)
+        if (cmd_line(i).switch.eq."-w") then
+          if ( &
+              any(cmd_line(i)%field(1)%subfield(1:)%name.eq."n") &
+              ) then
+            warnings%if=.false.
           endif
-          if (file_exists(log%name).and.log%noclobber) then
-            call print_warning ("I will not overwrite with -V : nc (noclobber) ... sorry", error=.true.)
-            call exit(1)
+          if ( &
+              any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &
+              ) then
+            warnings%strict=.true.
+            output%noclobber=.true.
+            log%noclobber=.true.
           endif
-          open (newunit=log%unit, file = log%name, action='write')
-        else
-          log%unit=output_unit
+          if ( &
+              any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
+              ) then
+            warnings%time=.true.
+          endif
         endif
-      endif
+      enddo
+    endif
+    if (.not.any(cmd_line%switch.eq.'-I')) then
+      call parse_info()
+    endif
+    if (any(cmd_line%switch.eq.'-V')) then
+      !if_verbose = .true.
+      do i=1,size(cmd_line)
+        if (cmd_line(i).switch.eq."-V") then
+          if ( &
+              any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
+              .or. &
+              any(cmd_line(i)%field(1)%subfield(2:)%name.eq."sparse") &
+              ) then
+            log%sparse = .true.
+          endif
+          if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
+            log%noclobber = .true.
+          endif
+          if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."full")) then
+            log%full = .true.
+          endif
+          if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
+            log%if = .true.
+            log%name=cmd_line(i)%field(1)%subfield(1)%name
+            if(cmd_line(i)%field(1)%subfield(1)%dataname.ne."") then
+              log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
+            endif
+            if (file_exists(log%name).and.log%noclobber) then
+              call print_warning ("I will not overwrite with -V : nc (noclobber) ... sorry", error=.true.)
+              call exit(1)
+            endif
+            open (newunit=log%unit, file = log%name, action='write')
+          else
+            log%unit=output_unit
+          endif
+        endif
+      enddo
+    else
+      ! if you don't specify log file, or not switch on verbose mode
+      ! all additional information will go to trash
+      ! Change /dev/null accordingly if your file system does not
+      ! support this name
+      open (newunit=log%unit, file = "/dev/null", action = "write" )
+    endif
+    if (.not. log%sparse) call print_version(program_calling=program_calling, version=version)
+    call date_and_time (values = execution_date)
+    write(log%unit, & 
+        '("Program started:", & 
+        1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
+        execution_date (1:3),execution_date(5:7),execution_date(4)/60
+    write(log%unit, form%separator)
+    write (log%unit, form%i0) "Command invoked:"
+    call get_command(dummy)
+    do i = 1, int(len(trim(dummy))/72)+1
+      write (log%unit, '(a72)') trim(dummy(72*(i-1)+1:))
     enddo
-  else
-    ! if you don't specify log file, or not switch on verbose mode
-    ! all additional information will go to trash
-    ! Change /dev/null accordingly if your file system does not
-    ! support this name
-    open (newunit=log%unit, file = "/dev/null", action = "write" )
-  endif
-  if (.not. log%sparse) call print_version(program_calling=program_calling, version=version)
-  call date_and_time (values = execution_date)
-  write(log%unit, & 
-      '("Program started:", & 
-      1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
-      execution_date (1:3),execution_date(5:7),execution_date(4)/60
-  write(log%unit, form%separator)
-  write (log%unit, form%i0) "Command invoked:"
-  call get_command(dummy)
-  do i = 1, int(len(trim(dummy))/72)+1
-    write (log%unit, '(a72)') trim(dummy(72*(i-1)+1:))
-  enddo
-  write(log%unit, form%separator)
-  write (log%unit, form%i0) "Command parsing:"
-  do i =1, size(cmd_line)
-    call parse_option(cmd_line(i), accepted_switches)
-  enddo
-  call get_index()
-  call check_arguments(program_calling=program_calling)
+    write(log%unit, form%separator)
+    write (log%unit, form%i0) "Command parsing:"
+    do i =1, size(cmd_line)
+      call parse_option(cmd_line(i), accepted_switches)
+    enddo
+    call get_index()
+    call check_arguments(program_calling=program_calling)
 end subroutine
 
 ! =============================================================================
@@ -286,12 +294,11 @@ subroutine check_arguments (program_calling)
     if (program_calling.eq."grat") then
       if (.not.any(cmd_line%switch.eq.'-M')) then
         if (any(cmd_line%switch.eq.'-G')) then
-          method="2D"
+          method(2)=.true.
+          if (.not.quiet) call print_warning("method", more= "assuming 2D")
         else
-          method="1D"
-        endif
-        if (.not.quiet) then 
-          call print_warning("method")
+          method(1)=.true.
+          if (.not.quiet) call print_warning("method", more= "assuming 1D")
         endif
       endif
       if (method(2) .and. .not.any(cmd_line%switch.eq.'-G')) then
@@ -616,6 +623,8 @@ subroutine get_index()
         ind%model%t = i
       case ("RSP")
         ind%model%rsp = i
+      case ("HRSP")
+        ind%model%hrsp = i
       case ("LS")
         ind%model%ls = i
       case ("H")

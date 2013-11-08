@@ -540,7 +540,7 @@ subroutine get_variable(model, date, print)
   logical, optional :: print
   character (20) :: aux
 
-  if (model%huge) then
+  if (model%huge .or. model%if_constant_value) then
     return
   endif
 
