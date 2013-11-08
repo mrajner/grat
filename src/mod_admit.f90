@@ -33,9 +33,9 @@ real(dp) function admit(site_, date)
 
   if (.not.isnan(val)) then
     if (site_%hp%if .and. transfer_sp%if) then
-      if (site_%h%if) then
-        site_%height = site_%h%val
-      endif
+      ! if (site_%h%if) then
+        ! site_%height = site_%h%val
+      ! endif
 
       if (ind%model%t.ne.0) then
         call get_value (                  & 

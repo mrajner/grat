@@ -92,7 +92,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
     if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
-      output%name=trim(cmd_line_entry%field(1)%subfield(1)%name)//"@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
+      output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) & 
+        // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
       output%tee=.true.
@@ -197,6 +198,8 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
             any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &
             ) then
           warnings%strict=.true.
+          output%noclobber=.true.
+          log%noclobber=.true.
         endif
         if ( &
             any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &

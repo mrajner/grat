@@ -688,7 +688,7 @@ subroutine convolve(site, date)
     enddo
 
     ! results to output
-    write (output%unit, '(<size(result)>en13.3$)') result
+    write (output%unit, "(" // output%form // '$)') result, sum(result)
 
     ! summary: -L@s
     if (ind%moreverbose%s.ne.0) then

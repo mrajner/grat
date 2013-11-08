@@ -38,6 +38,7 @@ module mod_printing
       noclobber = .false.,      & 
       full      = .false.,      & 
       sparse    = .false.
+    character(10) :: form="en13.3"
   end type
   type(output_info) :: log, output 
 

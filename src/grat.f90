@@ -108,6 +108,7 @@ program grat
         do i = 1, size(green)
           write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)//"_[muGal]"
         enddo
+          write (output%unit,'(a13)',advance='no'), "total"//"[muGal]"
       endif
     endif
 
@@ -185,7 +186,7 @@ program grat
             site(isite)%lon,  &
             site(isite)%height 
         if (method(1)) then 
-          write (output%unit, '(1en13.3,$)' ), &
+          write (output%unit, "("// output%form // '$)'), &
               admit( &
               site(isite), &
               date=date(idate)%date &
