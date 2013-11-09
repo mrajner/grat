@@ -1,7 +1,24 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-fd: grat
+#sslow
+osr: grat
+	grat -F ERA @SP \! , 101325 @RSP, ERA@HP\! , ETOPO@H! -H -M1,2 -D2010:2011 :4@M -G @GN -Sj
+
+osx: value_check grat
+		grat \
+		-M 1,2D \
+		-S j @H\
+		-F VIENNA @ RSP! , PREM @ HP! , PREM @ SP  , ETOPO @ H ! \
+		-D 2012 : 20120102 : 1 @ D \
+		-G @GE \
+		-q \
+		-wt \
+		-H 
+dd:
+	#  value_check -F NCEP@r ,EE@H -Sb -o :free -D2011,2012 -V
+	grat -F NCP@SP -Sb -o :free -D2011 -V:s -w -H -M1,2D -G @GN
+	fd: grat
 	grat -FNCEP@SP! , 101300@RSP ,1@HRSP \
 		-V \
 		-Sj \
@@ -20,12 +37,12 @@ f:grat
 	#  grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP -G merriam@GE -H -M2D -ws -D 20120101000000 -o dat/ib_20120101000000_ib.dat :nc -V
 
 dfdsfd: grat
-	  @for y in {2012..2015}; do \
-		  grat -Sj \
-		  -F ERA@SP!, NCEP@HP\!, ETOPO@H\! -U -A1 \
-		  -D$${y}1212 \
-		  -M1D   -w ; \
-		  done
+	@for y in {2012..2015}; do \
+		grat -Sj \
+		-F ERA@SP!, NCEP@HP\!, ETOPO@H\! -U -A1 \
+		-D$${y}1212 \
+		-M1D   -w ; \
+		done
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)
@@ -103,19 +120,19 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 ifdef DEP
-mod_utilities.o: mod_constants.o
-mod_atmosphere.o: mod_printing.o mod_utilities.o
-mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
-mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
-mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
-mod_date.o: mod_data.o
-mod_mjd.o: mod_constants.o
-mod_polygon.o:mod_printing.o mod_cmdline.o
-mod_printing.o: mod_cmdline.o
-mod_cmdline.o: mod_utilities.o
-mod_normalization.o: mod_constants.o mod_utilities.o
+	mod_utilities.o: mod_constants.o
+	mod_atmosphere.o: mod_printing.o mod_utilities.o
+	mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
+	mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
+	mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
+	mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
+	mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
+	mod_date.o: mod_data.o
+	mod_mjd.o: mod_constants.o
+	mod_polygon.o:mod_printing.o mod_cmdline.o
+	mod_printing.o: mod_cmdline.o
+	mod_cmdline.o: mod_utilities.o
+	mod_normalization.o: mod_constants.o mod_utilities.o
 endif
 
 

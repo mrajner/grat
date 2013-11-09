@@ -167,7 +167,7 @@ subroutine model_aliases(model, dryrun, year)
         model%names(1)="temp"
         call print_warning ("not yet NCEP@T", error=.true.)
       endif
-    case ("HP")
+    case ("HP","H")
       model%names(1)="hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.sfc.nc"
       model%autoload=.false.
@@ -191,7 +191,7 @@ subroutine model_aliases(model, dryrun, year)
     case ("T")
       model%names(1)="v2t"
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
-    case ("HP")
+    case ("HP","H")
       model%names(1)="z"
       model%datanames(1) = "gp2h"
       write(model%name,'(a,a,i4,a)') trim(prefix),"gp.nc"
@@ -242,6 +242,7 @@ subroutine model_aliases(model, dryrun, year)
     endselect
   case default
     model%if=.false.
+    model%autoload=.false.
   endselect
   if (model%if .and. .not. model%autoload) call read_netCDF(model)
 
@@ -540,7 +541,9 @@ subroutine get_variable(model, date, print)
   logical, optional :: print
   character (20) :: aux
 
-  if (model%huge .or. model%if_constant_value) then
+  if (model%huge &
+      .or. model%if_constant_value &
+      .or. .not. model%if) then
     return
   endif
 
@@ -678,7 +681,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   integer, intent(in), optional::date(6)
   logical :: success
 
-  if (.not.model%exist) then
+  if (.not.model%exist.or..not.model%if) then
     val = sqrt(-1.)
     return
   endif

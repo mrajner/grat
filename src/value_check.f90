@@ -98,7 +98,7 @@ program value_check
       endif
       imodel = 0
       do ii = 1 , size (model)
-        if (model(ii)%if .or. model(ii)%if_constant_value) then
+        if (model(ii)%if.or.model(ii)%if_constant_value) then
           imodel = imodel + 1
           if (iok.eq.1) then
             call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
@@ -109,11 +109,13 @@ program value_check
           if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
         endif
       enddo
-      write (output%unit , '(a8,2f10.4,20en15.4)') site(i)%name, site(i)%lat, site(i)%lon, val
+      write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
+      write (output%unit , "("// output%form // '$)') val
       if (output%unit.ne.output_unit.and..not.quiet) then 
         call cpu_time(cpu(2))
         call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
       endif
+      write (output%unit , *)
     enddo
   enddo
 
