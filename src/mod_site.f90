@@ -375,6 +375,7 @@ subroutine gather_site_model_info()
   use mod_data, only: get_value, model, get_variable
   integer :: i
 
+  stop "D"
   if (site_height_from_model.and. ind%model%h.eq.0) then
     call print_warning("site @H but not model @H was given", error=.true.)
   endif

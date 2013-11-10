@@ -3,14 +3,16 @@
 
 osx: value_check grat
 		grat \
-		-M 1,2D \
-		-S amazonina:-3000:-155:-1111  \
-		-F NCEP @ SP! , NCEP@HP! \
+		-M 1 \
+		-S amazonina:-3000:-155:-1111 @ H  \
+		-F NCEP @ SP! , \
+		NCEP@HP! , \
+		NCP@H!  \
 		-D 2012 : 20120102 : 1 @ D \
 		-G @GE \
 		-q \
 		-wt \
-		-H 
+		-H  -U:standard
 dd:
 	#  value_check -F NCEP@r ,EE@H -Sb -o :free -D2011,2012 -V
 	grat -F NCP@SP -Sb -o :free -D2011 -V:s -w -H -M1,2D -G @GN
