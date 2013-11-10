@@ -115,7 +115,7 @@ program value_check
         call cpu_time(cpu(2))
         call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
       endif
-      write (output%unit , *)
+      if (size(val).gt.0) write (output%unit , *)
     enddo
   enddo
 

@@ -1,15 +1,11 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-#sslow
-osr: grat
-	grat -F ERA @SP \! , 101325 @RSP, ERA@HP\! , ETOPO@H! -H -M1,2 -D2010:2011 :4@M -G @GN -Sj
-
 osx: value_check grat
 		grat \
 		-M 1,2D \
-		-S j @H\
-		-F VIENNA @ RSP! , PREM @ HP! , PREM @ SP  , ETOPO @ H ! \
+		-S amazonina:-3000:-155:-1111  \
+		-F NCEP @ SP! , NCEP@HP! \
 		-D 2012 : 20120102 : 1 @ D \
 		-G @GE \
 		-q \

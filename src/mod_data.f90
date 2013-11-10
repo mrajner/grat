@@ -681,6 +681,11 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   integer, intent(in), optional::date(6)
   logical :: success
 
+  if (model%if_constant_value) then
+    val = model%constant_value
+    return
+  end if
+
   if (.not.model%exist.or..not.model%if) then
     val = sqrt(-1.)
     return
@@ -699,10 +704,6 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     val = sqrt(-1.)
     return
   endif
-  if (model%if_constant_value) then
-    val = model%constant_value
-    return
-  end if
 
   ilat = minloc(abs(model%lat-lat),1)
   ilon = minloc(abs(model%lon-lon),1)

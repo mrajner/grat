@@ -89,7 +89,7 @@ program grat
 
     if (size(date).gt.0) then
       if(output%header) then
-        write (output%unit, '(a12,x,a14)', advance = "no" ) "mjd", "date"
+        write (output%unit, '(a12,x,a14,x)', advance = "no" ) "mjd", "date"
       endif
       start = 1
     endif
@@ -97,7 +97,7 @@ program grat
       if(output%header) write (output%unit, '(a2)', advance = "no" ) "i"
     endif
     if(output%header) then
-      write (output%unit, '(a8,3a10)', advance="no") "name", "lat", "lon", "h"
+      write (output%unit, '(a8,3(x,a9))', advance="no") "name", "lat", "lon", "h"
     endif
 
     if(output%header) then
@@ -179,10 +179,10 @@ program grat
 
 
         if (idate.gt.0) then
-          write(output%unit, '(f12.3,x,i4.4,5(i2.2))', advance="no") &
+          write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
               date(idate)%mjd, date(idate)%date
         endif
-        write (output%unit, '(a8,2f10.4,f10.3,$)' ), &
+        write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
             site(isite)%name, &
             site(isite)%lat,  &
             site(isite)%lon,  &

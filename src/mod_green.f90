@@ -472,7 +472,6 @@ subroutine convolve(site, date)
                 call get_value (                                                & 
                     model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
                     level=1, method = info(igreen)%interpolation)
-                stop "D"
                 val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
               endif
 
