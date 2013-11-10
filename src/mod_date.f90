@@ -40,6 +40,10 @@ subroutine parse_date (cmd_line_entry)
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
+    if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"  &
+    .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
+    i_aux=1,size(cmd_line_entry%field(i_)%subfield))])) cycle
+
     interval_unit = "h"
     write(log%unit,form%i2) trim(cmd_line_entry%field(i_)%full)
     call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
@@ -90,6 +94,7 @@ subroutine parse_date (cmd_line_entry)
       case('')
       case default
         call print_warning ("unit not valid", error=.true.)
+        cycle
       endselect
     else
       stop = start
@@ -101,6 +106,7 @@ subroutine parse_date (cmd_line_entry)
         read (cmd_line_entry%field(i_)%subfield(3)%dataname,* ) interval_unit
       case default
         call print_warning ("interval unit not valid", error=.true.)
+        cycle
       endselect
     else
       step=6
