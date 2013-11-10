@@ -3,7 +3,7 @@
 
 df: value_check
 	$< -D \
-	20110111 : 2012 :1 @M
+		20110131 :1 @M:1@D
 osx: value_check grat
 		grat \
 		-M 1,2D \
