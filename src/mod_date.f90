@@ -29,6 +29,7 @@ subroutine parse_date (cmd_line_entry)
   integer :: i_, i, start_index, i_aux
   character(1) :: interval_unit
   type(cmd_line_arg) :: cmd_line_entry
+  logical :: success
 
   if (allocated(date)) then
     call print_warning ("repeated")
@@ -41,28 +42,41 @@ subroutine parse_date (cmd_line_entry)
       cycle
     endif
     if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"  &
-    .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
-    i_aux=1,size(cmd_line_entry%field(i_)%subfield))])) cycle
+      .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
+      i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
+      call print_warning("date not numeric "// trim(cmd_line_entry%field(i_)%full))
+      cycle
+    endif
+
+    if (any( [( &
+    is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name) &
+    .and.index(cmd_line_entry%field(i_)%subfield(i_aux)%name,".").ne.0 , &
+    i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
+      call print_warning("decimal date not supported "// trim(cmd_line_entry%field(i_)%full))
+      cycle
+    endif
+
 
     interval_unit = "h"
-    write(log%unit,form%i2) trim(cmd_line_entry%field(i_)%full)
-    call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start)
+    write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
+    call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start, success=success)
+    if (.not.success) cycle
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
       if (size(model(1)%date).eq.0) then
         stop "NO dates in first model. -Dm is forbidden"
       else
-        start = model(1)%date(lbound(model(1)%date,1),1:6)
+        start = model(1)%date(lbound(model(1)%date, 1), 1:6)
       endif
     endif
     stop = start
 
     ! tilde
     if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~") then
-      swap = model(1)%date(1,:)
-      do i=2,size(model(1)%date(:,:),1)
-        if (abs(mjd(model(1)%date(i,:))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
-          swap = model(1)%date(i,:)
+      swap = model(1)%date(1, :)
+      do i=2, size(model(1)%date(:, :), 1)
+        if (abs(mjd(model(1)%date(i, :))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
+          swap = model(1)%date(i, :)
         endif
       enddo
       start = swap
@@ -82,15 +96,15 @@ subroutine parse_date (cmd_line_entry)
         stop(3:)=start(3:)
         if (stop(2).gt.12) then
           stop(1) = stop(1)+int(stop(2)/12)
-          stop(2) = modulo(stop(2),12)
+          stop(2) = modulo(stop(2), 12)
         else if (stop(2).lt.1) then
           stop(1) =stop(1)-int(-stop(2)/12+1)
           stop(2) =stop(2)+12*(1+int(-stop(2)/12))
         endif
       case('D')
-        call invmjd (mjd(start)+stop(1) , stop)
+        call invmjd (mjd(start)+stop(1), stop)
       case('H')
-        call invmjd (mjd(start)+stop(1)/24. , stop)
+        call invmjd (mjd(start)+stop(1)/24., stop)
       case('')
       case default
         call print_warning ("unit not valid", error=.true.)
@@ -102,8 +116,8 @@ subroutine parse_date (cmd_line_entry)
     if (size(cmd_line_entry%field(i_)%subfield).ge.3)then
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
-      case("M","D","Y", "H")
-        read (cmd_line_entry%field(i_)%subfield(3)%dataname,* ) interval_unit
+      case("M", "D", "Y", "H")
+        read (cmd_line_entry%field(i_)%subfield(3)%dataname, * ) interval_unit
       case default
         call print_warning ("interval unit not valid", error=.true.)
         cycle
@@ -113,13 +127,13 @@ subroutine parse_date (cmd_line_entry)
     endif
 
     if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
-      stop = model(1)%date(ubound(model(1)%date,1),1:6)
+      stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
     endif
 
-    write (log%unit , '('//form%t3//',a,x,i4,5(1x,i2.2))')  "start date:" , start
+    write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))')  "start date:", start
     if (mjd(start).ne.mjd(stop)) then
-      write (log%unit , '('//form%t3//',a,x,i4,5(1x,i2.2))') "stop  date:" , stop
-      write (log%unit , form%i3) "interval:" , step, interval_unit
+      write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))') "stop  date:", stop
+      write (log%unit, form%i3) "interval:", step, interval_unit
     endif
 
     ! allow that stop is previous than start and list in reverse order
@@ -142,12 +156,12 @@ subroutine parse_date (cmd_line_entry)
           (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
         date(start_index)%date=start
         date(start_index)%mjd=mjd(date(start_index)%date)
-        do i= start_index+1 ,size(date)
+        do i= start_index+1, size(date)
           date(i)%date=date(i-1)%date
           date(i)%date(2)=date(i-1)%date(2)+step
           if (date(i)%date(2).gt.12) then
             date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
-            date(i)%date(2) =modulo(date(i)%date(2),12)
+            date(i)%date(2) =modulo(date(i)%date(2), 12)
           else if (date(i)%date(2).lt.1) then
             date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
             date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
@@ -165,11 +179,11 @@ subroutine parse_date (cmd_line_entry)
         ) then
         if (size(cmd_line_entry%field(i_)%subfield).lt.3) step=1
         if (step.gt.size(model(1)%time)) step=size(model(1)%time)
-        call more_dates (ceiling(size(model(1)%time)/step),start_index)
+        call more_dates (ceiling(size(model(1)%time)/step), start_index)
         i_aux=0
         do i = 1, size(model(1)%time), int(step)
           i_aux=i_aux+1
-          date(i_aux)%date = model(1)%date(i,:)
+          date(i_aux)%date = model(1)%date(i, :)
           date(i_aux)%mjd =mjd (date(i_aux)%date)
         enddo
       else
@@ -178,14 +192,14 @@ subroutine parse_date (cmd_line_entry)
         if (interval_unit.eq."s") step = step/60./60.
 
         call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index )
-        do i = start_index , size(date)
+        do i = start_index, size(date)
           date(i)%mjd = mjd(start) + (i-start_index)*step/24.
           call invmjd (date(i)%mjd, date(i)%date)
         enddo
       endif
     endif
   enddo
-  write (log%unit , form%i3) "dates total:" , size(date)
+  write (log%unit, form%i3) "dates total:", size(date)
 
 end subroutine
 
@@ -194,10 +208,10 @@ end subroutine
 subroutine more_dates (number, start_index)
   integer, intent(in)  :: number
   integer, intent(out) :: start_index
-  type(dateandmjd), allocatable , dimension(:) :: tmpdate
+  type(dateandmjd), allocatable, dimension(:) :: tmpdate
 
   if (allocated(date)) then
-    write(log%unit, form%i3) ,"added date(s):", number
+    write(log%unit, form%i3), "added date(s):", number
     start_index=size(date) + 1
     call move_alloc(date, tmpdate)
     allocate(date(size(tmpdate)+number))
@@ -212,31 +226,34 @@ end subroutine
 ! =============================================================================
 !> Convert dates given as string to integer (6 elements)
 !! 
-!! 20110612060302 --> [2011 , 6 , 12 , 6 , 3 , 2 ]
+!! 20110612060302 --> [2011, 6, 12, 6, 3, 2 ]
 !! you can omit
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine string2date (string, date)
+subroutine string2date (string, date, success)
   use mod_utilities, only: is_numeric
   use mod_cmdline, only: method
-  character (*) , intent(in) :: string
-  integer , dimension(6) ,intent(out):: date 
-  integer :: start_char , end_char , j
+  character (*), intent(in) :: string
+  integer, dimension(6), intent(out):: date 
+  integer :: start_char, end_char, j
+  logical, optional :: success
 
+  if (present(success)) success=.true.
   ! this allow to specify !st Jan of year simple as -Dyyyy
   date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
   do j = 1, 6 
     if (j.eq.1) then
-      end_char=min(len(string),start_char+3)
+      end_char=min(len(string), start_char+3)
     else
-      end_char=min(len(string),start_char+1)
+      end_char=min(len(string), start_char+1)
     endif
     if (is_numeric(string(start_char : end_char) )) then
-      read(string(start_char : end_char),*) date(j)
+      read(string(start_char : end_char), *) date(j)
     else
       call print_warning ("bad date " // string)
+      if (present(success)) success=.false.
       return
     endif
     start_char=end_char+1
