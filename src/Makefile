@@ -2,7 +2,8 @@
 # for example: OBJS  = libgrat.a
 
 df: value_check
-	$< -D 2100.33 , 2100.33:3200.22
+	$< -D \
+	20110111 : 2012 :1 @M
 osx: value_check grat
 		grat \
 		-M 1,2D \

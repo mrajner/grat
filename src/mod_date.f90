@@ -167,6 +167,7 @@ subroutine parse_date (cmd_line_entry)
             date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
           endif
           date(i)%mjd=mjd(date(i)%date)
+          call invmjd(date(i)%mjd, date(i)%date)
         enddo
       endif
     else
