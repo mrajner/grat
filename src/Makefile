@@ -1,6 +1,9 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+df: value_check
+	$< -D \
+		20110131 :1 @M:1@D
 osx: value_check grat
 		grat \
 		-M 1 \
@@ -118,19 +121,19 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 ifdef DEP
-	mod_utilities.o: mod_constants.o
-	mod_atmosphere.o: mod_printing.o mod_utilities.o
-	mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
-	mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
-	mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-	mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-	mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
-	mod_date.o: mod_data.o
-	mod_mjd.o: mod_constants.o
-	mod_polygon.o:mod_printing.o mod_cmdline.o
-	mod_printing.o: mod_cmdline.o
-	mod_cmdline.o: mod_utilities.o
-	mod_normalization.o: mod_constants.o mod_utilities.o
+  mod_utilities.o: mod_constants.o
+  mod_atmosphere.o: mod_printing.o mod_utilities.o
+  mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
+  mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
+  mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
+  mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
+  mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
+  mod_date.o: mod_data.o
+  mod_mjd.o: mod_constants.o
+  mod_polygon.o:mod_printing.o mod_cmdline.o
+  mod_printing.o: mod_cmdline.o
+  mod_cmdline.o: mod_utilities.o
+  mod_normalization.o: mod_constants.o mod_utilities.o
 endif
 
 
