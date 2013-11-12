@@ -73,13 +73,13 @@ program grat
   call cpu_time(cpu(1))
 
   ! gather cmd line option decide where to put output
-  call intro & 
-    ( &
+  call intro ( &
     program_calling = "grat", &
       version = "pre-alpha", &
       accepted_switches="VSBLGPqoFIDLvhRrMOAHUw", &
-      cmdlineargs=.true. &
-      )
+      cmdlineargs=.true.)
+
+
     start = 0
     if (dryrun) then
       call print_site_summary (site_parsing=.true.)
@@ -121,6 +121,10 @@ program grat
     if (ind%model%rsp.ne.0) then
       call get_variable (model(ind%model%rsp))
     endif
+    if (ind%model%hrsp.ne.0) then
+      call get_variable (model(ind%model%hrsp))
+    endif
+
     if (inverted_landsea_mask.and.ind%model%ls.ne.0) then
       model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
     endif
@@ -134,16 +138,16 @@ program grat
             select case (model(i)%dataname)
             case ("SP", "T")
               if ( &
-                  idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
-                  .or.(model(i)%autoload &
-                  .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
-                  .and.idate.ne.1 &
-                  ) then
+                idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
+                .or.(model(i)%autoload &
+                .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
+                .and.idate.ne.1 &
+                ) then
                 call model_aliases(model(i), year= date(idate)%date(1))
               endif
               if (size(date).eq.0.and.model(i)%exist) then
                 call get_variable (model(i))
-              elseif (model(i)%exist) then
+                elseif (model(i)%exist) then
                 call get_variable (model(i), date = date(idate)%date)
               endif
             endselect
@@ -155,11 +159,11 @@ program grat
           if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
             if(size(date).eq.0) then
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                  inverted_landsea_mask = inverted_landsea_mask)
+                inverted_landsea_mask = inverted_landsea_mask)
             else
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                  date=date(idate)%date, &
-                  inverted_landsea_mask = inverted_landsea_mask)
+                date=date(idate)%date, &
+                inverted_landsea_mask = inverted_landsea_mask)
             endif
           endif
         endif
@@ -176,19 +180,19 @@ program grat
 
         if (idate.gt.0) then
           write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
-              date(idate)%mjd, date(idate)%date
+            date(idate)%mjd, date(idate)%date
         endif
         write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
-            site(isite)%name, &
-            site(isite)%lat,  &
-            site(isite)%lon,  &
-            site(isite)%height 
+          site(isite)%name, &
+          site(isite)%lat,  &
+          site(isite)%lon,  &
+          site(isite)%height 
         if (method(1)) then 
           write (output%unit, "("// output%form // '$)'), &
-              admit( &
-              site(isite), &
-              date=date(idate)%date &
-              )
+            admit( &
+            site(isite), &
+            date=date(idate)%date &
+            )
         endif
         if (method(2)) then 
           ! perform convolution
@@ -204,9 +208,9 @@ program grat
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
-              100*iprogress/(max(size(date),1) & 
-              *max(size(site),1)),             & 
-              cpu(2)-cpu(1))
+            100*iprogress/(max(size(date),1) & 
+            *max(size(site),1)),             & 
+            cpu(2)-cpu(1))
         endif
       enddo
     enddo

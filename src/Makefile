@@ -1,38 +1,6 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-osx: grat
-	command="grat -Sj @H  -F 1013@SP:@scale=100 , 0@HP, 8@H:@scale=1000,300@T  -A1 -H  -U -o:free";\
-	eval $$command ; \
-	eval $${command/,300@T/}
-dd:
-	#  value_check -F NCEP@r ,EE@H -Sb -o :free -D2011,2012 -V
-	grat -F NCP@SP -Sb -o :free -D2011 -V:s -w -H -M1,2D -G @GN
-	fd: grat
-	grat -FNCEP@SP! , 101300@RSP ,1@HRSP \
-		-V \
-		-Sj \
-		-D2011:2012:1@M \
-		-H -r nc,t -o :free -M1 -w -U
-ff: grat value_check
-	grat -M 1D -V -G @GN, @GE \
-		-Sr :32 :22 @H \
-		-F ERA@SP , ERA@HP , ETOPO@H! , \
-		VIENNA @RSP , VIENNA @ HRSP -w -D 2010:2012:400@D  \
-		-H  -U standard  -o :free -r nc
-
-f:grat
-	grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP , NCEP1 @ HP , ETOPO @ H \! -G merriam@GE -H -M2D -ws -U -D 20120101000000 
-	#  grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP -G merriam@GE -H -M2D -ws -BN -D 20120101000000 -o dat/nib_20120101000000_nib.dat :nc -V
-	#  grat -S j -F /home/mrajner/dat/ncep_reanalysis/reanalysis1/pres.sfc.2012.nc@SP:pres , VIENNA@RSP -G merriam@GE -H -M2D -ws -D 20120101000000 -o dat/ib_20120101000000_ib.dat :nc -V
-
-dfdsfd: grat
-	@for y in {2012..2015}; do \
-		grat -Sj \
-		-F ERA@SP!, NCEP@HP\!, ETOPO@H\! -U -A1 \
-		-D$${y}1212 \
-		-M1D   -w ; \
-		done
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)

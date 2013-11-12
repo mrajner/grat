@@ -18,106 +18,98 @@ real(dp) function admit(site_, date)
   real(dp) :: val, rsp, t, hrsp
   type(site_info) :: site_
   integer, optional :: date(6)
+  logical, save :: first_warning=.true.
 
-  if (ind%model%sp.ne.0 & 
-      .and.( model(ind%model%sp)%if &
-      .or. model(ind%model%sp)%if_constant_value) &
-      ) then
+  ! get SP
+  if (ind%model%sp.ne.0                         & 
+    .and.(model(ind%model%sp)%if                & 
+    .or. model(ind%model%sp)%if_constant_value) & 
+    ) then
     call get_value (                  & 
-        model=model(ind%model%sp),      & 
-        lat=site_%lat,                  & 
-        lon=site_%lon,                  & 
-        val=val,                        & 
-        level=1,                        & 
-        method = info(1)%interpolation, & 
-        date=date                       & 
-        )
+      model=model(ind%model%sp),      & 
+      lat=site_%lat,                  & 
+      lon=site_%lon,                  & 
+      val=val,                        & 
+      level=1,                        & 
+      method = info(1)%interpolation, & 
+      date=date                       & 
+      )
   else
     call print_warning("@SP is required with -M1D", error=.true.)
   endif
 
-  if (.not.isnan(val)) then
-    if (site_%hp%if .and. transfer_sp%if) then
-      if (ind%model%t.ne.0) then
-        call get_value (                  & 
-            model=model(ind%model%t),       & 
-            lat=site_%lat,                  & 
-            lon=site_%lon,                  & 
-            val=t,                          & 
-            level=1,                        & 
-            method=info(1)%interpolation,   & 
-            date=date                       & 
-            )
+  ! get RSP
+  if (ind%model%rsp.ne.0) then
+    call get_value (                 & 
+      model=model(ind%model%rsp),    & 
+      lat=site_%lat,                 & 
+      lon=site_%lon,                 & 
+      val=rsp,                       & 
+      level=1,                       & 
+      method = info(1)%interpolation & 
+      )
+  endif
 
-        ! val = standard_pressure(            & 
-            ! height=site_%height,              & 
-            ! h_zero=site_%hp%val,              & 
-            ! p_zero=val,                       & 
-            ! method=transfer_sp%method,        & 
-            ! temperature=t,                    & 
-            ! use_standard_temperature=.false., & 
-            ! nan_as_zero=.false.)
-      ! else
-        ! val = standard_pressure(           & 
-            ! height=site_%height,             & 
-            ! h_zero=site_%hp%val,             & 
-            ! p_zero=val,                      & 
-            ! method=transfer_sp%method,       & 
-            ! use_standard_temperature=.true., & 
-            ! nan_as_zero=.false.)
-      endif
-        val = standard_pressure(            & 
-            height=site_%height,              & 
-            h_zero=site_%hp%val,              & 
-            p_zero=val,                       & 
-            method=transfer_sp%method,        & 
-            temperature=t,                    & 
-            use_standard_temperature=ind%model%t.eq.0, & 
-            nan_as_zero=.false.)
+  if (transfer_sp%if) then
+
+    ! get T
+    if (ind%model%t.ne.0) then
+      call get_value (                  & 
+        model=model(ind%model%t),       & 
+        lat=site_%lat,                  & 
+        lon=site_%lon,                  & 
+        val=t,                          & 
+        level=1,                        & 
+        method=info(1)%interpolation,   & 
+        date=date                       & 
+        )
     endif
 
-    if (ind%model%rsp.ne.0) then
+    ! transfer SP
+    if (site_%hp%if.and..not.isnan(val)) then
+      val = standard_pressure(     & 
+        height=site_%height,       & 
+        h_zero=site_%hp%val,       & 
+        p_zero=val,                & 
+        method=transfer_sp%method, & 
+        temperature=t,             & 
+        use_standard_temperature   & 
+        = ind%model%t.eq.0,        & 
+        nan_as_zero=.false.)
+    endif
+
+    if (ind%model%hrsp.ne.0 &
+      .and.ind%model%rsp.ne.0) then
       call get_value (                 & 
-          model=model(ind%model%rsp),    & 
-          lat=site_%lat,                 & 
-          lon=site_%lon,                 & 
-          val=rsp,                       & 
-          level=1,                       & 
-          method = info(1)%interpolation & 
-          )
-      if (ind%model%hrsp.ne.0) then
-        call get_value (                 & 
-            model=model(ind%model%hrsp),    & 
-            lat=site_%lat,                 & 
-            lon=site_%lon,                 & 
-            val=hrsp,                      & 
-            level=1,                       & 
-            method = info(1)%interpolation & 
-            )
-        if (ind%model%t.ne.0) then
-          rsp = standard_pressure(            & 
-              height=site_%height,              & 
-              h_zero=hrsp,              & 
-              p_zero=rsp,                       & 
-              method=transfer_sp%method,        & 
-              temperature=t,                    & 
-              use_standard_temperature=.false., & 
-              nan_as_zero=.false.)
-        else
-          val = standard_pressure(           & 
-              height=site_%height,             & 
-              h_zero=hrsp,             & 
-              p_zero=rsp,                      & 
-              method=transfer_sp%method,       & 
-              use_standard_temperature=.true., & 
-              nan_as_zero=.false.)
-        endif
-      endif
-      val=val-rsp
+        model=model(ind%model%hrsp),   & 
+        lat=site_%lat,                 & 
+        lon=site_%lon,                 & 
+        val=hrsp,                      & 
+        level=1,                       & 
+        method = info(1)%interpolation & 
+        )
+
+      rsp = standard_pressure(     & 
+        height=site_%height,       & 
+        h_zero=hrsp,               & 
+        p_zero=rsp,                & 
+        method=transfer_sp%method, & 
+        temperature=t,             & 
+        use_standard_temperature   & 
+        = ind%model%t.eq.0,        & 
+        nan_as_zero=.false.)
+
+    elseif(ind%model%hrsp.ne.0) then
+      if (first_warning) call print_warning("@RSP not found but @HRSP and -U given")
+    elseif(ind%model%rsp.ne.0) then
+      if (first_warning) call print_warning("@HRSP not found but @RSP and -U given")
     endif
   endif
 
+  if (ind%model%rsp.ne.0) val = val-rsp
   admit = admitance%value*1.e-2 * val
+
+  if (first_warning) first_warning=.false.
 end function
 
 ! =============================================================================
@@ -133,7 +125,7 @@ subroutine parse_admit(cmd_line_entry)
   endif
   write(log%unit, '('//form%t2//',a,x,f6.2,x,a)') "admitance:", admitance%value, "uGal/hPa"
   if (size(cmd_line_entry%field(1)%subfield).gt.1 &
-      .and.cmd_line_entry%field(1)%subfield(2)%name.ne." ") then
+    .and.cmd_line_entry%field(1)%subfield(2)%name.ne." ") then
     admitance%level=cmd_line_entry%field(1)%subfield(2)%name
   else
     admitance%level="none"
