@@ -2,6 +2,16 @@
 # for example: OBJS  = libgrat.a
 
 
+dkljgfd:grat
+	grat \
+		-M 1,2D \
+		-S a:0:0 \
+		-F NCEP @ HP! , ERA @ SP ! , ETOPO @ H ! \
+		-D 2012  \
+		-U berg \
+		-G merriam @ GE , merriam @GN  -V
+
+
 SSSS= $(SP)
 SSSS= $(SP), $(H__)
 #  SSSS= $(SP), $(H__),$(Hetopo)
@@ -78,19 +88,19 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 ifdef DEP
-  mod_utilities.o: mod_constants.o
-  mod_atmosphere.o: mod_printing.o mod_utilities.o
-  mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
-  mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
-  mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-  mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-  mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
-  mod_date.o: mod_data.o
-  mod_mjd.o: mod_constants.o
-  mod_polygon.o:mod_printing.o mod_cmdline.o
-  mod_printing.o: mod_cmdline.o
-  mod_cmdline.o: mod_utilities.o
-  mod_normalization.o: mod_constants.o mod_utilities.o
+	mod_utilities.o: mod_constants.o
+	mod_atmosphere.o: mod_printing.o mod_utilities.o
+	mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
+	mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
+	mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
+	mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
+	mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
+	mod_date.o: mod_data.o
+	mod_mjd.o: mod_constants.o
+	mod_polygon.o:mod_printing.o mod_cmdline.o
+	mod_printing.o: mod_cmdline.o
+	mod_cmdline.o: mod_utilities.o
+	mod_normalization.o: mod_constants.o mod_utilities.o
 endif
 
 
