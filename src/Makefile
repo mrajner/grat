@@ -1,13 +1,10 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-osx: value_check grat
-		grat \
-			-Sj @H \
-			-F 0@SP , 100@RSP, \
-			0@HP, 0@H, 000@HRSP \
-			-A1 -H  \
-			-U -o:free
+osx: grat
+	command="grat -Sj @H  -F 1013@SP:@scale=100 , 0@HP, 8@H:@scale=1000,300@T  -A1 -H  -U -o:free";\
+	eval $$command ; \
+	eval $${command/,300@T/}
 dd:
 	#  value_check -F NCEP@r ,EE@H -Sb -o :free -D2011,2012 -V
 	grat -F NCP@SP -Sb -o :free -D2011 -V:s -w -H -M1,2D -G @GN
