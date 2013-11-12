@@ -19,7 +19,10 @@ real(dp) function admit(site_, date)
   type(site_info) :: site_
   integer, optional :: date(6)
 
-  if (ind%model%sp.ne.0.and. model(ind%model%sp)%if) then
+  if (ind%model%sp.ne.0 &
+      .and.(model(ind%model%sp)%if &
+      .or. model(ind%model%sp)%if_constant_value) &
+      ) then
     call get_value (                  & 
         model=model(ind%model%sp),      & 
         lat=site_%lat,                  & 

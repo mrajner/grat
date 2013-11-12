@@ -115,7 +115,6 @@ subroutine parse_site(cmd_line_entry)
     if (any(cmd_line_entry%field(i)%subfield%dataname.eq."H")) &
         site_height_from_model=.true.
   enddo
-
 end subroutine
 
 ! =============================================================================
@@ -265,14 +264,15 @@ end subroutine
 subroutine more_sites (number, start_index)
   integer, intent(in)  :: number
   integer, intent(out) :: start_index
-  type(site_info),allocatable, dimension(:) :: tmpsite
+  type(site_info), allocatable, dimension(:) :: tmpsite
 
   if (allocated(site)) then
     write(log%unit, form%i3), "added site(s):", number
     start_index=size(site) + 1
     call move_alloc(site,tmpsite)
     allocate(site(size(tmpsite)+number))
-    site=tmpsite
+    print * ,size(site),size(tmpsite),number
+    site(1:size(tmpsite))=tmpsite
     deallocate(tmpsite)
   else 
     allocate(site(number))
@@ -372,10 +372,9 @@ end subroutine
 ! =============================================================================
 subroutine gather_site_model_info()
   use mod_cmdline, only: ind, info
-  use mod_data, only: get_value, model, get_variable
+  use mod_data,    only: get_value, model, get_variable
   integer :: i
 
-  stop "D"
   if (site_height_from_model.and. ind%model%h.eq.0) then
     call print_warning("site @H but not model @H was given", error=.true.)
   endif
@@ -383,25 +382,25 @@ subroutine gather_site_model_info()
     if (ind%model%hp.ne.0) then
       call get_variable( model(ind%model%hp))
       site(i)%hp%if=.true.
-      call get_value (                        & 
-          model=model(ind%model%hp),            & 
-          lat=site(i)%lat,                      & 
-          lon=site(i)%lon,                      & 
-          val=site(i)%hp%val,                   & 
-          level=1,                              & 
-          method = info(1)%interpolation        & 
+      call get_value (                   & 
+          model=model(ind%model%hp),     & 
+          lat=site(i)%lat,               & 
+          lon=site(i)%lon,               & 
+          val=site(i)%hp%val,            & 
+          level=1,                       & 
+          method = info(1)%interpolation & 
           )
     endif
     if(ind%model%h.ne.0) then
       site(i)%h%if=.true.
       call get_variable(model(ind%model%h))
-      call get_value (                       & 
-          model=model(ind%model%h),              & 
-          lat=site(i)%lat,                       & 
-          lon=site(i)%lon,                       & 
-          val=site(i)%h%val,                     & 
-          level=1,                               & 
-          method = info(1)%interpolation         & 
+      call get_value (                      & 
+          model=model(ind%model%h),         & 
+          lat=site(i)%lat,                  & 
+          lon=site(i)%lon,                  & 
+          val=site(i)%h%val,                & 
+          level=1,                          & 
+          method = info(1)%interpolation    & 
           )
     endif
   enddo

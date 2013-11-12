@@ -173,8 +173,7 @@ subroutine model_aliases(model, dryrun, year)
       model%autoload=.false.
     case ("LS")
       model%names(1:3)=["z", "x", "y"]
-      write(model%name,'(a,a,i4,a)') &
-        "/home/mrajner/dat/landsea/ncep_closed_seas_caspian.nc"
+      model%name="/home/mrajner/dat/landsea/ncep_closed_seas_caspian.nc"
       model%autoload=.false.
     case default
       model%autoload=.false.
@@ -198,8 +197,7 @@ subroutine model_aliases(model, dryrun, year)
       model%autoload=.false.
     case ("LS")
       model%names(1:3)=["z", "x", "y"]
-      write(model%name,'(a,a,i4,a)') &
-        "/home/mrajner/dat/landsea/era_closed_seas_caspian.nc"
+      model%name="/home/mrajner/dat/landsea/era_closed_seas_caspian.nc"
       model%autoload=.false.
     case default
       model%autoload=.false.
@@ -244,7 +242,7 @@ subroutine model_aliases(model, dryrun, year)
     model%if=.false.
     model%autoload=.false.
   endselect
-  if (model%if .and. .not. model%autoload) call read_netCDF(model)
+  if (model%if.and..not.model%autoload) call read_netCDF(model)
 
   if(present(dryrun) .and. dryrun) return
 
@@ -264,7 +262,7 @@ function variable_modifer (val, modifer)
   use mod_atmosphere, only: geop2geom
   use mod_constants,  only: earth
   use mod_utilities,  only: ntokens
-  use iso_fortran_env
+  use mod_printing,   only: print_warning
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
   character(*) :: modifer
@@ -303,9 +301,7 @@ function variable_modifer (val, modifer)
       read(keyval,*) numerickeyval
       variable_modifer=numerickeyval+variable_modifer
     case default
-      write (error_unit, *), key, &
-          " variable modifer not found"
-      stop 
+      call print_warning ("variable modifer not found" // key, error=.true.)
     endselect
     modifer = modifer(index(modifer, "@")+1:)
   enddo
@@ -317,7 +313,8 @@ end function
 subroutine read_netCDF (model, print, force)
   use netcdf
   use mod_printing
-  use mod_cmdline, only: ind
+  use mod_cmdline,   only: ind
+  use mod_utilities, only: file_exists
   type (file) :: model
   logical, optional, intent(in) :: print, force
   integer :: i 
@@ -330,6 +327,9 @@ subroutine read_netCDF (model, print, force)
     if (allocated(model%level))  deallocate(model%level)
     if (allocated(model%time))   deallocate(model%time)
   endif
+  if (.not.file_exists(model%name)) &
+      call print_warning("file not exist " // trim (model%name), &
+      error=.true.) 
 
   if (.not. (present(print).and. .not. print)) then
     write (log%unit, form%i3) "Opening file:", trim(basename(trim(model%name)))
@@ -363,7 +363,7 @@ subroutine get_dimension (model, i, print)
   if (status /=nf90_noerr) then
     if(model%names(i).eq."lon") then
       model%names(i)="longitude"
-      if (.not. (present(print).and..not.print))then
+      if (.not.(present(print).and..not.print)) then
         write(log%unit, '(a)', advance='no') "longitude"
       endif
       status = nf90_inq_dimid(model%ncid,"longitude", dimid)
@@ -375,9 +375,13 @@ subroutine get_dimension (model, i, print)
     endif
     status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
   endif
-  if(status /= nf90_noerr) then 
+  if(status /= nf90_noerr.and.any(i.eq.[2,3])) then 
+    call print_warning("key variable not found: " &
+        // trim(model%names(i)), error=.true.)
+  elseif(status /= nf90_noerr) then 
     if (.not. (present(print).and..not.print))then
-      write (log%unit, '(a6,1x,a)') trim(model%names(i)),"not found, allocating (1)..." 
+      write (log%unit, '(a6,1x,a)') &
+          trim(model%names(i)),"not found, allocating (1)..." 
       call nc_info(model)
     endif
     length=1
@@ -385,19 +389,20 @@ subroutine get_dimension (model, i, print)
     if (.not. (present(print).and..not.print))then
       write (log%unit, '(a6,1x,a)') "ok"
     endif
-    call check (nf90_inquire_dimension(model%ncid, dimid, len = length) )
-    call check (nf90_inq_varid(model%ncid, model%names(i), varid))
+    call check(nf90_inquire_dimension(model%ncid, dimid, len=length))
+    call check(nf90_inq_varid(model%ncid, model%names(i), varid))
   endif
-  if (i .eq. 3 ) then
-    allocate(model%lat (length))
-    call check(nf90_get_var  (model%ncid, varid, model%lat))
-    status = nf90_get_att ( model%ncid, varid, &
+  if (i.eq.3 ) then
+    allocate(model%lat(length))
+    call check(nf90_get_var (model%ncid, varid, model%lat))
+    status = nf90_get_att(model%ncid, varid, &
         "actual_range", model%latrange) 
-    if (status /= nf90_noerr ) model%latrange &
-        =[model%lat(1), model%lat(size(model%lat)) ]
+    if (status /= nf90_noerr ) then
+      model%latrange =[model%lat(1), model%lat(size(model%lat)) ]
+    endif
   else if (i.eq.2 ) then
-    allocate(model%lon (length))
-    call check(nf90_get_var  (model%ncid,  varid, model%lon))
+    allocate(model%lon(length))
+    call check(nf90_get_var (model%ncid,  varid, model%lon))
     status = nf90_get_att ( model%ncid, varid, &
         "actual_range", model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
@@ -407,7 +412,7 @@ subroutine get_dimension (model, i, print)
     end where
   else if (i.eq.4 ) then
     allocate(model%level (length))
-    status = nf90_get_var  (model%ncid,  varid, model%level)
+    status = nf90_get_var (model%ncid,  varid, model%level)
   elseif (i.eq.5 ) then
     allocate(model%time (length) )
     status = nf90_get_var (model%ncid,  varid, model%time)
@@ -542,59 +547,64 @@ subroutine get_variable(model, date, print)
   character (20) :: aux
 
   if (model%huge &
-      .or. model%if_constant_value &
-      .or. .not. model%if) then
+      .or.model%if_constant_value &
+      .or..not. model%if) then
+  return
+endif
+
+index_time = 0
+status = nf90_inq_varid (model%ncid, model%names(1), varid)
+if (status /= nf90_noerr) then
+  call nc_info(model)
+  call print_warning( &
+      "variable not found: " // trim(model%names(1)), &
+      error=.true.)
+endif
+if (allocated(model%data)) deallocate(model%data)
+!  model%level=1
+allocate ( &
+    model%data ( &
+    size(model%lon), &
+    size(model%lat), &
+    size (model%level) &
+    ) &
+    )
+
+if (size(date).gt.0 .and. present(date)) then                       
+  index_time = get_time_index(model, date)
+  if (index_time.eq.0) then
+    if (.not. (present(print).and..not.print))then
+      if (.not.log%sparse) then
+        write(aux, '(i4.4,5i2.2)') date
+        call print_warning("cannot find date: "// aux & 
+            // "var: " // trim(model%names(1)) // " in file: " // trim(model%name))
+      endif
+    endif
+    model%data= sqrt(-1.)
     return
   endif
+else
+  index_time = 1
+endif
+start = [1,1,index_time]
+call check (nf90_get_var ( & 
+    ncid=model%ncid,         & 
+    varid=varid,             & 
+    values=model%data,       & 
+    start=start)             & 
+    )
 
-  index_time = 0
-  status = nf90_inq_varid (model%ncid, model%names(1), varid)
-  if (status /= nf90_noerr) call nc_info(model)
-  if (allocated(model%data)) deallocate(model%data)
-  !  model%level=1
-  allocate ( &
-      model%data ( &
-      size(model%lon), &
-      size(model%lat), &
-      size (model%level) &
-      ) &
-      )
-
-  if (size(date).gt.0 .and. present(date)) then                       
-    index_time = get_time_index(model, date)
-    if (index_time.eq.0) then
-      if (.not. (present(print).and..not.print))then
-        if (.not.log%sparse) then
-          write(aux, '(i4.4,5i2.2)') date
-          call print_warning("cannot find date: "// aux & 
-          // "var: " // trim(model%names(1)) // " in file: " // trim(model%name))
-        endif
-      endif
-      model%data= sqrt(-1.)
-      return
-    endif
-  else
-    index_time = 1
-  endif
-  start = [1,1,index_time]
-  call check (nf90_get_var ( & 
-      ncid=model%ncid,         & 
-      varid=varid,             & 
-      values=model%data,       & 
-      start=start)             & 
-      )
-
-  call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
-  model%data = model%data*scale_factor + add_offset
-  if (trim(model%datanames(1)).ne."") then
-    do i =1, size(model%data,1)
-      do j =1, size(model%data,2)
-        do k =1, size(model%data,3)
-          model%data(i,j,k) = variable_modifer (model%data(i,j,k), model%datanames(1))
-        enddo
+call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
+model%data = model%data*scale_factor + add_offset
+if (trim(model%datanames(1)).ne."") then
+  do i =1, size(model%data,1)
+    do j =1, size(model%data,2)
+      do k =1, size(model%data,3)
+        model%data(i,j,k) = variable_modifer (model%data(i,j,k), model%datanames(1))
       enddo
     enddo
-  endif
+  enddo
+endif
 end subroutine
 
 ! =============================================================================
@@ -634,7 +644,7 @@ subroutine check(status, error, success)
   logical, intent(in), optional :: error
   logical, intent(out), optional :: success
 
- 
+
   if(status /= nf90_noerr) then 
     call print_warning(trim(nf90_strerror(status)))
     if (present(success)) then

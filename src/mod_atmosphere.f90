@@ -101,9 +101,11 @@ function standard_pressure (  &
           *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air) 
     case ("full")
       if (.not.present(use_standard_temperature)) then
-        write(error_unit, '(a)') "error: you have to specify use_standard_temperature with &
-            full method in standard_pressure"
-        stop
+        call print_warning(                    & 
+            "error: you have to specify        & 
+            use_standard_temperature with      & 
+            full method in standard_pressure", & 
+            error=.true.)
       endif
       standard_pressure=0.
       if (present(dz)) then
@@ -154,72 +156,72 @@ end function
 !! \li subarctic_winter
 ! ==============================================================================
 function standard_temperature (height, fels_type)
-    use mod_constants, only: dp, earth, atmosphere
-    use mod_printing, only : log
+  use mod_constants, only: dp, earth, atmosphere
+  use mod_printing, only : log
 
-    real(dp), intent(in)  :: height
-    real(dp)  :: standard_temperature
-    character (len=*), intent(in), optional  :: fels_type 
-    real(dp) :: aux, cn, t
-    integer :: i,indeks
-    real(dp), dimension (10) :: z,c,d
+  real(dp), intent(in)  :: height
+  real(dp)  :: standard_temperature
+  character (len=*), intent(in), optional  :: fels_type 
+  real(dp) :: aux, cn, t
+  integer :: i,indeks
+  real(dp), dimension (10) :: z,c,d
 
-    ! Read into memory the parameters of temparature height profiles
-    ! for standard atmosphere 
-    z = (/11.0 , 20.1 , 32.1 , 47.4  , 51.4 , 71.7  , 85.7  , 100.0 , 200.0 , 300.0 /)
-    c = (/-6.5 ,  0.0 ,  1.0 ,  2.75 ,  0.0 , -2.75 , -1.97 ,   0.0 ,   0.0 ,   0.0 /)
-    d = (/ 0.3 ,  1.0 ,  1.0 ,  1.0  ,  1.0 ,  1.0  ,  1.0  ,   1.0 ,   1.0 ,   1.0 /)
-    t = atmosphere%temperature%standard
+  ! Read into memory the parameters of temparature height profiles
+  ! for standard atmosphere 
+  z = (/11.0 , 20.1 , 32.1 , 47.4  , 51.4 , 71.7  , 85.7  , 100.0 , 200.0 , 300.0 /)
+  c = (/-6.5 ,  0.0 ,  1.0 ,  2.75 ,  0.0 , -2.75 , -1.97 ,   0.0 ,   0.0 ,   0.0 /)
+  d = (/ 0.3 ,  1.0 ,  1.0 ,  1.0  ,  1.0 ,  1.0  ,  1.0  ,   1.0 ,   1.0 ,   1.0 /)
+  t = atmosphere%temperature%standard
 
-    if ( present (fels_type)) then
-      if (fels_type .eq. "US1976" ) then
-      elseif (fels_type .eq. "tropical" ) then
-        z=(/ 2.0 ,  3.0 , 16.5 , 21.5 , 45.0 , 51.0 , 70.0 , 100.0  , 200.0 , 300.0 /)
-        c=(/-6.0 , -4.0 , -6.7 ,  4.0 ,  2.2 ,  1.0 , -2.8 ,  -0.27 ,   0.0 ,   0.0 /)
-        d=(/ 0.5 ,  0.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,   1.0  ,   1.0 ,   1.0 /)
-        t=300.0
-      elseif (fels_type .eq. "subtropical_summer" ) then
-        z = (/ 1.5 ,  6.5 , 13.0 , 18.0 , 26.0 , 36.0 , 48.0 , 50.0 , 70.0 , 100.0   /)
-        c = (/-4.0 , -6.0 , -6.5 ,  0.0 ,  1.2 ,  2.2 ,  2.5 ,  0.0 , -3.0 ,  -0.025 /)
-        d = (/ 0.5 ,  1.0 ,  0.5 ,  0.5 ,  1.0 ,  1.0 ,  2.5 ,  0.5 ,  1.0 ,   1.0   /)
-        t = 294.0
-      elseif (fels_type .eq. "subtropical_winter" ) then
-        z = (/ 3.0 , 10.0 , 19.0 , 25.0 , 32.0 , 44.5 , 50.0 , 71.0 , 98.0 , 200.0 /)
-        c = (/-3.5 , -6.0 , -0.5 ,  0.0 ,  0.4 ,  3.2 ,  1.6 , -1.8 ,  0.7 ,   0.0 /)
-        d = (/ 0.5 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
-        t = 272.2
-      elseif (fels_type .eq. "subarctic_summer" ) then
-        z = (/ 4.7 , 10.0 , 23.0 , 31.8 , 44.0 , 50.2 , 69.2 , 100.0 , 200.0 , 300.0 /)
-        c = (/-5.3 , -7.0 ,  0.0 ,  1.4 ,  3.0 ,  0.7 , -3.3 ,  -0.2 ,   0.0 ,   0.0 /)
-        d = (/ 0.5 ,  0.3 ,  1.0 ,  1.0 ,  2.0 ,  1.0 ,  1.5 ,   1.0 ,   1.0 ,   1.0 /)
-        t = 287.0
-      elseif (fels_type .eq. "subarctic_winter" ) then
-        z = (/  1.0 ,  3.2 ,  8.5 , 15.5 , 25.0 , 30.0 , 35.0 , 50.0 , 70.0 , 100.0 /)
-        c = (/  3.0 , -3.2 , -6.8 ,  0.0 , -0.6 ,  1.0 ,  1.2 ,  2.5 , -0.7 ,  -1.2 /)
-        d = (/  0.4 ,  1.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
-        t = 257.1
-      else
-        stop "unknown fels_type argument"
-      endif
+  if ( present (fels_type)) then
+    if (fels_type .eq. "US1976" ) then
+    elseif (fels_type .eq. "tropical" ) then
+      z=(/ 2.0 ,  3.0 , 16.5 , 21.5 , 45.0 , 51.0 , 70.0 , 100.0  , 200.0 , 300.0 /)
+      c=(/-6.0 , -4.0 , -6.7 ,  4.0 ,  2.2 ,  1.0 , -2.8 ,  -0.27 ,   0.0 ,   0.0 /)
+      d=(/ 0.5 ,  0.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,   1.0  ,   1.0 ,   1.0 /)
+      t=300.0
+    elseif (fels_type .eq. "subtropical_summer" ) then
+      z = (/ 1.5 ,  6.5 , 13.0 , 18.0 , 26.0 , 36.0 , 48.0 , 50.0 , 70.0 , 100.0   /)
+      c = (/-4.0 , -6.0 , -6.5 ,  0.0 ,  1.2 ,  2.2 ,  2.5 ,  0.0 , -3.0 ,  -0.025 /)
+      d = (/ 0.5 ,  1.0 ,  0.5 ,  0.5 ,  1.0 ,  1.0 ,  2.5 ,  0.5 ,  1.0 ,   1.0   /)
+      t = 294.0
+    elseif (fels_type .eq. "subtropical_winter" ) then
+      z = (/ 3.0 , 10.0 , 19.0 , 25.0 , 32.0 , 44.5 , 50.0 , 71.0 , 98.0 , 200.0 /)
+      c = (/-3.5 , -6.0 , -0.5 ,  0.0 ,  0.4 ,  3.2 ,  1.6 , -1.8 ,  0.7 ,   0.0 /)
+      d = (/ 0.5 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
+      t = 272.2
+    elseif (fels_type .eq. "subarctic_summer" ) then
+      z = (/ 4.7 , 10.0 , 23.0 , 31.8 , 44.0 , 50.2 , 69.2 , 100.0 , 200.0 , 300.0 /)
+      c = (/-5.3 , -7.0 ,  0.0 ,  1.4 ,  3.0 ,  0.7 , -3.3 ,  -0.2 ,   0.0 ,   0.0 /)
+      d = (/ 0.5 ,  0.3 ,  1.0 ,  1.0 ,  2.0 ,  1.0 ,  1.5 ,   1.0 ,   1.0 ,   1.0 /)
+      t = 287.0
+    elseif (fels_type .eq. "subarctic_winter" ) then
+      z = (/  1.0 ,  3.2 ,  8.5 , 15.5 , 25.0 , 30.0 , 35.0 , 50.0 , 70.0 , 100.0 /)
+      c = (/  3.0 , -3.2 , -6.8 ,  0.0 , -0.6 ,  1.0 ,  1.2 ,  2.5 , -0.7 ,  -1.2 /)
+      d = (/  0.4 ,  1.5 ,  0.3 ,  0.5 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,  1.0 ,   1.0 /)
+      t = 257.1
+    else
+      stop "unknown fels_type argument"
     endif
+  endif
 
-    do i=1,10
-      if (height/1000..le.z(i)) then
-        indeks=i
-        exit
-      endif
-    enddo
+  do i=1,10
+    if (height/1000..le.z(i)) then
+      indeks=i
+      exit
+    endif
+  enddo
 
-    aux = 0.
-    do i = 1, indeks
-      if (i.eq.indeks) then
-        cn = 0.
-      else
-        cn = c(i+1)
-      endif
-      aux = aux + d(i) * (cn - c(i))  * dlog (dcosh ((height/1000. - z(i)) / d(i)) / dcosh (z(i)/d(i))) 
-    enddo
-    standard_temperature = t + c(1) * (height/1000.)/2. + aux/2.
+  aux = 0.
+  do i = 1, indeks
+    if (i.eq.indeks) then
+      cn = 0.
+    else
+      cn = c(i+1)
+    endif
+    aux = aux + d(i) * (cn - c(i))  * dlog (dcosh ((height/1000. - z(i)) / d(i)) / dcosh (z(i)/d(i))) 
+  enddo
+  standard_temperature = t + c(1) * (height/1000.)/2. + aux/2.
 end function
 
 ! =============================================================================
@@ -229,17 +231,17 @@ end function
 !! \date 2013-03-19
 ! =============================================================================
 real(dp) function geop2geom (geopotential_height, inverse)
-    use mod_constants, only: dp, earth
-    real (dp) :: geopotential_height
-    logical, intent(in), optional:: inverse
+  use mod_constants, only: dp, earth
+  real (dp) :: geopotential_height
+  logical, intent(in), optional:: inverse
 
-    if (present(inverse) .and. inverse) then
-      geop2geom = geopotential_height * &
-          (earth%radius / (earth%radius + geopotential_height))**2
-    else
-      geop2geom = geopotential_height / &
-          (earth%radius / (earth%radius + geopotential_height))**2
-    endif
+  if (present(inverse) .and. inverse) then
+    geop2geom = geopotential_height * &
+        (earth%radius / (earth%radius + geopotential_height))**2
+  else
+    geop2geom = geopotential_height / &
+        (earth%radius / (earth%radius + geopotential_height))**2
+  endif
 end function
 
 end module

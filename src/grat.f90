@@ -57,14 +57,13 @@
 ! ==============================================================================
 program grat
 
-  use mod_parser
+  use mod_parser, only: intro
   use mod_data
   use mod_date
-  use mod_green, only : convolve, green, result
-  use mod_site
-  use mod_polygon
+  use mod_green, only: convolve, green
+  use mod_site, only: print_site_summary, site
   use mod_cmdline
-  use mod_admit
+  use mod_admit, only: admit
 
   implicit none
   real(dp) :: cpu(2)
@@ -92,9 +91,6 @@ program grat
         write (output%unit, '(a12,x,a14,x)', advance = "no" ) "mjd", "date"
       endif
       start = 1
-    endif
-    if (size(info).gt.1) then
-      if(output%header) write (output%unit, '(a2)', advance = "no" ) "i"
     endif
     if(output%header) then
       write (output%unit, '(a8,3(x,a9))', advance="no") "name", "lat", "lon", "h"

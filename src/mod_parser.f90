@@ -1,6 +1,6 @@
 module mod_parser
   use mod_constants, only: dp
-  use iso_fortran_env
+  use iso_fortran_env, only: iostat_end
   use mod_printing
 
   implicit none
@@ -109,6 +109,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
       output%form="f13.3"
     endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."height")) then
+      output%height=.true.
+    endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
     if (file_exists(output%name).and.output%noclobber) then
       if (.not.log%sparse) then
@@ -198,19 +201,19 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
       do i=1,size(cmd_line)
         if (cmd_line(i).switch.eq."-w") then
           if ( &
-              any(cmd_line(i)%field(1)%subfield(1:)%name.eq."n") &
+              any(cmd_line(i)%field(i)%subfield(1:)%name.eq."n") &
               ) then
             warnings%if=.false.
           endif
           if ( &
-              any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &
+              any(cmd_line(i)%field(i)%subfield(1:)%name.eq."s") &
               ) then
             warnings%strict=.true.
             output%noclobber=.true.
             log%noclobber=.true.
           endif
           if ( &
-              any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
+              any(cmd_line(i)%field(i)%subfield(1:)%name.eq."t") &
               ) then
             warnings%time=.true.
           endif
@@ -303,6 +306,15 @@ subroutine check_arguments (program_calling)
       endif
       if (method(2) .and. .not.any(cmd_line%switch.eq.'-G')) then
         call print_warning("green_missing", error=.true.)
+      endif
+      if (method(2) &
+          .and. (ind%model%ls.eq.0 &
+          .or.(.not.model(ind%model%ls)%if &
+          .and..not.model(ind%model%ls)%if_constant_value) &
+          )) then
+        call print_warning( &
+            "inverted barometer, but no landsea mask", &
+            error=any(cmd_line%switch.eq."-B"))
       endif
     endif
     do i=1, size(model)

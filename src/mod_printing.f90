@@ -37,7 +37,8 @@ module mod_printing
     logical :: if, header, tee, & 
       noclobber = .false.,      & 
       full      = .false.,      & 
-      sparse    = .false.
+      sparse    = .false.,      &
+      height    = .false.
     character(10) :: form="en13.3"
   end type
   type(output_info) :: log, output 

@@ -21,15 +21,11 @@ program value_check
   call cpu_time(cpu(1))
 
   call intro ( &
-    program_calling   = "value_check",   &
-    accepted_switches = "VFoShvIDLPRqwHM",&
-    version           = "beta",          &
-    cmdlineargs       = .true.           &
+    program_calling   = "value_check",     &
+    accepted_switches = "VFoShvIDLPRqwHM", &
+    version           = "beta",            &
+    cmdlineargs       = .true.             &
     )
-
-  call get_index()
-
-  write(log%unit, form_separator) 
 
   ! for progress bar
   if (output%unit.ne.output_unit.and..not.quiet) open (unit=output_unit, carriagecontrol='fortran')
@@ -47,11 +43,14 @@ program value_check
 
   ! print header
   if (output%header.and.size(site).gt.0) then
-    write (output%unit, '(a8,2a10)', advance ="no"  ) "name", "lat", "lon"
+    write (output%unit, '(a8,2a10$)') "name", "lat", "lon"
+    if (output%height) then
+      write (output%unit, '(a10$)') "height"
+    endif
   endif
   do i = 1 ,size(model)
     if ((model(i)%if .or. model(i)%if_constant_value) .and. output%header ) then
-      write (output%unit,'(a15)',advance='no') trim( model(i)%dataname)
+      write (output%unit,'(a13)',advance='no') trim( model(i)%dataname)
     endif
   enddo
   if(output%header) write(output%unit, *)
@@ -102,7 +101,7 @@ program value_check
           imodel = imodel + 1
           if (iok.eq.1) then
             call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-              method=info(1)%interpolation, date=date(j)%date)
+                method=info(1)%interpolation, date=date(j)%date)
           else
             val (imodel) = 0
           endif
@@ -110,6 +109,9 @@ program value_check
         endif
       enddo
       write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
+      if (output%height) then
+        write (output%unit, '(f10.3$)') site(i)%height
+      endif
       write (output%unit , "("// output%form // '$)') val
       if (output%unit.ne.output_unit.and..not.quiet) then 
         call cpu_time(cpu(2))
@@ -123,7 +125,7 @@ program value_check
     do i = 1, size(model)
       do j = 1, size(model(i)%time)
         write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
-          model(i)%time(j), model(i)%date(j,:)
+            model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif

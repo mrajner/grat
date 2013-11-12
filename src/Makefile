@@ -1,6 +1,16 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+bug1: grat
+	grat               \
+		-F 100 @ SP   \
+		-M2D             \
+		-G@GN,merriam@GE \
+		-Sj,r              \
+		-o :free:height \
+		-H               \
+		-r t:nc -q 
+
 df: value_check
 	$< -D \
 		20110131 :1 @M:1@D
