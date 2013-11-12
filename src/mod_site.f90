@@ -271,7 +271,6 @@ subroutine more_sites (number, start_index)
     start_index=size(site) + 1
     call move_alloc(site,tmpsite)
     allocate(site(size(tmpsite)+number))
-    print * ,size(site),size(tmpsite),number
     site(1:size(tmpsite))=tmpsite
     deallocate(tmpsite)
   else 

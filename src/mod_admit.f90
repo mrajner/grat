@@ -86,30 +86,30 @@ real(dp) function admit(site_, date)
            level=1,                       & 
            method = info(1)%interpolation & 
            )
-      if (ind%model%t.ne.0) then
-        rsp = standard_pressure(            & 
-            height=site_%height,              & 
-            h_zero=hrsp,              & 
-            p_zero=rsp,                       & 
-            method=transfer_sp%method,        & 
-            temperature=t,                    & 
-            use_standard_temperature=.false., & 
-            nan_as_zero=.false.)
-      else
-        val = standard_pressure(           & 
-            height=site_%height,             & 
-            h_zero=hrsp,             & 
-            p_zero=rsp,                      & 
-            method=transfer_sp%method,       & 
-            use_standard_temperature=.true., & 
-            nan_as_zero=.false.)
-      endif
-      endif
-      val=val-rsp
-    endif
-  endif
+       if (ind%model%t.ne.0) then
+         rsp = standard_pressure(            & 
+             height=site_%height,              & 
+             h_zero=hrsp,              & 
+             p_zero=rsp,                       & 
+             method=transfer_sp%method,        & 
+             temperature=t,                    & 
+             use_standard_temperature=.false., & 
+             nan_as_zero=.false.)
+       else
+         val = standard_pressure(           & 
+             height=site_%height,             & 
+             h_zero=hrsp,             & 
+             p_zero=rsp,                      & 
+             method=transfer_sp%method,       & 
+             use_standard_temperature=.true., & 
+             nan_as_zero=.false.)
+       endif
+     endif
+     val=val-rsp
+   endif
+ endif
 
-  admit = admitance%value*1.e-2 * val
+ admit = admitance%value*1.e-2 * val
 end function
 
 ! =============================================================================

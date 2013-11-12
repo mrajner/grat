@@ -1,31 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-bug1: grat
-	grat               \
-		-F 100 @ SP   \
-		-M2D             \
-		-G@GN,merriam@GE \
-		-Sj,r              \
-		-o :free:height \
-		-H               \
-		-r t:nc -q 
-
-df: value_check
-	$< -D \
-		20110131 :1 @M:1@D
 osx: value_check grat
 		grat \
-		-M 1 \
-		-S amazonina:-3000:-155:-1111 @ H  \
-		-F NCEP @ SP! , \
-		NCEP@HP! , \
-		NCP@H!  \
-		-D 2012 : 20120102 : 1 @ D \
-		-G @GE \
-		-q \
-		-wt \
-		-H  -U:standard
+			-Sj @H \
+			-F 0@SP , 100@RSP, \
+			0@HP, 0@H, 000@HRSP \
+			-A1 -H  \
+			-U -o:free
 dd:
 	#  value_check -F NCEP@r ,EE@H -Sb -o :free -D2011,2012 -V
 	grat -F NCP@SP -Sb -o :free -D2011 -V:s -w -H -M1,2D -G @GN
