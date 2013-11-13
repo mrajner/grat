@@ -131,6 +131,11 @@ program grat
     endif
 
     do idate = start, size (date)
+      if (.not.output%nan) then
+        ! if (modulo(date(idate)%date(4)).eq.0) print *, "DFSDF"
+        ! print *, modulo(date(idate)%date(4))
+        print *, date(idate)%date(4)
+      endif
       do isite = 1, size(site)
         iprogress = iprogress + 1
 

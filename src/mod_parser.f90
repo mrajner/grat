@@ -118,6 +118,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."height")) then
       output%height=.true.
     endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nan")) then
+      output%nan=.true.
+    endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
     if (file_exists(output%name).and.output%noclobber) then
       if (.not.log%sparse) then

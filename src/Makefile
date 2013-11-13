@@ -2,6 +2,10 @@
 # for example: OBJS  = libgrat.a
 
 
+frfd: grat
+	grat -F NCEP @SP -D2011 :10@H:2@H -Sj
+
+
 TNCEP1=/home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc:air@offset=-273.15 
 TNCEP2=/home/mrajner/dat/ncep_reanalysis/air.2012.nc:air@offset=-273.15 
 
