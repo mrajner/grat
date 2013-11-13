@@ -68,7 +68,12 @@ module mod_cmdline
 
       type transfer_sp_info
         logical :: if = .false.
-        character(20) :: method="full"
+        ! by default with 2D method pressure is transfered
+        ! on topography (@H)
+        ! when on_site_level is true (-U @s) than pressure in convolution
+        ! is transfered on site height
+        logical :: on_site_level=.false.
+        character(20) :: method="standard"
       end type
       type(transfer_sp_info) transfer_sp
 

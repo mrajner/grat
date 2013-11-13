@@ -58,7 +58,7 @@ subroutine parse_green (cmd_line_entry)
     endif
     if (.not. any ( &
         cmd_line_entry%field(i)%subfield(1)%dataname &
-        .eq.["GN", "GE"])) then
+        .eq.["GN", "GE", "GNdt"])) then
       call print_warning( &
           "green type not found", &
           more=trim(cmd_line_entry%field(i)%subfield(1)%dataname), &
@@ -364,6 +364,7 @@ subroutine convolve(site, date)
   real(dp), allocatable, dimension(:) :: azimuths
   logical :: header_p = .true.
 
+
   if(.not.allocated(green_common)) then
     call green_unification()
   endif
@@ -454,12 +455,12 @@ subroutine convolve(site, date)
         endif
 
         ! GE, GN, ...
-        if (                       & 
-            ind%green%gn.ne.0        & 
-            .or.ind%green%ge.ne.0    & 
-            .or.ind%green%gg.ne.0    & 
+        if (                        & 
+            ind%green%gn.ne.0       & 
+            .or.ind%green%ge.ne.0   & 
+            .or.ind%green%gg.ne.0   & 
             .or.ind%green%gndt.ne.0 & 
-            .or.ind%green%c.ne.0 & 
+            .or.ind%green%c.ne.0    & 
             ) then
 
           if ( &
@@ -502,26 +503,29 @@ subroutine convolve(site, date)
               if (ind%model%sp.ne.0) then
                 ! transfer SP if necessary
                 if (transfer_sp%if) then
-                  if (ind%model%hp.eq.0) call print_warning("no @HP with -U",error=.true.)
-                  if (ind%model%h.eq.0) call print_warning("no @H with -U",error=.true.)
+                  if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
+                  if (ind%model%h .eq.0) call print_warning("no @H  with -U", error=.true.)
 
-                  if (ind%model%t.ne.0) then
+                  if (transfer_sp%on_site_level) then
+                    val(ind%model%sp) = standard_pressure( & 
+                        height=site%height,                & 
+                        h_zero=val(ind%model%hp),          & 
+                        p_zero=val(ind%model%sp),          & 
+                        method=transfer_sp%method,         & 
+                        temperature=val(ind%model%t),      & 
+                        use_standard_temperature           & 
+                        = ind%model%t.eq.0,                & 
+                        nan_as_zero=.false.)
+                  else
                     val(ind%model%sp) = standard_pressure( & 
                         height=val(ind%model%h),           & 
                         h_zero=val(ind%model%hp),          & 
                         p_zero=val(ind%model%sp),          & 
                         method=transfer_sp%method,         & 
                         temperature=val(ind%model%t),      & 
-                        use_standard_temperature=.false.   & 
-                        )
-                  else
-                    val(ind%model%sp)=standard_pressure( & 
-                        height=val(ind%model%h),         & 
-                        h_zero=val(ind%model%hp),        & 
-                        p_zero=val(ind%model%sp),        & 
-                        method=transfer_sp%method,       & 
-                        use_standard_temperature=.true.  & 
-                        )
+                        use_standard_temperature           & 
+                        = ind%model%t.eq.0,                & 
+                        nan_as_zero=.false.)
                   endif
                 endif
 
@@ -536,7 +540,6 @@ subroutine convolve(site, date)
                           green_common(igreen)%data(idist, ind%green%ge) * & 
                           area * normalize
                     endif
-
                     ! GEGdt pressure part from Guo 2004
                     if (ind%green%gegdt.ne.0) then
                       result(ind%green%gegdt) = result(ind%green%gegdt) +     & 
@@ -574,7 +577,8 @@ subroutine convolve(site, date)
                   if (ind%green%gndt.ne.0) then
                     if (any(                                                & 
                         [ind%model%sp, ind%model%t, ind%model%rsp           & 
-                        ].eq.0)) stop "not enougt data model"
+                        ].eq.0)) &
+                        call print_warning("not enougt data model for GNdt", error=.true.)
                     result(ind%green%gndt) = result(ind%green%gndt) +       & 
                         val(ind%model%sp) *                                 & 
                         green_common(igreen)%data(idist, ind%green%gndt) *  & 
@@ -640,7 +644,7 @@ subroutine convolve(site, date)
           if (header_p.and. output%header) then
             if(size(green_common).gt.1) &
                 write(moreverbose(ind%moreverbose%p)%unit, "(a2,x$)") "i"
-            
+
             write(moreverbose(ind%moreverbose%p)%unit, & 
                 '(a8,8a13,$)')                         & 
                 "name", "lat", "lon",                  & 
@@ -680,8 +684,8 @@ subroutine convolve(site, date)
               .and.(azimuth==azimuths(ubound(azimuths, 1))) & 
               )                                             & 
               ) then
-          if(size(green_common).gt.1) &
-              write(moreverbose(ind%moreverbose%p)%unit, "(i2,x$)") igreen
+            if(size(green_common).gt.1) &
+                write(moreverbose(ind%moreverbose%p)%unit, "(i2,x$)") igreen
             write(moreverbose(ind%moreverbose%p)%unit,         & 
                 '(a8,6' // output%form //',2en13.3,$)'),       & 
                 site%name, site%lat, site%lon,                 & 

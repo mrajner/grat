@@ -41,6 +41,7 @@ subroutine parse_date (cmd_line_entry)
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
+
     if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"  &
       .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
@@ -56,19 +57,20 @@ subroutine parse_date (cmd_line_entry)
       cycle
     endif
 
-
     interval_unit = "h"
     write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
-    call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start, success=success)
-    if (.not.success) cycle
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
       if (size(model(1)%date).eq.0) then
-        stop "NO dates in first model. -Dm is forbidden"
+        call print_warning("NO dates in first model. -Dm is forbidden (or -D before -F)", error=.true.)
       else
         start = model(1)%date(lbound(model(1)%date, 1), 1:6)
       endif
+    else
+      call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start, success=success)
+      if (.not.success) cycle
     endif
+
     stop = start
 
     ! tilde
@@ -83,36 +85,41 @@ subroutine parse_date (cmd_line_entry)
     endif
 
     if (size(cmd_line_entry%field(i_)%subfield).ge.2  &
-      .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
-      ) then
-      call string2date(cmd_line_entry%field(i_)%subfield(2)%name, stop)
-      select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
-      case('Y')
-        stop(1)=start(1)+stop(1)
-        stop(2:)=start(2:)
-      case('M')
-        stop(2)=start(2)+stop(1)
-        stop(1)=start(1)
-        stop(3:)=start(3:)
-        if (stop(2).gt.12) then
-          stop(1) = stop(1)+int(stop(2)/12)
-          stop(2) = modulo(stop(2), 12)
-        else if (stop(2).lt.1) then
-          stop(1) =stop(1)-int(-stop(2)/12+1)
-          stop(2) =stop(2)+12*(1+int(-stop(2)/12))
-        endif
-      case('D')
-        call invmjd (mjd(start)+stop(1), stop)
-      case('H')
-        call invmjd (mjd(start)+stop(1)/24., stop)
-      case('')
-      case default
-        call print_warning ("unit not valid", error=.true.)
-        cycle
-      endselect
+        .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
+        ) then
+      if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
+        stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
+      else
+        call string2date(cmd_line_entry%field(i_)%subfield(2)%name, stop)
+        select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
+        case('Y')
+          stop(1)=start(1)+stop(1)
+          stop(2:)=start(2:)
+        case('M')
+          stop(2)=start(2)+stop(1)
+          stop(1)=start(1)
+          stop(3:)=start(3:)
+          if (stop(2).gt.12) then
+            stop(1) = stop(1)+int(stop(2)/12)
+            stop(2) = modulo(stop(2), 12)
+          else if (stop(2).lt.1) then
+            stop(1) =stop(1)-int(-stop(2)/12+1)
+            stop(2) =stop(2)+12*(1+int(-stop(2)/12))
+          endif
+        case('D')
+          call invmjd (mjd(start)+stop(1), stop)
+        case('H')
+          call invmjd (mjd(start)+stop(1)/24., stop)
+        case('')
+        case default
+          call print_warning ("unit not valid", error=.true.)
+          cycle
+        endselect
+      endif
     else
       stop = start
     endif
+
     if (size(cmd_line_entry%field(i_)%subfield).ge.3)then
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
@@ -124,10 +131,6 @@ subroutine parse_date (cmd_line_entry)
       endselect
     else
       step=6
-    endif
-
-    if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
-      stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
     endif
 
     write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))')  "start date:", start
@@ -153,7 +156,7 @@ subroutine parse_date (cmd_line_entry)
       endif
       if (interval_unit.eq."M") then
         call more_dates &
-          (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
+            (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
         date(start_index)%date=start
         date(start_index)%mjd=mjd(date(start_index)%date)
         do i= start_index+1, size(date)
@@ -172,12 +175,12 @@ subroutine parse_date (cmd_line_entry)
       endif
     else
       if (cmd_line_entry%field(i_)%subfield(1)%name=="m" &
-        .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
-        .and. ( &
-        size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
-        cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
-        ) &
-        ) then
+          .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
+          .and. ( &
+          size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
+          cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
+          ) &
+          ) then
         if (size(cmd_line_entry%field(i_)%subfield).lt.3) step=1
         if (step.gt.size(model(1)%time)) step=size(model(1)%time)
         call more_dates (ceiling(size(model(1)%time)/step), start_index)
@@ -240,6 +243,7 @@ subroutine string2date (string, date, success)
   logical, optional :: success
 
   if (present(success)) success=.true.
+
   ! this allow to specify !st Jan of year simple as -Dyyyy
   date = [2000, 1, 1, 0, 0, 0]
 

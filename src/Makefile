@@ -2,15 +2,23 @@
 # for example: OBJS  = libgrat.a
 
 
-dkljgfd:grat
-	grat \
-		-M 1,2D \
-		-S a:0:0 \
-		-F NCEP @ HP! , ERA @ SP ! , ETOPO @ H ! \
-		-D 2012  \
-		-U berg \
-		-G merriam @ GE , merriam @GN  -V
+fdf:value_check
+	value_check \
+		-V \
+		-F /home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc:air@offset=-273.15 \
+		-Sj \
+		-Dm:m -oa:free:height
 
+dkljgfd:grat 
+	grat              \
+		-M 2D           \
+		-S j             \
+		-F NCEP @ SP!   \
+		, NCEP @ HP!   \
+		, NCEP @ LS!   \
+		, 900@H \
+		-D 2012 \
+		-G merriam @ GE, merriam @GNdt 
 
 SSSS= $(SP)
 SSSS= $(SP), $(H__)

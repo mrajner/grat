@@ -69,6 +69,7 @@ program grat
   real(dp) :: cpu(2)
   integer :: isite, i, idate, start, iprogress = 0
 
+
   ! program starts here with time stamp
   call cpu_time(cpu(1))
 
