@@ -195,7 +195,7 @@ subroutine parse_date (cmd_line_entry)
         if (interval_unit.eq."m") step = step/60.
         if (interval_unit.eq."s") step = step/60./60.
 
-        call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index )
+        call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index)
         do i = start_index, size(date)
           date(i)%mjd = mjd(start) + (i-start_index)*step/24.
           call invmjd (date(i)%mjd, date(i)%date)

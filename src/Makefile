@@ -2,12 +2,15 @@
 # for example: OBJS  = libgrat.a
 
 
+TNCEP1=/home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc:air@offset=-273.15 
+TNCEP2=/home/mrajner/dat/ncep_reanalysis/air.2012.nc:air@offset=-273.15 
+
 fdf:value_check
 	value_check \
 		-V \
-		-F /home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc:air@offset=-273.15 \
+		-F $(TNCEP) \
 		-Sj \
-		-Dm:m -oa:free:height
+		-Dm:10@D:1@D  -o:free:height  -H
 
 dkljgfd:grat 
 	grat              \
