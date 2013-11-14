@@ -161,6 +161,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       write (log%unit, *) "topography level"
     endif
   endif
+case ("-J")
+  ! level =
 case default
   if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
 endselect

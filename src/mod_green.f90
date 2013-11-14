@@ -364,7 +364,6 @@ subroutine convolve(site, date)
   real(dp), allocatable, dimension(:) :: azimuths
   logical :: header_p = .true.
 
-
   if(.not.allocated(green_common)) then
     call green_unification()
   endif
@@ -732,7 +731,7 @@ subroutine convolve(site, date)
 
   ! results to output
   if (result_component) write (output%unit, "(" // output%form // '$)') result
-  if (result_total) write (output%unit, "(" // output%form // '$)') sum(result)
+  if (result_total)     write (output%unit, "(" // output%form // '$)') sum(result)
 
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then

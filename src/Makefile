@@ -2,19 +2,16 @@
 # for example: OBJS  = libgrat.a
 
 
-frfd: grat
-	grat -F NCEP @SP -D2011 :10@H:2@H -Sj
-
-
-TNCEP1=/home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc:air@offset=-273.15 
-TNCEP2=/home/mrajner/dat/ncep_reanalysis/air.2012.nc:air@offset=-273.15 
+TNCEP1=/home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc @ \! :air@offset=-273.15 
+TNCEP2=/home/mrajner/dat/ncep_reanalysis/air.2012.nc @! :air@offset=-273.15 
 
 fdf:value_check
 	value_check \
 		-V \
-		-F $(TNCEP) \
+		-F $(TNCEP2) \
 		-Sj \
-		-Dm:10@D:1@D  -o:free:height  -H
+		-D2012010600:10@D:5@D  \
+		-o:free:height  -H
 
 dkljgfd:grat 
 	grat              \
@@ -103,19 +100,19 @@ OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
 ifdef DEP
-  mod_utilities.o: mod_constants.o
-  mod_atmosphere.o: mod_printing.o mod_utilities.o
-  mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
-  mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
-  mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-  mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-  mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
-  mod_date.o: mod_data.o
-  mod_mjd.o: mod_constants.o
-  mod_polygon.o:mod_printing.o mod_cmdline.o
-  mod_printing.o: mod_cmdline.o
-  mod_cmdline.o: mod_utilities.o
-  mod_normalization.o: mod_constants.o mod_utilities.o
+mod_utilities.o: mod_constants.o
+mod_atmosphere.o: mod_printing.o mod_utilities.o
+mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
+mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o
+mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
+mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
+mod_date.o: mod_data.o
+mod_mjd.o: mod_constants.o
+mod_polygon.o:mod_printing.o mod_cmdline.o
+mod_printing.o: mod_cmdline.o
+mod_cmdline.o: mod_utilities.o
+mod_normalization.o: mod_constants.o mod_utilities.o
 endif
 
 

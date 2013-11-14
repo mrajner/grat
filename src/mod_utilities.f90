@@ -267,8 +267,11 @@ function is_numeric(string)
   integer :: e
   if (string(1:1).eq."/") then
     is_numeric=.false. 
+  ! minus sign not on the first postion
+  else if (index(string,"-").gt.1) then
+    is_numeric=.false. 
   else 
-    read(string,*,iostat=e) x
+    read(string, *, iostat=e) x
     is_numeric = e == 0
   endif
 

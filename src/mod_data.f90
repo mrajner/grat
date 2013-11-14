@@ -564,7 +564,7 @@ subroutine get_variable(model, date, print)
       error=.true.)
   endif
   if (allocated(model%data)) deallocate(model%data)
-  !  model%level=1
+   ! model%level=1
   allocate ( &
     model%data ( &
     size(model%lon), &

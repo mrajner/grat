@@ -68,6 +68,7 @@ program grat
   implicit none
   real(dp) :: cpu(2)
   integer :: isite, i, idate, start, iprogress = 0
+  logical :: first_waning = .true.
 
 
   ! program starts here with time stamp
@@ -131,10 +132,11 @@ program grat
     endif
 
     do idate = start, size (date)
-      if (.not.output%nan) then
-        ! if (modulo(date(idate)%date(4)).eq.0) print *, "DFSDF"
-        ! print *, modulo(date(idate)%date(4))
-        print *, date(idate)%date(4)
+      if (.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
+        if (first_waning) call print_warning  &
+            ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
+        first_waning=.false.
+        cycle
       endif
       do isite = 1, size(site)
         iprogress = iprogress + 1
@@ -144,32 +146,33 @@ program grat
             select case (model(i)%dataname)
             case ("SP", "T")
               if ( &
-                idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
-                .or.(model(i)%autoload &
-                .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
-                .and.idate.ne.1 &
-                ) then
+                  idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
+                  .or.(model(i)%autoload &
+                  .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
+                  .and.idate.ne.1 &
+                  ) then
                 call model_aliases(model(i), year= date(idate)%date(1))
               endif
               if (size(date).eq.0.and.model(i)%exist) then
                 call get_variable (model(i))
-                elseif (model(i)%exist) then
+              elseif (model(i)%exist) then
                 call get_variable (model(i), date = date(idate)%date)
               endif
             endselect
           endif
         enddo
+        if (any(.not.model%exist).and..not.output%nan) cycle
 
         ! if ocean mass should be conserved (-O C)
         if (ocean_conserve_mass) then
           if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
             if(size(date).eq.0) then
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  inverted_landsea_mask = inverted_landsea_mask)
             else
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                date=date(idate)%date, &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  date=date(idate)%date, &
+                  inverted_landsea_mask = inverted_landsea_mask)
             endif
           endif
         endif
@@ -186,19 +189,19 @@ program grat
 
         if (idate.gt.0) then
           write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
-            date(idate)%mjd, date(idate)%date
+              date(idate)%mjd, date(idate)%date
         endif
         write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
-          site(isite)%name, &
-          site(isite)%lat,  &
-          site(isite)%lon,  &
-          site(isite)%height 
+            site(isite)%name, &
+            site(isite)%lat,  &
+            site(isite)%lon,  &
+            site(isite)%height 
         if (method(1)) then 
           write (output%unit, "("// output%form // '$)'), &
-            admit( &
-            site(isite), &
-            date=date(idate)%date &
-            )
+              admit( &
+              site(isite), &
+              date=date(idate)%date &
+              )
         endif
         if (method(2)) then 
           ! perform convolution
@@ -214,9 +217,9 @@ program grat
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
-            100*iprogress/(max(size(date),1) & 
-            *max(size(site),1)),             & 
-            cpu(2)-cpu(1))
+              100*iprogress/(max(size(date),1) & 
+              *max(size(site),1)),             & 
+              cpu(2)-cpu(1))
         endif
       enddo
     enddo
