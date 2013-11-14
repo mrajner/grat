@@ -265,7 +265,7 @@ function variable_modifer (val, modifer)
   use mod_atmosphere, only: geop2geom
   use mod_constants,  only: earth
   use mod_utilities,  only: ntokens
-  use mod_printing,   only: print_warning
+  use mod_printing,   only: print_warning, form, log
   real(dp) :: variable_modifer
   real(dp), intent(in) :: val
   character(*) :: modifer
@@ -276,6 +276,7 @@ function variable_modifer (val, modifer)
 
   variable_modifer = val
   do i = 1, ntokens(modifer,"@")
+    keyval=" "
     if (ntokens(modifer,"@").eq.1) then
       key = modifer
     else
@@ -285,10 +286,10 @@ function variable_modifer (val, modifer)
       keyval = trim(key(index(key,"=")+1:))
       key    = trim(key(1:index(key,"=")-1))
     endif
+    write(log%unit, form%i3) key 
+    print * ,  key,keyval 
     select case (key)
-    case ("g2h")
-      variable_modifer=geop2geom(variable_modifer)
-    case ("gh2h")
+    case ("g2h","gh2h")
       variable_modifer=geop2geom(variable_modifer)
     case ("gp2gh")
       variable_modifer=variable_modifer/earth%gravity%mean
@@ -300,6 +301,9 @@ function variable_modifer (val, modifer)
     case ("scale")
       read(keyval,*) numerickeyval
       variable_modifer=numerickeyval*variable_modifer
+    case ("invscale")
+      read(keyval,*) numerickeyval
+      variable_modifer=1./numerickeyval*variable_modifer
     case ("offset")
       read(keyval,*) numerickeyval
       variable_modifer=numerickeyval+variable_modifer
@@ -307,6 +311,7 @@ function variable_modifer (val, modifer)
       call print_warning ("variable modifer not found" // key, error=.true.)
     endselect
     modifer = modifer(index(modifer, "@")+1:)
+    print * ,variable_modifer
   enddo
 end function
 

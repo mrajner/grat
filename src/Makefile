@@ -5,23 +5,41 @@
 TNCEP1=/home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc @ \! :air@offset=-273.15 
 TNCEP2=/home/mrajner/dat/ncep_reanalysis/air.2012.nc @! :air@offset=-273.15 
 
-fdf:value_check
+#  value_check -Sj,r -o :free -F /home/mrajner/dat/erainterim/gp.nc@!:@invscale=9.80665, @!:@invscale=9.80665@g2h , @!:@scale=10@invscale=1 ,ERA@H!
+vlald:value_check 
 	value_check \
-		-V \
-		-F $(TNCEP2) \
+		-F 10 : @ scale=10@scale=20 @ offset =1111 \
 		-Sj \
-		-D2012010600:10@D:5@D  \
+		-o :free
+
+
+dfs:
+#  sfd:grat 
+	#  grat -F 100 @SP  \
+		#  -S j \
+		#  -G @GN , @GE \
+		#  -q \
+		#  -o  \
+		#  -L GNGE.dat @p : s -rt \
+		#  -I20@DD 
+
+fdf:value_check
+	value_check             \
+		-V                    \
+		-F $(TNCEP2)          \
+		-Sj                   \
+		-D2012010600:10@D:5@D \
 		-o:free:height  -H
 
-dkljgfd:grat 
-	grat              \
-		-M 2D           \
-		-S j             \
-		-F NCEP @ SP!   \
-		, NCEP @ HP!   \
-		, NCEP @ LS!   \
-		, 900@H \
-		-D 2012 \
+dkljgfd:grat
+	grat            \
+		-M 2D         \
+		-S j          \
+		-F NCEP @ SP! \
+		, NCEP @ HP!  \
+		, NCEP @ LS!  \
+		, 900@H       \
+		-D 2012       \
 		-G merriam @ GE, merriam @GNdt 
 
 SSSS= $(SP)

@@ -242,12 +242,12 @@ real(dp) function geop2geom (geopotential_height, inverse)
   real (dp) :: geopotential_height
   logical, intent(in), optional:: inverse
 
-  if (present(inverse) .and. inverse) then
-    geop2geom = geopotential_height * &
-      (earth%radius / (earth%radius + geopotential_height))**2
+  if (present(inverse).and.inverse) then
+    geop2geom = geopotential_height &
+      *(earth%radius/(earth%radius + geopotential_height))**2
   else
-    geop2geom = geopotential_height / &
-      (earth%radius / (earth%radius + geopotential_height))**2
+    geop2geom = geopotential_height &
+      /(earth%radius/(earth%radius + geopotential_height))**2
   endif
 end function
 
