@@ -89,8 +89,8 @@ subroutine parse_date (cmd_line_entry)
         ) then
       if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
         stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
-      else
-        call string2date(cmd_line_entry%field(i_)%subfield(2)%name, stop)
+      else if (cmd_line_entry%field(i_)%subfield(2)%dataname.ne."") then
+        read (cmd_line_entry%field(i_)%subfield(2)%name,*) stop(1)
         select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
         case('Y')
           stop(1)=start(1)+stop(1)
@@ -103,8 +103,8 @@ subroutine parse_date (cmd_line_entry)
             stop(1) = stop(1)+int(stop(2)/12)
             stop(2) = modulo(stop(2), 12)
           else if (stop(2).lt.1) then
-            stop(1) =stop(1)-int(-stop(2)/12+1)
-            stop(2) =stop(2)+12*(1+int(-stop(2)/12))
+            stop(1)=stop(1)-int(-stop(2)/12+1)
+            stop(2)=stop(2)+12*(1+int(-stop(2)/12))
           endif
         case('D')
           call invmjd (mjd(start)+stop(1), stop)
@@ -115,6 +115,8 @@ subroutine parse_date (cmd_line_entry)
           call print_warning ("unit not valid", error=.true.)
           cycle
         endselect
+      else
+        call string2date(cmd_line_entry%field(i_)%subfield(2)%name, stop)
       endif
     else
       stop = start
@@ -136,7 +138,7 @@ subroutine parse_date (cmd_line_entry)
     write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))')  "start date:", start
     if (mjd(start).ne.mjd(stop)) then
       write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))') "stop  date:", stop
-      write (log%unit, form%i3) "interval:", step, interval_unit
+      write (log%unit, "(" // form%t3// "a, f5.1, a)") "interval:", step, interval_unit
     endif
 
     ! allow that stop is previous than start and list in reverse order

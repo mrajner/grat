@@ -1,171 +1,174 @@
 module mod_parser
-  use mod_constants, only: dp
-  use iso_fortran_env, only: iostat_end
-  use mod_printing
+    use mod_constants, only: dp
+    use iso_fortran_env, only: iostat_end
+    use mod_printing
 
-  implicit none
+    implicit none
 
 contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
 subroutine parse_option (cmd_line_entry, accepted_switches)
-  use mod_site,    only: parse_site
-  use mod_date,    only: parse_date
-  use mod_polygon, only: parse_polygon
-  use mod_data,    only: parse_model
-  use mod_green,   only: parse_green
-  use mod_cmdline
-  use mod_utilities, only: file_exists
-  use mod_admit, only : parse_admit
+    use mod_site,    only: parse_site
+    use mod_date,    only: parse_date
+    use mod_polygon, only: parse_polygon
+    use mod_data,    only: parse_model, parse_level
+    use mod_green,   only: parse_green
+    use mod_cmdline
+    use mod_utilities, only: file_exists
+    use mod_admit, only : parse_admit
 
-  type(cmd_line_arg),intent(in):: cmd_line_entry
-  character(len=*), optional :: accepted_switches
-  integer(2) :: i
+    type(cmd_line_arg),intent(in):: cmd_line_entry
+    character(len=*), optional :: accepted_switches
+    integer(2) :: i
 
-  write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
-  if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
-      then
-    call print_warning ("not accepted switch " // cmd_line_entry%switch)
-    return
-  endif
+    write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
+    if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
+        then
+      call print_warning ("not accepted switch " // cmd_line_entry%switch)
+      return
+    endif
 
-  select case (cmd_line_entry%switch)
-  case ('-V')
-    if (.not.log%sparse) write(log%unit, form%i3) 'verbose mode' 
-    if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
-      if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
-    endif
-  case ('-r')
-    do i =1, size(cmd_line_entry%field)
-      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t")) result_total=.true.
-      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."nc")) result_component=.false.
-    enddo
-  case ('-S', '-R')
-    call parse_site(cmd_line_entry)
-  case ("-I")
-    call parse_info(cmd_line_entry)
-  case ("-L")
-    call parse_moreverbose(cmd_line_entry)
-  case ("-B")
-    if (cmd_line_entry%field(1)%subfield(1)%name.eq."N" ) &
-        inverted_barometer = .false.
-    if (.not.log%sparse) write(log%unit, form%i3) "inverted barometer assumption [T/F]:", &
-        inverted_barometer
-  case ("-O")
-    if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."C")) then
-      ocean_conserve_mass = .true.
-      if (.not.log%sparse) write(log%unit, form%i3) "conservation ocean mass"
-    endif
-    if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."I")) then
-      inverted_landsea_mask = .true.
-      if (.not.log%sparse) write(log%unit, form%i3) "inverted landsea mask"
-    endif
-  case ('-D')
-    call parse_date(cmd_line_entry)
-  case ('-A')
-    admitance%if=.true.
-    call parse_admit(cmd_line_entry)
-  case ('-F')
-    call parse_model(cmd_line_entry)
-  case ("-G")
-    call parse_green(cmd_line_entry)
-  case ("-H")
-    if (.not.log%sparse) write(log%unit, form%i3) 'header'
-    output%header=.true.
-  case ('-M')
-    method=.false.
-    do i =1, size(cmd_line_entry%field)
-      select case (cmd_line_entry%field(i)%subfield(1)%name)
-      case ("n")
-        dryrun = .true.
-      case ("1D", "1")
-        method(1) =.true.
-      case ("2D", "2")
-        method(2) =.true.
-      case ("3D", "3")
-        method(3) =.true.
-      case default
-        call print_warning("method not known" // cmd_line_entry%field(i)%subfield(1)%name)
-      end select
-    enddo
-    if (.not.log%sparse) then
-      write(log%unit, form_62, advance="no"), 'method was set:' 
-      do i=1,size(method)
-        if (method(i)) write(log%unit, '(i1,"D ",$)') i
-      enddo
-      write(log%unit, *)
-    endif
-    if (.not.any(method).and..not.dryrun) then
-      call print_warning("no correct method found", error=.true.)
-    endif
-  case ('-o')
-    output%if=.true.
-    output%name=cmd_line_entry%field(1)%subfield(1)%name
-    if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
-      output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) & 
-        // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
-    endif
-    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
-      output%tee=.true.
-    endif
-    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
-      output%noclobber=.true.
-    endif
-    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
-      output%form="f13.3"
-    endif
-    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."height")) then
-      output%height=.true.
-    endif
-    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nan")) then
-      output%nan=.true.
-    endif
-    if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
-    if (file_exists(output%name).and.output%noclobber) then
-      if (.not.log%sparse) then
-        call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
-          error=.true.)
+    select case (cmd_line_entry%switch)
+    case ('-V')
+      if (.not.log%sparse) write(log%unit, form%i3) 'verbose mode' 
+      if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
+        if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
       endif
-    endif
-    if (len(output%name).gt.0.and. output%name.ne."") then
-      open (newunit = output%unit, file = output%name, action = "write" )
-    endif
-  case ('-P')
-    call parse_polygon(cmd_line_entry)
-  case ('-w')
-    if (.not.log%sparse) write(log%unit, form%i2) "warnings"
-  case ('-q')
-    quiet=.true.
-  case ('-U')
-    select case (cmd_line_entry%field(1)%subfield(1)%name)
-    case ("n","N")
-      transfer_sp%if = .false.
+    case ('-r')
+      do i =1, size(cmd_line_entry%field)
+        if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t")) result_total=.true.
+        if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."nc")) result_component=.false.
+      enddo
+    case ('-S', '-R')
+      call parse_site(cmd_line_entry)
+    case ("-I")
+      call parse_info(cmd_line_entry)
+    case ("-L")
+      call parse_moreverbose(cmd_line_entry)
+    case ("-B")
+      if (cmd_line_entry%field(1)%subfield(1)%name.eq."N" ) &
+          inverted_barometer = .false.
+      if (.not.log%sparse) write(log%unit, form%i3) "inverted barometer assumption [T/F]:", &
+          inverted_barometer
+    case ("-O")
+      if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."C")) then
+        ocean_conserve_mass = .true.
+        if (.not.log%sparse) write(log%unit, form%i3) "conservation ocean mass"
+      endif
+      if (any(cmd_line_entry%field(1)%subfield(1:size(cmd_line_entry%field(1)%subfield))%name.eq."I")) then
+        inverted_landsea_mask = .true.
+        if (.not.log%sparse) write(log%unit, form%i3) "inverted landsea mask"
+      endif
+    case ('-D')
+      call parse_date(cmd_line_entry)
+    case ('-A')
+      admitance%if=.true.
+      call parse_admit(cmd_line_entry)
+    case ('-F')
+      call parse_model(cmd_line_entry)
+    case ("-G")
+      call parse_green(cmd_line_entry)
+    case ("-H")
+      if (.not.log%sparse) write(log%unit, form%i3) 'header'
+      output%header=.true.
+    case ('-M')
+      method=.false.
+      do i =1, size(cmd_line_entry%field)
+        select case (cmd_line_entry%field(i)%subfield(1)%name)
+        case ("n")
+          dryrun = .true.
+        case ("1D", "1")
+          method(1) =.true.
+        case ("2D", "2")
+          method(2) =.true.
+        case ("3D", "3")
+          method(3) =.true.
+        case default
+          call print_warning("method not known" // cmd_line_entry%field(i)%subfield(1)%name)
+        end select
+      enddo
+      if (.not.log%sparse) then
+        write(log%unit, form_62, advance="no"), 'method was set:' 
+        do i=1,size(method)
+          if (method(i)) write(log%unit, '(i1,"D ",$)') i
+        enddo
+        write(log%unit, *)
+      endif
+      if (.not.any(method).and..not.dryrun) then
+        call print_warning("no correct method found", error=.true.)
+      endif
+    case ('-o')
+      output%if=.true.
+      output%name=cmd_line_entry%field(1)%subfield(1)%name
+      if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
+        output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) & 
+            // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
+      endif
+      if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
+        output%tee=.true.
+      endif
+      if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
+        output%noclobber=.true.
+      endif
+      if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
+        output%form="f13.3"
+      endif
+      if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."height")) then
+        output%height=.true.
+      endif
+      if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nan")) then
+        output%nan=.true.
+      endif
+      if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."level")) then
+        output%level=.true.
+      endif
+      if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
+      if (file_exists(output%name).and.output%noclobber) then
+        if (.not.log%sparse) then
+          call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
+              error=.true.)
+        endif
+      endif
+      if (len(output%name).gt.0.and. output%name.ne."") then
+        open (newunit = output%unit, file = output%name, action = "write" )
+      endif
+    case ('-P')
+      call parse_polygon(cmd_line_entry)
+    case ('-w')
+      if (.not.log%sparse) write(log%unit, form%i2) "warnings"
+    case ('-q')
+      quiet=.true.
+    case ('-U')
+      select case (cmd_line_entry%field(1)%subfield(1)%name)
+      case ("n","N")
+        transfer_sp%if = .false.
+      case default
+        transfer_sp%if = .true.
+      end select
+      if (cmd_line_entry%field(1)%subfield(1)%name.ne."") then
+        transfer_sp%method=cmd_line_entry%field(1)%subfield(1)%name
+      endif
+      if (cmd_line_entry%field(1)%subfield(1)%dataname.eq."s") then
+        transfer_sp%on_site_level=.true.
+      endif
+      if (.not. log%sparse) then
+        write(log%unit,form%i2) &
+            "force transfer SP from @HP to @H and RSP from @HRSP to @H [T/F]: ", transfer_sp%if
+        write(log%unit, "(" // form%t2 //  "a$)") &
+            "force transfer SP on"
+        if (transfer_sp%on_site_level) then
+          write (log%unit, *) "site level"
+        else
+          write (log%unit, *) "topography level"
+        endif
+      endif
+    case ("-J")
+      call parse_level(cmd_line_entry)
     case default
-      transfer_sp%if = .true.
-    end select
-    if (cmd_line_entry%field(1)%subfield(1)%name.ne."") then
-      transfer_sp%method=cmd_line_entry%field(1)%subfield(1)%name
-    endif
-    if (cmd_line_entry%field(1)%subfield(1)%dataname.eq."s") then
-      transfer_sp%on_site_level=.true.
-    endif
-    if (.not. log%sparse) then
-     write(log%unit,form%i2) &
-        "force transfer SP from @HP to @H and RSP from @HRSP to @H [T/F]: ", transfer_sp%if
-    write(log%unit, "(" // form%t2 //  "a$)") &
-        "force transfer SP on"
-    if (transfer_sp%on_site_level) then
-      write (log%unit, *) "site level"
-    else
-      write (log%unit, *) "topography level"
-    endif
-  endif
-case ("-J")
-  ! level =
-case default
-  if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
-endselect
+      if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
+    endselect
 end subroutine 
 
 ! =============================================================================
@@ -299,7 +302,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     enddo
     write(log%unit, form%separator)
     write (log%unit, form%i0) "Command parsing:"
-    do i =1, size(cmd_line)
+    do i=1, size(cmd_line)
       call parse_option(cmd_line(i), accepted_switches)
     enddo
     call get_index()
@@ -634,6 +637,7 @@ function dataname(abbreviation)
     if (abbreviation.eq."o")  dataname = "ocean conserve mass"
     if (abbreviation.eq."t")  dataname = "total mass"
     if (abbreviation.eq."b")  dataname = "progress bar"
+    if (abbreviation.eq."j")  dataname = "level"
 end function
 
 
@@ -691,6 +695,8 @@ subroutine get_index()
         ind%moreverbose%b = i
       case ("n")
         ind%moreverbose%n = i
+      case ("j")
+        ind%moreverbose%j = i
       end select
     enddo
     do i = 1, size(green)

@@ -81,7 +81,6 @@ program grat
       accepted_switches="VSBLGPqoFIDLvhRrMOAHUw", &
       cmdlineargs=.true.)
 
-
     start = 0
     if (dryrun) then
       call print_site_summary (site_parsing=.true.)
@@ -131,12 +130,15 @@ program grat
       model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
     endif
 
+   
     do idate = start, size (date)
-      if (.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
-        if (first_waning) call print_warning  &
-            ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
-        first_waning=.false.
-        cycle
+      if (idate.ge.1) then 
+        if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
+          if (first_waning) call print_warning  &
+              ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
+          first_waning=.false.
+          cycle
+        endif
       endif
       do isite = 1, size(site)
         iprogress = iprogress + 1

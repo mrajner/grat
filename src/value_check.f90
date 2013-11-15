@@ -17,14 +17,15 @@ program value_check
   real (dp)    :: cpu(2)
   integer      :: i,ii ,j ,start , imodel, iprogress = 0
   integer(2)   :: iok
+  integer(2)   :: ilevel, start_level
 
   call cpu_time(cpu(1))
 
   call intro ( &
-    program_calling   = "value_check",     &
-    accepted_switches = "VFoShvIDLPRqwHM", &
-    version           = "beta",            &
-    cmdlineargs       = .true.             &
+    program_calling   = "value_check",      & 
+    accepted_switches = "VFoShvIDLPRqwHMJ", & 
+    version           = "beta",             & 
+    cmdlineargs       = .true.              & 
     )
 
   ! for progress bar
@@ -32,7 +33,9 @@ program value_check
 
   allocate (val (size(model)))
 
-  start =0 
+ 
+
+  start=0 
   if (size(date).gt.0) then
     start=1
     ! print header
@@ -46,6 +49,9 @@ program value_check
     write (output%unit, '(a8,2a10$)') "name", "lat", "lon"
     if (output%height) then
       write (output%unit, '(a10$)') "height"
+    endif
+    if (output%level) then
+      write (output%unit, '(a6$)') "level"
     endif
   endif
   do i = 1 ,size(model)
@@ -82,50 +88,72 @@ program value_check
         write (output%unit , '(f15.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
       endif
     endif
-    do i = 1 , size(site)
-      iprogress = iprogress + 1
-      ! add time stamp if -D option was specified
-      if (j.gt.0) then
-        write (output%unit , '(f15.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
-      endif
 
-      ! if this point should not be used (polygon) leave as zero
-      if (allocated(polygon).and.polygon(1)%if) then
-        call chkgon(site(i)%lon, site(i)%lat, polygon(1), iok)
-      else
-        iok=1
-      endif
-      imodel = 0
-      do ii = 1 , size (model)
-        if (model(ii)%if.or.model(ii)%if_constant_value) then
-          imodel = imodel + 1
-          if (iok.eq.1) then
-            call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                method=info(1)%interpolation, date=date(j)%date)
-          else
-            val (imodel) = 0
-          endif
-          if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
+    if (size(level%level).lt.1) then
+      start_level=0
+    else
+      start_level=1
+    endif
+    do ilevel=start_level, size(level%level)
+      do i = 1 , size(site)
+        iprogress = iprogress + 1
+        ! add time stamp if -D option was specified
+        if (j.gt.0) then
+          write (output%unit , '(f15.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
         endif
+
+        ! if this point should not be used (polygon) leave as zero
+        if (allocated(polygon).and.polygon(1)%if) then
+          call chkgon(site(i)%lon, site(i)%lat, polygon(1), iok)
+        else
+          iok=1
+        endif
+        imodel = 0
+        do ii = 1 , size (model)
+          if (model(ii)%if.or.model(ii)%if_constant_value) then
+            imodel = imodel + 1
+            if (iok.eq.1) then
+              call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
+                  method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
+            else
+              val (imodel) = 0
+            endif
+            if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
+          endif
+        enddo
+        write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
+        if (output%height) then
+          write (output%unit, '(f10.3$)') site(i)%height
+        endif
+        if (output%level.and. allocated(level%level)) then
+          write (output%unit, '(i6$)') level%level(ilevel)
+        else
+          write (output%unit, '(i6$)') ilevel
+        endif
+        write (output%unit , "("// output%form // '$)') val
+        if (output%unit.ne.output_unit.and..not.quiet) then 
+          call cpu_time(cpu(2))
+          call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
+        endif
+        if (size(val).gt.0) write (output%unit , *)
       enddo
-      write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
-      if (output%height) then
-        write (output%unit, '(f10.3$)') site(i)%height
-      endif
-      write (output%unit , "("// output%form // '$)') val
-      if (output%unit.ne.output_unit.and..not.quiet) then 
-        call cpu_time(cpu(2))
-        call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
-      endif
-      if (size(val).gt.0) write (output%unit , *)
     enddo
   enddo
 
   if (ind%moreverbose%d.ne.0) then
-    do i = 1, size(model)
-      do j = 1, size(model(i)%time)
+    do i=1, size(model)
+      do j=1, size(model(i)%time)
         write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
             model(i)%time(j), model(i)%date(j,:)
+      enddo
+    enddo
+  endif
+
+  if (ind%moreverbose%j.ne.0) then
+    do i = 1, size(model)
+      do j = 1, size(model(i)%level)
+        write (moreverbose(ind%moreverbose%j)%unit, '(i5)') &
+            model(i)%level(j) 
       enddo
     enddo
   endif

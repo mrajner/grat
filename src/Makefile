@@ -2,34 +2,26 @@
 # for example: OBJS  = libgrat.a
 
 
-TNCEP1=/home/mrajner/dat/ncep_reanalysis/reanalysis1/air.sig995.2012.nc @ \! :air@offset=-273.15 
-TNCEP2=/home/mrajner/dat/ncep_reanalysis/air.2012.nc @! :air@offset=-273.15 
-
-#  value_check -Sj,r -o :free -F /home/mrajner/dat/erainterim/gp.nc@!:@invscale=9.80665, @!:@invscale=9.80665@g2h , @!:@scale=10@invscale=1 ,ERA@H!
-vlald:value_check 
-	value_check \
-		-F 10 : @ scale=10@scale=20 @ offset =1111 \
-		-Sj \
-		-o :free
-
-
-dfs:
-#  sfd:grat 
-	#  grat -F 100 @SP  \
-		#  -S j \
-		#  -G @GN , @GE \
-		#  -q \
-		#  -o  \
-		#  -L GNGE.dat @p : s -rt \
-		#  -I20@DD 
-
+dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc
+rr=/home/mrajner/dat/ncep_reanalysis/hgt.2011.nc
+tt=/home/mrajner/dat/ncep_reanalysis/mslp.2000.nc
 fdf:value_check
+	value_check \
+		-F $(dd) @ ! :air@offset=-273.15 \
+		, $(rr) @ ! :hgt@gh2h \
+		, $(tt) @ ! :mslp@scale=0.01 \
+		-Sj -V -D2011:2@D -o:height:level:free \
+		-J m\
+		-H 
+
+d:
 	value_check             \
 		-V                    \
 		-F $(TNCEP2)          \
 		-Sj                   \
-		-D2012010600:10@D:5@D \
-		-o:free:height  -H
+		-D2011010600:10@D:5@D \
+		-o:free:height  -H \
+		-J 1 @ n
 
 dkljgfd:grat
 	grat            \
@@ -72,7 +64,7 @@ LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 FC = ifort
 
 # compiler flags
-FLAGS = -fpp -warn all -traceback     # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+FLAGS = -fpp -debug -warn all -traceback     # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  

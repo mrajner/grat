@@ -39,6 +39,7 @@ module mod_printing
       full      = .false.,      & 
       sparse    = .false.,      &
       height    = .false.,      &
+      level     = .false.,      &
       nan       = .false.
     character(10) :: form="en13.3"
   end type
