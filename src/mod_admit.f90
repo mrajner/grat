@@ -132,12 +132,12 @@ subroutine parse_admit(cmd_line_entry)
     read(cmd_line_entry%field(1)%subfield(1)%name, *) admitance%value
   endif
   write(log%unit, '('//form%t2//',a,x,f6.2,x,a)') "admitance:", admitance%value, "uGal/hPa"
-  if (size(cmd_line_entry%field(1)%subfield).gt.1 &
-    .and.cmd_line_entry%field(1)%subfield(2)%name.ne." ") then
-    admitance%level=cmd_line_entry%field(1)%subfield(2)%name
-  else
-    admitance%level="none"
-  endif
-  write(log%unit, form%i2) "level:", admitance%level
+  ! if (size(cmd_line_entry%field(1)%subfield).gt.1 &
+    ! .and.cmd_line_entry%field(1)%subfield(2)%name.ne." ") then
+    ! admitance%level=cmd_line_entry%field(1)%subfield(2)%name
+  ! else
+    ! admitance%level="none"
+  ! endif
+  ! write(log%unit, form%i2) "level:", admitance%level
 end subroutine
 end module
