@@ -99,15 +99,26 @@ program grat
 
     if(output%header) then
       if (method(1)) then
-        write (output%unit,'(a13)',advance='no'), "G1D[muGal]"
+        write (output%unit,'(a13)',advance='no'), "G1D"
       endif
       if (method(2)) then
         if (result_component) then
           do i = 1, size(green)
-            write (output%unit,'(a13)',advance='no'), trim(green(i)%dataname)//"[muGal]"
+            if (green(i)%dataname.eq."GE") then
+              if (inverted_barometer) then
+                write (output%unit,'(a13$)'), trim(green(i)%dataname)//"_IB"
+              else
+                write (output%unit,'(a13$)'), trim(green(i)%dataname)//"_NIB"
+              endif
+            else
+              write (output%unit,'(a13$)'), trim(green(i)%dataname)
+            endif
           enddo
+          if (inverted_barometer.and.non_inverted_barometer) then
+                write (output%unit,'(a13$)'), "GE_NIB"
+          endif
         endif
-        if (result_total) write (output%unit,'(a13)',advance='no'), "G2D"//"[muGal]"
+        if (result_total) write (output%unit,'(a13)',advance='no'), "G2D"
       endif
     endif
 
@@ -130,7 +141,7 @@ program grat
       model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
     endif
 
-   
+
     do idate = start, size (date)
       if (idate.ge.1) then 
         if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
@@ -232,6 +243,7 @@ program grat
       call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
       close(output_unit) 
     endif
-    write(log%unit, '("Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+    write(log%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
+    if (output%time) write(output%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
     write(log%unit, form_separator)
-  end program 
+end program 

@@ -2,17 +2,31 @@
 # for example: OBJS  = libgrat.a
 
 
+hjkr:grat
+	grat \
+		-F NCEP@HP, ETOPO@H\!, NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP, VIENNA@HRSP \
+		-G @GN ,@GE,@GNdt \
+		-Sj \
+		-M2 \
+		-D 2012:2013 \
+		-BI,N -H \
+		-U \
+		-o tmp : ree:time -V
+
+
 dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc
 rr=/home/mrajner/dat/ncep_reanalysis/hgt.2011.nc
-tt=/home/mrajner/dat/ncep_reanalysis/mslp.2000.nc
+tt=/home/mrajner/dat/ncep_reanalysis/mslp.2011.nc
 fdf:value_check
 	value_check \
-		-F $(dd) @ ! :air@offset=-273.15 \
+		-F \
+		$(dd) @ ! :air@offset=-273.15 \
 		, $(rr) @ ! :hgt@gh2h \
-		, $(tt) @ ! :mslp@scale=0.01 \
-		-Sj -V -D2011:2@D -o:height:level:free \
-		-J m\
+		, $(tt)@S!  :mslp@scale=0.01 \
+		-Sj -V -D2011:20@D:2@D -o:height:level:free \
 		-H 
+	#  value_check -F \
+		#  /home/mrajner/dat/erainterim/gp_l.2013.nc -Sj -V -Jm -o :free 
 
 d:
 	value_check             \

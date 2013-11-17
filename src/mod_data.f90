@@ -556,20 +556,25 @@ end function
 !> get level index
 ! =============================================================================
 function get_level_index(model,level)
+  use mod_printing, only: print_warning
+
   integer :: get_level_index
   type (file), intent(in) :: model
   integer, intent(in), optional :: level
   integer :: i
 
+    get_level_index=1
   if (.not.present(level).or.size(model%level).le.1) then
     get_level_index=1
     return
   endif
   do i = 1, size(model%level)
-    if (model%level(i).eq. level) then
-      get_level_index=i
+    if (model%level(i).eq.level) then
+       get_level_index=i
+       return
     endif
   enddo 
+  call print_warning("level not found")
 end function
 
 ! =============================================================================

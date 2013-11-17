@@ -61,18 +61,16 @@ module mod_cmdline
   ! general settings
   !----------------------------------------------------
   logical :: &
-      inverted_barometer    = .true.  , &
-      ocean_conserve_mass   = .false. , & 
-      inverted_landsea_mask = .false. , & 
-      quiet = .false.
+      inverted_barometer     = .true.  , &
+      non_inverted_barometer = .false. , &
+      ocean_conserve_mass    = .false. , &
+      inverted_landsea_mask  = .false. , &
+      quiet                  = .false.
 
       type transfer_sp_info
         logical :: if = .false.
         ! by default with 2D method pressure is transfered
         ! on topography (@H)
-        ! when on_site_level is true (-U @s) than pressure in convolution
-        ! is transfered on site height
-        logical :: on_site_level=.false.
         character(20) :: method="standard"
       end type
       type(transfer_sp_info) transfer_sp

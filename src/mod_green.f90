@@ -56,13 +56,9 @@ subroutine parse_green (cmd_line_entry)
     if (i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
       green(i)%name = green(i-1)%name
     endif
-    if (.not. any ( &
-        cmd_line_entry%field(i)%subfield(1)%dataname &
-        .eq.["GN", "GE", "GNdt"])) then
-      call print_warning( &
-          "green type not found", &
-          more=trim(cmd_line_entry%field(i)%subfield(1)%dataname), &
-          error=.true.)
+    if (any(green%dataname.eq.cmd_line_entry%field(i)%subfield(1)%dataname )) then
+      call print_warning("repeated dataname for Green")
+      continue
     else
       green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
     endif
@@ -116,7 +112,10 @@ subroutine read_green (green, print)
     case("GE")
       green%column=[1,6]
     case default
-      stop "GREEEEEN"
+      call print_warning( &
+          "green type not found", &
+          more=trim(green%dataname), &
+          error=.true.)
     end select
   case ("huang", "/home/mrajner/src/grat/dat/huang_green.dat" ) 
     green%name="/home/mrajner/src/grat/dat/huang_green.dat"
@@ -384,7 +383,15 @@ subroutine convolve(site, date)
     close(output_unit)
   endif
 
-  if (.not. allocated(result)) allocate(result(size(green)))
+  if (.not. allocated(result)) then
+    if (any(green%dataname.eq."GE").and.inverted_barometer &
+        .and. non_inverted_barometer) then
+      allocate(result(size(green)+1))
+    else
+      allocate(result(size(green)))
+    endif
+  endif
+
   npoints       = 0
   area          = 0
   tot_area      = 0
@@ -443,7 +450,7 @@ subroutine convolve(site, date)
         endif
 
         ! get LS
-        if (ind%model%ls.ne.0) then
+        if (ind%model%ls.ne.0.and.inverted_barometer) then
           call get_value ( & 
               model(ind%model%ls), r2d(lat), r2d(lon), val(ind%model%ls), & 
               level=1, method=info(igreen)%interpolation, date=date%date)
@@ -470,6 +477,7 @@ subroutine convolve(site, date)
                 model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
                 level=1, method = info(igreen)%interpolation, date=date%date)
             if (.not.isnan(val(ind%model%sp))) then
+
               ! get RP if given
               if (ind%model%rsp.ne.0) then
                 call get_value (                                                & 
@@ -479,43 +487,52 @@ subroutine convolve(site, date)
               endif
 
               ! get T
-              if (ind%model%t.ne.0) then
+              if (ind%model%t.ne.0 &
+                  .and.( &
+                  transfer_sp%if &
+                  .or.any(([ind%green%gndt,ind%green%gndz,ind%green%gndh]).ne.0) &
+              ) &
+                  ) then
                 call get_value ( & 
                     model(ind%model%t), r2d(lat), r2d(lon), val(ind%model%t), & 
                     level=1, method=info(igreen)%interpolation, date=date%date)
               endif
 
               ! get HP
-              if (ind%model%hp.ne.0) then
+              if (ind%model%hp.ne.0 &
+                  .and.( &
+                  transfer_sp%if &
+                  .or.any(([ind%green%gndz,ind%green%gndh]).ne.0) &
+                  ) &
+                  ) then
                 call get_value ( & 
                     model(ind%model%hp), r2d(lat), r2d(lon), val(ind%model%hp), & 
                     level=1, method = info(igreen)%interpolation)
               endif
 
               ! get H
-              if (ind%model%h.ne.0) then
+              if (ind%model%h.ne.0 & 
+                  .and.( &
+                  transfer_sp%if &
+                  .or.any(([ind%green%gndz,ind%green%gndh]).ne.0) &
+                  ) &
+                  ) then
                 call get_value ( & 
                     model(ind%model%h), r2d(lat), r2d(lon), val(ind%model%h), & 
                     level=1, method = info(igreen)%interpolation)
               endif
 
               if (ind%model%sp.ne.0) then
-                ! transfer SP if necessary
-                if (transfer_sp%if) then
-                  if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
-                  if (ind%model%h .eq.0) call print_warning("no @H  with -U", error=.true.)
 
-                  if (transfer_sp%on_site_level) then
-                    val(ind%model%sp) = standard_pressure( & 
-                        height=site%height,                & 
-                        h_zero=val(ind%model%hp),          & 
-                        p_zero=val(ind%model%sp),          & 
-                        method=transfer_sp%method,         & 
-                        temperature=val(ind%model%t),      & 
-                        use_standard_temperature           & 
-                        = ind%model%t.eq.0,                & 
-                        nan_as_zero=.false.)
-                  else
+                ! if the cell is not over sea and inverted barometer assumption was not set 
+                ! and is not excluded by polygon
+                if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
+
+                  ! transfer SP if necessary
+                  if (transfer_sp%if) then
+                    if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
+                    if (ind%model%h .eq.0) call print_warning("no @H  with -U", error=.true.)
+
                     val(ind%model%sp) = standard_pressure( & 
                         height=val(ind%model%h),           & 
                         h_zero=val(ind%model%hp),          & 
@@ -526,19 +543,17 @@ subroutine convolve(site, date)
                         = ind%model%t.eq.0,                & 
                         nan_as_zero=.false.)
                   endif
-                endif
 
-                if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
+                  !IB or NIB
                   if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
                     ! GE
                     if (ind%green%ge.ne.0) then
-                      ! if the cell is not over sea and inverted barometer assumption was not set 
-                      ! and is not excluded by polygon
                       result(ind%green%ge) = result(ind%green%ge) +        & 
                           val(ind%model%sp) *                              & 
                           green_common(igreen)%data(idist, ind%green%ge) * & 
                           area * normalize
                     endif
+
                     ! GEGdt pressure part from Guo 2004
                     if (ind%green%gegdt.ne.0) then
                       result(ind%green%gegdt) = result(ind%green%gegdt) +     & 
@@ -558,12 +573,39 @@ subroutine convolve(site, date)
                           aux * 1e8 ! m s-2 -> microGal
                     endif
                   endif
+
+                  ! ! GE NIB if both IB and NIB wanted
+                  if (inverted_barometer.and.non_inverted_barometer) then
+                    if (ind%green%ge.ne.0) then
+                      result(ubound(result)) = result(ubound(result)) +        & 
+                          val(ind%model%sp) *                              & 
+                          green_common(igreen)%data(idist, ind%green%ge) * & 
+                          area * normalize
+                    endif
+                  endif
                 endif
 
                 if (                                                     & 
                     (ind%polygon%n.ne.0.and.iok(ind%polygon%n).ne.0)     & 
                     .or.(ind%polygon%n.eq.0)                             & 
                     ) then
+
+                  ! transfer SP if necessary
+                  if (transfer_sp%if) then
+                    if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
+                    if (ind%model%h .eq.0) call print_warning("no @H  with -U", error=.true.)
+
+                    val(ind%model%sp) = standard_pressure( & 
+                        height=site%height,                & 
+                        h_zero=val(ind%model%hp),          & 
+                        p_zero=val(ind%model%sp),          & 
+                        method=transfer_sp%method,         & 
+                        temperature=val(ind%model%t),      & 
+                        use_standard_temperature           & 
+                        = ind%model%t.eq.0,                & 
+                        nan_as_zero=.false.)
+                  endif
+
                   ! GN
                   if (ind%green%gn.ne.0) then
                     result(ind%green%gn) = result(ind%green%gn) +        & 
@@ -577,13 +619,15 @@ subroutine convolve(site, date)
                     if (any(                                                & 
                         [ind%model%sp, ind%model%t, ind%model%rsp           & 
                         ].eq.0)) &
-                        call print_warning("not enougt data model for GNdt", error=.true.)
+                        call print_warning("not enougt data model for GNdt", &
+                        error=.true.)
                     result(ind%green%gndt) = result(ind%green%gndt) +       & 
                         val(ind%model%sp) *                                 & 
                         green_common(igreen)%data(idist, ind%green%gndt) *  & 
                         (val(ind%model%t)-atmosphere%temperature%standard)* & 
                         area * normalize
                   endif
+
                   !C
                   if (ind%green%c.ne.0) then
                     result(ind%green%c) = result(ind%green%c)              & 
@@ -591,6 +635,7 @@ subroutine convolve(site, date)
                         * green_common(igreen)%data(idist, ind%green%c)      & 
                         * area * normalize
                   endif
+
                   ! GNdz
                   if (ind%green%gndz.ne.0) then
                   endif
