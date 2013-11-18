@@ -4,8 +4,8 @@
 
 hjkr:grat
 	grat \
-		-F NCEP@HP, ETOPO@H\!, NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP, VIENNA@HRSP \
-		-G @GN ,@GE, @GNdt \
+		-F  NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP, VIENNA@HRSP \
+		-G @GNdz, @GN ,@GE, @GNdt \
 		-Sj \
 		-M1,2 \
 		-D 2012 \
