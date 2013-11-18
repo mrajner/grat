@@ -51,7 +51,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     inverted_barometer=.false.
     do i = 1, size(cmd_line_entry%field)
       select case(cmd_line_entry%field(i)%subfield(1)%name)
-      case ("N","n")
+      case ("N","n","nib")
         non_inverted_barometer = .true.
       case default
         inverted_barometer=.true.
@@ -122,6 +122,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
       output%noclobber=.true.
+    endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."c")) then
+      output%noclobber=.false.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
       output%form="f13.3"
@@ -268,6 +271,9 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
           log%noclobber = .true.
+        endif
+        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."c")) then
+          log%noclobber = .false.
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."full")) then
           log%full = .true.

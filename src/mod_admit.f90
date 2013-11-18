@@ -84,32 +84,32 @@ contains
               nan_as_zero=.false.)
         endif
 
-        if (ind%model%hrsp.ne.0 &
-            .and.ind%model%rsp.ne.0) then
-          call get_value (                 & 
-              model=model(ind%model%hrsp),   & 
-              lat=site_%lat,                 & 
-              lon=site_%lon,                 & 
-              val=hrsp,                      & 
-              level=1,                       & 
-              method = info(1)%interpolation & 
-              )
+        ! if (ind%model%hrsp.ne.0 &
+            ! .and.ind%model%rsp.ne.0) then
+          ! call get_value (                 & 
+              ! model=model(ind%model%hrsp),   & 
+              ! lat=site_%lat,                 & 
+              ! lon=site_%lon,                 & 
+              ! val=hrsp,                      & 
+              ! level=1,                       & 
+              ! method = info(1)%interpolation & 
+              ! )
 
-          rsp = standard_pressure(     & 
-              height=site_%height,       & 
-              h_zero=hrsp,               & 
-              p_zero=rsp,                & 
-              method=transfer_sp%method, & 
-              temperature=t,             & 
-              use_standard_temperature   & 
-              = ind%model%t.eq.0,        & 
-              nan_as_zero=.false.)
+          ! rsp = standard_pressure(     & 
+              ! height=site_%height,       & 
+              ! h_zero=hrsp,               & 
+              ! p_zero=rsp,                & 
+              ! method=transfer_sp%method, & 
+              ! temperature=t,             & 
+              ! use_standard_temperature   & 
+              ! = ind%model%t.eq.0,        & 
+              ! nan_as_zero=.false.)
 
-        elseif(ind%model%hrsp.ne.0) then
-          if (first_warning) call print_warning("@RSP not found but @HRSP and -U given")
-        elseif(ind%model%rsp.ne.0) then
-          if (first_warning) call print_warning("@HRSP not found but @RSP and -U given")
-        endif
+        ! elseif(ind%model%hrsp.ne.0) then
+          ! if (first_warning) call print_warning("@RSP not found but @HRSP and -U given")
+        ! elseif(ind%model%rsp.ne.0) then
+          ! if (first_warning) call print_warning("@HRSP not found but @RSP and -U given")
+        ! endif
       endif
 
       if (ind%model%rsp.ne.0) val = val-rsp
