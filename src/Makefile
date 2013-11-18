@@ -2,16 +2,22 @@
 # for example: OBJS  = libgrat.a
 
 
-hjkr:grat
+fff:fax fbx
+fax:value_check
+		value_check \
+			-F NCEP@H,	NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP -Sl \
+			-D2011:2012 -o vtmp -H -q 
+fbx: grat
 	grat \
-		-F  NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP, VIENNA@HRSP \
-		-G @GNdz, @GN ,@GE, @GNdt \
-		-Sj \
+		-F NCEP@H,  NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP \
+		-G @GNdz, @GNdz2, @GN ,@GE, @GNdt \
+		-Sl \
 		-M1,2 \
-		-D 2012 \
+		-D 2011:2012 \
 		-BI,N -H \
 		-rt \
-		-o :fre:time 
+		-o tmp :fre:time -q \
+		-A 1
 
 
 dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc

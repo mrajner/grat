@@ -709,25 +709,29 @@ subroutine get_index()
   do i = 1, size(green)
     select case (green(i)%dataname)
     case ("GE")
-      ind%green%ge = i 
+      ind%green%ge    = i
     case ("GEGdt")
-      ind%green%gegdt = i 
+      ind%green%gegdt = i
     case ("GN")
-      ind%green%gn = i
+      ind%green%gn    = i
     case ("C")
-      ind%green%c = i
+      ind%green%c     = i
     case ("GR")
-      ind%green%gr = i
+      ind%green%gr    = i
     case ("GHN")
-      ind%green%ghn = i
+      ind%green%ghn   = i
     case ("GHE")
-      ind%green%ghe = i
+      ind%green%ghe   = i
     case ("GG")
-      ind%green%gg = i
+      ind%green%gg    = i
     case ("GNdt")
-      ind%green%gndt = i
+      ind%green%gndt  = i
+    case ("GNdh")
+      ind%green%gndh  = i
     case ("GNdz")
-      ind%green%gndz = i
+      ind%green%gndz  = i
+    case ("GNdz2")
+      ind%green%gndz2 = i
     endselect
   enddo
   do i = 1, size(polygon)
