@@ -563,15 +563,15 @@ function get_level_index(model,level)
   integer, intent(in), optional :: level
   integer :: i
 
-    get_level_index=1
+  get_level_index=1
   if (.not.present(level).or.size(model%level).le.1) then
     get_level_index=1
     return
   endif
   do i = 1, size(model%level)
     if (model%level(i).eq.level) then
-       get_level_index=i
-       return
+      get_level_index=i
+      return
     endif
   enddo 
   call print_warning("level not found")
@@ -627,6 +627,7 @@ subroutine get_variable(model, date, print)
         "variable not found: " // trim(model%names(1)), &
         error=.true.)
   endif
+
   if (allocated(model%data)) deallocate(model%data)
   ! model%level=1
   allocate ( &
@@ -791,12 +792,21 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   ! do not look into data array - get value directly 
   if (model%huge) then
     call check (nf90_inq_varid (model%ncid, model%names(1), varid))
-    call check (nf90_get_var(                                                         & 
-        model%ncid, varid, val,                                                       & 
-        start = [ilon,ilat, &
-        get_level_index(model,level),  &
-        get_time_index(model,date)]), & 
-        success=success)
+    status=nf90_inq_varid (model%ncid, model%names(4), varid)
+    if (status.eq.nf90_noerr) then
+      call check (nf90_get_var(         & 
+          model%ncid, varid, val,       & 
+          start = [ilon,ilat,           & 
+          get_level_index(model,level), & 
+          get_time_index(model,date)]), & 
+          success=success)
+    else
+      call check (nf90_get_var(         & 
+          model%ncid, varid, val,       & 
+          start = [ilon,ilat,           & 
+          get_time_index(model,date)]), & 
+          success=success)
+    endif
     if(.not. success) then
       call print_warning ("skipping get_value")
       val = sqrt(-1.)

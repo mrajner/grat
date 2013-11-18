@@ -741,7 +741,7 @@ subroutine convolve(site, date)
                 (result(i), i =1,size(result))
             if (result_total) &
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                '(' // output%form //'$)'),sum(result)
+                '(' // output%form //'$)'),sum(result(1:size(green)))
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               do i=1,size(val)
                 call get_value (                          & 
@@ -776,7 +776,7 @@ subroutine convolve(site, date)
 
   ! results to output
   if (result_component) write (output%unit, "(" // output%form // '$)') result
-  if (result_total)     write (output%unit, "(" // output%form // '$)') sum(result)
+  if (result_total)     write (output%unit, "(" // output%form // '$)') sum(result(1:size(green)))
 
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then

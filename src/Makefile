@@ -5,13 +5,13 @@
 hjkr:grat
 	grat \
 		-F NCEP@HP, ETOPO@H\!, NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP, VIENNA@HRSP \
-		-G @GN ,@GE,@GNdt \
+		-G @GN ,@GE, @GNdt \
 		-Sj \
-		-M2 \
-		-D 2012:2013 \
+		-M1,2 \
+		-D 2012 \
 		-BI,N -H \
-		-U \
-		-o tmp : ree:time -V
+		-rt \
+		-o :fre:time 
 
 
 dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc
