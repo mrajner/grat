@@ -538,4 +538,23 @@ real function stdev (vec,i, nan)
     stdev = sqrt(sum((vec - mean(vec,i))**2)/real(size(vec)))
   endif
 end function
+
+
+! ==============================================================================
+! http://rosettacode.org/wiki/Count_occurrences_of_a_substring#Fortran
+! ==============================================================================
+function countsubstring(s1, s2) result(c)
+  character(*), intent(in) :: s1, s2
+  integer :: c, p, posn
+ 
+  c = 0
+  if(len(s2) == 0) return
+  p = 1
+  do 
+    posn = index(s1(p:), s2)
+    if(posn == 0) return
+    c = c + 1
+    p = p + posn + len(s2)
+  end do
+end function
 end module

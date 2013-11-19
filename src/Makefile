@@ -2,16 +2,12 @@
 # for example: OBJS  = libgrat.a
 
 
-hjkr:grat
-	grat \
-		-F NCEP@HP, ETOPO@H\!, NCEP @SP , NCEP@LS, NCEP1@T, VIENNA@RSP, VIENNA@HRSP \
-		-G @GN ,@GE,@GNdt \
-		-Sj \
+fbx: grat
+	grat -F 100 @SP,310@HP, 0 @H,10@T ,10@RSP   \
+		-Spl:10 \
 		-M2 \
-		-D 2012:2013 \
-		-BI,N -H \
-		-U \
-		-o tmp : ree:time -V
+		-D2011, 2011010106 \
+		-G@GNc, @GNdt -V -H
 
 
 dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc

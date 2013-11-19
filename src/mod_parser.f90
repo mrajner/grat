@@ -37,7 +37,6 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
     endif
   case ('-r')
-    stop "dla green ib i nib"
     do i =1, size(cmd_line_entry%field)
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t")) result_total=.true.
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."nc")) result_component=.false.
@@ -52,7 +51,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     inverted_barometer=.false.
     do i = 1, size(cmd_line_entry%field)
       select case(cmd_line_entry%field(i)%subfield(1)%name)
-      case ("N","n")
+      case ("N","n","nib")
         non_inverted_barometer = .true.
       case default
         inverted_barometer=.true.
@@ -123,6 +122,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
       output%noclobber=.true.
+    endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."c")) then
+      output%noclobber=.false.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
       output%form="f13.3"
@@ -269,6 +271,9 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."nc")) then
           log%noclobber = .true.
+        endif
+        if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."c")) then
+          log%noclobber = .false.
         endif
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."full")) then
           log%full = .true.
@@ -710,25 +715,29 @@ subroutine get_index()
   do i = 1, size(green)
     select case (green(i)%dataname)
     case ("GE")
-      ind%green%ge = i 
+      ind%green%ge    = i
     case ("GEGdt")
-      ind%green%gegdt = i 
+      ind%green%gegdt = i
     case ("GN")
-      ind%green%gn = i
-    case ("C")
-      ind%green%c = i
+      ind%green%gn    = i
+    case ("GNc")
+      ind%green%gnc   = i
     case ("GR")
-      ind%green%gr = i
+      ind%green%gr    = i
     case ("GHN")
-      ind%green%ghn = i
+      ind%green%ghn   = i
     case ("GHE")
-      ind%green%ghe = i
+      ind%green%ghe   = i
     case ("GG")
-      ind%green%gg = i
+      ind%green%gg    = i
     case ("GNdt")
-      ind%green%gndt = i
+      ind%green%gndt  = i
+    case ("GNdh")
+      ind%green%gndh  = i
     case ("GNdz")
-      ind%green%gndz = i
+      ind%green%gndz  = i
+    case ("GNdz2")
+      ind%green%gndz2 = i
     endselect
   enddo
   do i = 1, size(polygon)
