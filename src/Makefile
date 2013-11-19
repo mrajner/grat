@@ -3,11 +3,11 @@
 
 
 fbx: grat
-	grat -F 100 @SP,310@HP, 0 @H ,10@RSP   \
-		-Su:0:0:500 \
-		-M1,2 \
-		-G@GE,@GN \
-		-A1 -o:free -U
+	grat -F 100 @SP,310@HP, 0 @H,10@T ,10@RSP   \
+		-Spl:10 \
+		-M2 \
+		-D2011, 2011010106 \
+		-G@GNc, @GNdt -V -H
 
 
 dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc

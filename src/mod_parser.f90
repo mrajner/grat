@@ -720,8 +720,8 @@ subroutine get_index()
       ind%green%gegdt = i
     case ("GN")
       ind%green%gn    = i
-    case ("C")
-      ind%green%c     = i
+    case ("GNc")
+      ind%green%gnc   = i
     case ("GR")
       ind%green%gr    = i
     case ("GHN")

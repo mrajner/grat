@@ -23,6 +23,7 @@ module mod_green
     real(dp), allocatable,dimension(:) :: start
     real(dp), allocatable,dimension(:) :: stop
     real(dp), allocatable,dimension(:,:) :: data
+    real(dp), allocatable,dimension(:,:) :: data_site_specific
     character (len=25), allocatable, dimension(:) :: dataname
     logical, allocatable,dimension(:) :: elastic
   end type
@@ -75,13 +76,13 @@ subroutine parse_green (cmd_line_entry)
 
   ! check completness
   if ( &
-    any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
-  .and. green%dataname.eq."GNdz" ) &
-  .neqv. &
-    any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
-  .and. green%dataname.eq."GNdz2" ) &
-  ) call print_warning("-G: merriam@GNdz should go with merriam @GNdz2", &
-  error=.true.)
+      any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
+      .and. green%dataname.eq."GNdz" ) &
+      .neqv. &
+      any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
+      .and. green%dataname.eq."GNdz2" ) &
+      ) call print_warning("-G: merriam@GNdz should go with merriam @GNdz2", &
+      error=.true.)
 end subroutine
 
 ! =============================================================================
@@ -102,7 +103,6 @@ subroutine read_green (green, print)
   ! change the paths accordingly
   if (.not.file_exists(green%name) &
       .and. (.not. green%name.eq."merriam" &
-      .and.  .not. green%name.eq."compute" &
       .and.  .not. green%name.eq."huang" &
       .and.  .not. green%name.eq."rajner" )) then
     green%name="merriam"
@@ -121,6 +121,8 @@ subroutine read_green (green, print)
       green%column=[1,5]
     case("GE")
       green%column=[1,6]
+    case("GNc")
+      green%column=[1,2]
     case default
       call print_warning( &
           "green type not found", &
@@ -200,153 +202,188 @@ subroutine read_green (green, print)
     end select
   endif
 
-  ! if (green%name.eq."/home/mrajner/src/grat/dat/huang_green.dat" .and. &
-  ! (green%dataname.eq."GNdh".or.green%dataname.eq."GNdh")) &
-  ! then
-    ! green%data = green%data * 1000.
-    ! endif
 
-    if (.not.present(print)) then
-      write(log%unit, form%i3) trim(basename(trim(green%name))), trim(green%dataname), &
-          "columns:",green%column,&
-          "lines:", size(green%distance)
-    endif
+  if (.not.present(print)) then
+    write(log%unit, form%i3) trim(basename(trim(green%name))), trim(green%dataname), &
+        "columns:",green%column,&
+        "lines:", size(green%distance)
+  endif
 
-    if (green%columndataname(1).eq."R") then
-      green%distance=(/ (r2d(green%distance(i)), i=1,size(green%distance)) /)
-      write(log%unit, form_63) "conversion: radians --> to degrees"
-    endif
-    if (green%columndataname(2).eq."a2f") then
-      green%data=green%data  / (earth%radius)*1e12 * earth%gravity%mean
-      write(log%unit, form_63) "conversion: aplo --> to farrell"
-    endif
-    if (green%columndataname(2).eq."f2m") then
-      green%data= &
-          -green%data * green_normalization("f2m")
-      write(log%unit, form_63) "conversion: farrell --> to merriam"
-    endif
-  end subroutine
+  if (green%columndataname(1).eq."R") then
+    green%distance=(/ (r2d(green%distance(i)), i=1,size(green%distance)) /)
+    write(log%unit, form_63) "conversion: radians --> to degrees"
+  endif
+  if (green%columndataname(2).eq."a2f") then
+    green%data=green%data  / (earth%radius)*1e12 * earth%gravity%mean
+    write(log%unit, form_63) "conversion: aplo --> to farrell"
+  endif
+  if (green%columndataname(2).eq."f2m") then
+    green%data= &
+        -green%data * green_normalization("f2m")
+    write(log%unit, form_63) "conversion: farrell --> to merriam"
+  endif
+end subroutine
 
-  ! =============================================================================
-  !> Unification:
-  ! =============================================================================
-  subroutine green_unification ()
-    use mod_utilities, only: size_ntimes_denser, spline_interpolation, d2r
-    use mod_cmdline, only: info, moreverbose, ind
-    use mod_printing
-    use iso_fortran_env
-    type(green_functions) :: tmpgreen
-    integer :: i, iinfo, imin, imax, j, ii
-    integer, allocatable, dimension(:):: which_green, tmp
+! =============================================================================
+!> Unification:
+! =============================================================================
+subroutine green_unification ()
+  use mod_utilities, only: size_ntimes_denser, spline_interpolation, d2r
+  use mod_cmdline,   only: info, moreverbose, ind
+  use mod_printing
+  use mod_site, only: site
 
-    allocate (green_common(size(info)))
-    allocate (which_green(size(info)))
-    allocate (tmp(size(green)))
-    do iinfo=1,size(info)
-      if (info(iinfo)%distance%step.eq.0) then
-        do i = 1, size(green)
-          tmp(i)= count(                                         & 
-              green(i)%distance.le.info(iinfo)%distance%stop       & 
-              .and.green(i)%distance.ge.info(iinfo)%distance%start & 
-              ) 
-        enddo
-        which_green(iinfo) = maxloc(tmp, 1)
+  type(green_functions) :: tmpgreen
+  integer :: i, iinfo, imin, imax, j, ii
+  integer, allocatable, dimension(:):: which_green, tmp
 
-        imin=minloc( & 
-            abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start), 1)-1 
-        imax=minloc( &
-            abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop), 1)+1
+  allocate (green_common(size(info)))
+  allocate (which_green(size(info)))
+  allocate (tmp(size(green)))
+  do iinfo=1,size(info)
+    if (info(iinfo)%distance%step.eq.0) then
+      do i = 1, size(green)
+        tmp(i)= count(                                         & 
+            green(i)%distance.le.info(iinfo)%distance%stop       & 
+            .and.green(i)%distance.ge.info(iinfo)%distance%start & 
+            ) 
+      enddo
+      which_green(iinfo) = maxloc(tmp, 1)
 
-        if (imin.lt.1) imin = 1
-        if (imax.gt.size(green(which_green(iinfo))%distance)) then
-          imax = size(green(which_green(iinfo))%distance)
-        endif
+      imin=minloc( & 
+          abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start), 1)-1 
+      imax=minloc( &
+          abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop), 1)+1
 
-        allocate(tmpgreen%distance(                                   & 
-            size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) & 
-            ))
-        do ii = 1, imax - imin
-          do j = 1, info(iinfo)%distance%denser
-            tmpgreen%distance((ii-1)*info(iinfo)%distance%denser+j) = & 
-                green(which_green(iinfo))%distance(imin+ii-1)           & 
-                +(j-1)*(green(which_green(iinfo))%distance(imin+ii)     & 
-                -green(which_green(iinfo))%distance(imin+ii-1))         & 
-                /info(iinfo)%distance%denser
-          enddo
-        enddo
-
-        tmpgreen%distance(size(tmpgreen%distance)) = & 
-            green(which_green(iinfo))%distance(imax)
-
-        imin = count(tmpgreen%distance.le.info(iinfo)%distance%start) 
-        imax = size(tmpgreen%distance) - &
-            count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
-
-        allocate(green_common(iinfo)%distance(imax-imin+1))
-        green_common(iinfo)%distance =       & 
-            tmpgreen%distance(imin:imax)
-        green_common(iinfo)%distance(1) =    & 
-            (3/4.*info(iinfo)%distance%start+  & 
-            green_common(iinfo)%distance(2)/4)
-        green_common(iinfo)%distance(size(green_common(iinfo)%distance)) =      & 
-            (3/4.*info(iinfo)%distance%stop+                                      & 
-            green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
-
-        allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
-        allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
-
-        green_common(iinfo)%start=(green_common(iinfo)%distance)
-        do i =1, size(green_common(iinfo)%distance)
-          green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
-              green_common(iinfo)%distance(i-1) ) / 2.
-          green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
-              green_common(iinfo)%distance(i+1) ) / 2.
-        enddo
-
-        green_common(iinfo)%start(1)= info(iinfo)%distance%start
-        green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
-            info(iinfo)%distance%stop
-        deallocate(tmpgreen%distance)
-      else
-        allocate(green_common(iinfo)%distance( &
-            ceiling( &
-            (info(iinfo)%distance%stop - info(iinfo)%distance%start) &
-            /info(iinfo)%distance%step) &
-            ))
-        allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
-        allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
-
-        green_common(iinfo)%start = &
-            [(info(iinfo)%distance%start + &
-            (i-1)*info(iinfo)%distance%step, &
-            i=1,size(green_common(iinfo)%distance)) ]
-        green_common(iinfo)%stop = green_common(iinfo)%start(2:) 
-        green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = info(iinfo)%distance%stop
-        green_common(iinfo)%distance = &
-            (green_common(iinfo)%stop + green_common(iinfo)%start)/2
+      if (imin.lt.1) imin = 1
+      if (imax.gt.size(green(which_green(iinfo))%distance)) then
+        imax = size(green(which_green(iinfo))%distance)
       endif
 
-      allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance),size(green)))
-      allocate(green_common(iinfo)%dataname(size(green)))
-
-      do i = 1,  size(green_common(iinfo)%data,2)
-        call  spline_interpolation(          & 
-            green(i)%distance,                 & 
-            green(i)%data,                     & 
-            size(green(i)%distance),           & 
-            green_common(iinfo)%distance,      & 
-            green_common(iinfo)%data(:,i),     & 
-            size(green_common(iinfo)%distance) & 
-            )
-        where( &
-              green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
-              .or.green_common(iinfo)%distance.lt.green(i)%distance(1) &
-              )
-          green_common(iinfo)%data(:,i)=0
-        end where
-        green_common(iinfo)%dataname(i) = green(i)%dataname
+      allocate(tmpgreen%distance(                                   & 
+          size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) & 
+          ))
+      do ii = 1, imax - imin
+        do j = 1, info(iinfo)%distance%denser
+          tmpgreen%distance((ii-1)*info(iinfo)%distance%denser+j) = & 
+              green(which_green(iinfo))%distance(imin+ii-1)           & 
+              +(j-1)*(green(which_green(iinfo))%distance(imin+ii)     & 
+              -green(which_green(iinfo))%distance(imin+ii-1))         & 
+              /info(iinfo)%distance%denser
+        enddo
       enddo
+
+      tmpgreen%distance(size(tmpgreen%distance)) = & 
+          green(which_green(iinfo))%distance(imax)
+
+      imin = count(tmpgreen%distance.le.info(iinfo)%distance%start) 
+      imax = size(tmpgreen%distance) - &
+          count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
+
+      allocate(green_common(iinfo)%distance(imax-imin+1))
+      green_common(iinfo)%distance =       & 
+          tmpgreen%distance(imin:imax)
+      green_common(iinfo)%distance(1) =    & 
+          (3/4.*info(iinfo)%distance%start+  & 
+          green_common(iinfo)%distance(2)/4)
+      green_common(iinfo)%distance(size(green_common(iinfo)%distance)) =      & 
+          (3/4.*info(iinfo)%distance%stop+                                      & 
+          green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
+
+      allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
+      allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
+
+      green_common(iinfo)%start=(green_common(iinfo)%distance)
+      do i =1, size(green_common(iinfo)%distance)
+        green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
+            green_common(iinfo)%distance(i-1) ) / 2.
+        green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
+            green_common(iinfo)%distance(i+1) ) / 2.
+      enddo
+
+      green_common(iinfo)%start(1)= info(iinfo)%distance%start
+      green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
+          info(iinfo)%distance%stop
+      deallocate(tmpgreen%distance)
+    else
+      allocate(green_common(iinfo)%distance( &
+          ceiling( &
+          (info(iinfo)%distance%stop - info(iinfo)%distance%start) &
+          /info(iinfo)%distance%step) &
+          ))
+      allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
+      allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
+
+      green_common(iinfo)%start = &
+          [(info(iinfo)%distance%start + &
+          (i-1)*info(iinfo)%distance%step, &
+          i=1,size(green_common(iinfo)%distance)) ]
+      green_common(iinfo)%stop = green_common(iinfo)%start(2:) 
+      green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = info(iinfo)%distance%stop
+      green_common(iinfo)%distance = &
+          (green_common(iinfo)%stop + green_common(iinfo)%start)/2
+    endif
+
+    allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance),size(green)))
+    allocate(green_common(iinfo)%dataname(size(green)))
+
+    do i = 1,  size(green_common(iinfo)%data,2)
+      call  spline_interpolation(          & 
+          green(i)%distance,                 & 
+          green(i)%data,                     & 
+          size(green(i)%distance),           & 
+          green_common(iinfo)%distance,      & 
+          green_common(iinfo)%data(:,i),     & 
+          size(green_common(iinfo)%distance) & 
+          )
+      where( &
+            green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
+            .or.green_common(iinfo)%distance.lt.green(i)%distance(1) &
+            )
+        green_common(iinfo)%data(:,i)=0
+      end where
+      green_common(iinfo)%dataname(i) = green(i)%dataname
     enddo
+
+    if (ind%green%gnc.ne.0) then
+      allocate(green_common(iinfo)%data_site_specific(size(green_common(iinfo)%distance),size(site)))
+
+      print *
+      print *, size(green_common(iinfo)%data_site_specific,1)
+      print *, size(green_common(iinfo)%data_site_specific,2)
+      stop
+    endif
+  enddo
+
+end subroutine
+
+subroutine compute_site_specific_green()
+  print * , size(green_common), "===="
+
+  ! if(ind%green%gnc.ne.0) then
+  ! if ( &
+  ! any ([ &
+  ! ind%model%sp, &
+  ! ind%model%hp, &
+  ! ind%model%h, &
+  ! ind%model%t &
+  ! ].eq.0)) then
+    ! call print_warning ("with @GNc you need to give @T @HP @H",error=.true.)
+    ! endif
+    ! write(log%unit, form%i1) "computing aggf, this can take a while..."
+    ! write(log%unit, *)
+    ! open (unit=output_unit, carriagecontrol='fortran')
+    ! do i = 1, size(green_common)
+    ! do j = 1, size(green_common(i)%distance)
+    ! ! green_common(i)%data(j,ind%green%gnc)= &
+    ! ! aggf(d2r(green_common(i)%distance(j)), method="full")
+    ! ! print *, i, j,green_common(i)%data(j,ind%green%gnc), d2r(green_common(i)%distance(j))
+    ! ! call progress(100*j/size(green_common(i)%distance))
+    ! ! stop "UUUUUUUUUUUUUUUUUUUUUUU"
+    ! enddo
+    ! enddo
+    ! close(output_unit)
+    ! endif
   end subroutine
 
   ! =============================================================================
@@ -390,22 +427,6 @@ subroutine read_green (green, print)
     endif
     if(.not.allocated(green_common)) then
       call green_unification()
-    endif
-
-    if(ind%green%c.ne.0) then
-      write(log%unit, form%i1) "computing aggf, this can take a while..."
-      write(log%unit, *)
-      open (unit=output_unit, carriagecontrol='fortran')
-      do i = 1, size(green_common)
-        do j = 1, size(green_common(i)%distance)
-          green_common(i)%data(j,ind%green%c)= &
-              aggf(d2r(green_common(i)%distance(j)), method="full")
-          ! print *, i, j,green_common(i)%data(j,ind%green%c), d2r(green_common(i)%distance(j))
-          call progress(100*j/size(green_common(i)%distance))
-          stop "UUUUUUUUUUUUUUUUUUUUUUU"
-        enddo
-      enddo
-      close(output_unit)
     endif
 
     if (.not. allocated(result)) then
@@ -491,7 +512,7 @@ subroutine read_green (green, print)
               .or.ind%green%ge.ne.0   & 
               .or.ind%green%gg.ne.0   & 
               .or.ind%green%gndt.ne.0 & 
-              .or.ind%green%c.ne.0    & 
+              .or.ind%green%gnc.ne.0    & 
               ) then
 
             if ( &
@@ -513,7 +534,7 @@ subroutine read_green (green, print)
                   val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
                 endif
 
-              old_val_sp=val(ind%model%sp)
+                old_val_sp=val(ind%model%sp)
 
                 ! get T
                 if (ind%model%t.ne.0 &
@@ -558,21 +579,22 @@ subroutine read_green (green, print)
 
                   ! if the cell is not over sea and inverted barometer assumption was not set 
                   ! and is not excluded by polygon
+
+                  ! transfer SP if necessary on terrain
+                  if (transfer_sp%if &
+                      ) then
+                    val(ind%model%sp) = standard_pressure( & 
+                        height=val(ind%model%h),           & 
+                        h_zero=val(ind%model%hp),          & 
+                        p_zero=old_val_sp,          & 
+                        method=transfer_sp%method,         & 
+                        temperature=val(ind%model%t),      & 
+                        use_standard_temperature           & 
+                        = ind%model%t.eq.0,                & 
+                        nan_as_zero=.false.)
+                  endif
+
                   if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
-
-                    ! transfer SP if necessary on terrain
-                    if (transfer_sp%if) then
-                      val(ind%model%sp) = standard_pressure( & 
-                          height=val(ind%model%h),           & 
-                          h_zero=val(ind%model%hp),          & 
-                          p_zero=old_val_sp,          & 
-                          method=transfer_sp%method,         & 
-                          temperature=val(ind%model%t),      & 
-                          use_standard_temperature           & 
-                          = ind%model%t.eq.0,                & 
-                          nan_as_zero=.false.)
-                    endif
-
                     !IB or NIB
                     if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
                       ! GE
@@ -618,6 +640,15 @@ subroutine read_green (green, print)
                       (ind%polygon%n.ne.0.and.iok(ind%polygon%n).ne.0)     & 
                       .or.(ind%polygon%n.eq.0)                             & 
                       ) then
+
+                    !C before GN GNdt etc becouse it needs SP on H not on site 
+                    !level if -U (transfer%sp) given
+                    if(ind%green%gnc.ne.0) then
+                      result(ind%green%gnc) = result(ind%green%gnc)              & 
+                          + val(ind%model%sp)                                  & 
+                          * green_common(igreen)%data(idist, ind%green%gnc)      & 
+                          * area * normalize
+                    endif
 
                     ! transfer SP if necessary on site level
                     if (transfer_sp%if) then
@@ -701,13 +732,6 @@ subroutine read_green (green, print)
                           *  area * normalize
                     endif
 
-                    !C
-                    if (ind%green%c.ne.0) then
-                      result(ind%green%c) = result(ind%green%c)              & 
-                          + val(ind%model%sp)                                  & 
-                          * green_common(igreen)%data(idist, ind%green%c)      & 
-                          * area * normalize
-                    endif
                   endif
                 endif
               else
