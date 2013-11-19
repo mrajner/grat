@@ -1,7 +1,6 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-
 fbx: grat
 	grat -F 100 @SP,310@HP, 0 @H,10@T ,10@RSP   \
 		-Spl:10 \
@@ -233,4 +232,3 @@ helps: $(HELPS)
 $(HELPS): $(PROGS)
 %.hlp: 
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
-grat -M1,2 -G @GE -Sj -FERA@SP! -D2011:20110102 -o:time -H
