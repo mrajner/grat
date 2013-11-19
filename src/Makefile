@@ -2,11 +2,12 @@
 # for example: OBJS  = libgrat.a
 
 fbx: grat
-	grat -F 100 @SP,310@HP, 0 @H,10@T ,10@RSP   \
-		-Spl:10 \
+	time grat -F NCEP @SP,NCEP @LS, NCEP@HP, ETOPO@H\! , \
+		NCEP1@T , VIENNA@RSP   \
+		-Sj \
 		-M2 \
-		-D2011, 2011010106 \
-		-G@GNc, @GNdt -V -H
+		-D2011, 2011010118 \
+		-G@GNc, @GNdt -H -o tmpgnc.dat
 
 
 dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc

@@ -32,7 +32,9 @@ function aggfd ( &
     predefined,  & 
     fels_type,   &
     rough)
+
   use mod_constants, only: atmosphere, dp
+
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: delta
   real(dp), intent (in), optional :: dz
@@ -105,7 +107,7 @@ end function
 !! \date 2013.07.15
 !! \warning psi in radians h in meter
 ! ==============================================================================
-function aggf (       & 
+function aggf (         & 
     psi,                & 
     zmin, zmax, dz,     & 
     t_zero,             & 
@@ -146,6 +148,8 @@ function aggf (       &
   dz_   = 0.1
   h_    = 0.
 
+  aggf=0.
+
   if (present(zmin)) zmin_ = zmin
   if (present(zmax)) zmax_ = zmax
   if (present(  dz))   dz_ = dz
@@ -174,6 +178,7 @@ function aggf (       &
         + dz_/2  &
         + (i-1) * dz_
     enddo
+
     if (present(rough).and.rough) then
       ! do not use rough! it is only for testing
       do i = 1, size(heights)
@@ -185,27 +190,27 @@ function aggf (       &
           )
       enddo
     else
-      pressures(1) = standard_pressure( &
-        heights(1), &
-        method = method, &
-        h_zero = zmin_,  &
-        dz = dz, &
-        fels_type=fels_type, &
-        use_standard_temperature=.true., &
-        temperature = standard_temperature( &
-        zmin_, fels_type=fels_type)+deltat & 
+      pressures(1) = standard_pressure(     & 
+        heights(1),                         & 
+        method = method,                    & 
+        h_zero = zmin_,                     & 
+        dz = dz,                            & 
+        fels_type=fels_type,                & 
+        use_standard_temperature=.true.,    & 
+        temperature = standard_temperature( & 
+        zmin_, fels_type=fels_type)+deltat  & 
         )
       do i = 2, size(heights)
-        pressures(i) = standard_pressure(                                       & 
-          heights(i),                                                           & 
-          p_zero = pressures(i-1),                                              & 
-          h_zero = heights(i-1),                                                & 
-          method = method,                                                      & 
-          dz = dz,                                                              & 
-          fels_type=fels_type, &
-          use_standard_temperature=.true., &
-          temperature = standard_temperature(heights(i-1), &
-          fels_type=fels_type)+deltat & 
+        pressures(i) = standard_pressure(                  & 
+          heights(i),                                      & 
+          p_zero = pressures(i-1),                         & 
+          h_zero = heights(i-1),                           & 
+          method = method,                                 & 
+          dz = dz,                                         & 
+          fels_type=fels_type,                             & 
+          use_standard_temperature=.true.,                 & 
+          temperature = standard_temperature(heights(i-1), & 
+          fels_type=fels_type)+deltat                      & 
           )
       enddo
     endif
