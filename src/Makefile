@@ -237,3 +237,4 @@ helps: $(HELPS)
 $(HELPS): $(PROGS)
 %.hlp: 
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+grat -M1,2 -G @GE -Sj -FERA@SP! -D2011:20110102 -o:time -H
