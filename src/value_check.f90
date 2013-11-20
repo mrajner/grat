@@ -113,8 +113,8 @@ program value_check
           if (model(ii)%if.or.model(ii)%if_constant_value) then
             imodel = imodel + 1
             if (iok.eq.1) then
-              call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                  method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
+               call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
+                   method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
             else
               val (imodel) = 0
             endif
@@ -127,7 +127,7 @@ program value_check
         endif
         if (output%level.and. allocated(level%level)) then
           write (output%unit, '(i6$)') level%level(ilevel)
-        else
+        elseif(output%level) then
           write (output%unit, '(i6$)') ilevel
         endif
         write (output%unit , "("// output%form // '$)') val

@@ -16,7 +16,7 @@ module mod_data
   type file
     character(90) :: name 
     ! varname,lonname,latname,levelname,timename
-    character(len=50) :: names(5) = [ "z", "lon", "lat","level","time"]
+    character(len=50) :: names(5) = ["z", "lon", "lat", "level", "time"]
     character(len=100) :: datanames(5)=" "
 
     character(len=15) :: dataname
@@ -180,6 +180,12 @@ subroutine model_aliases(model, dryrun, year)
     case ("SP")
       model%names(1)="pres"
       write(model%name,'(a,a,i4,a)') trim(prefix),"pres.sfc.",year_,".nc"
+    ! case ("GP")
+      ! model%names(1)="pres"
+      ! write(model%name,'(a,a,i4,a)') trim(prefix),"pres.sfc.",year_,".nc"
+    case ("VT")
+      model%names(1)="air"
+      write(model%name,'(a,a,i4,a)') trim(prefix),"air.",year_,".nc"
     case ("T")
       if (model%autoloadname.eq."NCEP1") then
         model%names(1)="air"
@@ -601,23 +607,24 @@ end subroutine
 ! =============================================================================
 !> \brief Get variable from netCDF file for specified variables
 ! =============================================================================
-subroutine get_variable(model, date, print)
+subroutine get_variable(model, date, print,level)
   use netcdf
   use mod_printing
   type (file), intent(inout) :: model
   integer, optional, intent(in), dimension(6) ::date
   integer :: varid, status
   integer :: start(3)
+  integer :: startv(4)
   integer :: index_time, i, j, k
   real (dp) :: scale_factor, add_offset
   logical, optional :: print
+  integer, optional :: level
   character (20) :: aux
 
   if ( &
       model%huge &
       .or.model%if_constant_value &
       .or..not. model%if) return
-
 
   index_time = 0
   status = nf90_inq_varid (model%ncid, model%names(1), varid)
@@ -654,13 +661,26 @@ subroutine get_variable(model, date, print)
   else
     index_time = 1
   endif
-  start = [1,1,index_time]
-  call check (nf90_get_var ( & 
-      ncid=model%ncid,         & 
-      varid=varid,             & 
-      values=model%data,       & 
-      start=start)             & 
-      )
+
+  select case (model%dataname)
+  case ("VT")
+    startv = [1,1,get_level_index(model,level=level),index_time]
+    call check (nf90_get_var ( & 
+        ncid=model%ncid,         & 
+        varid=varid,             & 
+        values=model%data,       & 
+        start=startv)             & 
+        )
+
+  case default
+    start = [1,1,index_time]
+    call check (nf90_get_var ( & 
+        ncid=model%ncid,         & 
+        varid=varid,             & 
+        values=model%data,       & 
+        start=start)             & 
+        )
+  end select
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
   model%data = model%data*scale_factor + add_offset
@@ -812,6 +832,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
       val = sqrt(-1.)
       return
     endif
+
     call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset,status)
     if (status==nf90_noerr) val = val *scale_factor + add_offset
     if (trim(model%datanames(1)).ne."") then

@@ -1,26 +1,15 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-fbx: grat
-	time grat -F NCEP @SP,NCEP @LS, NCEP@HP, ETOPO@H\! , \
-		NCEP1@T , VIENNA@RSP   \
-		-Sj \
-		-M2 \
-		-D2011, 2011010118 \
-		-G@GNc, @GNdt -H -o tmpgnc.dat
 
 
-dd=/home/mrajner/dat/ncep_reanalysis/air.2011.nc
-rr=/home/mrajner/dat/ncep_reanalysis/hgt.2011.nc
-tt=/home/mrajner/dat/ncep_reanalysis/mslp.2011.nc
-fdf:value_check
+fdf: value_check
 	value_check \
 		-F \
-		$(dd) @ ! :air@offset=-273.15 \
-		, $(rr) @ ! :hgt@gh2h \
-		, $(tt)@S!  :mslp@scale=0.01 \
-		-Sj -V -D2011:20@D:2@D -o:height:level:free \
-		-H 
+		NCEP@VT \
+		-Sj  -D2011:20@D:2@D -o:height:level:free \
+		-H -J50
+df:
 	#  value_check -F \
 		#  /home/mrajner/dat/erainterim/gp_l.2013.nc -Sj -V -Jm -o :free 
 
@@ -233,3 +222,11 @@ helps: $(HELPS)
 $(HELPS): $(PROGS)
 %.hlp: 
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+
+settings_for_gnc: grat
+	time grat -F NCEP @SP,NCEP @LS, NCEP@HP, ETOPO@H\! , \
+		NCEP1@T , VIENNA@RSP   \
+		-Sj \
+		-M2 \
+		-D2011, 2011010118 \
+		-G@GNc, @GNdt -H -o tmpgnc.dat

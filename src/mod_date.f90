@@ -19,11 +19,12 @@ contains
 !! 
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine parse_date (cmd_line_entry) 
+subroutine parse_date(cmd_line_entry) 
   use mod_cmdline
   use mod_mjd, only: mjd, invmjd
   use mod_utilities, only: is_numeric
   use mod_data
+
   integer, dimension(6) :: start, stop, swap 
   real (dp) :: step 
   integer :: i_, i, start_index, i_aux
@@ -207,7 +208,7 @@ subroutine parse_date (cmd_line_entry)
   enddo
   write (log%unit, form%i3) "dates total:", size(date)
 
-end subroutine
+ end subroutine
 
 ! =============================================================================
 ! =============================================================================
@@ -238,7 +239,7 @@ end subroutine
 ! =============================================================================
 subroutine string2date (string, date, success)
   use mod_utilities, only: is_numeric
-  use mod_cmdline, only: method
+
   character (*), intent(in) :: string
   integer, dimension(6), intent(out):: date 
   integer :: start_char, end_char, j
@@ -250,7 +251,7 @@ subroutine string2date (string, date, success)
   date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
-  do j = 1, 6 
+   do j = 1, 6 
     if (j.eq.1) then
       end_char=min(len(string), start_char+3)
     else
