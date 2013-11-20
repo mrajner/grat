@@ -15,7 +15,7 @@ contains
       use mod_site
       use mod_cmdline, only: transfer_sp
 
-      real(dp) :: val, rsp, t, hrsp
+      real(dp) :: val, rsp, t !, hrsp
       type(site_info) :: site_
       integer, optional :: date(6)
       logical, save :: first_warning=.true.

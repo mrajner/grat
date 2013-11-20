@@ -2,13 +2,15 @@
 # for example: OBJS  = libgrat.a
 
 
-
 fdf: value_check
 	value_check \
 		-F \
-		NCEP@VT \
-		-Sj  -D2011:20@D:2@D -o:height:level:free \
-		-H -J50
+		NCEP@VT!:@offset=-273.15 \
+		, NCEP1 @T!:@offset=-273.15 \
+		-Sj  -D20110606 -o:height:level:free \
+		-H  -Jm
+	#  value_check -F NCEP1@T -Sj -D2012
+
 df:
 	#  value_check -F \
 		#  /home/mrajner/dat/erainterim/gp_l.2013.nc -Sj -V -Jm -o :free 
@@ -63,7 +65,8 @@ LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
 FC = ifort
 
 # compiler flags
-FLAGS = -fpp -debug -warn all -traceback     # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+FFLAGS = -fpp  -debug -warn all -traceback 
+# -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
@@ -139,7 +142,8 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 
 # implicit rules for object files
 %.o: %.f90
-	$(FC) $(FLAGS) $< -c
+	$(FC) $(FFLAGS) $< -c
+
 
 # rules for programs files
 # todo - shorter
@@ -148,11 +152,11 @@ $(PROGS_SHORTCUTS):
 	@make $(addprefix $(PROGS_DIR)/, $@)
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
-	$(FC) $(FLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
-	$(FC) $(FLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
+	$(FC) $(FFLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
 
 all:          \
 	$(OBJS)     \

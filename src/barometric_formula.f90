@@ -32,8 +32,10 @@ program barometric_formula
   enddo
 
    print '(10a18)' , "h", "simple", "berg", "pred", "pred2", "std" , "full"
-   do i = 1, nheight
-     if (i.gt. 20 .and. i.lt.nheight-20) cycle
+   do i = 1, nheight,200
+     ! if (i.gt. 20 .and. i.lt.nheight-20) then
+       ! cycle
+     ! endif
      ! if (heights(i).lt.1000.or.heights(i).gt.1001) cycle
      print '(10f18.9)' ,                                         & 
        heights(i),                                               & 

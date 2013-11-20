@@ -57,6 +57,7 @@
 ! ==============================================================================
 program grat
 
+  use omp_lib
   use mod_parser, only: intro
   use mod_data
   use mod_date
