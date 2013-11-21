@@ -213,6 +213,13 @@ subroutine model_aliases(model, dryrun, year, month)
       model%names(1)="hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.sfc.nc"
       model%autoload=.false.
+      if (present(dryrun) .and. dryrun) then
+        if (model%datanames(1).eq."") then
+          model%datanames(1) = "gh2h"
+        else
+          model%datanames(1) = "gh2h@"// trim(model%datanames(1))
+        endif
+      endif
     case ("LS")
       model%names(1:3)=["z", "x", "y"]
       model%name="/home/mrajner/dat/landsea/ncep_closed_seas_caspian.nc"
@@ -246,9 +253,15 @@ subroutine model_aliases(model, dryrun, year, month)
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
     case ("HP","H")
       model%names(1)="z"
-      model%datanames(1) = "gp2h"
       write(model%name,'(a,a,i4,a)') trim(prefix),"gp.nc"
       model%autoload=.false.
+      if (present(dryrun) .and. dryrun) then
+        if (model%datanames(1).ne."") then
+          model%datanames(1) = "gp2h@"// trim(model%datanames(1))
+        else
+          model%datanames(1) = "gp2h"
+        endif
+      endif
     case ("LS")
       model%names(1:3)=["z", "x", "y"]
       model%name="/home/mrajner/dat/landsea/era_closed_seas_caspian.nc"
@@ -354,8 +367,8 @@ function variable_modifier (val, modifier, verbose, list_only)
       select case (key)
       case ("gh2h") ! g2h is obsolete
         variable_modifier=geop2geom(variable_modifier)
-      case ("gp2gh")
-        variable_modifier=variable_modifier/earth%gravity%mean
+      ! case ("gp2gh")
+        ! variable_modifier=variable_modifier/earth%gravity%mean
       case ("gp2h")
         variable_modifier=geop2geom(variable_modifier)/earth%gravity%mean
       case ("nan")

@@ -202,7 +202,7 @@ program value_check
 
         if (output%unit.ne.output_unit.and..not.quiet) then 
           call cpu_time(cpu(2))
-          call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*size(level%level)), cpu(2)-cpu(1))
+          call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
         endif
         if (size(val).gt.0) write (output%unit , *)
       enddo
@@ -229,7 +229,7 @@ program value_check
 
   call cpu_time(cpu(2))
   if (output%unit.ne.output_unit.and..not.quiet) then 
-    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*size(level%level)), cpu(2)-cpu(1))
+    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
     close(output_unit) 
   endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)

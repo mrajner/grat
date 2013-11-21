@@ -1,6 +1,16 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+fdsfsd:value_check
+	value_check -FNCEP@SP -Sj -D2011 -o tmp
+fdf: grat
+	grat \
+		-S j \
+		-F NCEP@SP , NCEP1@T , VIENNA@RSP , NCEP@LS \
+		-G /home/mrajner/dat/green/green_prem_atmg_guo.dat  @GEGdt: 1:7 @f2m    \
+		-H  \
+		-D 2011 -M2 
+
 # compiler
 FC = ifort
 
