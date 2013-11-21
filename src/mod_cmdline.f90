@@ -83,7 +83,7 @@ module mod_cmdline
       type(warnings_info) warnings
 
       type model_index
-        integer(2) :: sp, t, rsp, ewt, h, ls, hp , hrsp
+        integer(2) :: sp, t, rsp, ewt, h, ls, hp, hrsp, gp, tp, tpf, rho, vt
       end type
       type poly_index
         integer(2) :: e, n

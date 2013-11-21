@@ -1,66 +1,6 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-
-fdf: value_check
-	value_check \
-		-F \
-		NCEP@VT!:@offset=-273.15 \
-		, NCEP1 @T!:@offset=-273.15 \
-		-Sj  -D20110606 -o:height:level:free \
-		-H  -Jm
-	#  value_check -F NCEP1@T -Sj -D2012
-
-df:
-	#  value_check -F \
-		#  /home/mrajner/dat/erainterim/gp_l.2013.nc -Sj -V -Jm -o :free 
-
-d:
-	value_check             \
-		-V                    \
-		-F $(TNCEP2)          \
-		-Sj                   \
-		-D2011010600:10@D:5@D \
-		-o:free:height  -H \
-		-J 1 @ n
-
-dkljgfd:grat
-	grat            \
-		-M 2D         \
-		-S j          \
-		-F NCEP @ SP! \
-		, NCEP @ HP!  \
-		, NCEP @ LS!  \
-		, 900@H       \
-		-D 2012       \
-		-G merriam @ GE, merriam @GNdt 
-
-SSSS= $(SP)
-SSSS= $(SP), $(H__)
-#  SSSS= $(SP), $(H__),$(Hetopo)
-j: grat
-	grat \
-		-S r:1:2:0 \
-		-M 2D \
-		-G m@GN, compute@C \
-		-F $(SSSS) \
-		-H -V -I 240@AS : 22@DS -L@g -D2011:2011:1
-	#  grat \
-		#  -S r \
-		#  -M 2D \
-		#  -G merriam@GN \
-		#  -F $(SSSS) \
-		#  -H
-o: grat
-	-grat \
-		-S l \
-		-F $(SP) , $(T), $(RSP) -V \
-		-G merriam @GNdt, merriam@GN \
-		-D m : m :10 -o tmpt: $(NC)
-
-RSP = /home/mrajner/dat/refpres/refpres0p5.nc@RSP:rp
-LSBALTYK="/home/mrajner/dat/landsea/baltyk0p05.nc@LS:z:x:y"
-
 # compiler
 FC = ifort
 

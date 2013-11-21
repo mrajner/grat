@@ -41,6 +41,7 @@ module mod_printing
       height    = .false.,      &
       level     = .false.,      &
       time      = .false.,      &
+      rho       = .false.,      &
       nan       = .false.
     character(10) :: form="en13.3"
   end type

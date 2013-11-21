@@ -638,7 +638,7 @@ subroutine convolve(site, date)
                     if (any(                                                & 
                         [ind%model%sp, ind%model%t, ind%model%rsp           & 
                         ].eq.0)) &
-                        call print_warning("not enougt data model for GNdt", &
+                        call print_warning("not enough data model for GNdt", &
                         error=.true.)
                     result(ind%green%gndt) = result(ind%green%gndt) +       & 
                         val(ind%model%sp)                                    & 
@@ -653,7 +653,7 @@ subroutine convolve(site, date)
                         [ &
                         ind%model%sp, ind%model%h, ind%model%rsp           & 
                         ].eq.0)) &
-                        call print_warning("not enougt data model for GNdh", &
+                        call print_warning("not enough data model for GNdh", &
                         error=.true.)
                     result(ind%green%gndh) = result(ind%green%gndh) +       & 
                         val(ind%model%sp)                                    & 
@@ -668,7 +668,7 @@ subroutine convolve(site, date)
                         [ &
                         ind%model%sp, ind%model%h, ind%model%rsp           & 
                         ].eq.0)) &
-                        call print_warning("not enougt data model for GNdz", &
+                        call print_warning("not enough data model for GNdz", &
                         error=.true.)
                     result(ind%green%gndz) = result(ind%green%gndz) +       & 
                         val(ind%model%sp)                                    & 
@@ -684,7 +684,7 @@ subroutine convolve(site, date)
                         [ &
                         ind%model%sp, ind%model%h, ind%model%rsp           & 
                         ].eq.0)) &
-                        call print_warning("not enougt data model for GNdz2", &
+                        call print_warning("not enough data model for GNdz2", &
                         error=.true.)
                     result(ind%green%gndz2) = result(ind%green%gndz2) +                  & 
                         val(ind%model%sp)                                                & 

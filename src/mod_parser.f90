@@ -141,6 +141,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."time")) then
       output%time=.true.
     endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."rho")) then
+      output%rho=.true.
+    endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
     if (file_exists(output%name).and.output%noclobber) then
       if (.not.log%sparse) then
@@ -684,6 +687,16 @@ subroutine get_index()
       ind%model%h = i
     case ("HP")
       ind%model%hp = i
+    case ("GP")
+      ind%model%gp = i
+    case ("TP")
+      ind%model%tp = i
+    case ("TPF")
+      ind%model%tpf = i
+    case ("RHO")
+      ind%model%rho = i
+    case ("VT")
+      ind%model%vt = i
     endselect
   enddo
   do i = 1, size(moreverbose)
