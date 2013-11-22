@@ -119,13 +119,8 @@ function standard_pressure (  &
         if (sfc_height.gt.height) dz_=-dz_
         do z_=sfc_height+dz_/2, height, dz_
           if (present(use_standard_temperature) .and. use_standard_temperature) then
-            if (present(temperature)) then
-              ! if temperature is given use standard temp.
-              if (z_-sfc_height.gt. 5000) then
-                t_=standard_temperature(z_,fels_type=fels_type)
-              else
+            if (present(temperature).and.(abs(z_-sfc_height).lt.5000)) then
                 t_=sfc_temperature+alpha*(z_-sfc_height)
-              endif
             else
               t_=standard_temperature(z_,fels_type=fels_type)
             endif

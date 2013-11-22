@@ -75,9 +75,9 @@ subroutine parse_green (cmd_line_entry)
 
   ! check completness
   if ( &
-      any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
-      .and. green%dataname.eq."GNdz" ) &
-      .neqv. &
+      ! any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
+      ! .and. green%dataname.eq."GNdz" ) &
+      ! .neqv. &
       any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
       .and. green%dataname.eq."GNdz2" ) &
       ) call print_warning("-G: merriam@GNdz should go with merriam @GNdz2", &

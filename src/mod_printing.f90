@@ -116,40 +116,45 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine progress(j, time)
-    use mod_constants, only: dp
-    use mod_cmdline, only: moreverbose
-    use iso_fortran_env, only: output_unit
-    implicit none
-    integer(kind=4)::j,k
-    integer:: ii
-    character(len=27)::bar="???% |                    |"
-    real(dp), optional :: time
+  use mod_constants, only: dp
+  use mod_cmdline, only: moreverbose
+  use iso_fortran_env, only: output_unit
+  implicit none
+  integer(kind=4)::j,k
+  integer:: ii
+  character(len=27)::bar="???% |                    |"
+  real(dp), optional :: time
+  integer,save :: every
 
-    write(unit=bar(1:3),fmt="(i3)") j
-    do k=1, j/5
-      bar(6+k:6+k)="*"
-    enddo
-    if (present(time)) then
-      write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a))") &
-          '+',char(13), bar, &
-          time, "s", int(100.*time/j), trim(output%name), &
-          (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
-    else
-      write(unit=output_unit,fmt="(a1,a1,a27)") '+',char(13), bar
-    endif
-    return
+  every =every+1
+  if (modulo(every,50).ne.0) return
+
+  write(unit=bar(1:3),fmt="(i3)") j
+  do k=1, j/5
+    bar(6+k:6+k)="*"
+  enddo
+
+  if (present(time)) then
+    write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a))") &
+      '+',char(13), bar, &
+      time, "s", int(100.*time/j), trim(output%name), &
+      (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
+  else
+    write(unit=output_unit,fmt="(a1,a1,a27)") '+',char(13), bar
+  endif
+  return
 end subroutine progress
 
 ! =============================================================================
 ! =============================================================================
 function basename (file)
-    character(200) :: basename
-    character(*) :: file
+  character(200) :: basename
+  character(*) :: file
 
-    if (log%full) then
-      basename=file
-    else
-      basename=file(index(file,'/', back=.true.)+1:)
-    endif
+  if (log%full) then
+    basename=file
+  else
+    basename=file(index(file,'/', back=.true.)+1:)
+  endif
 end function
 end module mod_printing
