@@ -124,10 +124,10 @@ subroutine progress(j, time)
   integer:: ii
   character(len=27)::bar="???% |                    |"
   real(dp), optional :: time
-  integer,save :: every
+  integer,save :: every=0
 
   every =every+1
-  if (modulo(every,50).ne.0) return
+  if (modulo(every,100).ne.0.and.j.ne.100.and.every.ne.1) return
 
   write(unit=bar(1:3),fmt="(i3)") j
   do k=1, j/5

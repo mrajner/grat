@@ -378,18 +378,24 @@ subroutine read_site_file (file_name)
               endif
             else
               if (nloop.eq.2) then 
+                if (number_of_lines-good_lines.lt.15) then
                 call print_warning("rejecting: " // line_of_file // "  [lon limits]")
+              endif
               endif
             endif
           else 
             if (nloop.eq.2) then
+                if (number_of_lines-good_lines.lt.15) then
               call print_warning("rejecting: " // trim(line_of_file)//  " [lat limits]")
+            endif
             endif
           endif
         else
           ! print it only once
           if (nloop.eq.2) then
+                if (number_of_lines-good_lines.lt.15) then
             call print_warning("rejecting: " // trim(line_of_file) // " [args]")
+          endif
           endif
         endif
       enddo

@@ -4,9 +4,10 @@
 tmp: grat local
 	grat \
 		-F NCEP@SP! \
-		-S local_site , local@LP \
+		-S local_site , j, local@L \
 		-H  \
-		-D 2009:2011  -M1,2 -G@GN -o tmp 
+		-D 2009:20090102  -M1,2 -G@GN -o tmp
+
 tmp2:
 	grat \
 		-F NCEP@SP! \
@@ -14,7 +15,7 @@ tmp2:
 		-H  \
 		-D 2009:2011  -M1,2 -G@GN -o tmp2 
 
-local: .FORCE
+local: 
 	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 	cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
