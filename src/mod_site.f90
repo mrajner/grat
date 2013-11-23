@@ -11,10 +11,17 @@ module mod_site
     real(dp) :: val
     logical  :: if=.false.
   end type
+  type lp_info
+    real(dp), allocatable, dimension(:,:) :: date
+    real(dp), allocatable, dimension(:) :: data
+    logical  :: if=.false.
+  end type
   type site_info 
     character(:),allocatable :: name
     real(dp)                 :: lat,lon,height
     type(more_site_heights)  :: hp, h, hrsp
+    logical :: use_local_pressure=.false.
+    type(lp_info) :: lp
   end type
   type(site_info), allocatable, dimension(:) :: site
   logical :: site_height_from_model=.false.
@@ -41,15 +48,17 @@ subroutine parse_site(cmd_line_entry)
     if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
       write(log%unit, form%i3) 'reading from file:', &
           cmd_line_entry%field(i)%subfield(1)%name
+      if(cmd_line_entry%field(i)%subfield(1)%dataname.eq."LP") then
+        if (size(site).gt.1) then
+          call print_warning("only one site with @LP allowed",error=.true.)
+        end if
+        call read_local_pressure(cmd_line_entry%field(i)%subfield(1)%name)
+        return
+      else
       call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
+    endif
       continue
     else if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
-        .or.&
-        (cmd_line_entry%field(i)%subfield(1)%name.eq. "g" )  &
-        .or.&
-        (cmd_line_entry%field(i)%subfield(1)%name.eq. "m" )  &
-        .or.&
-        (cmd_line_entry%field(i)%subfield(1)%name.eq. "pl" )  &
         ) &
         then
       call parse_GMT_like_boundaries (cmd_line_entry%field(i))
@@ -74,7 +83,9 @@ subroutine parse_site(cmd_line_entry)
             site(start_index)%height
       endif
       continue
-    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."j") then
+    else
+      select case(cmd_line_entry%field(i)%subfield(1)%name)
+      case ("j")
       ! this is shortcut for Józefosław -Sj
       call more_sites (1,start_index)
       site(start_index)%name   = "joze_a"
@@ -82,52 +93,55 @@ subroutine parse_site(cmd_line_entry)
       site(start_index)%lon    = 21.
       site(start_index)%height = 110.
       continue
+    case("b")
       ! and point on Baltic Sea
-    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."b") then
       call more_sites (1,start_index)
       site(start_index)%name   = "balt_a"
       site(start_index)%lat    = 57
       site(start_index)%lon    = 21
       site(start_index)%height = 0
       continue
+    case("r")
       ! and point on Rysy
-    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."r") then
       call more_sites (1,start_index)
       site(start_index)%name   = "rysy_a"
       site(start_index)%lat    = 49.17944
       site(start_index)%lon    = 20.088333
       site(start_index)%height = 2499
       continue
-    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."l") then
+    case("l")
       call more_sites (1,start_index)
       site(start_index)%name   = "lama_a"
       site(start_index)%lat    = 53.883
       site(start_index)%lon    = 20.667
       site(start_index)%height = 100
       continue
-    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."o") then
+    case("o")
       call more_sites (1,start_index)
       site(start_index)%name   = "mari_a"
       site(start_index)%lat    = 11.317
       site(start_index)%lon    = 142.25
       site(start_index)%height = -9910
       continue
-    else if (cmd_line_entry%field(i)%subfield(1)%name.eq."e") then
+    case("e")
       call more_sites (1,start_index)
       site(start_index)%name   = "ever_a"
       site(start_index)%lat    = 27.988056
       site(start_index)%lon    = 86.925278
       site(start_index)%height = 8848.
       continue
-    else
+    case ("g","m","pl")
+      call parse_GMT_like_boundaries (cmd_line_entry%field(i))
+      continue
+    case default
       call print_warning ("site")
       continue
+    end select
     endif
   enddo
   do i = 1, size(cmd_line_entry%field)
     if (any(cmd_line_entry%field(i)%subfield%dataname.eq."H")) &
         site_height_from_model=.true.
-    return
   enddo
 end subroutine
 
@@ -308,11 +322,13 @@ subroutine read_site_file (file_name)
     use mod_utilities, only: is_numeric, ntokens, skip_header
     use mod_cmdline, only: method
     character(len=*), intent(in) ::  file_name
-    integer :: io_status, i, good_lines = 0, number_of_lines = 0, nloop
+    integer :: io_status, i, good_lines, number_of_lines, nloop
     integer :: fileunit_site, start_index
     character(len=255), dimension(4)  :: dummy
     character(len=255) :: line_of_file
     type(site_info) :: aux
+
+    number_of_lines=0
 
     open ( newunit = fileunit_site, file = file_name, &
         iostat = io_status, status = "old", action="read" )
@@ -327,16 +343,16 @@ subroutine read_site_file (file_name)
       good_lines=0
       do 
         call skip_header(fileunit_site)
-        read ( fileunit_site, '(a)', iostat = io_status ) line_of_file 
-        if ( io_status == iostat_end)  exit
+        read (fileunit_site, '(a)', iostat=io_status) line_of_file 
+        if (io_status==iostat_end)  exit
         number_of_lines = number_of_lines + 1
         !  ! we need at least 3 parameter for site (name, B, L )
         if (ntokens(line_of_file).ge.3) then
           ! but no more than 4 parameters (name, B, L, H)
           if (ntokens(line_of_file).gt.4) then
-            read ( line_of_file, * ) dummy(1:4)
+            read (line_of_file, *) dummy(1:4)
           else
-            read ( line_of_file, * ) dummy(1:3)
+            read (line_of_file, *) dummy(1:3)
             ! if site height was not given we set it to zero
             dummy(4)="0."
           endif
@@ -443,5 +459,47 @@ subroutine gather_site_model_info()
       call print_site_summary()
       write(log%unit, form%separator)
     endif
+end subroutine
+subroutine read_local_pressure(file)
+  use mod_date
+  character(*), intent(in) :: file
+  integer :: unit, io_stat, datei(6), ilines
+  real(dp) :: val
+  character(20)::dates
+  
+  site(1)%lp%if=.true.
+  open (newunit=unit, file=file, action="read")
+
+  ilines=0
+  do
+    read (unit,*, iostat=io_stat) dates, val
+    if (io_stat.eq.iostat_end) exit
+    call string2date(dates, datei)
+    if (modulo(datei(4),6).ne.0) then
+      continue
+    else
+      ilines=ilines+1
+    endif
+  enddo
+  rewind(unit)
+  write(log%unit, form%i3) "lines in file: ", ilines
+  allocate(site(1)%lp%date(ilines,6))
+  allocate(site(1)%lp%data(ilines))
+
+  ilines=0
+  do
+    read (unit,*, iostat=io_stat) dates, val
+    call string2date(dates, datei)
+    if (io_stat.eq.iostat_end) exit
+    if (modulo(datei(4),6).ne.0) then
+      continue
+    else
+      ilines=ilines+1
+      site(1)%lp%date(ilines,1:6)=datei
+      site(1)%lp%data(ilines)=val*100.
+    endif
+  enddo
+
+  close(unit)
 end subroutine
 end module

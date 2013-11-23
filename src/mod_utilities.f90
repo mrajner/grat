@@ -3,7 +3,6 @@ module mod_utilities
   use mod_constants, only: dp, pi
   implicit none
 
-  public :: ntokens
 contains
 
 ! ==============================================================================
@@ -204,10 +203,15 @@ function ntokens(line, separator)
     character,intent(in) :: line*(*)
     character(1), intent(in), optional :: separator
     integer:: i, n, toks
-    character(1) :: separator_=' '
+    character(1) :: separator_
     integer  :: ntokens
 
-    if (present(separator)) separator_=separator
+    if (present(separator)) then
+      separator_=separator
+    else
+      separator_=' '
+    endif
+
     i = 1
     n = len_trim(line)
     toks = 0
@@ -254,7 +258,6 @@ subroutine skip_header (unit, comment_char_optional )
     backspace(unit)
 end subroutine
 
-
 ! =============================================================================
 !> Check if argument is numeric
 !!
@@ -279,7 +282,6 @@ function is_numeric(string)
     endif
 
 end function 
-
 
 ! =============================================================================
 !> Check if file exists.
