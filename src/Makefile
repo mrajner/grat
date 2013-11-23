@@ -1,6 +1,10 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+dfsf: grat
+	grat -F NCEP@SP, \
+		10@H , 100@HP   \
+		-Sj -D2011 -U
 tmp: grat local
 	grat \
 		-F NCEP@SP! \
