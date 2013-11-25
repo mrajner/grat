@@ -57,7 +57,7 @@
 ! ==============================================================================
 program grat
 
-  use omp_lib
+  ! use omp_lib parallel computation not yet enabled
   use mod_parser, only: intro
   use mod_data
   use mod_date
@@ -65,6 +65,7 @@ program grat
   use mod_site, only: print_site_summary, site
   use mod_cmdline
   use mod_admit, only: admit
+  use mod_3d, only: point_mass
 
   implicit none
   real(dp) :: cpu(2)
@@ -217,6 +218,7 @@ program grat
               date=date(idate)%date &
               )
         endif
+
         if (method(2)) then 
           ! perform convolution
           if (idate.gt.0) then
@@ -225,6 +227,13 @@ program grat
             call convolve (site(isite))
           endif
         endif
+
+        if (method(3)) then 
+         call point_mass (site(isite), date = date(idate))
+        endif
+
+
+
         write(output%unit,*)
 
         if (output%unit.ne.output_unit.and..not.quiet) then 

@@ -9,9 +9,10 @@ program value_check
   use mod_data     
   use mod_date
   use mod_site
-  use mod_constants, only: dp, R_air
+  use mod_constants, only: dp, R_air, earth
   use mod_polygon  , only: read_polygon, chkgon, polygon
-  use mod_atmosphere, only: standard_pressure, standard_temperature
+  use mod_atmosphere, only: standard_pressure, standard_temperature, geop2geom
+  use mod_utilities, only: d2r
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
@@ -197,6 +198,14 @@ program value_check
               100.*level%level(ilevel)/(R_air * val(ind%model%vt))
         endif
 
+        ! if (output%gp2h) then
+          ! val(ind%model%gp) = &
+              ! geop2geom( &
+              ! val(ind%model%gp)  & 
+              ! / ( (1. -0.002637 *cos (2. * d2r(site(i)%lat))) &
+              ! * earth%gravity%mean) &
+              ! )
+        ! endif
 
         write (output%unit , "("// output%form // '$)') val
 

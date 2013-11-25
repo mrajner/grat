@@ -26,6 +26,7 @@ function standard_density (height, temperature, fels_type, method)
   endif
   standard_density = standard_pressure( &
       height, temperature=t, method=method, fels_type=fels_type)/(R_air*t)
+  stop "TODO routine standard density should not be used anymore"
 end function
 ! =============================================================================
 !> \brief Compute gravity acceleration of the Earth
@@ -243,11 +244,14 @@ real(dp) function geop2geom (geopotential_height, inverse)
     logical, intent(in), optional:: inverse
 
     if (present(inverse).and.inverse) then
+      !conversion from geometric to geopotential height
       geop2geom = geopotential_height &
-          *(earth%radius/(earth%radius + geopotential_height))**2
+          *(earth%radius/(earth%radius + geopotential_height))
     else
+      !conversion from  geopotential to geometric height
       geop2geom = geopotential_height &
-          /(earth%radius/(earth%radius + geopotential_height))**2
+         * (earth%radius + geopotential_height) &
+         /(earth%radius) 
     endif
 end function
 

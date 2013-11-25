@@ -1,5 +1,10 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
+
+ffffw: grat
+	grat -M3 \
+		-Sj
+
 tmp: grat local
 	grat \
 		-F NCEP@SP! \
@@ -56,7 +61,8 @@ SRCS  = mod_constants.f90     \
 				mod_date.f90          \
 				mod_parser.f90        \
 				mod_admit.f90         \
-				mod_normalization.f90
+				mod_normalization.f90 \
+				mod_3d.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \

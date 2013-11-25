@@ -1,4 +1,4 @@
-! ================1==================================
+! ===================================================
 !> This modele gives routines to read, and write data
 !!
 !! The netCDF format is widely used in geoscienses. Moreover it is
@@ -365,8 +365,8 @@ function variable_modifier (val, modifier, verbose, list_only)
           write(log%unit, "("//form%t3//"a,a6,a7$)" ) &
           "var modifier: ", trim(key), trim(keyval)
       select case (key)
-      case ("gh2h") ! g2h is obsolete
-        variable_modifier=geop2geom(variable_modifier)
+      ! case ("gh2h") ! g2h is obsolete
+        ! variable_modifier=geop2geom(variable_modifier)
       ! case ("gp2gh")
         ! variable_modifier=variable_modifier/earth%gravity%mean
       case ("gp2h")

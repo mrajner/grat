@@ -27,5 +27,4 @@ function green_normalization(method, psi)
   endif
 end function
 
-
 end module

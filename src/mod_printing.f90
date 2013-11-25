@@ -42,6 +42,7 @@ module mod_printing
       level     = .false.,      &
       time      = .false.,      &
       rho       = .false.,      &
+      gp2h      = .false.,      &
       nan       = .false.
     character(10) :: form="en13.3"
   end type

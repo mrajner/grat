@@ -386,6 +386,7 @@ subroutine convolve(site, date)
     if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
     if (ind%model%h .eq.0) call print_warning("no @H  with -U", error=.true.)
   endif
+
   if(.not.allocated(green_common)) then
     call green_unification()
   endif
