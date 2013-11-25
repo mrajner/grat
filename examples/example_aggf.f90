@@ -26,6 +26,7 @@ program example_aggf
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_rough.dat' , predefined=.false., rough=.true.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method="simple"     , predefined=.false.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green.dat'       , predefined=.false. )
+  call aggf_resp_fels_profiles ('/home/mrajner/src/grat/examples/aggf_resp_fels_profiles.dat')
 
 
   !  call aggf_resp_hmax ()
@@ -33,10 +34,9 @@ program example_aggf
   !  call aggf_resp_t ()
   !  call aggf_resp_h ()
   !  call aggfdt_resp_dt ()
-    call aggf_resp_fels_profiles ('/home/mrajner/src/grat/examples/aggf_resp_fels_profiles.dat')
 
 
-  !  call mass_vs_height() !'/home/mrajner/src/grat/examples/mass_vs_height.dat')
+   call mass_vs_height() !'/home/mrajner/src/grat/examples/mass_vs_height.dat')
 
   call cpu_time(cpu(2))
   print '("Total time: ",f8.3,x,"[s]")', cpu(2)-cpu(1)
@@ -75,19 +75,19 @@ subroutine mass_vs_height (filename)
   do i =1,size(height)
     height(i) = dh*(i-1) 
     mass  (i) = standard_density (height(i), method="full")
-    !    mass  (i) = standard_density (height(i))
   enddo
 
   do i =0,50000,1000
-    percent=0
-    do j = 1 , size(height)
-      if (height(j).le.dble(i)) percent=percent+mass(j)
-    enddo
-    percent = percent /sum(mass)*100
-    write(file_unit, '(i6,2f19.9,es10.3)' ) , i ,percent , &
-    100-(earth%radius+dble(1))**2 * standard_pressure(dble(i)) / standard_gravity(dble(i))&
-    /earth%radius**2/standard_pressure(dble(0)) * standard_gravity(dble(0))*100
-
+   percent=0
+   do j = 1 , size(height)
+     if (height(j).le.dble(i)) percent=percent+mass(j)
+   enddo
+   percent = percent /sum(mass)*100
+  !  write(file_unit, '(i6,2f19.9,es10.3)' ) , i ,percent , &
+  !  100-(earth%radius+dble(1))**2 &
+  !  * standard_pressure(dble(i),method="full", use_standard_temperature=.true.) &
+  !  / standard_gravity(dble(i))&
+  !  /earth%radius**2/standard_pressure(dble(0)) * standard_gravity(dble(0))*100
   enddo
 end subroutine
 
@@ -207,7 +207,7 @@ subroutine aggf_resp_fels_profiles (filename)
   if (file_exists(filename)) then
     return
   else
-    print * , "aggf_resp_fels_profiles -->", filename
+    print *, "aggf_resp_fels_profiles -->", filename
   endif
   open  ( newunit = file_unit, &
     file    = filename, &
