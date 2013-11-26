@@ -142,7 +142,7 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
   predefined,fels_type, rough)
   use mod_constants, only: dp
   use mod_aggf ,     only: aggf, aggfd
-  use mod_green,     only: green, read_green
+  use mod_green,     only: green
   use mod_utilities, only: d2r, file_exists
   use mod_atmosphere
 
@@ -159,13 +159,7 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
     print '(a,a)', "compute_tabulated_green_functions --> ", trim(filename)
   endif
 
-  ! Get the spherical distances from Merriam92
-  if(allocated(green)) deallocate(green)
-  allocate(green(1))
-  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-  !green(1)%name="/home/mrajner/src/grat/dat/huang_green.dat"
-  green(1)%column=[1,2]
-  call read_green(green(1), print=.false.)
+  call get_green_distances
 
   open (                 & 
   newunit = file_unit, & 
@@ -218,11 +212,7 @@ subroutine aggf_resp_fels_profiles (filename)
     )
 
   ! Get the spherical distances from Merriam92
-  if(allocated(green)) deallocate(green)
-  allocate(green(1))
-  green(1)%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-  green(1)%column=[1,2]
-  call read_green(green(1), print=.false.)
+  call get_green_distances()
 
   ! All possible optional arguments for standard_temperature
   fels_types = (/ &
@@ -441,11 +431,7 @@ subroutine aggf_resp_dz (filename)
     file_unit = output_unit
   endif
 
-  allocate (green(1))
-  green(1)%name="merriam"
-  green(1)%column=[1, 2]
-  green(1)%dataname="GN"
-  call read_green(green(1))
+  call get_green_distances()
 
 ! Differences in AGGF(dz) only for small spherical distances
  allocate ( results ( 0 : 29 , 0: 5 ) )
@@ -579,10 +565,7 @@ subroutine aggf_thin_layer (filename)
 
   if (file_exists(filename)) return
 
-  allocate (green(1))
-  green(1)%name="merriam"
-  green(1)%column=[1, 2]
-  call read_green(green(1))
+  call get_green_distances()
 
   write(*,*), "aggf_thin_layer ---> ",filename
   if (present (filename)) then
@@ -661,6 +644,18 @@ subroutine green_newtonian_compute(filenames)
         i=1,size(psi))
     close(iun)
   enddo
+end subroutine
+
+! =============================================================================
+! =============================================================================
+subroutine get_green_distances()
+  use mod_green
+  if (allocated(green)) deallocate(green)
+  allocate (green(1))
+  green(1)%name="merriam"
+  green(1)%column=[1, 2]
+  green(1)%dataname="GN"
+  call read_green(green(1))
 end subroutine
 
 end program 
