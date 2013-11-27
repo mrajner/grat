@@ -7,7 +7,7 @@ ffffw: grat
 		-F NCEP@SP , VIENNA@RSP \
 		-o:free \
 		-I \
-		0@DB:10@DE -D2011:2012:10@D
+		0@DB:10@DE -D2011:2012:30@D -o /dev/null
 
 tmp: grat local
 	grat \

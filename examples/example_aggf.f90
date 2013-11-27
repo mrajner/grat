@@ -370,20 +370,24 @@ end subroutine
 !  close (file_unit)
 !end subroutine
 
-!! ============================================================================
-!!> \brief This computes AGGFDT for different dT
-!! ============================================================================
-!subroutine aggfdt_resp_dt ()
-!  use mod_constants, only : dp
-!  use mod_aggf  !, only : read_tabulated_green, compute_aggfdt
-!  real(dp), dimension(:,:), allocatable :: table , results
-!  integer :: i, j , file_unit
-!  real(dp) :: val_aggf
+! ============================================================================
+!> \brief This computes AGGFDT for different dT
+! ============================================================================
+subroutine aggfdt_resp_dt (filename)
+  integer :: file_unit, i, j
+  character(*) , intent (in) , optional:: filename
 
-!  ! read spherical distances from Merriam
-!  call read_tabulated_green ( table , "merriam" )
+  if (present (filename)) then
+    if (file_exists(filename)) return
+    ! open ( newunit = file_unit , &
+        ! file =filename , &
+        ! action  = 'write' )
+  ! else
+    file_unit = output_unit
+  endif
+  call get_green_distances()
 
-!  ! Header in first row with surface temperature [K]
+ ! Header in first row with surface temperature [K]
 !  allocate ( results (0 : size (table(:,1)) , 6 ) )
 !  results(0,1) = 1./0
 !  results(0,2) = 1.
@@ -399,63 +403,55 @@ end subroutine
 !    enddo
 !  enddo
 
-!  ! Print results to file
-!  open ( newunit = file_unit , &
-!         file    = '../examples/aggfdt_resp_dt.dat' , &
-!         action  = 'write')
 !  write (file_unit , '(6F20.5)' ) &
 !    ( (results (i,j) , j=1,6) , i = 0, size ( table (:,1) ) )
-!  close (file_unit)
-!end subroutine
+ close (file_unit)
+end subroutine
 
 ! ============================================================================
 !> \brief This computes AGGF for different height integration step 
 ! ============================================================================
 subroutine aggf_resp_dz (filename)
   use mod_green
- ! use mod_constants, only : dp
- ! use mod_aggf  !, only : read_tabulated_green, compute_aggf
- real(dp), dimension(:,:), allocatable :: results
- ! integer :: file_unit , i , j
- ! real(dp) :: val_aggf
+  use mod_aggf, only: aggf
+  real(dp), dimension(:,:), allocatable :: results
+  real(dp), dimension(:), allocatable :: dzs
 
- integer :: file_unit, n, i, j
+  integer :: file_unit, i, j
   character(*) , intent (in) , optional:: filename
 
   if (present (filename)) then
-    ! if (file_exists(filename)) return
-    ! open ( newunit = file_unit , &
-      ! file =filename , &
-      ! action  = 'write' )
-  ! else
+    if (file_exists(filename)) return
+    open ( newunit = file_unit , &
+        file =filename , &
+        action  = 'write' )
+  else
     file_unit = output_unit
   endif
 
   call get_green_distances()
 
-! Differences in AGGF(dz) only for small spherical distances
- allocate ( results ( 0 : 29 , 0: 5 ) )
- results = 0.
+  allocate(dzs(5))
+  dzs=(/ 0.01, 0.1, 1., 10., 100./)
 
- ! Header in first row [ infty and selected dz follow on ]
- results(0,0) = 1./0 
- results(0,1:5)=(/ 0.0001, 0.001, 0.01, 0.1, 1./)
+  allocate (results(size(green(1)%distance(1:29)),size(dzs)))
+  results = 0.
 
- do i = 1 , size (results (:,1))-1
-   results (i,0) = green(1)%distance (i)
-!    do j = 1 , size (results(1,:) ) - 1
-!    call compute_aggf ( results (i,0) , val_aggf , dh = results(0,j) )
-!    results (i, j) =  val_aggf
-!    enddo
+  do i = 1 , size (results (:,1))
+    do j=1,size(dzs)
+      results(i,j)=i+j
+      results(i,j)=aggf(d2r(green(1)%distance(i)), &
+          method="standard", &
+          dz=dzs(j))
+    enddo
+    ! compute relative errors from column 2 for all dz with respect to column 1
+    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
+  enddo
 
-!    ! compute relative errors from column 2 for all dz with respect to column 1
-!    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1) * 100 )
- enddo
-
- ! write result to file
- write ( file_unit , '(<size(results(1,:))>f14.6)' ) &
-   ((results (i,j), j=0,size(results (1,:)) - 1), i=0,size(results(:,1)) - 1)
- close(file_unit)
+  write(file_unit, '(a14,<size(dzs)>f14.4)') "psi_dz", dzs
+  write(file_unit, '(f14.5,<size(dzs)>e14.4)') &
+      (green(1)%distance(i), results(i,:), i=1,size(results(:,1)))
+  close(file_unit)
 end subroutine
 
 ! ============================================================================
@@ -467,7 +463,7 @@ end subroutine
 subroutine standard1976(filename)
   use, intrinsic :: iso_fortran_env
   use mod_utilities, only: file_exists
-  use mod_constants, only : dp
+  use mod_constants, only : dp, R_air
   use mod_atmosphere, only: &
       standard_temperature, standard_pressure , &
       standard_gravity,     standard_density
@@ -494,8 +490,9 @@ subroutine standard1976(filename)
         height/1000.,                        & 
         standard_temperature(height),        & 
         standard_gravity(height),            & 
-        standard_pressure(height)/100.,      &  ! --> hPa
-        standard_density (height)
+        standard_pressure(height, method="standard")/100.,      &  ! --> hPa
+        standard_pressure(height, method="standard") &
+        /(R_air*standard_temperature(height))
   enddo
   close( file_unit )
 end subroutine
@@ -529,7 +526,6 @@ subroutine aggf_resp_hmax (filename)
   n=90
   allocate(heights(n))
 
-  heights= logspace(real(1e-6,dp), real(60000,dp),n) 
   heights= logspace(real(1e-1,dp), real(60000,dp),n) 
 
   allocate (results(size(heights), size(psi))) 

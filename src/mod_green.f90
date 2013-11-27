@@ -420,6 +420,7 @@ subroutine convolve(site, date)
 
   result=0
 
+  if (ind%green%gnc.ne.0) close(output_unit)
   do igreen = 1, size(green_common)
     do idist = 1, size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
@@ -648,9 +649,10 @@ subroutine convolve(site, date)
                         * area * normalize
                     if (.not.quiet) then
                       open(unit=output_unit, carriagecontrol='fortran')
-                      call progress(                                                & 
-                          100*igreen*idist                                          & 
-                          /(size(green_common(igreen)%distance)*size(green_common)) & 
+                      call progress(                                                 & 
+                          100*igreen*idist                                           & 
+                          /(size(green_common(igreen)%distance)*size(green_common)), & 
+                          every=1 &
                           )
                     endif
                   endif

@@ -116,7 +116,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine progress(j, time)
+subroutine progress(j, time, every)
   use mod_constants, only: dp
   use mod_cmdline, only: moreverbose
   use iso_fortran_env, only: output_unit
@@ -125,10 +125,18 @@ subroutine progress(j, time)
   integer:: ii
   character(len=27)::bar="???% |                    |"
   real(dp), optional :: time
-  integer,save :: every=0
+  integer, optional :: every
+  integer :: every_
+  integer,save :: step=0
 
-  every =every+1
-  if (modulo(every,100).ne.0.and.j.ne.100.and.every.ne.1) return
+  if (present(every)) then
+    every_=every
+  else
+    every_=100
+  endif
+
+  step =step+1
+  if (modulo(step,every_).ne.0.and.j.ne.every_.and.step.ne.1) return
 
   write(unit=bar(1:3),fmt="(i3)") j
   do k=1, j/5
@@ -136,12 +144,12 @@ subroutine progress(j, time)
   enddo
 
   if (present(time)) then
-    write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a))") &
+    write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a)$)") &
       '+',char(13), bar, &
       time, "s", int(100.*time/j), trim(output%name), &
       (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
   else
-    write(unit=output_unit,fmt="(a1,a1,a27)") '+',char(13), bar
+    write(unit=output_unit,fmt="(a1,a1,a27$)") '+',char(13), bar
   endif
   return
 end subroutine progress
