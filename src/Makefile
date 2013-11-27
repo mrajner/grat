@@ -2,9 +2,12 @@
 # for example: OBJS  = libgrat.a
 
 ffffw: grat
-	grat -M2,3 \
-		-Sj -G @GN \
-		-F 100@SP
+	grat -M2 \
+		-Sr -G @GE \
+		-F NCEP@SP , VIENNA@RSP \
+		-o:free \
+		-I \
+		0@DB:10@DE -D2011:2012:10@D
 
 tmp: grat local
 	grat \

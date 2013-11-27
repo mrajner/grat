@@ -477,8 +477,16 @@ subroutine parse_info (cmd_line_entry)
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
           case ("DB")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
+            if (info(i)%distance%start.lt.0) then
+              call print_warning("changing -I@DB to 0")
+              info(i)%distance%start = 0 
+            endif
           case ("DE")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
+            if (info(i)%distance%stop.gt.180) then
+              call print_warning("changing -I@DE to 180")
+              info(i)%distance%stop = 180 
+            endif
           case ("AB")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
           case ("AE")
@@ -502,16 +510,16 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-          "("//form%t3//" &
-          'DB:',f7.2, & 
-          '|DE:',f8.3, &
-          '|I:',a, &
-          '|DD:',i2, &
-          '|DS:',f6.2, &
-          )"), &
-          info(i)%distance%start, info(i)%distance%stop, &
-          info(i)%interpolation, info(i)%distance%denser, &
-          info(i)%distance%step
+        "("//form%t3//" &
+        'DB:',f7.2, & 
+        '|DE:',f8.3, &
+        '|I:',a, &
+        '|DD:',i2, &
+        '|DS:',f6.2, &
+        )"), &
+        info(i)%distance%start, info(i)%distance%stop, &
+        info(i)%interpolation, info(i)%distance%denser, &
+        info(i)%distance%step
     enddo
   else
     allocate(info(1))
@@ -552,7 +560,7 @@ subroutine print_version (program_calling, version)
   write(log%unit, form_inheader ), version
   write(log%unit, form_inheader ), "compiled on "//__DATE__
   write(log%unit, form_inheader_n ), &
-      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
   write(log%unit, form_inheader ), 'Warsaw University of Technology'
