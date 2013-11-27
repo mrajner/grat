@@ -2,8 +2,9 @@
 # for example: OBJS  = libgrat.a
 
 ffffw: grat
-	grat -M3 \
-		-Sj
+	grat -M2,3 \
+		-Sj -G @GN \
+		-F 100@SP
 
 tmp: grat local
 	grat \
