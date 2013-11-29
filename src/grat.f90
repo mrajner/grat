@@ -80,7 +80,7 @@ program grat
   call intro ( &
     program_calling = "grat", &
       version = "pre-alpha", &
-      accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJ", &
+      accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJQ", &
       cmdlineargs=.true.)
 
     start = 0
@@ -231,8 +231,6 @@ program grat
         if (method(3)) then 
          call point_mass (site(isite), date = date(idate))
         endif
-
-
 
         write(output%unit,*)
 

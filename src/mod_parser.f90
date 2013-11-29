@@ -45,6 +45,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_site(cmd_line_entry)
   case ("-I")
     call parse_info(cmd_line_entry)
+  case ("-Q")
+    optimize=.true.
   case ("-L")
     call parse_moreverbose(cmd_line_entry)
   case ("-B")

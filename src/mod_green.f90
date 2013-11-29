@@ -550,9 +550,13 @@ subroutine convolve(site, date)
                   ]).ne.0) &
                   ) &
                   ) then
-                call get_value ( & 
-                    model(ind%model%h), r2d(lat), r2d(lon), val(ind%model%h), & 
-                    level=1, method = info(igreen)%interpolation)
+                if (optimize.and.green_common(igreen)%distance(idist).gt.20) then
+                  val(ind%model%h)=val(ind%model%hp)
+                else
+                  call get_value ( & 
+                      model(ind%model%h), r2d(lat), r2d(lon), val(ind%model%h), & 
+                      level=1, method = info(igreen)%interpolation)
+                endif
               endif
 
               if (ind%model%sp.ne.0) then

@@ -4,12 +4,10 @@ module mod_3d
 
 contains
 
-
-
 ! =============================================================================
 !> all values in radians 
-! =============================================================================
 ! see formula Neumeyer et al., 2004 p. 442-443
+! =============================================================================
 subroutine point_mass (site, date)
   use mod_site, only : site_info
   use mod_date, only : dateandmjd
@@ -34,8 +32,6 @@ subroutine point_mass (site, date)
   sizeheight=9000
   nheight=sizeheight/dheight
 
-  
-
   val=0
   do ilat=-nhor,nhor
     lat=d2r(site%lon)+d2r(ilat*dhor)
@@ -44,17 +40,20 @@ subroutine point_mass (site, date)
       do iheight=1,nheight
         height=iheight*dheight
         
-        val = val &
-            + standard_pressure(height, method="standard", nan_as_zero=.true.) &
-            /(R_air* standard_temperature(height)) &
-            * point_mass_a (d2r(site%lat), d2r(site%lon), site%height, lat, lon, height) &
-            * (earth%radius+height)**2 * dhor**2 * dheight * 1e8
-        
+ print *, point_mass_a (d2r(site%lat), d2r(site%lon), site%height, lat, lon, height) 
 
+        ! return
+        ! val = val &
+            ! + standard_pressure(height, method="standard", nan_as_zero=.true.) &
+            ! /(R_air* standard_temperature(height)) &
+            ! * point_mass_a (d2r(site%lat), d2r(site%lon), site%height, lat, lon, height) &
+            ! * (earth%radius+height)**2 * dhor**2 * dheight * 1e8
       enddo
     enddo
   enddo
+  return
   val=val*gravity%constant
+
   print *,val
 end subroutine
 
@@ -80,4 +79,16 @@ real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, heig
 
 end function
 
+! =============================================================================
+!> all values in radians 
+! =============================================================================
+real(dp) function geometry (psi, height)
+    use mod_constants, only: earth
+    real(dp), intent(in) :: psi, height
+    real(dp) :: l
+    ! l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 & 
+      ! - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
+    ! rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
+        ! -rho*((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.) 
+    end function
 end module mod_3d

@@ -1,13 +1,11 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-ffffw: grat
-	grat -M2 \
-		-Sr -G @GE \
-		-F NCEP@SP , VIENNA@RSP \
-		-o:free \
-		-I \
-		0@DB:10@DE -D2011:2012:30@D -o /dev/null
+tmmm:grat
+	grat -F 100 @SP\
+		-M3 -Sj \
+		-V \
+
 
 tmp: grat local
 	grat \
@@ -114,11 +112,9 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 	$(FC) $(FFLAGS) $< -c
 
 
-# rules for programs files
-# todo - shorter
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
-	@make $(addprefix $(PROGS_DIR)/, $@)
+	@make --no-print-directory $(addprefix $(PROGS_DIR)/, $@)
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 

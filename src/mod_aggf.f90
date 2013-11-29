@@ -106,6 +106,7 @@ end function
 !! \author Marcin Rajner
 !! \date 2013.07.15
 !! \warning psi in radians h in meter
+!! t_zero is actually delta_t so if t_zero=10 (t_zero=288.15+10)
 ! ==============================================================================
 function aggf (         & 
     psi,                & 
@@ -129,7 +130,7 @@ function aggf (         &
     zmin,   & ! minimum height, starting point [m]     (default = 0)
     zmax,   & ! maximum height, ending point   [m]     (default = 60000)
     dz,     & ! integration step               [m]     (default = 0.1 -> 10 cm)
-    t_zero, & ! temperature at the surface     [K]     (default = 288.15=t0)
+    t_zero, & ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
     h         ! station height                 [m]     (default = 0)
   logical, intent(in), optional :: &
     first_derivative_h, first_derivative_z, predefined, rough

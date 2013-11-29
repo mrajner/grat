@@ -65,6 +65,7 @@ module mod_cmdline
       non_inverted_barometer = .false. , &
       ocean_conserve_mass    = .false. , &
       inverted_landsea_mask  = .false. , &
+      optimize               = .false. , &
       quiet                  = .false.
 
       type transfer_sp_info
