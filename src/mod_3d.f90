@@ -14,52 +14,112 @@ subroutine point_mass (site, date)
   use mod_utilities, only: d2r
   use mod_atmosphere
   use mod_constants, only: R_air, gravity, earth
+  use mod_spherical, only: spher_trig, spher_area
+
   type (site_info) :: site
   type(dateandmjd),intent(in), optional :: date
 
-  real(dp) :: lat, lon, height
-  real(dp) :: dhor, sizehor, dheight, sizeheight
-  integer :: ilat, ilon, iheight, nhor, nheight
-  real(dp) :: val
+  real(dp) :: lat, lon
 
-  dhor=1
-  sizehor=0.5
-  nhor=sizehor/dhor
+  ! real(dp) :: dhor, sizehor, dheight, sizeheight
+  ! integer :: ilat, ilon, iheight, nhor, nheight
+  real(dp) :: val, volume
+  integer :: idistance, ndistance
+  real(dp) :: distance, ddistance
+  integer :: iazimuth, nazimuth
+  real(dp) :: azimuth, dazimuth, maxdistance, mindistance
+  integer :: iheight, nheight
+  real(dp) :: height, dheight, maxheight
 
-  dheight=100
-  sizeheight=60000
-  !delete
-  sizeheight=9000
-  nheight=sizeheight/dheight
+  print *
+  maxdistance=10
+  mindistance=5
+  maxheight=6000
+
+  ddistance=0.11
+  dazimuth=360
+  dheight=1
+
+  ndistance=ceiling(maxdistance/ddistance)
+  nazimuth=ceiling(360/dazimuth)
+  nheight=ceiling(maxheight/dheight)
+
+  ddistance=maxdistance/ndistance
+  dazimuth=360./nazimuth
+
 
   val=0
-  do ilat=-nhor,nhor
-    lat=d2r(site%lon)+d2r(ilat*dhor)
-    do ilon=-nhor, nhor
-      lon=d2r(site%lon)+d2r(ilon*dhor)
-      do iheight=1,nheight
-        height=iheight*dheight
-        
- print *, point_mass_a (d2r(site%lat), d2r(site%lon), site%height, lat, lon, height) 
+  do idistance = 1, ndistance
+    distance=(idistance)*ddistance-ddistance/2
 
-        ! return
-        ! val = val &
-            ! + standard_pressure(height, method="standard", nan_as_zero=.true.) &
-            ! /(R_air* standard_temperature(height)) &
-            ! * point_mass_a (d2r(site%lat), d2r(site%lon), site%height, lat, lon, height) &
-            ! * (earth%radius+height)**2 * dhor**2 * dheight * 1e8
+    volume = &
+        spher_area(                        &
+        d2r(distance-ddistance/2), &
+        d2r(distance+ddistance/2), &
+        d2r(dazimuth),                          &
+        radius=earth%radius,                    &
+        alternative_method=.true.) &
+        * dheight
+
+    do iazimuth = 1, nazimuth
+      azimuth = (iazimuth-1)*dazimuth
+      do iheight=1,nheight
+        height=( iheight -1 )*dheight
+
+        call spher_trig &
+            (d2r(site%lat), d2r(site%lon), &
+            d2r(distance), d2r(azimuth), lat, lon, domain=.true.)
+
+        ! print *, point_mass_a (d2r(site%lat), d2r(site%lon), site%height, lat, lon, height) 
+        val=val &
+            + geometry(psi=d2r(distance), h=site%height, z=height) &
+            *( standard_pressure(height,p_zero=101425._dp, method="standard", use_standard_temperature=.true.) &
+            - standard_pressure(height, method="standard", use_standard_temperature=.true.) )&
+        ! *100 &
+            /(R_air*standard_temperature(height))  &
+            * volume
+
       enddo
     enddo
   enddo
-  return
-  val=val*gravity%constant
+  val=val*gravity%constant*1e8
 
   print *,val
 end subroutine
 
+
 ! =============================================================================
 !> all values in radians 
 ! =============================================================================
+real(dp) function geometry (psi, h, z, method)
+  use mod_constants, only: earth
+  real(dp) &
+      ! intent(in)
+  :: psi, h, z
+  character(*), optional :: method
+  real(dp) :: l, gamma
+
+  h=100
+  if(present(method)) then
+    if (method.eq."klugel") then
+      gamma=atan(((z-h)*cos(psi/2))/((2*earth%radius+z)*sin(psi/2)))
+      geometry=sin(gamma-psi/2)/(2*(earth%radius+h) * sin(psi/2)*cos(gamma)+(z-h)*sin(psi/2+gamma))**2
+    else
+      stop "method not known"
+    endif
+  else
+    l = ((earth%radius + h)**2 + (earth%radius + z)**2 & 
+        - 2.*(earth%radius+h)*(earth%radius+z)*cos(psi))**(0.5)
+    geometry = ((earth%radius +z)*cos(psi) - (earth%radius + h))/l**3.
+  endif
+end function
+
+! =============================================================================
+!> all values in radians 
+!! see formula Neumeyer et al., 2004 p. 442-443
+!! this formula is identical as geometry in this module but is uses the
+!! geographical coordinates
+!! =============================================================================
 real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, height)
   use mod_constants, only: earth, pi
   real (dp) :: theta_s, lambda_s, height_s ! site
@@ -78,17 +138,4 @@ real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, heig
       / (r_s**2 + r**2 -2*(r_s)*r*aux)**(3./2.) 
 
 end function
-
-! =============================================================================
-!> all values in radians 
-! =============================================================================
-real(dp) function geometry (psi, height)
-    use mod_constants, only: earth
-    real(dp), intent(in) :: psi, height
-    real(dp) :: l
-    ! l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 & 
-      ! - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
-    ! rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
-        ! -rho*((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.) 
-    end function
 end module mod_3d

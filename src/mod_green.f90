@@ -19,12 +19,12 @@ module mod_green
   real(dp), allocatable, dimension(:) :: result
 
   type green_common_info
-    real(dp), allocatable,dimension(:) :: distance
-    real(dp), allocatable,dimension(:) :: start
-    real(dp), allocatable,dimension(:) :: stop
-    real(dp), allocatable,dimension(:,:) :: data
+    real(dp), allocatable, dimension(:) :: distance
+    real(dp), allocatable, dimension(:) :: start
+    real(dp), allocatable, dimension(:) :: stop
+    real(dp), allocatable, dimension(:,:) :: data
     character (len=25), allocatable, dimension(:) :: dataname
-    logical, allocatable,dimension(:) :: elastic
+    logical, allocatable, dimension(:) :: elastic
   end type
   type(green_common_info), allocatable, dimension(:) :: green_common
 
@@ -62,7 +62,7 @@ subroutine parse_green (cmd_line_entry)
     else
       green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
     endif
-    do ii=1,2
+    do ii=1, 2
       green(i)%column(ii) =green(i-1)%column(ii)
       green(i)%columndataname(ii) = green(i-1)%columndataname(ii) 
       if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
@@ -110,17 +110,17 @@ subroutine read_green (green, print)
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
     select case (green%dataname)
     case("GN")
-      green%column=[1,2]
+      green%column=[1, 2]
     case("GNdt") 
-      green%column=[1,3]
+      green%column=[1, 3]
     case("GNdz")
-      green%column=[1,4]
+      green%column=[1, 4]
     case("GNdz2")
-      green%column=[1,5]
+      green%column=[1, 5]
     case("GE")
-      green%column=[1,6]
+      green%column=[1, 6]
     case("GNc")
-      green%column=[1,2]
+      green%column=[1, 2]
     case default
       call print_warning( &
           "green type not found", &
@@ -131,13 +131,13 @@ subroutine read_green (green, print)
     green%name="/home/mrajner/src/grat/dat/huang_green.dat"
     select case (green%dataname)
     case("GN")
-      green%column=[1,2]
+      green%column=[1, 2]
     case("GNdt") 
-      green%column=[1,3]
+      green%column=[1, 3]
     case("GNdh")
-      green%column=[1,4]
+      green%column=[1, 4]
     case("GNdz")
-      green%column=[1,5]
+      green%column=[1, 5]
     case default
       call print_warning ( &
           trim(green%dataname) //" not found in " &
@@ -147,13 +147,13 @@ subroutine read_green (green, print)
     green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
     select case (green%dataname)
     case("GN")
-      green%column=[1,2]
+      green%column=[1, 2]
     case("GNdt") 
-      green%column=[1,3]
+      green%column=[1, 3]
     case("GNdh")
-      green%column=[1,4]
+      green%column=[1, 4]
     case("GNdz")
-      green%column=[1,5]
+      green%column=[1, 5]
     case default
       call print_warning ( &
           trim(green%dataname) //" not found in " &
@@ -164,7 +164,7 @@ subroutine read_green (green, print)
   end select
 
   if(green%column(1).ne.0 .and. green%column(2).ne.0) then
-    allocate(tmp(max(green%column(1),green%column(2))))
+    allocate(tmp(max(green%column(1), green%column(2))))
     lines = 0
     open (newunit =fileunit, file=green%name, action="read", status="old")
     do 
@@ -203,12 +203,12 @@ subroutine read_green (green, print)
 
   if (.not.present(print)) then
     write(log%unit, form%i3) trim(basename(trim(green%name))), trim(green%dataname), &
-        "columns:",green%column,&
+        "columns:", green%column, &
         "lines:", size(green%distance)
   endif
 
   if (green%columndataname(1).eq."R") then
-    green%distance=(/ (r2d(green%distance(i)), i=1,size(green%distance)) /)
+    green%distance=(/ (r2d(green%distance(i)), i=1, size(green%distance)) /)
     write(log%unit, form_63) "conversion: radians --> to degrees"
   endif
   if (green%columndataname(2).eq."a2f") then
@@ -238,7 +238,7 @@ subroutine green_unification ()
   allocate (green_common(size(info)))
   allocate (which_green(size(info)))
   allocate (tmp(size(green)))
-  do iinfo=1,size(info)
+  do iinfo=1, size(info)
     if (info(iinfo)%distance%step.eq.0) then
       do i = 1, size(green)
         tmp(i)= count(                                         & 
@@ -259,7 +259,7 @@ subroutine green_unification ()
       endif
 
       allocate(tmpgreen%distance(                                   & 
-          size_ntimes_denser(imax-imin+1,info(iinfo)%distance%denser) & 
+          size_ntimes_denser(imax-imin+1, info(iinfo)%distance%denser) & 
           ))
       do ii = 1, imax - imin
         do j = 1, info(iinfo)%distance%denser
@@ -315,30 +315,30 @@ subroutine green_unification ()
       green_common(iinfo)%start = &
           [(info(iinfo)%distance%start + &
           (i-1)*info(iinfo)%distance%step, &
-          i=1,size(green_common(iinfo)%distance)) ]
+          i=1, size(green_common(iinfo)%distance)) ]
       green_common(iinfo)%stop = green_common(iinfo)%start(2:) 
       green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = info(iinfo)%distance%stop
       green_common(iinfo)%distance = &
           (green_common(iinfo)%stop + green_common(iinfo)%start)/2
     endif
 
-    allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance),size(green)))
+    allocate(green_common(iinfo)%data(size(green_common(iinfo)%distance), size(green)))
     allocate(green_common(iinfo)%dataname(size(green)))
 
-    do i = 1,  size(green_common(iinfo)%data,2)
+    do i = 1,  size(green_common(iinfo)%data, 2)
       call  spline_interpolation(          & 
           green(i)%distance,                 & 
           green(i)%data,                     & 
           size(green(i)%distance),           & 
           green_common(iinfo)%distance,      & 
-          green_common(iinfo)%data(:,i),     & 
+          green_common(iinfo)%data(:, i),     & 
           size(green_common(iinfo)%distance) & 
           )
       where( &
             green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
             .or.green_common(iinfo)%distance.lt.green(i)%distance(1) &
             )
-        green_common(iinfo)%data(:,i)=0
+        green_common(iinfo)%data(:, i)=0
       end where
       green_common(iinfo)%dataname(i) = green(i)%dataname
     enddo
@@ -369,10 +369,10 @@ subroutine convolve(site, date)
   use mod_aggf, only: aggf
   use mod_atmosphere, only: standard_pressure
   type(site_info), intent(in) :: site
-  type(dateandmjd),intent(in), optional :: date
+  type(dateandmjd), intent(in), optional :: date
 
   integer  :: igreen, idist, iazimuth, nazimuth
-  real(dp) :: azimuth,dazimuth
+  real(dp) :: azimuth, dazimuth
   real(dp) :: lat, lon, area, tot_area, tot_area_used
   real(dp) :: val(size(model)), old_val_sp
   integer  :: i, j, npoints
@@ -393,8 +393,8 @@ subroutine convolve(site, date)
 
   if (site%lp%if) then
     val=0
-    do i=1,size(site%lp%date)
-      if(all(site%lp%date(i,1:6).eq.date%date(1:6))) then
+    do i=1, size(site%lp%date)
+      if(all(site%lp%date(i, 1:6).eq.date%date(1:6))) then
         val=site%lp%data(i)
         exit
       endif
@@ -421,6 +421,7 @@ subroutine convolve(site, date)
   result=0
 
   if (ind%green%gnc.ne.0) close(output_unit)
+
   do igreen = 1, size(green_common)
     do idist = 1, size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
@@ -464,7 +465,7 @@ subroutine convolve(site, date)
             d2r(green_common(igreen)%distance(idist)), d2r(azimuth), lat, lon, domain=.true.)
         ! read polygons
         if (ind%polygon%e.ne.0 .or. ind%polygon%n.ne.0) then
-          do i =1,size(polygon)
+          do i =1, size(polygon)
             if (polygon(i)%if) then
               call chkgon (r2d(lon), r2d(lat), polygon(i), iok(i))
             endif
@@ -640,7 +641,7 @@ subroutine convolve(site, date)
                         ind%model%h, &
                         ind%model%t &
                         ].eq.0)) &
-                        call print_warning ("with @GNc you need to give @T @HP @H",error=.true.)
+                        call print_warning ("with @GNc you need to give @T @HP @H", error=.true.)
                     result(ind%green%gnc) = result(ind%green%gnc)  & 
                         + val(ind%model%sp)                        & 
                         * aggf(                                    & 
@@ -778,17 +779,17 @@ subroutine convolve(site, date)
               if (isnan(aux)) aux = 0
               if (ind%green%gr.ne.0) then
                 result(ind%green%gr) = result(ind%green%gr) +       & 
-                    green_common(igreen)%data(idist,ind%green%gr) & 
+                    green_common(igreen)%data(idist, ind%green%gr) & 
                     * aux
 
                 if (ind%green%ghn.ne.0) then
                   result(ind%green%ghn) = result(ind%green%ghn) +      & 
-                      green_common(igreen)%data(idist,ind%green%ghn) * & 
+                      green_common(igreen)%data(idist, ind%green%ghn) * & 
                       aux * (- cos (d2r(azimuth)))
                 endif
                 if (ind%green%ghe.ne.0) then
                   result(ind%green%ghe) = result(ind%green%ghe) +      & 
-                      green_common(igreen)%data(idist,ind%green%ghe) * & 
+                      green_common(igreen)%data(idist, ind%green%ghe) * & 
                       aux * (- sin (d2r(azimuth)))
                 endif
               endif
@@ -799,17 +800,17 @@ subroutine convolve(site, date)
         if(ind%moreverbose%p.ne.0) then
           if (header_p.and. output%header) then
             if(size(green_common).gt.1) &
-                write(moreverbose(ind%moreverbose%p)%unit, "(a2,x$)") "i"
+                write(moreverbose(ind%moreverbose%p)%unit, "(a2, x$)") "i"
 
             write(moreverbose(ind%moreverbose%p)%unit, & 
-                '(a8,8a13,$)')                         & 
+                '(a8, 8a13, $)')                         & 
                 "name", "lat", "lon",                  & 
                 "distance", "azimuth",                 & 
                 "lat", "lon",                          & 
                 "area", "totarea"
             if (result_component) then
               write(moreverbose(ind%moreverbose%p)%unit, & 
-                  '(a13,$)')                & 
+                  '(a13, $)')                & 
                   (trim(green(i)%dataname), & 
                   i=lbound(green, 1),       & 
                   ubound(green, 1)          & 
@@ -817,17 +818,17 @@ subroutine convolve(site, date)
             endif
             if (result_total) then
               write(moreverbose(ind%moreverbose%p)%unit, & 
-                  '(a13,$)') "total" 
+                  '(a13, $)') "total" 
             endif
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               write(moreverbose(ind%moreverbose%p)%unit,                       & 
                   '(<size(model)>a12)', advance='no' )                         & 
-                  (trim(model(i)%dataname), i=lbound(model, 1),ubound(model, 1))
+                  (trim(model(i)%dataname), i=lbound(model, 1), ubound(model, 1))
             endif
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, & 
-                  '(<size(iok)>(a3,i1))'),               & 
-                  ("ok",i, i =1,ubound(iok, 1))
+                  '(<size(iok)>(a3, i1))'),               & 
+                  ("ok", i, i =1, ubound(iok, 1))
             else
               write(moreverbose(ind%moreverbose%p)%unit, *)
             endif
@@ -842,21 +843,21 @@ subroutine convolve(site, date)
               ) then
 
             if(size(green_common).gt.1) &
-                write(moreverbose(ind%moreverbose%p)%unit, "(i2,x$)") igreen
+                write(moreverbose(ind%moreverbose%p)%unit, "(i2, x$)") igreen
             write(moreverbose(ind%moreverbose%p)%unit,         & 
-                '(a8,6' // output%form //',2en13.3,$)'),       & 
+                '(a8, 6' // output%form //',2 en13.3, $)'),       & 
                 site%name, site%lat, site%lon,                 & 
                 green_common(igreen)%distance(idist), azimuth, & 
-                r2d(lat),r2d(lon), area, tot_area
+                r2d(lat), r2d(lon), area, tot_area
             if (result_component)                          & 
                 write(moreverbose(ind%moreverbose%p)%unit, & 
                 '(' // output%form //'$)'),                & 
-                (result(i), i =1,size(result))
+                (result(i), i =1, size(result))
             if (result_total) &
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                '(' // output%form //'$)'),sum(result(1:size(green)))
+                '(' // output%form //'$)'), sum(result(1:size(green)))
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
-              do i=1,size(val)
+              do i=1, size(val)
                 call get_value (                          & 
                     model(i), r2d(lat), r2d(lon), val(i), & 
                     level=1,                              & 
@@ -864,7 +865,7 @@ subroutine convolve(site, date)
                     date=date%date)
               enddo
               write(moreverbose(ind%moreverbose%p)%unit, & 
-                  '(<size(model)>en12.2,$)') val
+                  '(<size(model)>en12.2, $)') val
             endif
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, & 
@@ -893,9 +894,9 @@ subroutine convolve(site, date)
 
   ! summary: -L@s
   if (ind%moreverbose%s.ne.0) then
-    if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8,3a12)' ) &
+    if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
         "station", "npoints", "area", "area/R2", "t_area_used"
-    write(moreverbose(ind%moreverbose%s)%unit,'(a8,i8,3en12.2)') &
+    write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)') &
         site%name, npoints, tot_area, tot_area/earth%radius**2, tot_area_used
   endif
   if(ind%moreverbose%g.ne.0) then

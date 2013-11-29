@@ -24,7 +24,7 @@ contains
 !! \warning All input angles in radians, output area on unit sphere or 
 !! in square units of given (optionally) \c radius.
 ! =============================================================================
-function spher_area (distance ,ddistance, azstp, radius, alternative_method )
+function spher_area (distance, ddistance, azstp, radius, alternative_method )
   real(dp) :: spher_area
   real(dp), intent(in)  :: distance, ddistance 
   real(dp), intent(in)  :: azstp
@@ -51,10 +51,10 @@ end function
 !! \date 2013-03-06
 !! \warning all values in radians
 ! =============================================================================
-subroutine spher_trig ( latin , lonin , distance , azimuth , latout , lonout, domain)
-  real(dp) , intent(in)  :: distance 
-  real(dp) , intent(in)  :: latin , lonin , azimuth
-  real(dp) , intent(out) :: latout, lonout 
+subroutine spher_trig (latin, lonin, distance, azimuth, latout, lonout, domain)
+  real(dp), intent(in)  :: distance 
+  real(dp), intent(in)  :: latin, lonin, azimuth
+  real(dp), intent(out) :: latout, lonout 
   real(dp) :: saz, caz, st, ct, cd, sd, cb, sb
   logical, intent(in), optional :: domain
 
@@ -87,11 +87,11 @@ end subroutine
 !!
 !! All arguments in radians
 ! =============================================================================
-subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, haversine)
-  real(dp) , intent (in)         :: lat1 , lon1 , lat2 , lon2
-  real(dp) , intent (out)        :: distance , azimuth
-  real(dp)                       :: dlat , dlon, a
-  logical, intent(in) , optional :: haversine
+subroutine spher_trig_inverse (lat1, lon1, lat2, lon2, distance, azimuth, haversine)
+  real(dp), intent (in)         :: lat1, lon1, lat2, lon2
+  real(dp), intent (out)        :: distance, azimuth
+  real(dp)                       :: dlat, dlon, a
+  logical, intent(in), optional :: haversine
 
   dlon = lon2 - lon1
   dlat = lat2 - lat1
@@ -107,7 +107,7 @@ subroutine spher_trig_inverse (lat1, lon1, lat2 , lon2 , distance , azimuth, hav
     distance = acos ( sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
   endif
 
-  azimuth = atan2( (sin(dlon)*cos(lat2)/sin(distance)) ,  ((sin(lat2)*cos(lat1) - cos(lat2)*sin(lat1)*cos(dlon))/sin(distance))  )
+  azimuth = atan2( (sin(dlon)*cos(lat2)/sin(distance)),  ((sin(lat2)*cos(lat1) - cos(lat2)*sin(lat1)*cos(dlon))/sin(distance))  )
   if (azimuth.lt.0) azimuth = azimuth + 2 * pi
 end subroutine
 

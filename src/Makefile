@@ -4,7 +4,6 @@
 tmmm:grat
 	grat -F 100 @SP\
 		-M3 -Sj \
-		-V \
 
 
 tmp: grat local
