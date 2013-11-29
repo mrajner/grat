@@ -479,6 +479,8 @@ function linspace(xmin, xmax, n)
     end do
 end function
 
+! ==============================================================================
+! ==============================================================================
 function logspace(xmin, xmax, n)
     real(dp), intent(in) :: xmin, xmax
     real(dp), dimension(:), allocatable :: logspace

@@ -11,7 +11,7 @@ contains
 subroutine point_mass (site, date)
   use mod_site, only : site_info
   use mod_date, only : dateandmjd
-  use mod_utilities, only: d2r
+  use mod_utilities, only: d2r, logspace
   use mod_atmosphere
   use mod_constants, only: R_air, gravity, earth
   use mod_spherical, only: spher_trig, spher_area
@@ -20,6 +20,8 @@ subroutine point_mass (site, date)
   type(dateandmjd),intent(in), optional :: date
 
   real(dp) :: lat, lon
+  integer :: jdd
+  real(dp) :: dd(3)
 
   ! real(dp) :: dhor, sizehor, dheight, sizeheight
   ! integer :: ilat, ilon, iheight, nhor, nheight
@@ -29,62 +31,79 @@ subroutine point_mass (site, date)
   integer :: iazimuth, nazimuth
   real(dp) :: azimuth, dazimuth, maxdistance, mindistance
   integer :: iheight, nheight
-  real(dp) :: height, dheight, maxheight
+  real(dp) :: height, dheight, maxheight, minheight
+
 
   print *
-  maxdistance=10
-  mindistance=5
-  maxheight=6000
+  maxdistance=1.5
+  mindistance=0.0000001
 
-  ddistance=0.11
+  maxheight=39002
+  minheight=20
+
+
+  ddistance=0.1
   dazimuth=360
-  dheight=1
+  dheight=0.1
 
-  ndistance=ceiling(maxdistance/ddistance)
-  nazimuth=ceiling(360/dazimuth)
-  nheight=ceiling(maxheight/dheight)
+  dd=[0.1,1.005,.01]
 
-  ddistance=maxdistance/ndistance
-  dazimuth=360./nazimuth
+  do jdd=1, size(dd)
+    ddistance=dd(jdd)
+    ndistance=ceiling((maxdistance-mindistance)/ddistance)
+    nazimuth=ceiling(360/dazimuth)
+    nheight=ceiling((maxheight-minheight)/dheight)
+
+    ddistance=(maxdistance-mindistance)/ndistance
+    dheight=(maxheight-minheight)/nheight
+    dazimuth=360./nazimuth
 
 
-  val=0
-  do idistance = 1, ndistance
-    distance=(idistance)*ddistance-ddistance/2
+    val=0
+    do idistance = 1, ndistance
+      distance=mindistance+ idistance*ddistance-ddistance/2
 
-    volume = &
-        spher_area(                        &
-        d2r(distance-ddistance/2), &
-        d2r(distance+ddistance/2), &
-        d2r(dazimuth),                          &
-        radius=earth%radius,                    &
-        alternative_method=.true.) &
-        * dheight
+      volume = &
+          spher_area(                        &
+          d2r(distance-ddistance/2), &
+          d2r(distance+ddistance/2), &
+          d2r(dazimuth),                          &
+          radius=earth%radius,                    &
+          alternative_method=.true.) &
+          * dheight
 
-    do iazimuth = 1, nazimuth
-      azimuth = (iazimuth-1)*dazimuth
-      do iheight=1,nheight
-        height=( iheight -1 )*dheight
+      do iazimuth = 1, nazimuth
+        azimuth = (iazimuth-1)*dazimuth
+        do iheight=1,nheight
+          height=minheight+(iheight -1)*dheight
 
-        call spher_trig &
-            (d2r(site%lat), d2r(site%lon), &
-            d2r(distance), d2r(azimuth), lat, lon, domain=.true.)
 
-        ! print *, point_mass_a (d2r(site%lat), d2r(site%lon), site%height, lat, lon, height) 
-        val=val &
-            + geometry(psi=d2r(distance), h=site%height, z=height) &
-            *( standard_pressure(height,p_zero=101425._dp, method="standard", use_standard_temperature=.true.) &
-            - standard_pressure(height, method="standard", use_standard_temperature=.true.) )&
-        ! *100 &
-            /(R_air*standard_temperature(height))  &
-            * volume
+          !todo top bottom press
+          val=val &
+              + geometry(psi=d2r(distance), h=site%height, z=height) &
+              *( &
+              ( &
+                standard_pressure(height,p_zero=101425._dp, method="standard", use_standard_temperature=.true.) &
+                +standard_pressure(height+dheight,p_zero=101425._dp, method="standard", use_standard_temperature=.true.) &
+              )/2 &
+              - &
+              ( &
+                ( &
+                  standard_pressure(height, method="standard", use_standard_temperature=.true.) &
+                  +standard_pressure(height+dheight, method="standard", use_standard_temperature=.true.) &
+                )/2 &
+              ) &
+              ) &
+              /(R_air*standard_temperature(height))  &
+              * volume
 
+        enddo
       enddo
     enddo
+    val=val*gravity%constant*1e8
+    print*, ddistance,dheight,val
   enddo
-  val=val*gravity%constant*1e8
 
-  print *,val
 end subroutine
 
 
