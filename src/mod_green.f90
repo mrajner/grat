@@ -453,10 +453,9 @@ subroutine convolve(site, date)
       azimuths = [(info(igreen)%azimuth%start + (i-1) * dazimuth, i= 1, nazimuth)] 
 
       do iazimuth  = 1, nazimuth
-        npoints = npoints + 1
-        azimuth = (iazimuth - 1) * dazimuth
         azimuth = azimuths(iazimuth)
 
+        npoints = npoints + 1
         tot_area=tot_area+area
 
         ! get lat and lon of point
