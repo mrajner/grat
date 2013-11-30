@@ -899,6 +899,8 @@ subroutine convolve(site, date)
     write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)') &
         site%name, npoints, tot_area, tot_area/earth%radius**2, tot_area_used
   endif
+
+  ! green values : -L@g
   if(ind%moreverbose%g.ne.0) then
     do i = 1, size(green_common)
       do j=1,size(green_common(i)%distance)
@@ -906,7 +908,8 @@ subroutine convolve(site, date)
             j, green_common(i)%distance(j), &
             green_common(i)%start(j), &
             green_common(i)%stop(j), &
-            green_common(i)%data(j,:)
+            green_common(i)%data(j,:), &
+            green_common(i)%distance(j)-green_common(i)%distance(j-1)
       enddo
     enddo
   endif

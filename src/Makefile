@@ -2,8 +2,9 @@
 # for example: OBJS  = libgrat.a
 
 tmmm:grat
-	grat -F 100 @SP\
-		-M3 -Sj \
+	time grat -F 100 @SP\
+		-M2,3 -Sj -G@GN -H -L@ \
+		-I0.5@DE:2@DD
 
 
 tmp: grat local
