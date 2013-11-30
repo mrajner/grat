@@ -52,7 +52,7 @@ module mod_cmdline
     integer :: denser
   end type
   type info_info
-    type (range):: distance,azimuth
+    type (range):: distance,azimuth, height
     character (1) :: interpolation
   end type
   type(info_info), dimension(:), allocatable:: info
@@ -90,7 +90,7 @@ module mod_cmdline
         integer(2) :: e, n
       end type
       type moreverbose_index
-        integer(2) :: p, g, t, a, d, l, n, r, s, o, b , j
+        integer(2) :: p, g, t, a, d, l, n, r, s, o, b, j, v
       end type
       type green_index
         integer(2) :: & 

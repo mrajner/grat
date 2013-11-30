@@ -811,6 +811,8 @@ end subroutine check
 !! \end{center}
 !! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
+!!
+!! lat and lon in decimal degree
 ! =============================================================================
 subroutine get_value(model, lat, lon, val, level, method, date)
   use mod_constants, only: dp 

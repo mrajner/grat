@@ -469,7 +469,6 @@ subroutine parse_info (cmd_line_entry)
   endif
 
   if (present(cmd_line_entry)) then
-
     allocate (info(size(cmd_line_entry%field)))
     do i = 1, size(cmd_line_entry%field)
       write(log%unit, form%i2), "Range:", i
@@ -489,18 +488,26 @@ subroutine parse_info (cmd_line_entry)
               call print_warning("changing -I@DE to 180")
               info(i)%distance%stop = 180 
             endif
-          case ("AB")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
-          case ("AE")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
           case ("DS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
           case ("DD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
+          case ("AB")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
+          case ("AE")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
           case ("AD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
           case ("AS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
+          case ("HB")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%start
+          case ("HE")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%stop
+          case ("HD")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%denser
+          case ("HS")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%step
           endselect
         else 
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -536,14 +543,21 @@ subroutine info_defaults(info)
   type(info_info),intent(inout) :: info
 
   info%interpolation="n"
+
   info%distance%start=0.
   info%distance%stop=180.
-  info%azimuth%start=0.
-  info%azimuth%stop=360.
   info%distance%denser=1
   info%distance%step=0
+
+  info%azimuth%start=0.
+  info%azimuth%stop=360.
   info%azimuth%step=0
   info%azimuth%denser=1
+
+  info%height%start=0.
+  info%height%stop=60000.
+  info%height%step=5
+  info%height%denser=1
 
 end subroutine
 
@@ -736,6 +750,8 @@ subroutine get_index()
       ind%moreverbose%n = i
     case ("j")
       ind%moreverbose%j = i
+    case ("v")
+      ind%moreverbose%v = i
     end select
   enddo
   do i = 1, size(green)

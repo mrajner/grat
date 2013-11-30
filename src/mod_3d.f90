@@ -1,6 +1,7 @@
 module mod_3d
     use mod_constants, only: dp
     implicit none
+    real(dp) :: result3d=0.
 
     ! Gitlein <0.5° 0.05x0.05
     !         <10° 0.1x0.1
@@ -13,45 +14,31 @@ contains
 subroutine point_mass (site, date)
   use mod_site, only : site_info
   use mod_date, only : dateandmjd
-  use mod_utilities, only: d2r, logspace
+  use mod_utilities, only: d2r, r2d
   use mod_atmosphere
   use mod_constants, only: R_air, gravity, earth
   use mod_spherical, only: spher_trig, spher_area
   use mod_green, only: green, green_common
   use mod_cmdline
+  use mod_printing, only: output
+  use mod_data
 
   type (site_info) :: site
   type(dateandmjd),intent(in), optional :: date
 
-  real(dp) :: val, volume
+  real(dp) :: val(size(model)), volume, result
   real(dp), dimension(:), allocatable :: azimuths
-  integer :: igreen, idist, nazimuth
-  real(dp) :: dazimuth
+  integer :: igreen, idist, nazimuth, iazimuth, nheight, iheight
+  real(dp) :: dazimuth, azimuth
+  integer :: i
+  real (dp) :: dheight, height, lat, lon
 
-
-  ! print *
-  ! print * , size (green), "dd"
-  return
-  stop 
-
-  ! maxheight=39002
-  ! minheight=10
-
-
-  ! ddistance=0.05
-  ! dazimuth=360
-  ! dheight=0.1
-
-  ! ndistance=ceiling((maxdistance-mindistance)/ddistance)
-  ! nazimuth=ceiling(360/dazimuth)
-  ! nheight=ceiling((maxheight-minheight)/dheight)
-
-  ! ddistance=(maxdistance-mindistance)/ndistance
-  ! dheight=(maxheight-minheight)/nheight
-  ! dazimuth=360./nazimuth
-
+  result=0
   do igreen = 1, size(green_common)
+    if (ind%moreverbose%v.ne.0) write(moreverbose(ind%moreverbose%v)%unit,*)
+
     do idist = 1, size(green_common(igreen)%distance)
+
       if (allocated(azimuths)) deallocate (azimuths)
       if (info(igreen)%azimuth%step.eq.0) then
         nazimuth = &
@@ -60,69 +47,70 @@ subroutine point_mass (site, date)
             info(igreen)%azimuth%denser
         if (nazimuth.eq.0) nazimuth=1
         dazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
-      ! else
-        ! dazimuth = info(igreen)%azimuth%step
-        ! nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
+      else
+        dazimuth = info(igreen)%azimuth%step
+        nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
       endif
 
-      ! ! calculate area using spherical formulae
-      ! area = spher_area(                        & 
-          ! d2r(green_common(igreen)%start(idist)), & 
-          ! d2r(green_common(igreen)%stop(idist)),  & 
-          ! d2r(dazimuth),                          & 
-          ! radius=earth%radius,                    & 
-          ! alternative_method=.true.)
+      nheight=ceiling((info(igreen)%height%stop-info(igreen)%height%start)/info(igreen)%height%step)
 
+      ! calculate area using spherical formulae
+      volume = spher_area(                    & 
+          d2r(green_common(igreen)%start(idist)), & 
+          d2r(green_common(igreen)%stop(idist)),  & 
+          d2r(dazimuth),                          & 
+          radius=earth%radius,                    & 
+          alternative_method=.true.)              & 
+          * info(igreen)%height%step
 
-      ! allocate(azimuths(nazimuth))
-      ! azimuths = [(info(igreen)%azimuth%start + (i-1) * dazimuth, i= 1, nazimuth)] 
+      allocate(azimuths(nazimuth))
+      azimuths = [(info(igreen)%azimuth%start + (i-1) * dazimuth, i= 1, nazimuth)] 
 
-      ! do iazimuth  = 1, nazimuth
-        ! azimuth = azimuths(iazimuth)
+      do iazimuth  = 1, nazimuth
+        azimuth = azimuths(iazimuth)
 
+        call spher_trig &
+            (d2r(site%lat), d2r(site%lon), &
+            d2r(green_common(igreen)%distance(idist)), d2r(azimuth), lat, lon, domain=.true.)
+
+        call get_value (                                              & 
+            model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
+            level=1, method = info(igreen)%interpolation, date=date%date)
+        call get_value (                                              & 
+            model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), & 
+            level=1, method = info(igreen)%interpolation, date=date%date)
+
+        do iheight=1, nheight
+          height=info(igreen)%height%start+(iheight-0.5)*info(igreen)%height%step
+
+          if (iheight.eq.1) then
+            val(3)= standard_pressure(height, p_zero=val(ind%model%sp), method="standard", use_standard_temperature=.true.)
+            val(4)= standard_pressure(height, p_zero=val(ind%model%rsp), method="standard", use_standard_temperature=.true.)
+          else
+            val(3)= standard_pressure(height, p_zero=val(3),h_zero=height-info(igreen)%height%step, method="standard", use_standard_temperature=.true.)
+            val(4)= standard_pressure(height, p_zero=val(4),h_zero=height-info(igreen)%height%step, method="standard", use_standard_temperature=.true.)
+          endif
+          result=result &
+              + geometry(psi=d2r(green_common(igreen)%distance(idist)), h=site%height, z=height) &
+              *(val(3) - val(4)) &
+              /(R_air*standard_temperature(height))  &
+              * volume
+
+          if (ind%moreverbose%v.ne.0) then
+            print '(4f10.3,4e14.3)', azimuth, &
+                green_common(igreen)%start(idist), &
+                green_common(igreen)%stop(idist), &
+                green_common(igreen)%distance(idist),height, &
+                height-1./2. * (info(igreen)%height%step), &
+                height--1./2. * (info(igreen)%height%step), result
+          endif
+        enddo
       enddo
-      enddo
-  val=0
+    enddo
+  enddo
 
-    ! volume = &
-        ! spher_area(                        &
-        ! d2r(distance-ddistance/2), &
-        ! d2r(distance+ddistance/2), &
-        ! d2r(dazimuth),                          &
-        ! radius=earth%radius,                    &
-        ! alternative_method=.true.) &
-        ! * dheight
-
-    ! do iazimuth = 1, nazimuth
-      ! azimuth = (iazimuth-1)*dazimuth
-      ! do iheight=1,nheight
-        ! height=minheight+(iheight -1)*dheight
-
-
-        ! !todo top bottom press
-        ! val=val &
-            ! + geometry(psi=d2r(distance), h=site%height, z=height) &
-            ! *( &
-            ! ( &
-            ! standard_pressure(height,p_zero=101425._dp, method="standard", use_standard_temperature=.true.) &
-            ! +standard_pressure(height+dheight,p_zero=101425._dp, method="standard", use_standard_temperature=.true.) &
-            ! )/2 &
-            ! - &
-            ! ( &
-            ! ( &
-            ! standard_pressure(height, method="standard", use_standard_temperature=.true.) &
-            ! +standard_pressure(height+dheight, method="standard", use_standard_temperature=.true.) &
-            ! )/2 &
-            ! ) &
-            ! ) &
-            ! /(R_air*standard_temperature(height))  &
-            ! * volume
-
-      ! enddo
-    ! enddo
-  ! enddo
-  ! val=val*gravity%constant*1e8
-  ! print*, ddistance,dheight,val
+  result=-result*gravity%constant*1e8
+  write(output%unit,"("//output%form//"$)"), result
 
 end subroutine
 

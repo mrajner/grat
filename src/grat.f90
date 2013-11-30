@@ -119,8 +119,14 @@ program grat
           if (inverted_barometer.and.non_inverted_barometer) then
                 write (output%unit,'(a13$)'), "GE_NIB"
           endif
+          if (method(3)) then
+                write (output%unit,'(a13$)'), "G3D"
+          endif
         endif
         if (result_total) write (output%unit,'(a13)',advance='no'), "G2D"
+      endif
+      if (method(3)) then
+        write (output%unit,'(a13)',advance='no'), "G3D"
       endif
     endif
 
