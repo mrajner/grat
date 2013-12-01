@@ -47,6 +47,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_info(cmd_line_entry)
   case ("-Q")
     optimize=.true.
+    write(log%unit, form%i3) "optimize"
   case ("-L")
     call parse_moreverbose(cmd_line_entry)
   case ("-B")
@@ -165,6 +166,13 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (.not.log%sparse) write(log%unit, form%i2) "warnings"
   case ('-q')
     quiet=.true.
+    if (cmd_line_entry%field(1)%full.ne."") then
+      read (cmd_line_entry%field(1)%full,*) quiet_step
+    else
+      quiet_step=0
+    endif
+    write(log%unit,form%i2) &
+        "quiet step", quiet_step
   case ('-U')
     select case (cmd_line_entry%field(1)%subfield(1)%name)
     case ("n","N")
@@ -338,6 +346,7 @@ subroutine check_arguments (program_calling)
   use mod_cmdline, only: cmd_line, method, quiet, ind, transfer_sp, &
       inverted_barometer
   use mod_site, only: gather_site_model_info
+  use mod_green, only: parse_green
   character(len=*), intent(in) :: program_calling
   integer :: i
 
@@ -353,6 +362,10 @@ subroutine check_arguments (program_calling)
     endif
     if (method(2) .and. .not.any(cmd_line%switch.eq.'-G')) then
       call print_warning("green_missing", error=.true.)
+    endif
+    if (method(3) .and. .not.any(cmd_line%switch.eq.'-G')) then
+      call parse_green()
+      stop
     endif
     if ((method(2) &
         .and. inverted_barometer) &
@@ -519,16 +532,16 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-        "("//form%t3//" &
-        'DB:',f7.2, & 
-        '|DE:',f8.3, &
-        '|I:',a, &
-        '|DD:',i2, &
-        '|DS:',f6.2, &
-        )"), &
-        info(i)%distance%start, info(i)%distance%stop, &
-        info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step
+          "("//form%t3//" &
+          'DB:',f7.2, & 
+          '|DE:',f8.3, &
+          '|I:',a, &
+          '|DD:',i2, &
+          '|DS:',f6.2, &
+          )"), &
+          info(i)%distance%start, info(i)%distance%stop, &
+          info(i)%interpolation, info(i)%distance%denser, &
+          info(i)%distance%step
     enddo
   else
     allocate(info(1))
@@ -576,7 +589,7 @@ subroutine print_version (program_calling, version)
   write(log%unit, form_inheader ), version
   write(log%unit, form_inheader ), "compiled on "//__DATE__
   write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
   write(log%unit, form_inheader ), 'Warsaw University of Technology'

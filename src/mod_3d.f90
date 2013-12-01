@@ -18,7 +18,6 @@ real(dp) function geometry (psi, h, z, method)
   character(*), optional :: method
   real(dp) :: l, gamma
 
-  h=100
   if(present(method)) then
     if (method.eq."klugel") then
       gamma=atan(((z-h)*cos(psi/2))/((2*earth%radius+z)*sin(psi/2)))
@@ -31,6 +30,31 @@ real(dp) function geometry (psi, h, z, method)
         - 2.*(earth%radius+h)*(earth%radius+z)*cos(psi))**(0.5)
     geometry = ((earth%radius +z)*cos(psi) - (earth%radius + h))/l**3.
   endif
+end function
+
+! =============================================================================
+!> all values in radians 
+! =============================================================================
+real(dp) function potential (psi, h, z, method)
+  use mod_constants, only: earth
+  real(dp) &
+      ! intent(in)
+  :: psi, h, z
+  character(*), optional :: method
+  real(dp) :: l, gamma
+
+  ! if(present(method)) then
+    ! if (method.eq."klugel") then
+      ! gamma=atan(((z-h)*cos(psi/2))/((2*earth%radius+z)*sin(psi/2)))
+      ! geometry=sin(gamma-psi/2)/(2*(earth%radius+h) * sin(psi/2)*cos(gamma)+(z-h)*sin(psi/2+gamma))**2
+    ! else
+      ! stop "method not known"
+    ! endif
+  ! else
+    ! l = ((earth%radius + h)**2 + (earth%radius + z)**2 & 
+        ! - 2.*(earth%radius+h)*(earth%radius+z)*cos(psi))**(0.5)
+    ! geometry = ((earth%radius +z)*cos(psi) - (earth%radius + h))/l**3.
+  ! endif
 end function
 
 ! =============================================================================

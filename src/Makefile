@@ -2,13 +2,12 @@
 # for example: OBJS  = libgrat.a
 
 tmmm:grat
-	time grat \
+	grat \
 		-F NCEP @SP, VIENNA@RSP, @V3 \
-		-M2,3 -S j -G@GN -H  \
-		-D 2011:20110904:1@D \
-		-I 360@AS: 100@HS:0@HB: 45000@HE :1@DD :0.5@DE \
-		-o tmp:free:nc
-
+		-M2,3 -G @GN -S j -H  \
+		-D 2011:1@D \
+		-I 360@AS: 100@HS:0@HB: 10000@HE :1@DD :0.5@DE \
+		-o :free 
 
 tmp: grat local
 	grat \

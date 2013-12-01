@@ -232,13 +232,15 @@ program grat
 
         write(output%unit,*)
 
-        if (output%unit.ne.output_unit.and..not.quiet) then 
+        if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then 
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
               100*iprogress/(max(size(date),1) & 
               *max(size(site),1)),             & 
-              cpu(2)-cpu(1))
+              cpu(2)-cpu(1), & 
+              every=quiet_step &
+              )
         endif
       enddo
     enddo

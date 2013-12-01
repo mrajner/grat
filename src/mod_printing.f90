@@ -118,7 +118,7 @@ end subroutine
 ! =============================================================================
 subroutine progress(j, time, every)
   use mod_constants, only: dp
-  use mod_cmdline, only: moreverbose
+  use mod_cmdline, only: moreverbose, quiet_step
   use iso_fortran_env, only: output_unit
   implicit none
   integer(kind=4)::j,k
@@ -132,7 +132,7 @@ subroutine progress(j, time, every)
   if (present(every)) then
     every_=every
   else
-    every_=100
+    every_=quiet_step
   endif
 
   step =step+1
