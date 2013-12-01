@@ -3,11 +3,11 @@
 
 tmmm:grat
 	time grat \
-		-F NCEP @SP, VIENNA@RSP, @V3, @V4 \
-		-M2,3 -S 0 : 0 : 0: -G@GN -H  \
-		-D 2011:2011:1@D \
-		-I 360@AS: 40@HS :00@HB: 34000@HE :1@DD :0.5@DE \
-		-o :free -rt
+		-F NCEP @SP, VIENNA@RSP, @V3 \
+		-M2,3 -S j -G@GN -H  \
+		-D 2011:20110904:1@D \
+		-I 360@AS: 100@HS:0@HB: 45000@HE :1@DD :0.5@DE \
+		-o tmp:free:nc
 
 
 tmp: grat local

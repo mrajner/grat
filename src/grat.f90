@@ -65,7 +65,6 @@ program grat
   use mod_site, only: print_site_summary, site
   use mod_cmdline
   use mod_admit, only: admit
-  use mod_3d, only: point_mass
 
   implicit none
   real(dp) :: cpu(2)
@@ -118,9 +117,6 @@ program grat
           enddo
           if (inverted_barometer.and.non_inverted_barometer) then
                 write (output%unit,'(a13$)'), "GE_NIB"
-          endif
-          if (method(3)) then
-                write (output%unit,'(a13$)'), "G3D"
           endif
         endif
         if (result_total) write (output%unit,'(a13)',advance='no'), "G2D"
@@ -225,17 +221,13 @@ program grat
               )
         endif
 
-        if (method(2)) then 
+        if (method(2).or.method(3)) then 
           ! perform convolution
-          if (idate.gt.0) then
+          ! if (idate.gt.0) then
             call convolve (site(isite), date = date(idate))
-          else
-            call convolve (site(isite))
-          endif
-        endif
-
-        if (method(3)) then 
-         call point_mass (site(isite), date = date(idate))
+          ! else
+            ! call convolve (site(isite))
+          ! endif
         endif
 
         write(output%unit,*)

@@ -367,14 +367,14 @@ subroutine convolve(site, date)
   use mod_printing
   use mod_normalization, only: green_normalization
   use mod_aggf, only: aggf
-  use mod_atmosphere, only: standard_pressure
+  use mod_atmosphere, only: standard_pressure, standard_temperature
   use mod_3d
   type(site_info), intent(in) :: site
   type(dateandmjd), intent(in), optional :: date
 
   integer  :: igreen, idist, iazimuth, nazimuth
   real(dp) :: azimuth, dazimuth
-  real(dp) :: lat, lon, area, tot_area, tot_area_used
+  real(dp) :: lat, lon, height, area, tot_area, tot_area_used
   real(dp) :: val(size(model)), old_val_sp
   integer  :: i, j, npoints, iheight, nheight
   integer(2) :: iok(size(polygon))
@@ -420,6 +420,7 @@ subroutine convolve(site, date)
   tot_area_used = 0
 
   result=0
+  result3d=0
 
   if (ind%green%gnc.ne.0) close(output_unit)
 
@@ -437,6 +438,9 @@ subroutine convolve(site, date)
         dazimuth = info(igreen)%azimuth%step
         nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
       endif
+
+      if (method(3)) &
+          nheight=ceiling((info(igreen)%height%stop-info(igreen)%height%start)/info(igreen)%height%step)
 
       ! calculate area using spherical formulae
       area = spher_area(                        & 
@@ -633,35 +637,34 @@ subroutine convolve(site, date)
                     .or.(ind%polygon%n.eq.0)                             & 
                     ) then
 
-                  !3D 3D method is here 
+                  !3D 
                   if (method(3)) then
-                    ! result3d=
+                    if (ind%model%rsp.eq.0) then
+                      call print_warning("3D but no RSP")
+                    endif
                     do iheight=1, nheight
                       height=info(igreen)%height%start+(iheight-0.5)*info(igreen)%height%step
+                      if (iheight.eq.1) then
+                        val(3)= standard_pressure(height, p_zero=val(ind%model%sp), method="standard", use_standard_temperature=.true.)
+                      else
+                        val(3)= standard_pressure(height, p_zero=val(3),h_zero=height-info(igreen)%height%step, method="standard", use_standard_temperature=.true.)
+                      endif
 
-                      ! if (iheight.eq.1) then
-                        ! val(3)= standard_pressure(height, p_zero=val(ind%model%sp), method="standard", use_standard_temperature=.true.)
-                        ! val(4)= standard_pressure(height, p_zero=val(ind%model%rsp), method="standard", use_standard_temperature=.true.)
-                      ! else
-                        ! val(3)= standard_pressure(height, p_zero=val(3),h_zero=height-info(igreen)%height%step, method="standard", use_standard_temperature=.true.)
-                        ! val(4)= standard_pressure(height, p_zero=val(4),h_zero=height-info(igreen)%height%step, method="standard", use_standard_temperature=.true.)
-                      ! endif
-                      ! result=result &
-                          ! + geometry(psi=d2r(green_common(igreen)%distance(idist)), h=site%height, z=height) &
-                          ! *(val(3) - val(4)) &
-                          ! /(R_air*standard_temperature(height))  &
-                          ! * volume
+                      result3d = result3d &
+                          + geometry(psi=d2r(green_common(igreen)%distance(idist)), h=site%height, z=height) &
+                          *(val(3)-val(4)*0) &
+                          /(R_air * standard_temperature(height))  &
+                          * area * info(igreen)%height%step
 
-                      ! if (ind%moreverbose%v.ne.0) then
-                        ! print '(4f10.3,4e14.3)', azimuth, &
-                            ! green_common(igreen)%start(idist), &
-                            ! green_common(igreen)%stop(idist), &
-                            ! green_common(igreen)%distance(idist),height, &
-                            ! height-1./2. * (info(igreen)%height%step), &
-                            ! height--1./2. * (info(igreen)%height%step), result
-                      ! endif
+                      if (ind%moreverbose%v.ne.0) then
+                        print '(4f10.3,4e14.3)', azimuth, &
+                            green_common(igreen)%start(idist), &
+                            green_common(igreen)%stop(idist), &
+                            green_common(igreen)%distance(idist),height, &
+                            height-1./2. * (info(igreen)%height%step), &
+                            height--1./2. * (info(igreen)%height%step), result
+                      endif
                     enddo
-
                   endif
 
 
@@ -830,6 +833,7 @@ subroutine convolve(site, date)
             endif
           endif
         endif
+
         ! moreverbose point: -L@p
         if(ind%moreverbose%p.ne.0) then
           if (header_p.and. output%header) then
@@ -923,6 +927,8 @@ subroutine convolve(site, date)
       enddo
     enddo
   enddo
+
+  result3d=-result3d*gravity%constant*1e8
 
   ! results to output
   if (result_component) write (output%unit, "(" // output%form // '$)') result
