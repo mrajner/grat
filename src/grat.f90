@@ -102,7 +102,7 @@ program grat
       if (method(1)) then
         write (output%unit,'(a13)',advance='no'), "G1D"
       endif
-      if (method(2)) then
+      if (method(2).or.method(3)) then
         if (result_component) then
           do i = 1, size(green)
             if (green(i)%dataname.eq."GE") then

@@ -1,15 +1,19 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
+fdfsd: value_check
+	value_check -F NCEP@VT -Sj \
+		-D2011 -Jm -o:level
+
 dfsdfsf: grat
 	grat \
 		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T \
-		-M3  \
-		-S j@H \
+		-M3,2,1 -G@GN  \
+		-S j \
 		-H   \
-		-D 2011:0@D \
-		-I 10@AS: 150@HS:0@HB: 50000@HE :1@DD :0.5@DE  \
-		-o :free -q 5  
+		-D 2011:300@D:5@D \
+		-I 10@AS: 100@HS:0@HB: 55000@HE :1@DD :0.5@DE  \
+		-o tmp2:free -q 5  -A-0.43 -U
 
 tmp: grat local
 	grat \
