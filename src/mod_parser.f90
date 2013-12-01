@@ -271,6 +271,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
       endif
     enddo
   endif
+
   if (.not.any(cmd_line%switch.eq.'-I')) then
     call parse_info()
   endif
@@ -331,9 +332,12 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   enddo
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command parsing:"
+
   do i=1, size(cmd_line)
     call parse_option(cmd_line(i), accepted_switches)
+
   enddo
+
   call get_index()
   call check_arguments(program_calling=program_calling)
 end subroutine
@@ -365,7 +369,6 @@ subroutine check_arguments (program_calling)
     endif
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-G')) then
       call parse_green()
-      stop
     endif
     if ((method(2) &
         .and. inverted_barometer) &

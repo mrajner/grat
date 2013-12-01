@@ -1,13 +1,15 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-tmmm:grat
+dfsdfsf: grat
 	grat \
-		-F NCEP @SP, VIENNA@RSP, @V3 \
-		-M2,3 -G @GN -S j -H  \
-		-D 2011:1@D \
-		-I 360@AS: 100@HS:0@HB: 10000@HE :1@DD :0.5@DE \
-		-o :free 
+		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T \
+		-M3  \
+		-S j@H \
+		-H   \
+		-D 2011:0@D \
+		-I 10@AS: 150@HS:0@HB: 50000@HE :1@DD :0.5@DE  \
+		-o :free -q 5  
 
 tmp: grat local
 	grat \
@@ -26,8 +28,8 @@ tmp2:
 local: 
 	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
-	cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
-			
+			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
+
 
 # compiler
 FC = ifort
@@ -86,7 +88,7 @@ mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o mod_date.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o mod_3d.o
 mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
 mod_date.o: mod_data.o
 mod_mjd.o: mod_constants.o

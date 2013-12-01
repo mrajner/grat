@@ -1,7 +1,6 @@
 module mod_3d
     use mod_constants, only: dp
     implicit none
-    real(dp) :: result3d=0.
 
     ! Gitlein <0.5° 0.05x0.05
     !         <10° 0.1x0.1
@@ -12,9 +11,7 @@ contains
 ! =============================================================================
 real(dp) function geometry (psi, h, z, method)
   use mod_constants, only: earth
-  real(dp) &
-      ! intent(in)
-  :: psi, h, z
+  real(dp), intent(in) :: psi, h, z
   character(*), optional :: method
   real(dp) :: l, gamma
 
@@ -35,13 +32,13 @@ end function
 ! =============================================================================
 !> all values in radians 
 ! =============================================================================
-real(dp) function potential (psi, h, z, method)
-  use mod_constants, only: earth
-  real(dp) &
+! real(dp) function potential (psi, h, z, method)
+  ! use mod_constants, only: earth
+  ! real(dp) &
       ! intent(in)
-  :: psi, h, z
-  character(*), optional :: method
-  real(dp) :: l, gamma
+  ! :: psi, h, z
+  ! character(*), optional :: method
+  ! real(dp) :: l, gamma
 
   ! if(present(method)) then
     ! if (method.eq."klugel") then
@@ -55,7 +52,7 @@ real(dp) function potential (psi, h, z, method)
         ! - 2.*(earth%radius+h)*(earth%radius+z)*cos(psi))**(0.5)
     ! geometry = ((earth%radius +z)*cos(psi) - (earth%radius + h))/l**3.
   ! endif
-end function
+! end function
 
 ! =============================================================================
 !> all values in radians 
