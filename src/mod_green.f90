@@ -682,17 +682,20 @@ subroutine convolve(site, date)
                         -max(info(igreen)%height%start,val(ind%model%h))) &
                         /info(igreen)%height%step)
 
-                    allocate(heights(nheight))
-                    do iheight=1, nheight
-                      heights(iheight)=max(info(igreen)%height%start, val(ind%model%h)) &
-                          +(iheight-0.5)*info(igreen)%height%step
-                    enddo
+                    ! allocate(heights(nheight))
+                    ! do iheight=1, nheight
+                      ! heights(iheight)=max(info(igreen)%height%start, val(ind%model%h)) &
+                          ! +(iheight-0.5)*info(igreen)%height%step
+                    ! enddo
 
+                    print *
+                    print *, model(ind%model%gp)%level
+                    print *, level%level
                     do i=1,size(level%level)
                       call get_value (                                                                        & 
                           model(ind%model%gp), r2d(lat), r2d(lon), val(ind%model%gp),                       & 
                           level=level%level(i), method = info(igreen)%interpolation, date=date%date)
-                      print *,"A",val(ind%model%gp)
+                      print *,i,level%level(i),val(ind%model%gp)
                     enddo
                     print*
                     print *, heights

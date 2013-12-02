@@ -448,6 +448,7 @@ end subroutine
 subroutine get_dimension (model, i, print)
   use netcdf
   use mod_printing
+  use mod_utilities, only: countsubstring
   type(file) :: model
   integer :: dimid, varid 
   integer, intent(in) :: i
@@ -515,8 +516,8 @@ subroutine get_dimension (model, i, print)
       model%level=0
       return
     else
-    status = nf90_get_var (model%ncid, varid, model%level)
-  endif
+      status = nf90_get_var (model%ncid, varid, model%level)
+    endif
   elseif (i.eq.5 ) then
     allocate(model%time (length) )
     status = nf90_get_var (model%ncid, varid, model%time)
@@ -723,7 +724,7 @@ subroutine get_variable(model, date, print, level)
   if(present(level)) stop "XXXXXXX"
   select case (model%dataname)
   case ("VT","GP")
-     startv = [1,1,1,index_time]
+    startv = [1,1,1,index_time]
     call check (nf90_get_var ( & 
         ncid=model%ncid,         & 
         varid=varid,             & 
@@ -1159,7 +1160,7 @@ subroutine parse_level (cmd_line_entry)
       write (log%unit, '(a)'), "all"
     endif
   else
-      level%all=.true.
+    level%all=.true.
   endif
 
 end subroutine

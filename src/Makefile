@@ -1,13 +1,14 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
+#
 
-dfsdfsf: grat
+dfsdfsf: $(OBJS) grat
 	grat \
-		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T , NCEP@GP! \
+		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T ,ERA@GP! \
 		-M3,2,1 -G@GN  \
-		-S j \
+		-S o \
 		-H   \
-		-D 20120104:1@D \
+		-D 20100102:1@D \
 		-I 10@AS: 100@HS:0@HB: 5000@HE :1@DD :0.5@DE  \
 		-o :free -q 5  -A-0.43 
 
@@ -68,7 +69,8 @@ SRCS  = mod_constants.f90     \
 				mod_parser.f90        \
 				mod_admit.f90         \
 				mod_normalization.f90 \
-				mod_3d.f90
+				mod_3d.f90          \
+				mod_qsort.f90
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -89,7 +91,7 @@ mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o mod_date.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
 mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o mod_3d.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
+mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o mod_qsort.o
 mod_date.o: mod_data.o
 mod_mjd.o: mod_constants.o
 mod_polygon.o:mod_printing.o mod_cmdline.o

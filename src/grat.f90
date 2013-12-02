@@ -65,6 +65,7 @@ program grat
   use mod_site, only: print_site_summary, site
   use mod_cmdline
   use mod_admit, only: admit
+  use mod_utilities, only: Bubble_Sort
 
   implicit none
   real(dp) :: cpu(2)
@@ -198,6 +199,14 @@ program grat
           allocate(level%level(size(model(ind%model%gp)%level)))
           level%level=model(ind%model%gp)%level
         endif
+
+        ! sort levels for 3D method
+        print * , level%level
+        call Bubble_Sort(level%level)
+        print * , level%level
+
+        stop
+
 
         ! if ocean mass should be conserved (-O C)
         if (ocean_conserve_mass) then
