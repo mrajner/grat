@@ -1,19 +1,15 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-fdfsd: value_check
-	value_check -F NCEP@VT -Sj \
-		-D2011 -Jm -o:level
-
 dfsdfsf: grat
 	grat \
-		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T \
+		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T , NCEP@GP \
 		-M3,2,1 -G@GN  \
-		-S j \
+		-S r \
 		-H   \
-		-D 2011:300@D:5@D \
-		-I 10@AS: 100@HS:0@HB: 55000@HE :1@DD :0.5@DE  \
-		-o tmp2:free -q 5  -A-0.43 -U
+		-D 2011:1@D \
+		-I 10@AS: 100@HS:0@HB: 5000@HE :1@DD :0.5@DE  \
+		-o :free -q 5  -A-0.43 -V 
 
 tmp: grat local
 	grat \
@@ -126,6 +122,9 @@ $(PROGS_SHORTCUTS):
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+
+#  ../bin/value_check: value_check.f90 $(OBJS)
+	#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) /home/mrajner/src/ncl_ncarg-6.1.2/ni/src/lib/nfpfort/int2p_dp.f
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)

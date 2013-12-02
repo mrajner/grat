@@ -1131,27 +1131,31 @@ subroutine parse_level (cmd_line_entry)
   use mod_cmdline, only: cmd_line_arg
   use mod_printing, only: print_warning, form, log
 
-  type(cmd_line_arg)  :: cmd_line_entry
+  type(cmd_line_arg), optional :: cmd_line_entry
   integer :: i
 
-  if (allocated(level%level)) then
-    call print_warning ("repeated", more="-J")
-    return
-  endif
-  if (cmd_line_entry%field(1)%subfield(1)%name.eq."m") then
-    level%all=.true.
-  else
-    allocate (level%level(size(cmd_line_entry%field)))
-    do i =1,  size(level%level)
-      read(cmd_line_entry%field(i)%subfield(1)%name, '(i)') level%level(i)
-    enddo
-  endif
+  if (present(cmd_line_entry)) then
+    if (allocated(level%level)) then
+      call print_warning ("repeated", more="-J")
+      return
+    endif
+    if (cmd_line_entry%field(1)%subfield(1)%name.eq."m") then
+      level%all=.true.
+    else
+      allocate (level%level(size(cmd_line_entry%field)))
+      do i =1,  size(level%level)
+        read(cmd_line_entry%field(i)%subfield(1)%name, '(i)') level%level(i)
+      enddo
+    endif
 
-  write(log%unit, form%i2, advance="no") "level pressure:"
-  if (allocated(level%level)) then
-    write (log%unit, '(<size(level%level)>i4)'), level%level
-  else if (level%all) then
-    write (log%unit, '(a)'), "all"
+    write(log%unit, form%i2, advance="no") "level pressure:"
+    if (allocated(level%level)) then
+      write (log%unit, '(<size(level%level)>i4)'), level%level
+    else if (level%all) then
+      write (log%unit, '(a)'), "all"
+    endif
+  else
+      level%all=.true.
   endif
 
 end subroutine

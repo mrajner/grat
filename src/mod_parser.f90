@@ -346,7 +346,7 @@ end subroutine
 ! =============================================================================
 subroutine check_arguments (program_calling)
   use mod_date, only: date
-  use mod_data, only: model
+  use mod_data, only: model, parse_level
   use mod_cmdline, only: cmd_line, method, quiet, ind, transfer_sp, &
       inverted_barometer
   use mod_site, only: gather_site_model_info
@@ -369,6 +369,9 @@ subroutine check_arguments (program_calling)
     endif
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-G')) then
       call parse_green()
+    endif
+    if (method(3) .and. .not.any(cmd_line%switch.eq.'-J')) then
+      call parse_level()
     endif
     if ((method(2) &
         .and. inverted_barometer) &

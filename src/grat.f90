@@ -127,6 +127,7 @@ program grat
       write (output%unit, *)
     endif
 
+
     ! read only once Land-sea, reference surface pressure
     if (ind%model%ls.ne.0) then
       call get_variable (model(ind%model%ls))
@@ -158,7 +159,7 @@ program grat
         do i = 1, size(model)
           if(model(i)%if) then
             select case (model(i)%dataname)
-            case ("SP", "T")
+            case ("SP", "T", "GP") !TODO
               if ( &
                 idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
                 .or.(model(i)%autoload &
@@ -177,16 +178,21 @@ program grat
         enddo
         if (any(.not.model%exist).and..not.output%nan) cycle
 
+        if (level%all.and..not.allocated(level%level)) then
+          allocate(level%level(size(model(ind%model%gp)%level)))
+          level%level=model(ind%model%gp)%level
+        endif
+
         ! if ocean mass should be conserved (-O C)
         if (ocean_conserve_mass) then
           if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
             if(size(date).eq.0) then
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  inverted_landsea_mask = inverted_landsea_mask)
             else
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                date=date(idate)%date, &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  date=date(idate)%date, &
+                  inverted_landsea_mask = inverted_landsea_mask)
             endif
           endif
         endif
@@ -203,19 +209,19 @@ program grat
 
         if (idate.gt.0) then
           write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
-            date(idate)%mjd, date(idate)%date
+              date(idate)%mjd, date(idate)%date
         endif
         write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
-          site(isite)%name, &
-          site(isite)%lat,  &
-          site(isite)%lon,  &
-          site(isite)%height 
+            site(isite)%name, &
+            site(isite)%lat,  &
+            site(isite)%lon,  &
+            site(isite)%height 
         if (method(1)) then 
           write (output%unit, "("// output%form // '$)'), &
-            admit( &
-            site(isite), &
-            date=date(idate)%date &
-            )
+              admit( &
+              site(isite), &
+              date=date(idate)%date &
+              )
         endif
 
         if (method(2).or.method(3)) then 
@@ -229,11 +235,11 @@ program grat
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
-            100*iprogress/(max(size(date),1) & 
-            *max(size(site),1)),             & 
-            cpu(2)-cpu(1), & 
-            every=quiet_step &
-            )
+              100*iprogress/(max(size(date),1) & 
+              *max(size(site),1)),             & 
+              cpu(2)-cpu(1), & 
+              every=quiet_step &
+              )
         endif
       enddo
     enddo
@@ -247,4 +253,4 @@ program grat
     write(log%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
     if (output%time) write(output%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
     write(log%unit, form_separator)
-  end program 
+end program 
