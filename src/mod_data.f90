@@ -172,7 +172,10 @@ subroutine model_aliases(model, dryrun, year, month)
     endif
   else
     year_=9999
+    month_=99
   endif
+
+  print * , year_,"U", month_
 
   if(.not. model%autoload) model%autoloadname=model%name
   model%if=.true.
@@ -238,6 +241,7 @@ subroutine model_aliases(model, dryrun, year, month)
       write(model%name,'(a,a,i4,a)') trim(prefix),"sp.",year_,".nc"
     case ("GP")
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"gp_l.",year_,month_,".nc"
+      write(*,'(a,a,i4,i2.2,a)') trim(prefix),"gp_l.",year_,month_,".nc"
       if (present(dryrun) .and. dryrun) then
         if (model%datanames(1).ne."") then
           model%datanames(1) = "gp2h@"// trim(model%datanames(1))

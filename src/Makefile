@@ -3,13 +3,13 @@
 
 dfsdfsf: grat
 	grat \
-		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T , NCEP@GP \
+		-F NCEP @SP, VIENNA@RSP , @V3 , NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP1@T , NCEP@GP! \
 		-M3,2,1 -G@GN  \
-		-S r \
+		-S j \
 		-H   \
-		-D 2011:1@D \
+		-D 20120104:1@D \
 		-I 10@AS: 100@HS:0@HB: 5000@HE :1@DD :0.5@DE  \
-		-o :free -q 5  -A-0.43 -V 
+		-o :free -q 5  -A-0.43 
 
 tmp: grat local
 	grat \
