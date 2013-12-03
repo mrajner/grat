@@ -160,7 +160,7 @@ program grat
         do i = 1, size(model)
           if(model(i)%if) then
             select case (model(i)%dataname)
-            case ("SP", "T", "GP") !TODO
+            case ("SP", "T", "GP", "VT") 
               if ( &
                 .not.(model(i)%autoloadname.eq."ERA" &
                 .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
@@ -201,12 +201,7 @@ program grat
         endif
 
         ! sort levels for 3D method
-        print * , level%level
         call Bubble_Sort(level%level)
-        print * , level%level
-
-        stop
-
 
         ! if ocean mass should be conserved (-O C)
         if (ocean_conserve_mass) then
