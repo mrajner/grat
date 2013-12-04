@@ -3,15 +3,16 @@
 #
 
 MYMODEL=NCEP
+
 dfsdfsf: $(OBJS) grat
 	grat \
-		-F $(MYMODEL) @SP, VIENNA@RSP , NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP!, $(MYMODEL)@VT! \
-		-M2,3 -G@GN  \
+		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,NCEP@VT! \
+		-M1,2,3:otential -G@GN  \
 		-S j \
 		-H   \
-		-D 20100101:2010010623 \
-		-I 60@AS: 90@HS: 40000@HE :1@DD :0.5@DE  \
-		-o tmp2:free:time  -V  
+		-D 20100101:3@Y:2@D \
+		-I 60@AS: 150@HS: 40000@HE :1@DD :3@DE  \
+		-otmpcm:free:time  -q1 -A-0.43
 
 tmp: grat local
 	grat \
@@ -31,6 +32,12 @@ local:
 	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
+
+holla:grat
+	grat -F VIENNA @RSP,NCEP@SP, NCEP1@T,NCEP@HP, ETOPO@H\! -G@GNc, @GN, @GNdt, @GNdz,@GNdz2 -D2010:2011 \
+		-Sj \
+		-oholla -H
+
 
 
 # compiler

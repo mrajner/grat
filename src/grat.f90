@@ -128,7 +128,6 @@ program grat
       write (output%unit, *)
     endif
 
-
     ! read only once Land-sea, reference surface pressure
     if (ind%model%ls.ne.0) then
       call get_variable (model(ind%model%ls))
@@ -194,6 +193,7 @@ program grat
           endif
         enddo
         if (any(.not.model%exist).and..not.output%nan) cycle
+
 
         if (level%all.and..not.allocated(level%level)) then
           allocate(level%level(size(model(ind%model%gp)%level)))

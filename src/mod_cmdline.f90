@@ -125,6 +125,7 @@ module mod_cmdline
       type(admitance_info) :: admitance
 
       logical :: method(3)
+      logical :: potential3d=.false.
       logical :: dryrun
 
       logical :: result_total=.false., result_component=.true.
