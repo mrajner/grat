@@ -679,8 +679,8 @@ subroutine convolve(site, date)
                     endif
 
                     if (allocated(heights)) deallocate(heights)
-                    if (allocated(pressures)) deallocate(pressures)
-                    if (allocated(temperatures)) deallocate(temperatures)
+                    ! if (allocated(pressures)) deallocate(pressures)
+                    ! if (allocated(temperatures)) deallocate(temperatures)
 
                     nheight= &
                         ceiling((info(igreen)%height%stop &
@@ -688,72 +688,72 @@ subroutine convolve(site, date)
                         /info(igreen)%height%step)
 
                     allocate(heights(nheight))
-                    allocate(pressures(nheight))
-                    allocate(temperatures(nheight))
+                    ! allocate(pressures(nheight))
+                    ! allocate(temperatures(nheight))
 
                     do iheight=1, nheight
                       heights(iheight)=max(info(igreen)%height%start, val(ind%model%h)) &
                           +(iheight-0.5)*info(igreen)%height%step
                     enddo
 
-                    if (.not. allocated(level%height)) allocate (level%height(size(level%level)))
-                    if (.not. allocated(level%temperature)) allocate (level%temperature(size(level%level)))
+                    ! if (.not. allocated(level%height)) allocate (level%height(size(level%level)))
+                    ! if (.not. allocated(level%temperature)) allocate (level%temperature(size(level%level)))
 
-                    do i=1,size(level%level)
-                      call get_value (                                                               & 
-                          model(ind%model%gp), r2d(lat), r2d(lon), level%height(i),                  & 
-                          level=level%level(i), method = info(igreen)%interpolation, date=date%date)
-                      if (ind%model%vt.ne.0) then
-                        call get_value (                                                               & 
-                            model(ind%model%vt), r2d(lat), r2d(lon), level%temperature(i),                  & 
-                            level=level%level(i), method = info(igreen)%interpolation, date=date%date)
-                      endif
-                    enddo
+                    ! do i=1,size(level%level)
+                      ! call get_value (                                                               & 
+                          ! model(ind%model%gp), r2d(lat), r2d(lon), level%height(i),                  & 
+                          ! level=level%level(i), method = info(igreen)%interpolation, date=date%date)
+                      ! if (ind%model%vt.ne.0) then
+                        ! call get_value (                                                               & 
+                            ! model(ind%model%vt), r2d(lat), r2d(lon), level%temperature(i),                  & 
+                            ! level=level%level(i), method = info(igreen)%interpolation, date=date%date)
+                      ! endif
+                    ! enddo
 
                     i=1
                     ! print *
                     ! print *
                     do iheight=1, nheight
-                      if (iheight.eq.1) then
-                        pressures(iheight) = standard_pressure( &
-                            heights(iheight), &
-                            p_zero=val(ind%model%sp)+val(ind%model%rsp), &
-                            method="standard", &
-                            use_standard_temperature=.true., &
-                            temperature=val(ind%model%t) &
-                            )
-                        temperatures(iheight)=level%temperature(i)-6.5e-3*(val(ind%model%h)-val(ind%model%hp))
-                      else
-                        do while(level%height(i+1).lt.heights(iheight).and. i.ne.size(level%level))
-                          i=i+1
-                        end do
-                        if(heights(iheight-1).lt. level%height(i)) then 
-                          pressures(iheight)= standard_pressure( &
-                              height=heights(iheight), &
-                              p_zero=100*dble(level%level(i)), &
-                              h_zero=level%height(i), &
-                              method="standard", &
-                              use_standard_temperature=.true.,  nan_as_zero=.true.)
-                        else
-                          pressures(iheight)= standard_pressure( &
-                              height=heights(iheight), &
-                              p_zero=pressures(iheight-1), &
-                              h_zero=heights(iheight-1), &
-                              method="standard", &
-                              use_standard_temperature=.true.,  nan_as_zero=.true.)
-                        endif
+                      ! if (iheight.eq.1) then
+                        ! pressures(iheight) = standard_pressure( &
+                            ! heights(iheight), &
+                            ! p_zero=val(ind%model%sp)+val(ind%model%rsp), &
+                            ! method="standard", &
+                            ! use_standard_temperature=.true., &
+                            ! temperature=val(ind%model%t) &
+                            ! )
+                        ! temperatures(iheight)=level%temperature(i)-6.5e-3*(val(ind%model%h)-val(ind%model%hp))
+                      ! else
+                        ! do while(level%height(i+1).lt.heights(iheight).and. i.ne.size(level%level))
+                          ! i=i+1
+                        ! end do
+                        ! if(heights(iheight-1).lt. level%height(i)) then 
+                          ! pressures(iheight)= standard_pressure( &
+                              ! height=heights(iheight), &
+                              ! p_zero=100*dble(level%level(i)), &
+                              ! h_zero=level%height(i), &
+                              ! method="standard", &
+                              ! use_standard_temperature=.true.,  nan_as_zero=.true.)
+                        ! else
+                          ! pressures(iheight)= standard_pressure( &
+                              ! height=heights(iheight), &
+                              ! p_zero=pressures(iheight-1), &
+                              ! h_zero=heights(iheight-1), &
+                              ! method="standard", &
+                              ! use_standard_temperature=.true.,  nan_as_zero=.true.)
+                        ! endif
 
-                        ! temperature linear interpolation
-                        if(i.lt.size(level%level)) then
-                          temperatures(iheight)= &
-                              level%temperature(i) &
-                              + (level%temperature(i+1)-level%temperature(i)) &
-                              /(level%height(i+1)-level%height(i))*(heights(iheight)-level%height(i))
-                        else
-                          temperatures(iheight)= &
-                              level%temperature(i) 
-                        endif
-                      endif
+                        ! ! temperature linear interpolation
+                        ! if(i.lt.size(level%level)) then
+                          ! temperatures(iheight)= &
+                              ! level%temperature(i) &
+                              ! + (level%temperature(i+1)-level%temperature(i)) &
+                              ! /(level%height(i+1)-level%height(i))*(heights(iheight)-level%height(i))
+                        ! else
+                          ! temperatures(iheight)= &
+                              ! level%temperature(i) 
+                        ! endif
+                      ! endif
 !
 !                      print '(10f10.1)', heights(iheight), &
 !                          level%height(i), pressures(iheight), &
@@ -766,17 +766,18 @@ subroutine convolve(site, date)
 !                          temperatures(iheight), &
 !                          level%temperature(i)
 
-                      ! if (iheight.eq.1) then
-                        ! val(3)= standard_pressure(height, p_zero=val(ind%model%sp), method="standard", use_standard_temperature=.true.)
-                      ! else
-                        ! val(3)= standard_pressure(height, p_zero=val(3),h_zero=height-info(igreen)%height%step, method="standard", use_standard_temperature=.true.)
-                      ! endif
+                      if (iheight.eq.1) then
+                        val(3)= standard_pressure(height, p_zero=val(ind%model%sp), method="full", use_standard_temperature=.true., &
+                            temperature=val(ind%model%t))
+                      else
+                        val(3)= standard_pressure(height, p_zero=val(3),h_zero=height-info(igreen)%height%step, method="full", use_standard_temperature=.true.)
+                      endif
                       result(ind%green%g3d) = result(ind%green%g3d) &
                           + geometry(psi=d2r(green_common(igreen)%distance(idist)), h=site%height, z=heights(iheight)) &
                           *( &
                           ! pressures(iheight)/(temperatures(iheight))  &
-                          pressures(iheight)/(standard_temperature(heights(iheight)))  &
-                      ! val(3)/standard_temperature(heights(iheight)) &
+                          ! pressures(iheight)/(standard_temperature(heights(iheight)))  &
+                      val(3)/standard_temperature(heights(iheight)) &
                           ! -standard_pressure(heights(iheight),p_zero=val(ind%model%rsp),method="standard", &
                           ! use_standard_temperature=.true., nan_as_zero=.true.)/(standard_temperature(heights(iheight)))  &
                           ) &

@@ -2,16 +2,16 @@
 # for example: OBJS  = libgrat.a
 #
 
-MYMODEL=ERA
+MYMODEL=NCEP
 dfsdfsf: $(OBJS) grat
 	grat \
-		-F $(MYMODEL) @SP, VIENNA@RSP , $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP!, $(MYMODEL)@VT! \
+		-F $(MYMODEL) @SP, VIENNA@RSP , NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP!, $(MYMODEL)@VT! \
 		-M2,3 -G@GN  \
 		-S j \
 		-H   \
 		-D 20100101:2010010623 \
-		-I 40@AS: 20@HS:0@HB: 62900@HE :1@DD :0.5@DE  \
-		-o tmp:free:time -q 1  -V  
+		-I 60@AS: 90@HS: 40000@HE :1@DD :0.5@DE  \
+		-o tmp2:free:time  -V  
 
 tmp: grat local
 	grat \
