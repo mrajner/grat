@@ -125,7 +125,11 @@ module mod_cmdline
       type(admitance_info) :: admitance
 
       logical :: method(3)
-      logical :: potential3d=.false.
+
+      ! point mass - method3d(1)=.true.
+      ! potential  - method3d(2)=.true.
+      ! cylinder   - method3d(3)=.true.
+      logical :: method3d(3) 
       logical :: dryrun
 
       logical :: result_total=.false., result_component=.true.

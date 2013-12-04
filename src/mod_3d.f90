@@ -61,12 +61,27 @@ real(dp) function potential (psi1,psi2, dazimuth, h, z1, z2)
     -l1+l2+l3-l4
 
   potential = -potential* dazimuth / (6.*r**2)
+end function
 
-  ! !##### Klugel
-  ! r = ((earth%radius + h)**2 + (earth%radius + z1/2+z2/2)**2 & 
-    ! - 2.*(earth%radius+h)*(earth%radius+z1/2+z2/2)*cos(psi1/2+psi2/2))**(0.5)
-  ! potential = -2.*pi*(z1-z2+sqrt(z1**2+r**2)-sqrt(z2**2+r**2))
+! =============================================================================
+!> all values in radians 
+! =============================================================================
+real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
+  use mod_constants, only: earth, pi
+  real(dp), intent(in) :: psi1, psi2, h, z1, z2, dazimuth
+  real(dp) :: r1, r2
 
+  r1=(earth%radius+h)*psi1
+  r2=(earth%radius+h)*psi2
+ ! cylinder = (sqrt((z1-h)**2+r2**2)-sqrt((z2-h)**2+r2**2))-(sqrt((z1-h)**2+r1**2)-sqrt((z2-h)**2+r1**2))
+ cylinder = -(sqrt((z1-h)**2+r1**2)-sqrt((z1-h)**2+r2**2) ) + (sqrt((z2-h)**2+r1**2)-sqrt((z2-h)**2+r2**2) )
+ if(z1.lt.h.and.z2.lt.h) then
+   cylinder=-cylinder
+ else if((z1-h)*(z2-h).lt.0) then
+   cylinder=0
+   return
+ endif
+ cylinder = dazimuth * cylinder
 end function
 
 ! =============================================================================

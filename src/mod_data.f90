@@ -792,7 +792,7 @@ subroutine check(status, success)
     if (present(success)) then
       success=.false.
     endif
-  stop "XXX"
+    stop "XXX"
     return
   else
     if (present(success)) then
