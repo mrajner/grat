@@ -479,6 +479,8 @@ function linspace(xmin, xmax, n)
     end do
 end function
 
+! ==============================================================================
+! ==============================================================================
 function logspace(xmin, xmax, n)
     real(dp), intent(in) :: xmin, xmax
     real(dp), dimension(:), allocatable :: logspace
@@ -562,4 +564,26 @@ function countsubstring(s1, s2) result(c)
       p = p + posn + len(s2)
     end do
 end function
+
+! sort integers in reverse order
+! http://rosettacode.org/wiki/Sorting_algorithms/Bubble_sort#Fortran
+SUBROUTINE Bubble_Sort(a)
+  integer, intent(in out), dimension(:) :: a
+  integer :: temp
+  integer :: i, j
+  logical :: swapped = .true.
+ 
+  do j = size(a)-1, 1, -1
+    swapped = .false.
+    do i = 1, j
+      if (a(i) < a(i+1)) then
+        temp = a(i)
+        a(i) = a(i+1)
+        a(i+1) = temp
+        swapped = .true.
+      end if
+    end do
+    if (.not. swapped) exit
+  end do
+END SUBROUTINE Bubble_Sort
 end module

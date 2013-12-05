@@ -21,6 +21,7 @@ program value_check
   integer(2)   :: iok
   integer(2)   :: ilevel, start_level
 
+
   call cpu_time(cpu(1))
 
   call intro ( &
@@ -65,7 +66,7 @@ program value_check
     do i = 1 , size(model)
       if (model(i)%if) then
         if ( &
-            .not.( model(i)%autoloadname.eq."ERA" &
+            .not.(model(i)%autoloadname.eq."ERA" &
             .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
             .and.(j.eq.1.and. model(i)%autoload &
             .or. (  &
@@ -154,6 +155,7 @@ program value_check
         if (output%height) then
           write (output%unit, '(f10.3$)') site(i)%height
         endif
+
         if (output%level.and. allocated(level%level)) then
           write (output%unit, '(i6$)') level%level(ilevel)
         elseif(output%level) then
@@ -168,12 +170,15 @@ program value_check
               use_standard_temperature=.true., &
               method = model(ind%model%tp)%name &
               ) 
+
           if (output%rho) then
             val(ind%model%tp)=val(ind%model%tp)/(R_air * standard_temperature(val(ind%model%gp)))
           endif
+
           val(ind%model%tp)= &
               variable_modifier(val(ind%model%tp),model(ind%model%tp)%datanames(1))
         endif
+
         if (ind%model%tpf.ne.0) then
           if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t].eq.0)) &
               call print_warning("not enough with @TPF")
@@ -208,7 +213,7 @@ program value_check
         ! endif
 
         write (output%unit , "("// output%form // '$)') val
-
+        
         if (output%unit.ne.output_unit.and..not.quiet) then 
           call cpu_time(cpu(2))
           call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
@@ -238,9 +243,10 @@ program value_check
 
   call cpu_time(cpu(2))
   if (output%unit.ne.output_unit.and..not.quiet) then 
-    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
+    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1), every=1)
     close(output_unit) 
   endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
+
 end program

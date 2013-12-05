@@ -65,7 +65,7 @@ program grat
   use mod_site, only: print_site_summary, site
   use mod_cmdline
   use mod_admit, only: admit
-  use mod_3d, only: point_mass
+  use mod_utilities, only: Bubble_Sort
 
   implicit none
   real(dp) :: cpu(2)
@@ -80,7 +80,7 @@ program grat
   call intro ( &
     program_calling = "grat", &
       version = "pre-alpha", &
-      accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJ", &
+      accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJQ", &
       cmdlineargs=.true.)
 
     start = 0
@@ -103,7 +103,7 @@ program grat
       if (method(1)) then
         write (output%unit,'(a13)',advance='no'), "G1D"
       endif
-      if (method(2)) then
+      if (method(2).or.method(3)) then
         if (result_component) then
           do i = 1, size(green)
             if (green(i)%dataname.eq."GE") then
@@ -117,7 +117,7 @@ program grat
             endif
           enddo
           if (inverted_barometer.and.non_inverted_barometer) then
-                write (output%unit,'(a13$)'), "GE_NIB"
+            write (output%unit,'(a13$)'), "GE_NIB"
           endif
         endif
         if (result_total) write (output%unit,'(a13)',advance='no'), "G2D"
@@ -148,7 +148,7 @@ program grat
       if (idate.ge.1) then 
         if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
           if (first_waning) call print_warning  &
-              ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
+            ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
           first_waning=.false.
           cycle
         endif
@@ -159,18 +159,34 @@ program grat
         do i = 1, size(model)
           if(model(i)%if) then
             select case (model(i)%dataname)
-            case ("SP", "T")
+            case ("SP", "T", "GP", "VT") 
               if ( &
-                  idate.eq.1.and.model(i)%autoload.and.model(i)%ncid.eq.0  &
-                  .or.(model(i)%autoload &
-                  .and..not.date(idate)%date(1).eq.date(idate-1)%date(1)) &
-                  .and.idate.ne.1 &
-                  ) then
-                call model_aliases(model(i), year= date(idate)%date(1))
+                .not.(model(i)%autoloadname.eq."ERA" &
+                .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
+                .and.(idate.eq.1.and. model(i)%autoload &
+                .or. (  &
+                model(i)%autoload &
+                .and. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
+                ) &
+                ) &
+                ) then
+                call model_aliases(model(i), year=date(idate)%date(1))
+              else if ( &
+                idate.eq.1.and. model(i)%autoload &
+                .or. (  &
+                model(i)%autoload &
+                .and. .not.( &
+                date(idate)%date(1).eq.date(idate-1)%date(1) &
+                .and.date(idate)%date(2).eq.date(idate-1)%date(2) &
+                ) &
+                ) &
+                ) then
+                call model_aliases( &
+                  model(i), year=date(idate)%date(1), month=date(idate)%date(2))
               endif
               if (size(date).eq.0.and.model(i)%exist) then
                 call get_variable (model(i))
-              elseif (model(i)%exist) then
+                elseif (model(i)%exist) then
                 call get_variable (model(i), date = date(idate)%date)
               endif
             endselect
@@ -178,16 +194,25 @@ program grat
         enddo
         if (any(.not.model%exist).and..not.output%nan) cycle
 
+
+        if (level%all.and..not.allocated(level%level)) then
+          allocate(level%level(size(model(ind%model%gp)%level)))
+          level%level=model(ind%model%gp)%level
+        endif
+
+        ! sort levels for 3D method
+        call Bubble_Sort(level%level)
+
         ! if ocean mass should be conserved (-O C)
         if (ocean_conserve_mass) then
           if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
             if(size(date).eq.0) then
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                  inverted_landsea_mask = inverted_landsea_mask)
+                inverted_landsea_mask = inverted_landsea_mask)
             else
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                  date=date(idate)%date, &
-                  inverted_landsea_mask = inverted_landsea_mask)
+                date=date(idate)%date, &
+                inverted_landsea_mask = inverted_landsea_mask)
             endif
           endif
         endif
@@ -204,56 +229,48 @@ program grat
 
         if (idate.gt.0) then
           write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
-              date(idate)%mjd, date(idate)%date
+            date(idate)%mjd, date(idate)%date
         endif
         write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
-            site(isite)%name, &
-            site(isite)%lat,  &
-            site(isite)%lon,  &
-            site(isite)%height 
+          site(isite)%name, &
+          site(isite)%lat,  &
+          site(isite)%lon,  &
+          site(isite)%height 
         if (method(1)) then 
           write (output%unit, "("// output%form // '$)'), &
-              admit( &
-              site(isite), &
-              date=date(idate)%date &
-              )
+            admit( &
+            site(isite), &
+            date=date(idate)%date &
+            )
         endif
 
-        if (method(2)) then 
+        if (method(2).or.method(3)) then 
           ! perform convolution
-          if (idate.gt.0) then
-            call convolve (site(isite), date = date(idate))
-          else
-            call convolve (site(isite))
-          endif
+          call convolve (site(isite), date = date(idate))
         endif
-
-        if (method(3)) then 
-         call point_mass (site(isite), date = date(idate))
-        endif
-
-
 
         write(output%unit,*)
 
-        if (output%unit.ne.output_unit.and..not.quiet) then 
+        if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then 
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
-              100*iprogress/(max(size(date),1) & 
-              *max(size(site),1)),             & 
-              cpu(2)-cpu(1))
+            100*iprogress/(max(size(date),1) & 
+            *max(size(site),1)),             & 
+            cpu(2)-cpu(1), & 
+            every=quiet_step &
+            )
         endif
       enddo
     enddo
 
     ! execution time-stamp
     call cpu_time(cpu(2))
-    if (output%unit.ne.output_unit.and..not.quiet) then 
-      call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1))
+    if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then 
+      call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1), every=1)
       close(output_unit) 
     endif
     write(log%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
     if (output%time) write(output%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
     write(log%unit, form_separator)
-end program 
+  end program 

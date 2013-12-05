@@ -45,6 +45,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_site(cmd_line_entry)
   case ("-I")
     call parse_info(cmd_line_entry)
+  case ("-Q")
+    optimize=.true.
+    write(log%unit, form%i3) "optimize"
   case ("-L")
     call parse_moreverbose(cmd_line_entry)
   case ("-B")
@@ -96,6 +99,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         method(2) =.true.
       case ("3D", "3")
         method(3) =.true.
+        if (cmd_line_entry%field(i)%subfield(2)%name.eq."potential") then
+          potential3d=.true.
+        endif
       case default
         call print_warning("method not known" // cmd_line_entry%field(i)%subfield(1)%name)
       end select
@@ -163,6 +169,13 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (.not.log%sparse) write(log%unit, form%i2) "warnings"
   case ('-q')
     quiet=.true.
+    if (cmd_line_entry%field(1)%full.ne."") then
+      read (cmd_line_entry%field(1)%full,*) quiet_step
+    else
+      quiet_step=0
+    endif
+    write(log%unit,form%i2) &
+        "quiet step", quiet_step
   case ('-U')
     select case (cmd_line_entry%field(1)%subfield(1)%name)
     case ("n","N")
@@ -261,6 +274,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
       endif
     enddo
   endif
+
   if (.not.any(cmd_line%switch.eq.'-I')) then
     call parse_info()
   endif
@@ -321,9 +335,12 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   enddo
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command parsing:"
+
   do i=1, size(cmd_line)
     call parse_option(cmd_line(i), accepted_switches)
+
   enddo
+
   call get_index()
   call check_arguments(program_calling=program_calling)
 end subroutine
@@ -332,10 +349,11 @@ end subroutine
 ! =============================================================================
 subroutine check_arguments (program_calling)
   use mod_date, only: date
-  use mod_data, only: model
+  use mod_data, only: model, parse_level
   use mod_cmdline, only: cmd_line, method, quiet, ind, transfer_sp, &
       inverted_barometer
   use mod_site, only: gather_site_model_info
+  use mod_green, only: parse_green
   character(len=*), intent(in) :: program_calling
   integer :: i
 
@@ -351,6 +369,12 @@ subroutine check_arguments (program_calling)
     endif
     if (method(2) .and. .not.any(cmd_line%switch.eq.'-G')) then
       call print_warning("green_missing", error=.true.)
+    endif
+    if (method(3) .and. .not.any(cmd_line%switch.eq.'-G')) then
+      call parse_green()
+    endif
+    if (method(3) .and. .not.any(cmd_line%switch.eq.'-J')) then
+      call parse_level()
     endif
     if ((method(2) &
         .and. inverted_barometer) &
@@ -467,7 +491,6 @@ subroutine parse_info (cmd_line_entry)
   endif
 
   if (present(cmd_line_entry)) then
-
     allocate (info(size(cmd_line_entry%field)))
     do i = 1, size(cmd_line_entry%field)
       write(log%unit, form%i2), "Range:", i
@@ -487,18 +510,26 @@ subroutine parse_info (cmd_line_entry)
               call print_warning("changing -I@DE to 180")
               info(i)%distance%stop = 180 
             endif
-          case ("AB")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
-          case ("AE")
-            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
           case ("DS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
           case ("DD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
+          case ("AB")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
+          case ("AE")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
           case ("AD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
           case ("AS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
+          case ("HB")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%start
+          case ("HE")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%stop
+          case ("HD")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%denser
+          case ("HS")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%step
           endselect
         else 
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -510,16 +541,16 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
       write(log%unit, &
-        "("//form%t3//" &
-        'DB:',f7.2, & 
-        '|DE:',f8.3, &
-        '|I:',a, &
-        '|DD:',i2, &
-        '|DS:',f6.2, &
-        )"), &
-        info(i)%distance%start, info(i)%distance%stop, &
-        info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step
+          "("//form%t3//" &
+          'DB:',f7.2, & 
+          '|DE:',f8.3, &
+          '|I:',a, &
+          '|DD:',i2, &
+          '|DS:',f6.2, &
+          )"), &
+          info(i)%distance%start, info(i)%distance%stop, &
+          info(i)%interpolation, info(i)%distance%denser, &
+          info(i)%distance%step
     enddo
   else
     allocate(info(1))
@@ -534,14 +565,21 @@ subroutine info_defaults(info)
   type(info_info),intent(inout) :: info
 
   info%interpolation="n"
+
   info%distance%start=0.
   info%distance%stop=180.
-  info%azimuth%start=0.
-  info%azimuth%stop=360.
   info%distance%denser=1
   info%distance%step=0
+
+  info%azimuth%start=0.
+  info%azimuth%stop=360.
   info%azimuth%step=0
   info%azimuth%denser=1
+
+  info%height%start=0.
+  info%height%stop=60000.
+  info%height%step=5
+  info%height%denser=1
 
 end subroutine
 
@@ -560,7 +598,7 @@ subroutine print_version (program_calling, version)
   write(log%unit, form_inheader ), version
   write(log%unit, form_inheader ), "compiled on "//__DATE__
   write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
   write(log%unit, form_inheader ), 'Warsaw University of Technology'
@@ -734,6 +772,8 @@ subroutine get_index()
       ind%moreverbose%n = i
     case ("j")
       ind%moreverbose%j = i
+    case ("v")
+      ind%moreverbose%v = i
     end select
   enddo
   do i = 1, size(green)

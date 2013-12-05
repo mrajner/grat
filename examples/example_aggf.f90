@@ -30,11 +30,8 @@ program example_aggf
   call mass_vs_height('/home/mrajner/src/grat/examples/mass_vs_height.dat')
   call aggf_resp_hmax ('/home/mrajner/src/grat/examples/aggf_resp_zmax.dat')
   call aggf_resp_dz ('/home/mrajner/src/grat/examples/aggf_resp_dz.dat')
-  !  call aggf_resp_t ()
-  !  call aggf_resp_h ()
-  !  call aggfdt_resp_dt ()
-
-
+  call aggf_resp_t ('/home/mrajner/src/grat/examples/aggf_resp_t.dat')
+  call aggf_resp_h ('/home/mrajner/src/grat/examples/aggf_resp_h.dat')
 
   call cpu_time(cpu(2))
   print '("Total time: ",f8.3,x,"[s]")', cpu(2)-cpu(1)
@@ -177,7 +174,6 @@ subroutine compute_tabulated_green_functions (filename, method, dz, &
   'GN[microGal/hPa]'     , 'GN/dT[microGal/hPa/K]' ,               & 
   'GN/dh[microGal/hPa/m]', 'GN/dz[microGal/hPa/m]'
 
-  !file_unit=6 !testing
   do i= 1, size(green(1)%distance)
     write(file_unit, '(13f15.6)'), &
     green(1)%distance(i), &
@@ -196,25 +192,25 @@ end subroutine
 subroutine aggf_resp_fels_profiles (filename)
   use mod_constants, only: dp
   use mod_aggf, only : aggf
-  use mod_green, only: read_green, green
+  use mod_green, only: green
   character (len=255) ,dimension (6) :: fels_types
   integer :: i , j, file_unit
-  character(*), intent(in) :: filename
+  character(*), intent(in), optional :: filename
 
-  if (file_exists(filename)) then
-    return
+  if (present (filename)) then
+    if (file_exists(filename)) return
+    open ( newunit = file_unit , &
+      file =filename , &
+      action  = 'write' )
   else
-    print *, "aggf_resp_fels_profiles -->", filename
+    file_unit = output_unit
   endif
-  open  ( newunit = file_unit, &
-    file    = filename, &
-    action  = 'write' &
-    )
+    print *, "aggf_resp_fels_profiles -->", filename
 
   ! Get the spherical distances from Merriam92
   call get_green_distances()
 
-  ! All possible optional arguments for standard_temperature
+  ! ! All possible optional arguments for standard_temperature
   fels_types = (/ &
     "US1976"             , "tropical",   &
     "subtropical_summer" , "subtropical_winter" , &
@@ -226,8 +222,13 @@ subroutine aggf_resp_fels_profiles (filename)
 
   ! print results
   do i = 1, size(green(1)%distance)
-    write(file_unit, '(<size(fels_types)+1>f20.6)'), &
-      green(1)%distance(i) , (aggf (d2r(green(1)%distance(i)), fels_type=fels_types(j)), j = 1, size(fels_types) )
+    write(file_unit, '(<size(fels_types)+1>f20.5)'), &
+      green(1)%distance(i), &
+      (aggf( &
+      d2r(green(1)%distance(i)), &
+      method="standard", &
+      fels_type=fels_types(j)), j=1,size(fels_types) &
+      )
   enddo
   close(file_unit)
 end subroutine
@@ -282,376 +283,336 @@ subroutine compare_fels_profiles (filename)
   close(file_unit)
 end subroutine
 
-!! ============================================================================
-!!> Computes AGGF for different site height (h)
-!! ============================================================================
-!subroutine aggf_resp_h ()
+! ============================================================================
+!> Computes AGGF for different site height (h)
+! ============================================================================
+subroutine aggf_resp_h (filename)
 !  use mod_constants, only : dp
-!  use mod_aggf  !, only : read_tabulated_green , compute_aggf
-!  real(dp), dimension(:,:), allocatable :: table , results
-!  integer :: i, j, file_unit , ii
-!  real(dp) :: val_aggf
+  use mod_green, only: green
+ use mod_aggf, only : aggf
+ real(dp) :: heights(6)
+ character(*), intent(in), optional :: filename
+ integer :: file_unit, i, ii, j
+ real(dp) :: aux
 
-!  ! Get the spherical distances from Merriam92
-!  call read_tabulated_green ( table , author = "merriam")
+ if (present (filename)) then
+   if (file_exists(filename)) return
+   open ( newunit = file_unit , &
+       file =filename , &
+       action  = 'write' )
+ else
+   file_unit = output_unit
+ endif
 
-!  ! Specify the output table and put station height in first row
-!  allocate ( results ( 0 : size (table(:,1)) , 7 ) )
-!  results(0,1) = 1./0     ! Infinity in first header
-!  results(0,3) = 0.0      !   0 m
-!  results(0,3) = 0.001    !   1 m
-!  results(0,4) = 0.01     !  10 m
-!  results(0,5) = 0.1      ! 100 m 
-!  results(0,6) = 1.       !   1 km
-!  results(0,7) = 10.      !  10 km
+ call get_green_distances()
 
-!  ! write results to file
-!  open (                                      &
-!    newunit = file_unit,                      &
-!    file    = '../examples/aggf_resp_h.dat',  &
-!    action  = 'write'                         &
-!    )
+ heights=[0.,1.,10.,100.,1000.,10000.]
 
-!  write (file_unit, '(8(F20.8))' ) results (0, :) 
-!  do i =1 , size (table(:,1))
-!    ! denser sampling 
-!    do ii = 0,8 
-!      results ( i , 1 )  = table(i,1) + ii * (table (i+1,1) - table (i,1)) / 9. 
-!      ! only compute for small spherical distances
-!      if (results (i, 1) .gt. 0.2 ) exit
-!      write (file_unit, '(F20.7,$)') , results (i,1)
-!      do j =  2 , size(results(1,: ) )
-!        call compute_aggf(results(i,1) , val_aggf, dh=dble(0.0001), h =results(0,j))
-!        results (i,j) = val_aggf
-!        write (file_unit,'(f20.7,1x,$)') results(i,j)
-!      enddo
-!      write (file_unit,*)
-!    enddo
-!  enddo
-!  close (file_unit)
-!end subroutine
 
-!! ============================================================================
-!!> This computes AGGF for different surface temperature
-!!!
-!!! \author M. Rajner
-!!! \date 2013-03-18
-!! ============================================================================
-!subroutine aggf_resp_t ()
-!  use mod_constants, only : dp , atmosphere
-!  use mod_aggf !, only : read_tabulated_green , compute_aggf
-!  real(dp), dimension(:,:), allocatable :: table , results
-!  integer :: i, j , file_unit
-!  real(dp) :: val_aggf
-
-!  ! read spherical distances from Merriam
-!  call read_tabulated_green ( table , "merriam" )
-
-!  ! Header in first row with surface temperature [K]
-!  allocate ( results (0 : size (table(:,1)) , 4 ) )
-!  results(0,1) = 1./0
-!  results(0,2) = atmosphere%temperature%standard +   0. 
-!  results(0,3) = atmosphere%temperature%standard +  15.0 
-!  results(0,4) = atmosphere%temperature%standard + -45.0 
-!  do i =1 , size (table(:,1))
-!    results ( i , 1 )  = table(i,1)
-!    do j =  2 , 4
-!    call compute_aggf ( results (i , 1 ) , val_aggf, dh = dble(0.00001), t_zero = results(0, j) )
-!    results (i,j) = val_aggf
-!    enddo
-!  enddo
-
-!  ! Print results to file
-!  open ( newunit = file_unit , &
-!         file    = '../examples/aggf_resp_t.dat' , &
-!         action  = 'write')
-!  write (file_unit , '(4F20.5)' ) &
-!    ( (results (i,j) , j=1,4) , i = 0, size ( table (:,1) ) )
-!  close (file_unit)
-!end subroutine
-
-! ============================================================================
-!> \brief This computes AGGFDT for different dT
-! ============================================================================
-subroutine aggfdt_resp_dt (filename)
-  integer :: file_unit, i, j
-  character(*) , intent (in) , optional:: filename
-
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    ! open ( newunit = file_unit , &
-        ! file =filename , &
-        ! action  = 'write' )
-  ! else
-    file_unit = output_unit
-  endif
-  call get_green_distances()
-
- ! Header in first row with surface temperature [K]
-!  allocate ( results (0 : size (table(:,1)) , 6 ) )
-!  results(0,1) = 1./0
-!  results(0,2) = 1.
-!  results(0,3) = 5. 
-!  results(0,4) = 10. 
-!  results(0,5) = 20. 
-!  results(0,6) = 50. 
-!  do i =1 , size (table(:,1))
-!    results ( i , 1 )  = table(i,1)
-!    do j =  2 , 6
-!      call compute_aggfdt ( results (i , 1 ) , val_aggf, results(0, j) )
-!      results (i,j) = val_aggf
-!    enddo
-!  enddo
-
-!  write (file_unit , '(6F20.5)' ) &
-!    ( (results (i,j) , j=1,6) , i = 0, size ( table (:,1) ) )
- close (file_unit)
-end subroutine
-
-! ============================================================================
-!> \brief This computes AGGF for different height integration step 
-! ============================================================================
-subroutine aggf_resp_dz (filename)
-  use mod_green
-  use mod_aggf, only: aggf
-  real(dp), dimension(:,:), allocatable :: results
-  real(dp), dimension(:), allocatable :: dzs
-
-  integer :: file_unit, i, j
-  character(*) , intent (in) , optional:: filename
-
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    open ( newunit = file_unit , &
-        file =filename , &
-        action  = 'write' )
-  else
-    file_unit = output_unit
-  endif
-
-  call get_green_distances()
-
-  allocate(dzs(5))
-  dzs=(/ 0.01, 0.1, 1., 10., 100./)
-
-  allocate (results(size(green(1)%distance(1:29)),size(dzs)))
-  results = 0.
-
-  do i = 1 , size (results (:,1))
-    do j=1,size(dzs)
-      results(i,j)=i+j
-      results(i,j)=aggf(d2r(green(1)%distance(i)), &
-          method="standard", &
-          dz=dzs(j))
-    enddo
-    ! compute relative errors from column 2 for all dz with respect to column 1
-    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
-  enddo
-
-  write(file_unit, '(a14,<size(dzs)>f14.4)') "psi_dz", dzs
-  write(file_unit, '(f14.5,<size(dzs)>e14.4)') &
-      (green(1)%distance(i), results(i,:), i=1,size(results(:,1)))
-  close(file_unit)
-end subroutine
-
-! ============================================================================
-!> \brief This computes standard atmosphere parameters
-!!
-!! It computes temperature, gravity, pressure, pressure (simplified formula)
-!! density for given height
-! ============================================================================
-subroutine standard1976(filename)
-  use, intrinsic :: iso_fortran_env
-  use mod_utilities, only: file_exists
-  use mod_constants, only : dp, R_air
-  use mod_atmosphere, only: &
-      standard_temperature, standard_pressure , &
-      standard_gravity,     standard_density
-  integer :: file_unit
-  character(*) , intent (in) , optional:: filename
-  real(dp) :: height
-
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    open ( newunit = file_unit , &
-        file =filename , &
-        action  = 'write' )
-  else
-    file_unit = output_unit
-  endif
-
-  print * , "standard atmosphere --->", filename
-  ! print header
-  write ( file_unit , '(6(a15))' ) &
-      'height', 'T' , 'g' , 'p', 'rho'
-  do height=0.,68000. , 1000
-    ! print results to file
-    write( file_unit,'(5f15.5, e12.3)'), & 
-        height/1000.,                        & 
-        standard_temperature(height),        & 
-        standard_gravity(height),            & 
-        standard_pressure(height, method="standard")/100.,      &  ! --> hPa
-        standard_pressure(height, method="standard") &
-        /(R_air*standard_temperature(height))
-  enddo
-  close( file_unit )
-end subroutine
-
-! ============================================================================
-!> \brief This computes relative values of AGGF for different atmosphere
-!! height integration
-! ============================================================================
-subroutine aggf_resp_hmax (filename)
-  use mod_utilities, only: file_exists, logspace, d2r
-  ! use mod_constants, only : dp
-  use mod_aggf, only : aggf
-  real (dp) , dimension (2) :: psi
-  real (dp) , dimension (:)   , allocatable :: heights 
-  real (dp) , dimension (:,:) , allocatable :: results
-  integer :: file_unit, n, i, j
-  character(*) , intent (in) , optional:: filename
-
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    open ( newunit = file_unit , &
-        file =filename , &
-        action  = 'write' )
-  else
-    file_unit = output_unit
-  endif
-
-  print * , "standard atmosphere ---> ", filename
-  psi=(/0.0001, 10 /)
-
-  n=90
-  allocate(heights(n))
-
-  heights= logspace(real(1e-1,dp), real(60000,dp),n) 
-
-  allocate (results(size(heights), size(psi))) 
-  results=0
-
-  do j=1, size(heights)
-    do i = 1, size(psi)
-      results(j,i) =aggf(d2r(psi(i)),method="standard", zmax=heights(j))
+ write (file_unit, "(a12,6(x,'h',f0.0))") "distance", heights(1:6)
+  do i =1 , size (green(1)%distance)
+    ! denser sampling 
+    do ii = 0,8 
+      aux  = green(1)%distance(i) + ii * (green(1)%distance(i+1) - green(1)%distance(i)) / 9. 
+      if (aux.gt.0.2 ) exit
+      write (file_unit, '(F12.6$)') , aux
+      do j =  1 , size(heights)
+        write (file_unit,'(f12.4,1x,$)') aggf(d2r(aux), method="standard", h=heights(j))
+      enddo
+      write (file_unit,*)
     enddo
   enddo
-  do i = 1, size(psi)
-    results(:,i)=results(:,i)/results(size(heights),i) * 100. ! in %
-  enddo
+  close (file_unit)
+ end subroutine
 
-  write(file_unit , '(a14,SP,100f14.5)' ),"#heght\psi", (psi(j) , j= 1,size(psi))
-  do i=1, size (results (:,1))
-    write(file_unit, '(100f14.4)' ) heights(i)/1000, (results(i,j), j = 1, size(psi) )
-  enddo
-  close(file_unit)
-end subroutine
+ ! ============================================================================
+ !> This computes AGGF for different surface temperature
+ !!
+ !! \author M. Rajner
+ !! \date 2013-03-18
+ ! ============================================================================
+ subroutine aggf_resp_t (filename)
+   use mod_green, only: green
+   ! use mod_constants, only : dp , atmosphere
+   use mod_aggf, only : aggf
+   real(dp), dimension(:,:), allocatable :: results
+   integer :: i, j
+   character(*), intent(in), optional :: filename
+   integer :: file_unit
+   real(dp) :: temperatures(3)
 
-! ============================================================================
-! ============================================================================
-subroutine aggf_thin_layer (filename)
-  use, intrinsic:: iso_fortran_env
-  use mod_constants, only : dp , pi
-  use mod_aggf, only : GN_thin_layer
-  use mod_utilities, only: d2r, file_exists
-  use mod_green
+   if (present (filename)) then
+     if (file_exists(filename)) return
+     open ( newunit = file_unit , &
+         file =filename , &
+         action  = 'write' )
+   else
+     file_unit = output_unit
+   endif
+   call get_green_distances()
 
-  integer :: file_unit , i
-  character(*) , intent (in) , optional:: filename
+   allocate(results(size(green(1)%distance), 3))
 
-  if (file_exists(filename)) return
+   temperatures=[0., 15., -45]
 
-  call get_green_distances()
+   write(file_unit, '(4a12)') "distance","T0+0", "T0+15", "T0-45"
+   do i = 1 , size(green(1)%distance)
+     write(file_unit, '(f12.5$)') green(1)%distance(i)
+     do j=1, size(temperatures)
+       write(file_unit, '(f12.5$)') &
+           aggf(d2r(green(1)%distance(i)), method="standard", t_zero=temperatures(j))
+     enddo
+     write(file_unit, *)
+   enddo
+   close (file_unit)
+ end subroutine
 
-  write(*,*), "aggf_thin_layer ---> ",filename
-  if (present (filename)) then
-    open (newunit = file_unit , &
-        file =filename , &
-        action  = 'write' )
-  else
-    file_unit = output_unit
-  endif
-  do i = 1 , size (green(1)%distance)
-    write(file_unit,*) green(1)%distance(i) ,green(1)%data(i), &
-        GN_thin_layer (d2r(green(1)%distance(i)))
-  enddo
-end subroutine
+ ! ============================================================================
+ !> \brief This computes AGGF for different height integration step 
+ ! ============================================================================
+ subroutine aggf_resp_dz (filename)
+   use mod_green
+   use mod_aggf, only: aggf
+   real(dp), dimension(:,:), allocatable :: results
+   real(dp), dimension(:), allocatable :: dzs
 
-subroutine admit_niebauer(filename)
-  use mod_constants
-  use mod_utilities
-  real(dp) :: a
-  real(dp) :: theta
-  real(dp) :: b , f
-  character(*), intent(in) :: filename
-  integer::iun
+   integer :: file_unit, i, j
+   character(*) , intent (in) , optional:: filename
 
-  if (file_exists(filename)) return
-  print * , "admit_niebauer ---> ", filename
+   if (present (filename)) then
+     if (file_exists(filename)) return
+     open ( newunit = file_unit , &
+         file =filename , &
+         action  = 'write' )
+   else
+     file_unit = output_unit
+   endif
 
-  open (newunit=iun, file=filename, action = 'write')
+   call get_green_distances()
 
-  f=earth%radius/9500
-  do theta=0.5 , 180, 0.01
-    b= 2*f*sin(d2r(theta/2))
-    a= 2*pi * gravity%constant / earth%gravity%mean* &
-        (1 - b/(2*f) -1/b + 2/f)
-    write(iun, *) , theta , a *1e10
-  enddo
-end subroutine
+   allocate(dzs(5))
+   dzs=(/ 0.01, 0.1, 1., 10., 100./)
 
-! =============================================================================
-!> compute green newtonian function
-! =============================================================================
-subroutine green_newtonian_compute(filenames)
-  use mod_utilities, only: file_exists
-  use mod_green
-  use mod_utilities, only : logspace , d2r
-  integer:: iun , n , i , j , k
-  real (dp) , allocatable , dimension(:) :: psi , h
-  character(12) , allocatable , dimension(:) :: column_name
-  character(*) ,  optional :: filenames(3)
-  character(20) :: method
-  character(40) :: prefix
+   allocate (results(size(green(1)%distance(1:29)),size(dzs)))
+   results = 0.
 
-  prefix="/home/mrajner/src/grat/examples/"
+   do i = 1 , size (results (:,1))
+     do j=1,size(dzs)
+       results(i,j)=i+j
+       results(i,j)=aggf(d2r(green(1)%distance(i)), &
+           method="standard", &
+           dz=dzs(j))
+     enddo
+     ! compute relative errors from column 2 for all dz with respect to column 1
+     results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
+   enddo
 
-  iun = 6
+   write(file_unit, '(a14,<size(dzs)>f14.4)') "psi_dz", dzs
+   write(file_unit, '(f14.5,<size(dzs)>e14.4)') &
+       (green(1)%distance(i), results(i,:), i=1,size(results(:,1)))
+   close(file_unit)
+ end subroutine
 
-  n = 9 * 50
-  allocate(psi(n))
-  psi = logspace(real(1e-6,dp) , real(180,dp),n) 
+ ! ============================================================================
+ !> \brief This computes standard atmosphere parameters
+ !!
+ !! It computes temperature, gravity, pressure, pressure (simplified formula)
+ !! density for given height
+ ! ============================================================================
+ subroutine standard1976(filename)
+   use, intrinsic :: iso_fortran_env
+   use mod_utilities, only: file_exists
+   use mod_constants, only : dp, R_air
+   use mod_atmosphere, only: &
+       standard_temperature, standard_pressure , &
+       standard_gravity,     standard_density
+   integer :: file_unit
+   character(*) , intent (in) , optional:: filename
+   real(dp) :: height
 
-  allocate(h(11))
-  h = [ 0. , 1. , 10. , 100., 1000. , 10000., -1., -10. , -100., -1000., -10000.]
+   if (present (filename)) then
+     if (file_exists(filename)) return
+     open ( newunit = file_unit , &
+         file =filename , &
+         action  = 'write' )
+   else
+     file_unit = output_unit
+   endif
 
-  allocate(column_name(size(h)))
-  write(column_name, '(f0.0)' ) (h(i),i=1,11)
+   print * , "standard atmosphere --->", filename
+   ! print header
+   write ( file_unit , '(6(a15))' ) &
+       'height', 'T' , 'g' , 'p', 'rho'
+   do height=0.,68000. , 1000
+     ! print results to file
+     write( file_unit,'(5f15.5, e12.3)'), & 
+         height/1000.,                        & 
+         standard_temperature(height),        & 
+         standard_gravity(height),            & 
+         standard_pressure(height, method="standard")/100.,      &  ! --> hPa
+         standard_pressure(height, method="standard") &
+         /(R_air*standard_temperature(height))
+   enddo
+   close( file_unit )
+ end subroutine
 
-  do k =1,3
-    if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
-    print *, "green_newtonian_compute ---> " , trim(prefix)//trim(filenames(k))
-    open (newunit=iun, file=trim(prefix)//filenames(k), action = 'write')
+ ! ============================================================================
+ !> \brief This computes relative values of AGGF for different atmosphere
+ !! height integration
+ ! ============================================================================
+ subroutine aggf_resp_hmax (filename)
+   use mod_utilities, only: file_exists, logspace, d2r
+   ! use mod_constants, only : dp
+   use mod_aggf, only : aggf
+   real (dp) , dimension (2) :: psi
+   real (dp) , dimension (:)   , allocatable :: heights 
+   real (dp) , dimension (:,:) , allocatable :: results
+   integer :: file_unit, n, i, j
+   character(*) , intent (in) , optional:: filename
 
-    method = filenames(k)(17:index(filenames(k),".")-1)
-    write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
-    write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
-        (green_newtonian(d2r(psi(i)), h= h(j), method = method), j=1,size(h)) , &
-        i=1,size(psi))
-    close(iun)
-  enddo
-end subroutine
+   if (present (filename)) then
+     if (file_exists(filename)) return
+     open ( newunit = file_unit , &
+         file =filename , &
+         action  = 'write' )
+   else
+     file_unit = output_unit
+   endif
 
-! =============================================================================
-! =============================================================================
-subroutine get_green_distances()
-  use mod_green
-  if (allocated(green)) deallocate(green)
-  allocate (green(1))
-  green(1)%name="merriam"
-  green(1)%column=[1, 2]
-  green(1)%dataname="GN"
-  call read_green(green(1))
-end subroutine
+   print * , "standard atmosphere ---> ", filename
+   psi=(/0.0001, 10 /)
+
+   n=90
+   allocate(heights(n))
+
+   heights= logspace(real(1e-1,dp), real(60000,dp),n) 
+
+   allocate (results(size(heights), size(psi))) 
+   results=0
+
+   do j=1, size(heights)
+     do i = 1, size(psi)
+       results(j,i) =aggf(d2r(psi(i)),method="standard", zmax=heights(j))
+     enddo
+   enddo
+   do i = 1, size(psi)
+     results(:,i)=results(:,i)/results(size(heights),i) * 100. ! in %
+   enddo
+
+   write(file_unit , '(a14,SP,100f14.5)' ),"#heght\psi", (psi(j) , j= 1,size(psi))
+   do i=1, size (results (:,1))
+     write(file_unit, '(100f14.4)' ) heights(i)/1000, (results(i,j), j = 1, size(psi) )
+   enddo
+   close(file_unit)
+ end subroutine
+
+ ! ============================================================================
+ ! ============================================================================
+ subroutine aggf_thin_layer (filename)
+   use, intrinsic:: iso_fortran_env
+   use mod_constants, only : dp , pi
+   use mod_aggf, only : GN_thin_layer
+   use mod_utilities, only: d2r, file_exists
+   use mod_green
+
+   integer :: file_unit , i
+   character(*) , intent (in) , optional:: filename
+
+   if (file_exists(filename)) return
+
+   call get_green_distances()
+
+   write(*,*), "aggf_thin_layer ---> ",filename
+   if (present (filename)) then
+     open (newunit = file_unit , &
+         file =filename , &
+         action  = 'write' )
+   else
+     file_unit = output_unit
+   endif
+   do i = 1 , size (green(1)%distance)
+     write(file_unit,*) green(1)%distance(i) ,green(1)%data(i), &
+         GN_thin_layer (d2r(green(1)%distance(i)))
+   enddo
+ end subroutine
+
+ ! =============================================================================
+ ! =============================================================================
+ subroutine admit_niebauer(filename)
+   use mod_constants
+   use mod_utilities
+   real(dp) :: a
+   real(dp) :: theta
+   real(dp) :: b , f
+   character(*), intent(in) :: filename
+   integer::iun
+
+   if (file_exists(filename)) return
+   print * , "admit_niebauer ---> ", filename
+
+   open (newunit=iun, file=filename, action = 'write')
+
+   f=earth%radius/9500
+   do theta=0.5 , 180, 0.01
+     b= 2*f*sin(d2r(theta/2))
+     a= 2*pi * gravity%constant / earth%gravity%mean* &
+         (1 - b/(2*f) -1/b + 2/f)
+     write(iun, *) , theta , a *1e10
+   enddo
+ end subroutine
+
+ ! =============================================================================
+ !> compute green newtonian function
+ ! =============================================================================
+ subroutine green_newtonian_compute(filenames)
+   use mod_utilities, only: file_exists
+   use mod_green
+   use mod_utilities, only : logspace , d2r
+   integer:: iun , n , i , j , k
+   real (dp) , allocatable , dimension(:) :: psi , h
+   character(12) , allocatable , dimension(:) :: column_name
+   character(*) ,  optional :: filenames(3)
+   character(20) :: method
+   character(40) :: prefix
+
+   prefix="/home/mrajner/src/grat/examples/"
+
+   iun = 6
+
+   n = 9 * 50
+   allocate(psi(n))
+   psi = logspace(real(1e-6,dp) , real(180,dp),n) 
+
+   allocate(h(11))
+   h = [0., 1., 10., 100., 1000., 10000., -1., -10., -100., -1000., -10000.]
+
+   allocate(column_name(size(h)))
+   write(column_name, '(f0.0)' ) (h(i),i=1,11)
+
+   do k =1,3
+     if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
+     print *, "green_newtonian_compute ---> " , trim(prefix)//trim(filenames(k))
+     open (newunit=iun, file=trim(prefix)//filenames(k), action = 'write')
+
+     method = filenames(k)(17:index(filenames(k),".")-1)
+     write(iun, '(a12,<size(h)>a12)') "#psi" ,( "h"//trim(column_name(i)) , i = 1 ,11)
+     write(iun, '(<size(h)+1>en12.2)') , (psi(i), &
+         (green_newtonian(d2r(psi(i)), h= h(j), method = method), j=1,size(h)) , &
+         i=1,size(psi))
+     close(iun)
+   enddo
+ end subroutine
+
+ ! =============================================================================
+ ! =============================================================================
+ subroutine get_green_distances()
+   use mod_green
+   if (allocated(green)) deallocate(green)
+   allocate (green(1))
+   green(1)%name="merriam"
+   green(1)%column=[1, 2]
+   green(1)%dataname="GN"
+   call read_green(green(1),print=.false.)
+ end subroutine
 
 end program 

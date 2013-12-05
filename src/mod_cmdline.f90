@@ -52,7 +52,7 @@ module mod_cmdline
     integer :: denser
   end type
   type info_info
-    type (range):: distance,azimuth
+    type (range):: distance,azimuth, height
     character (1) :: interpolation
   end type
   type(info_info), dimension(:), allocatable:: info
@@ -65,7 +65,9 @@ module mod_cmdline
       non_inverted_barometer = .false. , &
       ocean_conserve_mass    = .false. , &
       inverted_landsea_mask  = .false. , &
+      optimize               = .false. , &
       quiet                  = .false.
+  integer :: quiet_step=50
 
       type transfer_sp_info
         logical :: if = .false.
@@ -89,7 +91,7 @@ module mod_cmdline
         integer(2) :: e, n
       end type
       type moreverbose_index
-        integer(2) :: p, g, t, a, d, l, n, r, s, o, b , j
+        integer(2) :: p, g, t, a, d, l, n, r, s, o, b, j, v
       end type
       type green_index
         integer(2) :: & 
@@ -105,7 +107,8 @@ module mod_cmdline
             gndh        = 0,  & ! first derivative respect to station height
             gndz        = 0,  & ! first derivative respect to column height
             gndz2       = 0,  & ! second derivative respect to column height
-            gnc         = 0     ! compute aggf every time
+            gnc         = 0,  & ! compute aggf every time
+            g3d
       end type
       type index_info
         type (model_index)       :: model
@@ -122,6 +125,7 @@ module mod_cmdline
       type(admitance_info) :: admitance
 
       logical :: method(3)
+      logical :: potential3d=.false.
       logical :: dryrun
 
       logical :: result_total=.false., result_component=.true.

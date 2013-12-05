@@ -47,6 +47,7 @@ module mod_data
 
   type level_info
     integer, allocatable, dimension(:) :: level
+    real(dp), allocatable, dimension(:) :: height, temperature
     logical :: all=.false.
   end type
   type(level_info) :: level
@@ -172,6 +173,7 @@ subroutine model_aliases(model, dryrun, year, month)
     endif
   else
     year_=9999
+    month_=99
   endif
 
   if(.not. model%autoload) model%autoloadname=model%name
@@ -398,10 +400,6 @@ function variable_modifier (val, modifier, verbose, list_only)
 end function
 
 ! =============================================================================
-! =============================================================================
-!TOOOOO
-
-! =============================================================================
 !> Read netCDF file into memory
 ! =============================================================================
 subroutine read_netCDF (model, print, force)
@@ -444,6 +442,7 @@ end subroutine
 subroutine get_dimension (model, i, print)
   use netcdf
   use mod_printing
+  use mod_utilities, only: countsubstring
   type(file) :: model
   integer :: dimid, varid 
   integer, intent(in) :: i
@@ -511,8 +510,8 @@ subroutine get_dimension (model, i, print)
       model%level=0
       return
     else
-    status = nf90_get_var (model%ncid, varid, model%level)
-  endif
+      status = nf90_get_var (model%ncid, varid, model%level)
+    endif
   elseif (i.eq.5 ) then
     allocate(model%time (length) )
     status = nf90_get_var (model%ncid, varid, model%time)
@@ -719,7 +718,7 @@ subroutine get_variable(model, date, print, level)
   if(present(level)) stop "XXXXXXX"
   select case (model%dataname)
   case ("VT","GP")
-     startv = [1,1,1,index_time]
+    startv = [1,1,1,index_time]
     call check (nf90_get_var ( & 
         ncid=model%ncid,         & 
         varid=varid,             & 
@@ -793,10 +792,13 @@ subroutine check(status, success)
     if (present(success)) then
       success=.false.
     endif
+  stop "XXX"
+    return
   else
     if (present(success)) then
       success=.true.
     endif
+    return
   end if
 end subroutine check  
 
@@ -807,10 +809,12 @@ end subroutine check
 !! \latexonly
 !! \begin{center}
 !!  \tikzsetfigurename{interpolation_ilustration}
-!!  \input{/home/mrajner/src/grat/doc/rysunki/interpolation_ilustration}\\
+!!  \input{/home/mrajner/src/grat/doc/figures/interpolation_ilustration}\\
 !! \end{center}
 !! \endlatexonly
-!! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
+!! \image html /home/mrajner/src/grat/doc/figures/interpolation_ilustration.svg
+!!
+!! lat and lon in decimal degree
 ! =============================================================================
 subroutine get_value(model, lat, lon, val, level, method, date)
   use mod_constants, only: dp 
@@ -1129,27 +1133,31 @@ subroutine parse_level (cmd_line_entry)
   use mod_cmdline, only: cmd_line_arg
   use mod_printing, only: print_warning, form, log
 
-  type(cmd_line_arg)  :: cmd_line_entry
+  type(cmd_line_arg), optional :: cmd_line_entry
   integer :: i
 
-  if (allocated(level%level)) then
-    call print_warning ("repeated", more="-J")
-    return
-  endif
-  if (cmd_line_entry%field(1)%subfield(1)%name.eq."m") then
-    level%all=.true.
-  else
-    allocate (level%level(size(cmd_line_entry%field)))
-    do i =1,  size(level%level)
-      read(cmd_line_entry%field(i)%subfield(1)%name, '(i)') level%level(i)
-    enddo
-  endif
+  if (present(cmd_line_entry)) then
+    if (allocated(level%level)) then
+      call print_warning ("repeated", more="-J")
+      return
+    endif
+    if (cmd_line_entry%field(1)%subfield(1)%name.eq."m") then
+      level%all=.true.
+    else
+      allocate (level%level(size(cmd_line_entry%field)))
+      do i =1,  size(level%level)
+        read(cmd_line_entry%field(i)%subfield(1)%name, '(i)') level%level(i)
+      enddo
+    endif
 
-  write(log%unit, form%i2, advance="no") "level pressure:"
-  if (allocated(level%level)) then
-    write (log%unit, '(<size(level%level)>i4)'), level%level
-  else if (level%all) then
-    write (log%unit, '(a)'), "all"
+    write(log%unit, form%i2, advance="no") "level pressure:"
+    if (allocated(level%level)) then
+      write (log%unit, '(<size(level%level)>i4)'), level%level
+    else if (level%all) then
+      write (log%unit, '(a)'), "all"
+    endif
+  else
+    level%all=.true.
   endif
 
 end subroutine

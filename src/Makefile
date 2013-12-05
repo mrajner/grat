@@ -1,13 +1,18 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
+#
 
-ffffw: grat
-	grat -M2 \
-		-Sr -G @GE \
-		-F NCEP@SP , VIENNA@RSP \
-		-o:free \
-		-I \
-		0@DB:10@DE -D2011:2012:30@D -o /dev/null
+MYMODEL=NCEP
+
+dfsdfsf: $(OBJS) grat
+	grat \
+		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,NCEP@VT! \
+		-M1,2,3:otential -G@GN  \
+		-S j \
+		-H   \
+		-D 20100101:3@Y:2@D \
+		-I 60@AS: 150@HS: 40000@HE :1@DD :3@DE  \
+		-otmpcm:free:time  -q1 -A-0.43
 
 tmp: grat local
 	grat \
@@ -26,8 +31,14 @@ tmp2:
 local: 
 	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
-	cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
-			
+			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
+
+holla:grat
+	grat -F VIENNA @RSP,NCEP@SP, NCEP1@T,NCEP@HP, ETOPO@H\! -G@GNc, @GN, @GNdt, @GNdz,@GNdz2 -D2010:2011 \
+		-Sj \
+		-oholla -H
+
+
 
 # compiler
 FC = ifort
@@ -66,7 +77,7 @@ SRCS  = mod_constants.f90     \
 				mod_parser.f90        \
 				mod_admit.f90         \
 				mod_normalization.f90 \
-				mod_3d.f90
+				mod_3d.f90          \
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -86,8 +97,8 @@ mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
 mod_site.o: mod_printing.o mod_utilities.o mod_constants.o mod_data.o mod_cmdline.o mod_date.o
 mod_parser.o: mod_cmdline.o mod_data.o mod_polygon.o mod_green.o mod_admit.o mod_date.o
-mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o
-mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o
+mod_green.o: mod_data.o mod_polygon.o mod_date.o mod_spherical.o mod_site.o mod_normalization.o mod_aggf.o mod_3d.o mod_data.o
+mod_data.o: mod_mjd.o mod_atmosphere.o mod_polygon.o mod_utilities.o mod_printing.o 
 mod_date.o: mod_data.o
 mod_mjd.o: mod_constants.o
 mod_polygon.o:mod_printing.o mod_cmdline.o
@@ -114,14 +125,15 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 	$(FC) $(FFLAGS) $< -c
 
 
-# rules for programs files
-# todo - shorter
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
-	@make $(addprefix $(PROGS_DIR)/, $@)
+	@make --no-print-directory $(addprefix $(PROGS_DIR)/, $@)
 
 $(PROGS_DIR)/%:%.f90 $(OBJS)
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+
+#  ../bin/value_check: value_check.f90 $(OBJS)
+	#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) /home/mrajner/src/ncl_ncarg-6.1.2/ni/src/lib/nfpfort/int2p_dp.f
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)

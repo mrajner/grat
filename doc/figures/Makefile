@@ -1,5 +1,4 @@
-all: favicon.ico
-#  all: \
+all: \
 	spher_area.pdf spher_area.svg \
 	podklad.pdf podklad2.pdf \
 	polygon_ilustration.pdf polygon_ilustration.png\
@@ -8,7 +7,8 @@ all: favicon.ico
 	logo_grat.pdf \
 	logo_gr@.pdf \
 	logo_grat.svg \
-	logo_gr@.svg
+	logo_gr@.svg \
+	favicon.ico
 
 %.pdf: %.tex
 	pdflatex $<
