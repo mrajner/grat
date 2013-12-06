@@ -99,9 +99,14 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         method(2) =.true.
       case ("3D", "3")
         method(3) =.true.
-        if (cmd_line_entry%field(i)%subfield(2)%name.eq."potential") then
-          potential3d=.true.
-        endif
+        select case (cmd_line_entry%field(i)%subfield(2)%name) 
+        case ("potential")
+          method3d(2)=.true.
+        case ("cylinder")
+          method3d(3)=.true.
+        case default
+          method3d(1)=.true.
+        endselect
       case default
         call print_warning("method not known" // cmd_line_entry%field(i)%subfield(1)%name)
       end select

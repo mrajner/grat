@@ -6,13 +6,13 @@ MYMODEL=NCEP
 
 dfsdfsf: $(OBJS) grat
 	grat \
-		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,NCEP@VT! \
-		-M1,2,3:otential -G@GN  \
+		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,$(MYMODEL)@VT! \
+		-M1,2,3 -G@GN  \
 		-S j \
 		-H   \
-		-D 20100101:3@Y:2@D \
-		-I 60@AS: 150@HS: 40000@HE :1@DD :3@DE  \
-		-otmpcm:free:time  -q1 -A-0.43
+		-D 20100101:2010010623 \
+		-I 60@AS: 50@HS: 40000@HE :1@DD :3@DE  \
+		-o$(MYMODEL)_U:free:time  -q1 -A-0.43 -U
 
 tmp: grat local
 	grat \
