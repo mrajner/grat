@@ -681,7 +681,7 @@ subroutine convolve(site, date)
                   if (method(3)) then
                     ! print *
                     if (ind%model%rsp.eq.0) then
-                      call print_warning("3D but no RSP")
+                      call print_warning("3D but no RSP", error=.true.)
                     endif
 
                     if (allocated(heights)) deallocate(heights)
