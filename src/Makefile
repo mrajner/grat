@@ -2,7 +2,12 @@
 # for example: OBJS  = libgrat.a
 #
 #
-grat:
+gratx: grat
+	grat -M3,2 \
+		-F ERA@GP \! , \
+		ERA@SP , \
+		VIENNA@RSP \
+		-D2010 -F@RSP
 
 MYMODEL=NCEP
 
