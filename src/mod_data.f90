@@ -809,10 +809,10 @@ end subroutine check
 !! \latexonly
 !! \begin{center}
 !!  \tikzsetfigurename{interpolation_ilustration}
-!!  \input{/home/mrajner/src/grat/doc/rysunki/interpolation_ilustration}\\
+!!  \input{/home/mrajner/src/grat/doc/figures/interpolation_ilustration}\\
 !! \end{center}
 !! \endlatexonly
-!! \image html /home/mrajner/src/grat/doc/rysunki/interpolation_ilustration.svg
+!! \image html /home/mrajner/src/grat/doc/figures/interpolation_ilustration.svg
 !!
 !! lat and lon in decimal degree
 ! =============================================================================

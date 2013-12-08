@@ -1,6 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+#
+gratx: grat
+	grat -M3,2 \
+		-F ERA@GP \! , \
+		ERA@SP , \
+		VIENNA@RSP \
+		-D2010 -F@RSP
 
 MYMODEL=NCEP
 
@@ -132,10 +139,17 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/, $@)
 
-$(PROGS_DIR)/%:%.f90 $(OBJS)
-	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+HOST=$(shell hostname)
 
-#  ../bin/value_check: value_check.f90 $(OBJS)
+# prevent owervriting with new version on the server grat
+$(PROGS_DIR)/%:%.f90 $(OBJS) 
+ifeq ($(HOST),grat)
+	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@$(DATE) $(OBJS) 
+else
+	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+endif
+
+XXX../bin/value_check: value_check.f90 $(OBJS)
 	#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) /home/mrajner/src/ncl_ncarg-6.1.2/ni/src/lib/nfpfort/int2p_dp.f
 
 # rules for example files

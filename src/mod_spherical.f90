@@ -16,10 +16,10 @@ contains
 !! \latexonly
 !! \begin{center}
 !!  \tikzsetfigurename{spher_area} 
-!!  \input{/home/mrajner/src/grat/doc/rysunki/spher_area}
+!!  \input{/home/mrajner/src/grat/doc/figures/spher_area}
 !! \end{center}
 !! \endlatexonly
-!! \image html /home/mrajner/src/grat/doc/rysunki/spher_area.svg
+!! \image html /home/mrajner/src/grat/doc/figures/spher_area.svg
 !!
 !! \warning All input angles in radians, output area on unit sphere or 
 !! in square units of given (optionally) \c radius.

@@ -158,8 +158,8 @@ end subroutine
 !! \date 2013-03-04
 !! 
 !! The ilustration explain exclusion idea\n
-!! \image latex /home/mrajner/src/grat/doc/rysunki/polygon_ilustration.pdf "capt" width=\textwidth
-!! \image html /home/mrajner/src/grat/doc/rysunki/polygon_ilustration.png
+!! \image latex /home/mrajner/src/grat/doc/figures/polygon_ilustration.pdf "capt" width=\textwidth
+!! \image html /home/mrajner/src/grat/doc/figures/polygon_ilustration.png
 ! ==============================================================================
 subroutine chkgon (rlong , rlat , polygon , iok)
   real(dp),intent (in) :: rlong, rlat
