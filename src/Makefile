@@ -1,16 +1,16 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
-#
-ddfdf: value_check
-	value_check -F NCEP@VT,NCEP1@VSH,rCEP1@SRH -Sj -V -D2010 : 1@D -Jm -o:level:free
 
 gratx: grat
-	grat -M3,2 \
-		-F ERA@GP \! , \
+	grat -M3 \
+		-F \
+		ERA@GP \! , \
 		ERA@SP , \
-		VIENNA@RSP \
-		-D2010 -F@RSP
+		VIENNA@RSP, \
+		VIENNA@HRSP \
+		-D2012 -V -Sj \
+		-I20@AS:1@DE
 
 MYMODEL=NCEP
 
