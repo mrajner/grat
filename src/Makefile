@@ -2,6 +2,9 @@
 # for example: OBJS  = libgrat.a
 #
 #
+ddfdf: value_check
+	value_check -F NCEP@VT,NCEP1@VSH,rCEP1@SRH -Sj -V -D2010 : 1@D -Jm -o:level:free
+
 gratx: grat
 	grat -M3,2 \
 		-F ERA@GP \! , \
@@ -92,9 +95,6 @@ PROGSSRCS =  grat.f90               \
 						 real_vs_standard.f90   \
 						 barometric_formula.f90
 
-grat:
-	echo "offf"
-
 EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
@@ -119,8 +119,8 @@ endif
 
 
 PROGS_DIR=../bin
-#  PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
-#  PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
+PROGS  = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
+PROGS_SHORTCUTS  = $(PROGSSRCS:.f90=)
 
 # change to your path directory
 LINKS_DIR=/home/mrajner/.local/bin

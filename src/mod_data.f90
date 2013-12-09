@@ -203,6 +203,23 @@ subroutine model_aliases(model, dryrun, year, month)
     case ("VT")
       model%names(1)="air"
       write(model%name,'(a,a,i4,a)') trim(prefix),"air.",year_,".nc"
+    case ("VRH")
+      model%names(1)="rhum"
+      write(model%name,'(a,a,i4,a)') trim(prefix),"rhum.",year_,".nc"
+    case ("VSH")
+      if (model%autoloadname.eq."NCEP1") then
+        model%names(1)="shum"
+        write(model%name,'(a,a,i4,a)') trim(prefix),"shum.",year_,".nc"
+      else
+        call print_warning ("not yet NCEP@VSH", error=.true.)
+      endif
+    case ("SRH")
+      if (model%autoloadname.eq."NCEP1") then
+        model%names(1)="rhum"
+        write(model%name,'(a,a,i4,a)') trim(prefix),"rhum.sig995.",year_,".nc"
+      else
+        call print_warning ("not yet NCEP@SRH", error=.true.)
+      endif
     case ("T")
       if (model%autoloadname.eq."NCEP1") then
         model%names(1)="air"
@@ -620,10 +637,12 @@ function get_level_index(model, level, sucess)
   integer, intent(in), optional :: level
   logical, intent(out), optional :: sucess
   integer :: i
+  logical :: first_fail=.true.
 
   get_level_index=1
   if (.not.present(level).or.size(model%level).le.1) then
     get_level_index=1
+    if (present(sucess)) sucess=.true.
     return
   endif
   do i = 1, size(model%level)
@@ -634,7 +653,8 @@ function get_level_index(model, level, sucess)
     endif
   enddo 
   if (present(sucess)) sucess=.false.
-  call print_warning("level not found")
+  if (first_fail) call print_warning("level not found (no warning again)")
+  first_fail=.false.
 end function
 
 ! =============================================================================
@@ -717,7 +737,7 @@ subroutine get_variable(model, date, print, level)
 
   if(present(level)) stop "XXXXXXX"
   select case (model%dataname)
-  case ("VT","GP")
+  case ("VT","GP", "VRH", "VSH")
     startv = [1,1,1,index_time]
     call check (nf90_get_var ( & 
         ncid=model%ncid,         & 
@@ -937,7 +957,8 @@ subroutine get_value(model, lat, lon, val, level, method, date)
         model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
     write(moreverbose(ind%moreverbose%n)%unit,  '(">")')
   endif
-  val = model%data(ilon, ilat, get_level_index(model,ilevel))
+  val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
+  if (.not.success2) val=sqrt(-1.)
 
 end subroutine 
 
