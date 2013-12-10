@@ -160,10 +160,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
     if (file_exists(output%name).and.output%noclobber) then
-      if (.not.log%sparse) then
         call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
             error=.true.)
-      endif
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit, file = output%name, action = "write" )
@@ -311,7 +309,6 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
           endif
           if (file_exists(log%name).and.log%noclobber) then
             call print_warning ("I will not overwrite with -V : nc (noclobber) ... sorry", error=.true.)
-            call exit(1)
           endif
           open (newunit=log%unit, file = log%name, action='write')
         else
@@ -457,7 +454,7 @@ subroutine parse_moreverbose (cmd_line_entry)
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
           if (file_exists(moreverbose(i)%name)) then
-            call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
+              call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
           endif
         endif
         open(                            & 

@@ -3,14 +3,14 @@
 #
 
 gratx: grat
-	grat -M3 \
+	grat -q 10 -M3 \
 		-F \
 		ERA@GP \! , \
 		ERA@SP , \
 		VIENNA@RSP, \
 		VIENNA@HRSP \
-		-D2012 -V -Sj \
-		-I20@AS:1@DE
+		-D2012  -Sj \
+		-I20@AS:1@DE -o tmp:nc 
 
 MYMODEL=NCEP
 

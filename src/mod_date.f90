@@ -3,6 +3,7 @@ module mod_date
   use mod_printing
 
   implicit none
+
   !----------------------------------------------------
   ! dates
   !----------------------------------------------------
@@ -23,7 +24,7 @@ subroutine parse_date(cmd_line_entry)
   use mod_cmdline
   use mod_mjd, only: mjd, invmjd
   use mod_utilities, only: is_numeric
-  use mod_data
+  use mod_data, only: model
 
   integer, dimension(6) :: start, stop, swap 
   real (dp) :: step 
