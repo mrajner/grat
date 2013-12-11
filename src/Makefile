@@ -149,8 +149,9 @@ else
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
 endif
 
-XXX../bin/value_check: value_check.f90 $(OBJS)
-	#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) /home/mrajner/src/ncl_ncarg-6.1.2/ni/src/lib/nfpfort/int2p_dp.f
+# paralelization
+#../bin/value_check: value_check.f90 $(OBJS)
+#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) /home/mrajner/src/ncl_ncarg-6.1.2/ni/src/lib/nfpfort/int2p_dp.f
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
