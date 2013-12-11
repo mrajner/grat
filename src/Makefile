@@ -3,7 +3,7 @@
 #
 
 gratx: grat
-	grat -q 10 -M3 \
+	grat -M3 \
 		-F \
 		ERA@GP \! , \
 		ERA@SP , \
@@ -22,7 +22,7 @@ dfsdfsf: $(OBJS) grat
 		-H   \
 		-D 20100101:2010010623 \
 		-I 60@AS: 50@HS: 40000@HE :1@DD :3@DE  \
-		-o$(MYMODEL)_U:free:time  -q1 -A-0.43 -U
+		-o$(MYMODEL)_U:free:time  -A-0.43 -U
 
 tmp: grat local
 	grat \
