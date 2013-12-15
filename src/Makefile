@@ -8,9 +8,9 @@ gratx: grat
 		ERA@GP \! , \
 		ERA@SP , \
 		VIENNA@RSP, \
-		VIENNA@HRSP \
-		-D2012  -Sj \
-		-I20@AS:1@DE -o tmp:nc 
+		VIENNA@HRSP, ERA@T, ERA@HP\! \
+		-D2010  -Sj \
+		-I20@AS:1@DE
 
 MYMODEL=NCEP
 
