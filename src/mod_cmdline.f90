@@ -50,6 +50,8 @@ module mod_cmdline
     real(dp):: stop
     real(dp):: step
     integer :: denser
+    real(dp):: stop_3d
+    ! logical :: stop_3d_if
   end type
   type info_info
     type (range):: distance,azimuth, height

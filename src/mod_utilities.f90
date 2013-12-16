@@ -273,8 +273,9 @@ function is_numeric(string)
     integer :: e
     if (string(1:1).eq."/") then
       is_numeric=.false. 
-      ! minus sign not on the first postion
-    else if (index(string,"-").gt.1) then
+      ! minus sign not on the first postion but allow 1e-5
+    else if (index(string,"-").gt.1 &
+        .and..not.index(string,"e").eq.index(string,"-")-1) then
       is_numeric=.false. 
     else 
       read(string, *, iostat=e) x
@@ -568,22 +569,22 @@ end function
 ! sort integers in reverse order
 ! http://rosettacode.org/wiki/Sorting_algorithms/Bubble_sort#Fortran
 SUBROUTINE Bubble_Sort(a)
-  integer, intent(in out), dimension(:) :: a
-  integer :: temp
-  integer :: i, j
-  logical :: swapped = .true.
- 
-  do j = size(a)-1, 1, -1
-    swapped = .false.
-    do i = 1, j
-      if (a(i) < a(i+1)) then
-        temp = a(i)
-        a(i) = a(i+1)
-        a(i+1) = temp
-        swapped = .true.
-      end if
+    integer, intent(in out), dimension(:) :: a
+    integer :: temp
+    integer :: i, j
+    logical :: swapped = .true.
+
+    do j = size(a)-1, 1, -1
+      swapped = .false.
+      do i = 1, j
+        if (a(i) < a(i+1)) then
+          temp = a(i)
+          a(i) = a(i+1)
+          a(i+1) = temp
+          swapped = .true.
+        end if
+      end do
+      if (.not. swapped) exit
     end do
-    if (.not. swapped) exit
-  end do
 END SUBROUTINE Bubble_Sort
 end module

@@ -3,14 +3,22 @@
 #
 
 gratx: grat
-	grat -M3 \
-		-F \
-		ERA@GP \! , \
-		ERA@SP , \
-		VIENNA@RSP, \
-		VIENNA@HRSP, ERA@T, ERA@HP\! \
-		-D2010  -Sj \
-		-I20@AS:1@DE
+	grat -M2,3:potentil         \
+		-F             \
+		NCEP@GP \! ,   \
+		NCEP@VT \! ,   \
+		NCEP@SP\! ,    \
+		VIENNA@RSP\!,  \
+		VIENNA@HRSP\!, \
+		NCEP1@T\!,     \
+		NCEP@HP\!,      \
+		NCEP@LS\!      \
+		-H \
+		-G@GN, @GE   \
+		-o tmp: free \
+		-r t \
+		-D20100103  -Sj -I10@DE:0.004@3D
+	cat tmp
 
 MYMODEL=NCEP
 

@@ -532,6 +532,8 @@ subroutine parse_info (cmd_line_entry)
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%denser
           case ("HS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%step
+          case ("3D")
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop_3d
           endselect
         else 
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -563,25 +565,27 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine info_defaults(info)
-  use mod_cmdline, only: info_info
-  type(info_info),intent(inout) :: info
+    use mod_cmdline, only: info_info
+    type(info_info),intent(inout) :: info
 
-  info%interpolation="n"
+    info%interpolation="n"
 
-  info%distance%start=0.
-  info%distance%stop=180.
-  info%distance%denser=1
-  info%distance%step=0
+    info%distance%start=0.
+    info%distance%stop=180.
+    info%distance%denser=1
+    info%distance%step=0
 
-  info%azimuth%start=0.
-  info%azimuth%stop=360.
-  info%azimuth%step=0
-  info%azimuth%denser=1
+    info%azimuth%start=0.
+    info%azimuth%stop=360.
+    info%azimuth%step=0
+    info%azimuth%denser=1
 
-  info%height%start=0.
-  info%height%stop=60000.
-  info%height%step=5
-  info%height%denser=1
+    info%height%start=0.
+    info%height%stop=60000.
+    info%height%step=5
+    info%height%denser=1
+    
+    info%distance%stop_3d=180.
 
 end subroutine
 
@@ -592,93 +596,93 @@ end subroutine
 !! \date 2013-03-06
 ! =============================================================================
 subroutine print_version (program_calling, version)
-  character(*) :: program_calling 
-  character(*), optional :: version
+    character(*) :: program_calling 
+    character(*), optional :: version
 
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), trim(program_calling)
-  write(log%unit, form_inheader ), version
-  write(log%unit, form_inheader ), "compiled on "//__DATE__
-  write(log%unit, form_inheader_n ), &
-      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
-  write(log%unit, form_inheader ), 'Warsaw University of Technology'
-  write(log%unit, form_inheader ), 'License: GPL v3 or later'
-  write(log%unit, form_header )
+    write(log%unit, form_header )
+    write(log%unit, form_inheader ), trim(program_calling)
+    write(log%unit, form_inheader ), version
+    write(log%unit, form_inheader ), "compiled on "//__DATE__
+    write(log%unit, form_inheader_n ), &
+        "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+    write(log%unit, form_header )
+    write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
+    write(log%unit, form_inheader ), 'Warsaw University of Technology'
+    write(log%unit, form_inheader ), 'License: GPL v3 or later'
+    write(log%unit, form_header )
 end subroutine
 
 !! =============================================================================
 !! =============================================================================
 subroutine print_help (program_calling, accepted_switches)
-  character(*), intent(in) :: program_calling
-  character(*), intent(in),optional :: accepted_switches
-  integer :: help_unit, io_stat
-  character(500)::line
-  character(255)::syntax
-  logical:: if_print_line = .false., if_optional=.true.
+    character(*), intent(in) :: program_calling
+    character(*), intent(in),optional :: accepted_switches
+    integer :: help_unit, io_stat
+    character(500)::line
+    character(255)::syntax
+    logical:: if_print_line = .false., if_optional=.true.
 
-  if_print_line=.false.
+    if_print_line=.false.
 
-  ! change this path according to your settings
-  open(newunit=help_unit, file="/home/mrajner/src/grat/dat/help.hlp", action="read",status="old")
+    ! change this path according to your settings
+    open(newunit=help_unit, file="/home/mrajner/src/grat/dat/help.hlp", action="read",status="old")
 
-  write (log%unit, "(a)", advance="no" ) program_calling
-  ! first loop - print only syntax with squre brackets if parameter is optional
-  do 
-    read (help_unit, '(a)', iostat=io_stat) line
-    if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
-      if (if_optional) write(log%unit, '(a)', advance="no") " ["
-      if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
-      if (if_optional) write(log%unit, '(a)', advance="no") "]"
-    endif
-    if (io_stat==iostat_end) then
-      write(log%unit, *) " " 
-      if_print_line = .false.
-      exit
-    endif
-    if(line(1:1)=="-") then
-      if(if_accepted_switch (line(1:2),accepted_switches )) then
-        if_print_line = .true.
-      else
-        if(line(1:1)=="-") if_print_line=.false.
+    write (log%unit, "(a)", advance="no" ) program_calling
+    ! first loop - print only syntax with squre brackets if parameter is optional
+    do 
+      read (help_unit, '(a)', iostat=io_stat) line
+      if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
+        if (if_optional) write(log%unit, '(a)', advance="no") " ["
+        if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
+        if (if_optional) write(log%unit, '(a)', advance="no") "]"
       endif
-    endif
-
-    if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
-      if_optional=.true.
-    else if (line(5:13) == "mandatory") then
-      if_optional=.false.
-    endif
-    if (line(2:2)=="s") then
-      syntax = trim(adjustl(line(3:)))
-    endif
-  enddo
-  rewind(help_unit)
-
-  write(log%unit, form_60), 'Summary of available options for program '//program_calling
-  ! second loop - print informations
-  do 
-    read (help_unit, '(a)', iostat=io_stat) line
-    if (io_stat==iostat_end) exit
-
-    if(line(1:1)=="-") then
-      !todo
-      if(if_accepted_switch (line(1:2),accepted_switches )) then
-        if_print_line = .true.
-        write (log%unit, form_61 ) trim(line)
-      else
-        if(line(1:1)=="-") if_print_line=.false.
+      if (io_stat==iostat_end) then
+        write(log%unit, *) " " 
+        if_print_line = .false.
+        exit
       endif
-    else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
-      if (if_print_line) then
-        write (log%unit, form_61 ) "  "//trim(line(3:))
+      if(line(1:1)=="-") then
+        if(if_accepted_switch (line(1:2),accepted_switches )) then
+          if_print_line = .true.
+        else
+          if(line(1:1)=="-") if_print_line=.false.
+        endif
       endif
-    else if (line(2:2)=="") then
-      if (if_print_line) write (log%unit, form_61 ) trim(line)
-    endif
-  enddo
-  close(help_unit)
+
+      if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
+        if_optional=.true.
+      else if (line(5:13) == "mandatory") then
+        if_optional=.false.
+      endif
+      if (line(2:2)=="s") then
+        syntax = trim(adjustl(line(3:)))
+      endif
+    enddo
+    rewind(help_unit)
+
+    write(log%unit, form_60), 'Summary of available options for program '//program_calling
+    ! second loop - print informations
+    do 
+      read (help_unit, '(a)', iostat=io_stat) line
+      if (io_stat==iostat_end) exit
+
+      if(line(1:1)=="-") then
+        !todo
+        if(if_accepted_switch (line(1:2),accepted_switches )) then
+          if_print_line = .true.
+          write (log%unit, form_61 ) trim(line)
+        else
+          if(line(1:1)=="-") if_print_line=.false.
+        endif
+      else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
+        if (if_print_line) then
+          write (log%unit, form_61 ) "  "//trim(line(3:))
+        endif
+      else if (line(2:2)=="") then
+        if (if_print_line) write (log%unit, form_61 ) trim(line)
+      endif
+    enddo
+    close(help_unit)
 end subroutine
 
 ! =============================================================================
@@ -689,22 +693,37 @@ end subroutine
 ! =============================================================================
 ! todo split to appropriate modules and call
 function dataname(abbreviation)
-  character(len=40) :: dataname
-  character(len=2) :: abbreviation
+    character(len=2), intent(in) :: abbreviation
+    character(len=40) :: dataname
 
-  dataname="unknown"
-  if (abbreviation.eq."n")  dataname = "nearest"
-  if (abbreviation.eq."l")  dataname = "bilinear"
-  if (abbreviation.eq."g")  dataname = "green function used"
-  if (abbreviation.eq."p")  dataname = "points"
-  if (abbreviation.eq."r")  dataname = "results"
-  if (abbreviation.eq."a")  dataname = "auxiliary"
-  if (abbreviation.eq."d")  dataname = "dates"
-  if (abbreviation.eq."s")  dataname = "summary"
-  if (abbreviation.eq."o")  dataname = "ocean conserve mass"
-  if (abbreviation.eq."t")  dataname = "total mass"
-  if (abbreviation.eq."b")  dataname = "progress bar"
-  if (abbreviation.eq."j")  dataname = "level"
+    select case(abbreviation)
+    case("n")
+      dataname = "nearest"
+    case("l")
+      dataname = "bilinear"
+    case("g")
+      dataname = "green function used"
+    case("p")  
+      dataname = "points"
+    case("r")  
+      dataname = "results"
+    case("a")  
+      dataname = "auxiliary"
+    case("d")  
+      dataname = "dates"
+    case("s")  
+      dataname = "summary"
+    case("o")  
+      dataname = "ocean conserve mass"
+    case("t")  
+      dataname = "total mass"
+    case("b")  
+      dataname = "progress bar"
+    case("j")  
+      dataname = "level"
+    case default
+      dataname="unknown"
+    end select
 end function
 
 
@@ -713,107 +732,107 @@ end function
 !! functions, polygon etc.
 ! =============================================================================
 subroutine get_index()
-  use mod_polygon, only: polygon
-  use mod_data,    only: model
-  use mod_green,   only: green
-  use mod_cmdline, only: ind, moreverbose
+    use mod_polygon, only: polygon
+    use mod_data,    only: model
+    use mod_green,   only: green
+    use mod_cmdline, only: ind, moreverbose
 
-  integer :: i
+    integer :: i
 
-  do i = 1, size(model)
-    select case (model(i)%dataname)
-    case ("SP")
-      ind%model%sp = i
-    case ("EWT")
-      ind%model%ewt = i
-    case ("T")
-      ind%model%t = i
-    case ("RSP")
-      ind%model%rsp = i
-    case ("HRSP")
-      ind%model%hrsp = i
-    case ("LS")
-      ind%model%ls = i
-    case ("H")
-      ind%model%h = i
-    case ("HP")
-      ind%model%hp = i
-    case ("GP")
-      ind%model%gp = i
-    case ("TP")
-      ind%model%tp = i
-    case ("TPF")
-      ind%model%tpf = i
-    case ("RHO")
-      ind%model%rho = i
-    case ("VT")
-      ind%model%vt = i
-    endselect
-  enddo
-  do i = 1, size(moreverbose)
-    select case (moreverbose(i)%dataname)
-    case ("p")
-      ind%moreverbose%p = i
-    case ("g")
-      ind%moreverbose%g = i
-    case ("a")
-      ind%moreverbose%a = i
-    case ("d")
-      ind%moreverbose%d = i
-    case ("r")
-      ind%moreverbose%r = i
-    case ("s")
-      ind%moreverbose%s = i
-    case ("o")
-      ind%moreverbose%o = i
-    case ("t")
-      ind%moreverbose%t = i
-    case ("b")
-      ind%moreverbose%b = i
-    case ("n")
-      ind%moreverbose%n = i
-    case ("j")
-      ind%moreverbose%j = i
-    case ("v")
-      ind%moreverbose%v = i
-    end select
-  enddo
-  do i = 1, size(green)
-    select case (green(i)%dataname)
-    case ("GE")
-      ind%green%ge    = i
-    case ("GEGdt")
-      ind%green%gegdt = i
-    case ("GN")
-      ind%green%gn    = i
-    case ("GNc")
-      ind%green%gnc   = i
-    case ("GR")
-      ind%green%gr    = i
-    case ("GHN")
-      ind%green%ghn   = i
-    case ("GHE")
-      ind%green%ghe   = i
-    case ("GG")
-      ind%green%gg    = i
-    case ("GNdt")
-      ind%green%gndt  = i
-    case ("GNdh")
-      ind%green%gndh  = i
-    case ("GNdz")
-      ind%green%gndz  = i
-    case ("GNdz2")
-      ind%green%gndz2 = i
-    endselect
-  enddo
-  do i = 1, size(polygon)
-    select case (polygon(i)%dataname)
-    case ("E","")
-      ! assume polygon is for elastic part
-      ind%polygon%e = i
-    case ("N")
-      ind%polygon%n = i
-    endselect
-  enddo
+    do i = 1, size(model)
+      select case (model(i)%dataname)
+      case ("SP")
+        ind%model%sp = i
+      case ("EWT")
+        ind%model%ewt = i
+      case ("T")
+        ind%model%t = i
+      case ("RSP")
+        ind%model%rsp = i
+      case ("HRSP")
+        ind%model%hrsp = i
+      case ("LS")
+        ind%model%ls = i
+      case ("H")
+        ind%model%h = i
+      case ("HP")
+        ind%model%hp = i
+      case ("GP")
+        ind%model%gp = i
+      case ("TP")
+        ind%model%tp = i
+      case ("TPF")
+        ind%model%tpf = i
+      case ("RHO")
+        ind%model%rho = i
+      case ("VT")
+        ind%model%vt = i
+      endselect
+    enddo
+    do i = 1, size(moreverbose)
+      select case (moreverbose(i)%dataname)
+      case ("p")
+        ind%moreverbose%p = i
+      case ("g")
+        ind%moreverbose%g = i
+      case ("a")
+        ind%moreverbose%a = i
+      case ("d")
+        ind%moreverbose%d = i
+      case ("r")
+        ind%moreverbose%r = i
+      case ("s")
+        ind%moreverbose%s = i
+      case ("o")
+        ind%moreverbose%o = i
+      case ("t")
+        ind%moreverbose%t = i
+      case ("b")
+        ind%moreverbose%b = i
+      case ("n")
+        ind%moreverbose%n = i
+      case ("j")
+        ind%moreverbose%j = i
+      case ("v")
+        ind%moreverbose%v = i
+      end select
+    enddo
+    do i = 1, size(green)
+      select case (green(i)%dataname)
+      case ("GE")
+        ind%green%ge    = i
+      case ("GEGdt")
+        ind%green%gegdt = i
+      case ("GN")
+        ind%green%gn    = i
+      case ("GNc")
+        ind%green%gnc   = i
+      case ("GR")
+        ind%green%gr    = i
+      case ("GHN")
+        ind%green%ghn   = i
+      case ("GHE")
+        ind%green%ghe   = i
+      case ("GG")
+        ind%green%gg    = i
+      case ("GNdt")
+        ind%green%gndt  = i
+      case ("GNdh")
+        ind%green%gndh  = i
+      case ("GNdz")
+        ind%green%gndz  = i
+      case ("GNdz2")
+        ind%green%gndz2 = i
+      endselect
+    enddo
+    do i = 1, size(polygon)
+      select case (polygon(i)%dataname)
+      case ("E","")
+        ! assume polygon is for elastic part
+        ind%polygon%e = i
+      case ("N")
+        ind%polygon%n = i
+      endselect
+    enddo
 end subroutine
 end module

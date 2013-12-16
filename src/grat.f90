@@ -17,7 +17,7 @@
 !! Also you need to have \c iso_fortran_env module available to guess the number
 !! of output_unit for your compiler.
 !! When you don't want a \c log_file and you don't switch \c verbose all 
-!! unneceserry information whitch are normally collected goes to \c /dev/null
+!! unnecesarry information whitch are normally collected goes to \c /dev/null
 !! file. This is *nix system default trash. For other system or file system
 !! organization, please change this value in \c mod_cmdline module.
 !!
@@ -120,7 +120,14 @@ program grat
             write (output%unit,'(a13$)'), "GE_NIB"
           endif
         endif
-        if (result_total) write (output%unit,'(a13)',advance='no'), "G2D"
+        if (result_total) then
+          if (method(2)) then
+            write (output%unit,'(a13)',advance='no'), "G2D_t"
+          endif
+          if (method(3)) then
+            write (output%unit,'(a13)',advance='no'), "G3D_t"
+          endif
+        endif
       endif
     endif
 
@@ -148,7 +155,7 @@ program grat
       if (idate.ge.1) then 
         if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
           if (first_waning) call print_warning  &
-            ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
+              ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
           first_waning=.false.
           cycle
         endif
@@ -161,32 +168,32 @@ program grat
             select case (model(i)%dataname)
             case ("SP", "T", "GP", "VT") 
               if ( &
-                .not.(model(i)%autoloadname.eq."ERA" &
-                .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
-                .and.(idate.eq.1.and. model(i)%autoload &
-                .or. (  &
-                model(i)%autoload &
-                .and. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
-                ) &
-                ) &
-                ) then
+                  .not.(model(i)%autoloadname.eq."ERA" &
+                  .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
+                  .and.(idate.eq.1.and. model(i)%autoload &
+                  .or. (  &
+                  model(i)%autoload &
+                  .and. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
+                  ) &
+                  ) &
+                  ) then
                 call model_aliases(model(i), year=date(idate)%date(1))
               else if ( &
-                idate.eq.1.and. model(i)%autoload &
-                .or. (  &
-                model(i)%autoload &
-                .and. .not.( &
-                date(idate)%date(1).eq.date(idate-1)%date(1) &
-                .and.date(idate)%date(2).eq.date(idate-1)%date(2) &
-                ) &
-                ) &
-                ) then
+                  idate.eq.1.and. model(i)%autoload &
+                  .or. (  &
+                  model(i)%autoload &
+                  .and. .not.( &
+                  date(idate)%date(1).eq.date(idate-1)%date(1) &
+                  .and.date(idate)%date(2).eq.date(idate-1)%date(2) &
+                  ) &
+                  ) &
+                  ) then
                 call model_aliases( &
-                  model(i), year=date(idate)%date(1), month=date(idate)%date(2))
+                    model(i), year=date(idate)%date(1), month=date(idate)%date(2))
               endif
               if (size(date).eq.0.and.model(i)%exist) then
                 call get_variable (model(i))
-                elseif (model(i)%exist) then
+              elseif (model(i)%exist) then
                 call get_variable (model(i), date = date(idate)%date)
               endif
             endselect
@@ -208,11 +215,11 @@ program grat
           if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
             if(size(date).eq.0) then
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  inverted_landsea_mask = inverted_landsea_mask)
             else
               call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
-                date=date(idate)%date, &
-                inverted_landsea_mask = inverted_landsea_mask)
+                  date=date(idate)%date, &
+                  inverted_landsea_mask = inverted_landsea_mask)
             endif
           endif
         endif
@@ -229,19 +236,19 @@ program grat
 
         if (idate.gt.0) then
           write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
-            date(idate)%mjd, date(idate)%date
+              date(idate)%mjd, date(idate)%date
         endif
         write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
-          site(isite)%name, &
-          site(isite)%lat,  &
-          site(isite)%lon,  &
-          site(isite)%height 
+            site(isite)%name, &
+            site(isite)%lat,  &
+            site(isite)%lon,  &
+            site(isite)%height 
         if (method(1)) then 
           write (output%unit, "("// output%form // '$)'), &
-            admit( &
-            site(isite), &
-            date=date(idate)%date &
-            )
+              admit( &
+              site(isite), &
+              date=date(idate)%date &
+              )
         endif
 
         if (method(2).or.method(3)) then 
@@ -255,11 +262,11 @@ program grat
           open(unit=output_unit, carriagecontrol='fortran')
           call cpu_time(cpu(2))
           call progress(                     & 
-            100*iprogress/(max(size(date),1) & 
-            *max(size(site),1)),             & 
-            cpu(2)-cpu(1), & 
-            every=quiet_step &
-            )
+              100*iprogress/(max(size(date),1) & 
+              *max(size(site),1)),             & 
+              cpu(2)-cpu(1), & 
+              every=quiet_step &
+              )
         endif
       enddo
     enddo
