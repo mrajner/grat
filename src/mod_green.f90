@@ -797,7 +797,7 @@ subroutine convolve(site, date)
                               + geometry(psi=d2r(green_common(igreen)%distance(idist)), h=site%height, z=heights(iheight)) &
                               * pressures(iheight)/(temperatures(iheight))  &
                               * area * info(igreen)%height%step &
-                              *-gravity%constant*1e8/R_air
+                              *(-gravity%constant)*1e8/R_air
                         else if (method3d(2)) then
                           result(ind%green%g3d) = result(ind%green%g3d)      & 
                               + potential(                                     & 
@@ -809,7 +809,7 @@ subroutine convolve(site, date)
                               z2= heights(iheight)+info(igreen)%height%step/2  & 
                               )                                                & 
                               * pressures(iheight)/(temperatures(iheight))  &
-                              *-gravity%constant*1e8/R_air
+                              *(-gravity%constant)*1e8/R_air
                         else if (method3d(3)) then
                           result(ind%green%g3d) = result(ind%green%g3d)      & 
                               + cylinder(                                     & 
@@ -821,7 +821,7 @@ subroutine convolve(site, date)
                               z2= heights(iheight)+info(igreen)%height%step/2  & 
                               )                                                & 
                               * pressures(iheight)/(temperatures(iheight))  &
-                              *-gravity%constant*1e8/R_air
+                              *(-gravity%constant)*1e8/R_air
                         endif
                       enddo
                     endif

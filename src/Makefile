@@ -3,7 +3,7 @@
 #
 
 gratx: grat
-	grat -M2,3:potentil         \
+	grat -M2,3:cylinder         \
 		-F             \
 		NCEP@GP \! ,   \
 		NCEP@VT \! ,   \
