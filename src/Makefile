@@ -2,6 +2,16 @@
 # for example: OBJS  = libgrat.a
 #
 
+sdfsadf:grat
+	grat \
+  -F NCEP @SP, VIENNA@RSP, NCEP1@T, NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP@GP! ,NCEP@VT! \
+  -M1,2,3 -G@GN  \
+  -S j \
+  -H   \
+  -rt \
+  -D 20100101 \
+  -I 4@AS: 50@HS: 50000@HE : 0.2 @ DE :0.1@3D  \
+  -o   -q -A-0.43  
 gratx: grat
 	grat -M2,3:potentil         \
 		-F             \
@@ -17,7 +27,7 @@ gratx: grat
 		-G@GN, @GE   \
 		-o tmp: free \
 		-r t \
-		-D20100103  -Sj -I10@DE:0.004@3D
+		-D20100103  -Sj -I10@DE:0.4@3D :0.1@DS:50@AS 
 	cat tmp
 
 MYMODEL=NCEP

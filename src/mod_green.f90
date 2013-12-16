@@ -1175,7 +1175,6 @@ subroutine convolve(site, date)
   ! results to output
   if (result_component) write (output%unit, "(" // output%form // '$)') result
   if (result_total) then
-    ! write (output%unit, "(" // output%form // '$)') sum(result(1:size(green)))
     if (method(2)) then
       write(output%unit, &
           '(' // output%form //'$)'), &
