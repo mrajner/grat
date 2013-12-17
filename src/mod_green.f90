@@ -846,7 +846,7 @@ subroutine convolve(site, date)
                         zmin=val(ind%model%h),                     & 
                         t_zero=val(ind%model%t),                   & 
                         h=site%height,                             & 
-                        dz =  &
+                        dz = 10.* &
                         merge(10._dp, &
                         merge(0.1_dp,1._dp, &
                         green_common(igreen)%distance(idist).le.1e-5_dp ), &
