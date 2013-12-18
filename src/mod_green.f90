@@ -719,6 +719,12 @@ subroutine convolve(site, date)
                               model(ind%model%vt), r2d(lat), r2d(lon), level%temperature(i),                  & 
                               level=level%level(i), method = info(igreen)%interpolation, date=date%date)
                         endif
+                        if (ind%model%vsh.ne.0) then
+                          call get_value (                                                               & 
+                              model(ind%model%vsh), r2d(lat), r2d(lon), val=aux,                  & 
+                              level=level%level(i), method = info(igreen)%interpolation, date=date%date)
+                          if (.not.isnan(aux)) level%temperature(i)=level%temperature(i)*(1.+0.608*aux)
+                        endif
                       enddo
 
                       i=1
@@ -1047,12 +1053,12 @@ subroutine convolve(site, date)
                 if (ind%green%ghn.ne.0) then
                   result(ind%green%ghn) = result(ind%green%ghn) +      & 
                       green_common(igreen)%data(idist, ind%green%ghn) * & 
-                      aux * (- cos (d2r(azimuth)))
+                      aux * (-cos(d2r(azimuth)))
                 endif
                 if (ind%green%ghe.ne.0) then
                   result(ind%green%ghe) = result(ind%green%ghe) +      & 
                       green_common(igreen)%data(idist, ind%green%ghe) * & 
-                      aux * (- sin (d2r(azimuth)))
+                      aux * (-sin(d2r(azimuth)))
                 endif
               endif
             endif

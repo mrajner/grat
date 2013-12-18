@@ -166,7 +166,7 @@ program grat
         do i = 1, size(model)
           if(model(i)%if) then
             select case (model(i)%dataname)
-            case ("SP", "T", "GP", "VT") 
+            case ("SP", "T", "GP", "VT", "VSH") 
               if ( &
                   .not.(model(i)%autoloadname.eq."ERA" &
                   .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &

@@ -788,6 +788,8 @@ subroutine parse_info (cmd_line_entry)
         ind%model%rho = i
       case ("VT")
         ind%model%vt = i
+      case ("VSH")
+        ind%model%vsh = i
       endselect
     enddo
     do i = 1, size(moreverbose)
