@@ -13,7 +13,7 @@ sdfsadf:grat
   -I 4@AS: 50@HS: 50000@HE : 0.2 @ DE :0.1@3D  \
   -o   -q -A-0.43  
 gratx: grat
-	grat -M2,3:potentil         \
+	grat -M2,3:cylinder         \
 		-F             \
 		NCEP@GP \! ,   \
 		NCEP@VT \! ,   \
