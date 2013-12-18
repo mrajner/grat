@@ -16,7 +16,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   use mod_data,    only: parse_model, parse_level
   use mod_green,   only: parse_green
   use mod_cmdline
-  use mod_utilities, only: file_exists
+  use mod_utilities, only: file_exists, is_numeric
   use mod_admit, only : parse_admit
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
@@ -100,23 +100,38 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       case ("3D", "3")
         method(3) =.true.
         select case (cmd_line_entry%field(i)%subfield(2)%name) 
+        case ("point")
+          method3d(1)=.true.
         case ("potential")
           method3d(2)=.true.
         case ("cylinder")
           method3d(3)=.true.
+        case ("cylinder2")
+          method3d(4)=.true.
         case default
+          call print_warning ("no explicit method3d given &
+              - falling into point mass (for backward compability, not &
+              recomended)")
           method3d(1)=.true.
         endselect
+        if(is_numeric(cmd_line_entry%field(i)%subfield(2)%dataname)) then
+          read(cmd_line_entry%field(i)%subfield(2)%dataname, *) method3d_refinment_distance
+        endif
+
       case default
-        call print_warning("method not known" // cmd_line_entry%field(i)%subfield(1)%name)
+        call print_warning("method not known " // trim(cmd_line_entry%field(i)%subfield(1)%name))
       end select
     enddo
-    if (.not.log%sparse) then
-      write(log%unit, form_62, advance="no"), 'method was set:' 
-      do i=1,size(method)
-        if (method(i)) write(log%unit, '(i1,"D ",$)') i
-      enddo
-      write(log%unit, *)
+    write(log%unit, form_62, advance="no"), 'method was set:' 
+    do i=1,size(method)
+      if (method(i)) write(log%unit, '(i1,"D ",$)') i
+    enddo
+    write(log%unit, *)
+    if (method(3).and.(method3d(2).or.method3d(3))) then
+      write(log%unit, form_62, advance="no"), "method refinment for near 3d"
+      if (method3d(2)) write(log%unit,'(a$)') "cuboid"
+      if (method3d(3)) write(log%unit,'(a$)') "cylinder"
+      write(log%unit,*) method3d_refinment_distance 
     endif
     if (.not.any(method).and..not.dryrun) then
       call print_warning("no correct method found", error=.true.)
@@ -160,8 +175,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
     if (file_exists(output%name).and.output%noclobber) then
-        call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
-            error=.true.)
+      call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
+          error=.true.)
     endif
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit, file = output%name, action = "write" )
@@ -373,6 +388,7 @@ subroutine check_arguments (program_calling)
       call print_warning("green_missing", error=.true.)
     endif
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-G')) then
+      call print_warning("no method 2D, so 3D result will be shifted")
       call parse_green()
     endif
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-J')) then
@@ -454,7 +470,7 @@ subroutine parse_moreverbose (cmd_line_entry)
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
           if (file_exists(moreverbose(i)%name)) then
-              call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
+            call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
           endif
         endif
         open(                            & 
@@ -555,16 +571,21 @@ subroutine parse_info (cmd_line_entry)
           info(i)%distance%start, info(i)%distance%stop, &
           info(i)%interpolation, info(i)%distance%denser, &
           info(i)%distance%step
-    enddo
-  else
-    allocate(info(1))
-    call info_defaults(info(1))
-  endif
-end subroutine
 
-! =============================================================================
-! =============================================================================
-subroutine info_defaults(info)
+      if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then
+        call print_warning("stop_3d distance is less then stop distance &
+              - distant area filled with 2D result GN[d..] if any")
+        endif
+      enddo
+    else
+      allocate(info(1))
+      call info_defaults(info(1))
+    endif
+  end subroutine
+
+  ! =============================================================================
+  ! =============================================================================
+  subroutine info_defaults(info)
     use mod_cmdline, only: info_info
     type(info_info),intent(inout) :: info
 
@@ -584,18 +605,18 @@ subroutine info_defaults(info)
     info%height%stop=60000.
     info%height%step=5
     info%height%denser=1
-    
+
     info%distance%stop_3d=180.
 
-end subroutine
+  end subroutine
 
-! =============================================================================
-!> Print version of program depending on program calling
-!! 
-!! \author M. Rajner
-!! \date 2013-03-06
-! =============================================================================
-subroutine print_version (program_calling, version)
+  ! =============================================================================
+  !> Print version of program depending on program calling
+  !! 
+  !! \author M. Rajner
+  !! \date 2013-03-06
+  ! =============================================================================
+  subroutine print_version (program_calling, version)
     character(*) :: program_calling 
     character(*), optional :: version
 
@@ -610,11 +631,11 @@ subroutine print_version (program_calling, version)
     write(log%unit, form_inheader ), 'Warsaw University of Technology'
     write(log%unit, form_inheader ), 'License: GPL v3 or later'
     write(log%unit, form_header )
-end subroutine
+  end subroutine
 
-!! =============================================================================
-!! =============================================================================
-subroutine print_help (program_calling, accepted_switches)
+  !! =============================================================================
+  !! =============================================================================
+  subroutine print_help (program_calling, accepted_switches)
     character(*), intent(in) :: program_calling
     character(*), intent(in),optional :: accepted_switches
     integer :: help_unit, io_stat
@@ -683,16 +704,16 @@ subroutine print_help (program_calling, accepted_switches)
       endif
     enddo
     close(help_unit)
-end subroutine
+  end subroutine
 
-! =============================================================================
-!> Attach full dataname by abbreviation
-!!
-!! \date 2013-03-21
-!! \author M. Rajner
-! =============================================================================
-! todo split to appropriate modules and call
-function dataname(abbreviation)
+  ! =============================================================================
+  !> Attach full dataname by abbreviation
+  !!
+  !! \date 2013-03-21
+  !! \author M. Rajner
+  ! =============================================================================
+  ! todo split to appropriate modules and call
+  function dataname(abbreviation)
     character(len=2), intent(in) :: abbreviation
     character(len=40) :: dataname
 
@@ -724,14 +745,14 @@ function dataname(abbreviation)
     case default
       dataname="unknown"
     end select
-end function
+  end function
 
 
-! =============================================================================
-!> This soubroutine stores indexes of specific dataname for data, green
-!! functions, polygon etc.
-! =============================================================================
-subroutine get_index()
+  ! =============================================================================
+  !> This soubroutine stores indexes of specific dataname for data, green
+  !! functions, polygon etc.
+  ! =============================================================================
+  subroutine get_index()
     use mod_polygon, only: polygon
     use mod_data,    only: model
     use mod_green,   only: green
@@ -834,5 +855,5 @@ subroutine get_index()
         ind%polygon%n = i
       endselect
     enddo
-end subroutine
+  end subroutine
 end module

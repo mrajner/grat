@@ -1,4 +1,3 @@
-! =============================================================================
 !> \file
 !! \brief This module gather cmd line arguments
 !!
@@ -80,7 +79,8 @@ module mod_cmdline
       type(transfer_sp_info) transfer_sp
 
       type warnings_info
-        logical :: if = .true., &
+        logical :: &
+          if = .true., &
           strict=.false., &
           time=.false.
       end type
@@ -131,7 +131,9 @@ module mod_cmdline
       ! point mass - method3d(1)=.true.
       ! potential  - method3d(2)=.true.
       ! cylinder   - method3d(3)=.true.
-      logical :: method3d(3) 
+      ! cylinder2   - method3d(3)=.true.
+      logical :: method3d(4) 
+      real :: method3d_refinment_distance=0.1
       logical :: dryrun
 
       logical :: result_total=.false., result_component=.true.

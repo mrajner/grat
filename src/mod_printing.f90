@@ -115,7 +115,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     endif
     call exit(1)
   endif
-  if(.not.quiet) write(def_unit,*)
+  if(.not.quiet.and.warnings%if) write(def_unit,*)
 end subroutine
 
 ! =============================================================================

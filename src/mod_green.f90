@@ -390,7 +390,7 @@ subroutine convolve(site, date)
 
   integer  :: igreen, idist, iazimuth, nazimuth
   real(dp) :: azimuth, dazimuth
-  real(dp) :: lat, lon, height, area, tot_area, tot_area_used
+  real(dp) :: lat, lon, area, tot_area, tot_area_used
   real(dp) :: val(size(model)), old_val_sp, old_val_rsp
   integer  :: i, j, npoints, iheight, nheight
   integer(2) :: iok(size(polygon))
@@ -400,7 +400,7 @@ subroutine convolve(site, date)
       heights, pressures, temperatures
   logical :: header_p = .true.
 
-  real(dp) :: h1,h2, v1,v2, p_int !temporary
+  ! real(dp) :: h1,h2, v1,v2, p_int !temporary
   real(dp) :: rsp
   real(dp), dimension(:), allocatable :: result_partial
 
@@ -728,10 +728,10 @@ subroutine convolve(site, date)
                       do iheight=1, nheight
 
                         if (iheight.eq.1) then
-                          h1=val(ind%model%h)
-                          v1=val(ind%model%sp)+val(ind%model%rsp)
-                          h2=level%height(i)
-                          v2=1.e2*dble(level%level(i))
+                          ! h1=val(ind%model%h)
+                          ! v1=val(ind%model%sp)+val(ind%model%rsp)
+                          ! h2=level%height(i)
+                          ! v2=1.e2*dble(level%level(i))
 
                           temperatures(iheight)=level%temperature(i)-6.5e-3*(val(ind%model%h)-val(ind%model%hp))
 
@@ -761,10 +761,10 @@ subroutine convolve(site, date)
                           endif
 
                           if(heights(iheight-1).lt.level%height(i).and.(heights(iheight).gt.level%height(i))) then 
-                            h1=level%height(i)
-                            v1=1.e2*dble(level%level(i))
-                            h2=level%height(i+1)
-                            v2=1.e2*dble(level%level(i+1))
+                            ! h1=level%height(i)
+                            ! v1=1.e2*dble(level%level(i))
+                            ! h2=level%height(i+1)
+                            ! v2=1.e2*dble(level%level(i+1))
 
                             pressures(iheight)= standard_pressure( &
                                 height=heights(iheight), &
@@ -792,7 +792,7 @@ subroutine convolve(site, date)
                         ! pressures(iheight)=p_int
                         ! endif
 
-                        if (method3d(1).or.green_common(igreen)%distance(idist).gt.0.1) then
+                        if (method3d(1).or.green_common(igreen)%distance(idist).gt.method3d_refinment_distance) then
                           result(ind%green%g3d) = result(ind%green%g3d) &
                               + geometry(psi=d2r(green_common(igreen)%distance(idist)), h=site%height, z=heights(iheight)) &
                               * pressures(iheight)/(temperatures(iheight))  &
@@ -810,9 +810,25 @@ subroutine convolve(site, date)
                               )                                                & 
                               * pressures(iheight)/(temperatures(iheight))  &
                               *(-gravity%constant)*1e8/R_air
+                          if (isnan(result(ind%green%g3d)))  then
+                            ! small distances can cause numerical problems
+                            result(ind%green%g3d)=0
+                          endif
                         else if (method3d(3)) then
                           result(ind%green%g3d) = result(ind%green%g3d)      & 
                               + cylinder(                                     & 
+                              psi1=d2r(green_common(igreen)%start(idist)),     & 
+                              psi2=d2r(green_common(igreen)%stop(idist)),      & 
+                              dazimuth=d2r(dazimuth),                          & 
+                              h=site%height,                                   & 
+                              z1= heights(iheight)-info(igreen)%height%step/2, & 
+                              z2= heights(iheight)+info(igreen)%height%step/2  & 
+                              )                                                & 
+                              * pressures(iheight)/(temperatures(iheight))  &
+                              *(-gravity%constant)*1e8/R_air
+                        else if (method3d(4)) then
+                          result(ind%green%g3d) = result(ind%green%g3d)      & 
+                              + cylinder2(                                     & 
                               psi1=d2r(green_common(igreen)%start(idist)),     & 
                               psi2=d2r(green_common(igreen)%stop(idist)),      & 
                               dazimuth=d2r(dazimuth),                          & 
@@ -922,7 +938,7 @@ subroutine convolve(site, date)
                         * (val(ind%model%t)-atmosphere%temperature%standard) & 
                         *  area * normalize
                     result(ind%green%gndt) = result(ind%green%gndt) +       & 
-                     result_partial(ind%green%gndt) 
+                        result_partial(ind%green%gndt) 
                   endif
 
                   ! GNdh
@@ -933,7 +949,7 @@ subroutine convolve(site, date)
                         ].eq.0)) &
                         call print_warning("not enough data model for GNdh", &
                         error=.true.)
-                        result_partial(ind%green%gndh) = &
+                    result_partial(ind%green%gndh) = &
                         val(ind%model%sp)                                    & 
                         * green_common(igreen)%data(idist, ind%green%gndh)   & 
                         * (val(ind%model%h)-site%height) & 
@@ -956,7 +972,7 @@ subroutine convolve(site, date)
                         * (val(ind%model%h)-site%height) & 
                         *  area * normalize
                     result(ind%green%gndz) = result(ind%green%gndz) +       & 
-                    result_partial(ind%green%gndz)
+                        result_partial(ind%green%gndz)
                   endif
 
 
@@ -1228,22 +1244,22 @@ end subroutine
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, distancestop)
-  use mod_spherical, only : spher_trig
-  use mod_cmdline,   only : moreverbose, ind
-  use mod_utilities, only : r2d
+    use mod_spherical, only : spher_trig
+    use mod_cmdline,   only : moreverbose, ind
+    use mod_utilities, only : r2d
 
-  real(dp), intent(in) :: azimuth, azstep, latin, lonin
-  real(dp) ::  lat, lon, distancestart, distancestop
+    real(dp), intent(in) :: azimuth, azstep, latin, lonin
+    real(dp) ::  lat, lon, distancestart, distancestop
 
-  call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
-  call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-  call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-  call spher_trig (latin, lonin, distancestart, azimuth + azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(">")')
+    call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
+    call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+    call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+    call spher_trig (latin, lonin, distancestart, azimuth + azstep/2, lat, lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+    write(moreverbose(ind%moreverbose%a)%unit, '(">")')
 end subroutine
 
 ! =============================================================================
@@ -1257,54 +1273,54 @@ end subroutine
 !!    olssson see \cite olsson2009
 !! =============================================================================
 function green_newtonian (psi, h, z, method)
-  use mod_constants, only: earth, gravity
-  use mod_normalization, only: green_normalization
-  real(dp) :: green_newtonian
-  real(dp), intent (in) :: psi
-  real(dp), intent (in), optional :: h
-  real(dp), intent (in), optional :: z
-  character(*), optional :: method
-  real(dp) :: h_, z_, eps, t
-  if (present(h)) then
-    h_=h
-  else
-    h_=0.
-  endif
-  if (present(z)) then
-    z_=z
-  else
-    z_=0.
-  endif
-  if (present(method) &
-      .and. (method.eq."spotl" .or. method.eq."olsson")) then
-    if(method.eq."spotl") then
-      eps = h_/ earth%radius
-      green_newtonian =                                      & 
-          1. /earth%radius**2                                  & 
-          *(eps + 2. * (sin(psi/2.))**2 )                      & 
-          /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) & 
-          * gravity%constant                                   & 
-          * green_normalization("f",psi=psi)
-      return
-    else if (method.eq."olsson") then
-      t = earth%radius/(earth%radius +h_)
-      green_newtonian =                      & 
-          1 / earth%radius**2 * t**2 *         & 
-          (1. - t * cos (psi) ) /              & 
-          ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) & 
-          * gravity%constant                   & 
-          * green_normalization("f",psi=psi)
+    use mod_constants, only: earth, gravity
+    use mod_normalization, only: green_normalization
+    real(dp) :: green_newtonian
+    real(dp), intent (in) :: psi
+    real(dp), intent (in), optional :: h
+    real(dp), intent (in), optional :: z
+    character(*), optional :: method
+    real(dp) :: h_, z_, eps, t
+    if (present(h)) then
+      h_=h
+    else
+      h_=0.
+    endif
+    if (present(z)) then
+      z_=z
+    else
+      z_=0.
+    endif
+    if (present(method) &
+        .and. (method.eq."spotl" .or. method.eq."olsson")) then
+      if(method.eq."spotl") then
+        eps = h_/ earth%radius
+        green_newtonian =                                      & 
+            1. /earth%radius**2                                  & 
+            *(eps + 2. * (sin(psi/2.))**2 )                      & 
+            /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) & 
+            * gravity%constant                                   & 
+            * green_normalization("f",psi=psi)
+        return
+      else if (method.eq."olsson") then
+        t = earth%radius/(earth%radius +h_)
+        green_newtonian =                      & 
+            1 / earth%radius**2 * t**2 *         & 
+            (1. - t * cos (psi) ) /              & 
+            ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) & 
+            * gravity%constant                   & 
+            * green_normalization("f",psi=psi)
+        return
+      endif
+    else
+      green_newtonian =                                                 & 
+          ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        & 
+          / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
+          -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
+
+      green_newtonian = green_newtonian &
+          * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
       return
     endif
-  else
-    green_newtonian =                                                 & 
-        ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        & 
-        / ((earth%radius + h_)**2 + (earth%radius + z_)**2            & 
-        -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
-
-    green_newtonian = green_newtonian &
-        * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
-    return
-  endif
 end function
 end module
