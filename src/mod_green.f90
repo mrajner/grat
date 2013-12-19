@@ -710,21 +710,24 @@ subroutine convolve(site, date)
 
                       if (.not. allocated(level%height)) allocate (level%height(size(level%level)))
                       if (.not. allocated(level%temperature)) allocate (level%temperature(size(level%level)))
+                      if (.not. allocated(level%humidity)) allocate (level%humidity(size(level%level)))
 
                       do i=1,size(level%level)
                         call get_value (                                                               & 
                           model(ind%model%gp), r2d(lat), r2d(lon), level%height(i),                  & 
                           level=level%level(i), method = info(igreen)%interpolation, date=date%date)
+
                         if (ind%model%vt.ne.0) then
                           call get_value (                                                               & 
                             model(ind%model%vt), r2d(lat), r2d(lon), level%temperature(i),                  & 
                             level=level%level(i), method = info(igreen)%interpolation, date=date%date)
                         endif
+
                         if (ind%model%vsh.ne.0) then
                           call get_value (                                                               & 
-                            model(ind%model%vsh), r2d(lat), r2d(lon), val=aux,                  & 
+                            model(ind%model%vsh), r2d(lat), r2d(lon), val=level%humidity(i),                  & 
                             level=level%level(i), method = info(igreen)%interpolation, date=date%date)
-                          if (.not.isnan(aux)) level%temperature(i)=level%temperature(i)*(1.+0.608*aux)
+                          if (.not.isnan(level%humidity(i))) level%temperature(i)=level%temperature(i)*(1.+0.608*level%humidity(i))
                         endif
                       enddo
 
@@ -746,8 +749,8 @@ subroutine convolve(site, date)
                             call get_value (                                                               & 
                               model(ind%model%vsh), r2d(lat), r2d(lon), val=aux,                  & 
                               level=level%level(i-1), method = info(igreen)%interpolation, date=date%date)
-                            TODO
-                            if (.not.isnan(aux)) temperatures(iheight)=temperatures(iheight)*(1.+0.608*aux)
+                            ! TODO
+                            ! if (.not.isnan(aux)) temperatures(iheight)=temperatures(iheight)*(1.+0.608*aux)
                           endif
 
                           ! print * ,  aux
@@ -844,24 +847,10 @@ subroutine convolve(site, date)
                             )                                                & 
                             * pressures(iheight)/(temperatures(iheight))  &
                             *(-gravity%constant)*1e8/R_air
-                        else if (method3d(4)) then
-                          result(ind%green%g3d) = result(ind%green%g3d)      & 
-                            + cylinder2(                                     & 
-                            psi1=d2r(green_common(igreen)%start(idist)),     & 
-                            psi2=d2r(green_common(igreen)%stop(idist)),      & 
-                            dazimuth=d2r(dazimuth),                          & 
-                            h=site%height,                                   & 
-                            z1= heights(iheight)-info(igreen)%height%step/2, & 
-                            z2= heights(iheight)+info(igreen)%height%step/2  & 
-                            )                                                & 
-                            * pressures(iheight)/(temperatures(iheight))  &
-                            *(-gravity%constant)*1e8/R_air
                         endif
                       enddo
                     endif
                   endif
-                  ! if
-                  ! stop 
 
                   !C before GN GNdt etc because it needs SP on H not on site 
                   if(ind%green%gnc.ne.0) then

@@ -106,8 +106,6 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           method3d(2)=.true.
         case ("cylinder")
           method3d(3)=.true.
-        case ("cylinder2")
-          method3d(4)=.true.
         case default
           call print_warning ("no explicit method3d given &
               - falling into point mass (for backward compability, not &

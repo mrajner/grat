@@ -60,15 +60,6 @@ real(dp) function potential (psi1, psi2, dazimuth, h, z1, z2)
     s1*n1-s2*n2-s3*n3+s4*n4 &
     -l1+l2+l3-l4
 
-  ! this part was omitted in Neumeyer. Important in montainous area
-  TODO
-  if(z1.lt.h.and.z2.lt.h) then
-    potential=-potential
-  else if((z1-h)*(z2-h).lt.0) then
-    potential=0
-    return
-  endif
-
   potential = -potential* dazimuth / (6.*r**2)
 end function
 
@@ -83,13 +74,6 @@ real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
   r1=(earth%radius+h)*psi1
   r2=(earth%radius+h)*psi2
   cylinder = -(sqrt((z1-h)**2+r1**2)-sqrt((z1-h)**2+r2**2) ) + (sqrt((z2-h)**2+r1**2)-sqrt((z2-h)**2+r2**2) )
-  TODO
-  if(z1.lt.h.and.z2.lt.h) then
-    cylinder=-cylinder
-  else if((z1-h)*(z2-h).lt.0) then
-    cylinder=0
-    return
-  endif
   cylinder = dazimuth * cylinder
 end function
 
@@ -115,14 +99,6 @@ real(dp) function cylinder2 (psi1,psi2, dazimuth, h, z1, z2)
       -sqrt((zz1-hh)**2+r2**2)) & 
       +(sqrt((zz2-hh)**2+r1**2) & 
       -sqrt((zz2-hh)**2+r2**2))
-
-    TODO
-  if(zz1.lt.hh.and.zz2.lt.hh) then
-    cylinder2=-cylinder2
-  else if((zz1-hh)*(zz2-hh).lt.0) then
-    cylinder2=0
-    return
-  endif
 
   cylinder2 = dazimuth * cylinder2
 end function

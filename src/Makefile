@@ -2,7 +2,7 @@
 # for example: OBJS  = libgrat.a
 #
 #  fdpofssdif: grat
-	#  for i in  none cylinder2 potential cylinder; do \
+	#  for i in  none potential cylinder; do \
 		#  grat \
 		#  -F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
 		#  -S j \
@@ -13,13 +13,16 @@
 		#  done;
 fdpofssdif: grat
 		grat \
-		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-		, NCEP1@VSH \
-		-S jj:52:21:5000  \
-		-I 60@AS: 80@HS: 60000@HE :1@DD :1@3D \
-		-M 3:potential @ 0.10  \
-		 -G@GN  -U \
-		 -D2010:3@D -wn -r,t -H
+			-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
+			, NCEP1@VSH \
+			-S jj:52:21:60  \
+			-I 60@AS: 180@HS: 60000@HE :1@DD :40@3D \
+			-M 3:potential @ 0.10  \
+			-G@GN   \
+			-D2010:43@D -wn -r,t -H -o tmp60 &
+fsf: 
+		value_check \
+			-D2010:43@D -F NCEP@SP -Sff:52:21
 
 sdfsadf:grat
 	grat \

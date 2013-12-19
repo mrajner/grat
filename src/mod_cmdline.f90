@@ -131,8 +131,7 @@ module mod_cmdline
       ! point mass - method3d(1)=.true.
       ! potential  - method3d(2)=.true.
       ! cylinder   - method3d(3)=.true.
-      ! cylinder2   - method3d(3)=.true.
-      logical :: method3d(4) 
+      logical :: method3d(3) 
       real :: method3d_refinment_distance=0.1
       logical :: dryrun
 

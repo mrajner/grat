@@ -47,7 +47,7 @@ module mod_data
 
   type level_info
     integer, allocatable, dimension(:) :: level
-    real(dp), allocatable, dimension(:) :: height, temperature
+    real(dp), allocatable, dimension(:) :: height, temperature, humidity
     logical :: all=.false.
   end type
   type(level_info) :: level
