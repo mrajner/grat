@@ -14,12 +14,12 @@
 fdpofssdif: grat
 		grat \
 		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-		, NCEP1@VSH! \
-		-S j \
-		-I 60@AS: 80@HS: 60000@HE :1@DD :1@DE \
-		-M 3: $$i @ 1.32 -o:free \
-		 -G@GN \
-		 -D2010:3@D -wn -r
+		, NCEP1@VSH \
+		-S jj:52:21:5000  \
+		-I 60@AS: 80@HS: 60000@HE :1@DD :1@3D \
+		-M 3:potential @ 0.10  \
+		 -G@GN  -U \
+		 -D2010:3@D -wn -r,t -H
 
 sdfsadf:grat
 	grat \
