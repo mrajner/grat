@@ -63,25 +63,25 @@ real(dp) function potential (psi1, psi2, dazimuth, h, z1, z2)
   potential = -potential* dazimuth / (6.*r**2)
 end function
 
-! =============================================================================
-!> all values in radians 
-! =============================================================================
-real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
-  use mod_constants, only: earth, pi
-  real(dp), intent(in) :: psi1, psi2, h, z1, z2, dazimuth
-  real(dp) :: r1, r2
+! ! =============================================================================
+! !> all values in radians 
+! ! =============================================================================
+! real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
+  ! use mod_constants, only: earth, pi
+  ! real(dp), intent(in) :: psi1, psi2, h, z1, z2, dazimuth
+  ! real(dp) :: r1, r2
 
-  r1=(earth%radius+h)*psi1
-  r2=(earth%radius+h)*psi2
-  cylinder = -(sqrt((z1-h)**2+r1**2)-sqrt((z1-h)**2+r2**2) ) + (sqrt((z2-h)**2+r1**2)-sqrt((z2-h)**2+r2**2) )
-  cylinder = dazimuth * cylinder
-end function
+  ! r1=(earth%radius+h)*psi1
+  ! r2=(earth%radius+h)*psi2
+  ! cylinder = -(sqrt((z1-h)**2+r1**2)-sqrt((z1-h)**2+r2**2) ) + (sqrt((z2-h)**2+r1**2)-sqrt((z2-h)**2+r2**2) )
+  ! cylinder = dazimuth * cylinder
+! end function
 
 ! =============================================================================
 !> all values in radians 
 !! second improved version of cylinder, includes curvature of the earth
 ! =============================================================================
-real(dp) function cylinder2 (psi1,psi2, dazimuth, h, z1, z2)
+real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
   use mod_constants, only: earth, pi
   real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
   real(dp) :: psi, hh, zz1, zz2
@@ -95,12 +95,11 @@ real(dp) function cylinder2 (psi1,psi2, dazimuth, h, z1, z2)
   zz2=(earth%radius+z2)*cos(psi)
   hh=(earth%radius+h)
 
-  cylinder2 = -(sqrt((zz1-hh)**2+r1**2) & 
+  cylinder = -(sqrt((zz1-hh)**2+r1**2) & 
       -sqrt((zz1-hh)**2+r2**2)) & 
       +(sqrt((zz2-hh)**2+r1**2) & 
       -sqrt((zz2-hh)**2+r2**2))
-
-  cylinder2 = dazimuth * cylinder2
+  cylinder = dazimuth * cylinder
 end function
 
 ! =============================================================================

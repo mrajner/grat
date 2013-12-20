@@ -1,17 +1,18 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
-#  fdpofssdif: grat
-	#  for i in  none potential cylinder; do \
-		#  grat \
-		#  -F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-		#  -S j \
-		#  -I 60@AS: 80@HS: 60000@HE :2@DD :3@DE \
-		#  -M 3: $$i @ 1.32 -o:free \
-		 #  -G@GN \
-		#  -D2010 -wn -rt;\
-		#  done;
 fdpofssdif: grat
+	for i in  none potential cylinder; do \
+		grat \
+		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
+		-S j \
+		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE \
+		-M 3: $$i @ 0.32 -o:free \
+		 -G@GN \
+		-D2010 -wn -rt;\
+		done;
+
+fdofssdif: grat
 		grat \
 			-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
 			, NCEP1@VSH \
