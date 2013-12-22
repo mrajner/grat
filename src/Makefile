@@ -1,7 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
-fdpofssdif: grat
+flkdjfds:
 	for i in  none potential cylinder; do \
 		grat \
 		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
@@ -95,7 +95,7 @@ holla:grat
 FC = ifort
 
 # compiler flags
-FFLAGS = -fpp  -debug -warn all -traceback 
+FFLAGS = -fpp -debug -warn all -traceback 
 # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 

@@ -118,7 +118,10 @@ subroutine read_green (green, print)
   if (.not.file_exists(green%name) &
     .and. (.not. green%name.eq."merriam" &
     .and.  .not. green%name.eq."huang" &
-    .and.  .not. green%name.eq."rajner" )) then
+    .and.  .not. green%name.eq."rajner" &
+    ! this will be feature added for hydrosphere loading later...
+    ! .and.  .not. green%name.eq."GB" &
+    )) then
     green%name="merriam"
   endif
   select case (green%name)
@@ -1026,7 +1029,7 @@ subroutine convolve(site, date)
             else
               result=sqrt(-1.)
             endif
-          else
+          elseif(ind%model%ewt.eq.0) then
             call print_warning("@SP is required with -M2D -G", error=.true.)
           endif
         endif
