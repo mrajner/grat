@@ -1,15 +1,16 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
-fdpofssdif: grat
-	for i in  none potential cylinder; do \
+fssdif: grat
+	time for i in  none potential cylinder; do                                                  \
 		grat \
 		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-		-S j \
-		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE \
-		-M 3: $$i @ 0.32 -o:free \
-		 -G@GN \
-		-D2010 -wn -rt;\
+		-S j                                   \
+		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
+		-M 3: $$i @ 0.32 -o:free               \
+		 -G@GN                                 \
+		-D2010 -wn -rt;                        \
+		exit ;                                 \
 		done;
 
 fdofssdif: grat
@@ -36,8 +37,8 @@ sdfsadf:grat
 		-I 4@AS: 50@HS: 50000@HE : 0.2 @ DE :0.1@3D  \
 		-o   -q -A-0.43  
 gratx: grat
-	grat -M2,3:cylinder         \
-		-F             \
+	grat -M2,3:cylinder  \
+		-F  \
 		NCEP@GP \! ,   \
 		NCEP@VT \! ,   \
 		NCEP@SP\! ,    \
@@ -95,7 +96,7 @@ holla:grat
 FC = ifort
 
 # compiler flags
-FFLAGS = -fpp  -debug -warn all -traceback 
+FFLAGS = -fpp  -debug -warn all -traceback -v -openmp
 # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
