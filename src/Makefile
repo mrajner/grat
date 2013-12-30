@@ -7,7 +7,7 @@ fssdif: grat
 		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
 		-S j                                   \
 		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
-		-M 3: $$i @ 0.32 -o:free               \
+		-M 3: $$i @ 0.31 -o:free               \
 		 -G@GN                                 \
 		-D2010 -wn -rt;                        \
 		exit ;                                 \
@@ -85,10 +85,7 @@ local:
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
-holla:grat
-	grat -F VIENNA @RSP,NCEP@SP, NCEP1@T,NCEP@HP, ETOPO@H\! -G@GNc, @GN, @GNdt, @GNdz,@GNdz2 -D2010:2011 \
-		-Sj \
-		-oholla -H
+
 
 
 
@@ -96,7 +93,7 @@ holla:grat
 FC = ifort
 
 # compiler flags
-FFLAGS = -fpp  -debug -warn all -traceback -v -openmp
+FFLAGS = -fpp  -debug -warn all -traceback
 # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
