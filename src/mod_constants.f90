@@ -12,7 +12,7 @@ module mod_constants
   integer , parameter :: sp = 4 
 
   real(dp) , parameter ::                   & 
-    r0          = 6356.766,                 & ! Earth radius (US Std. atm. 1976)  [km]
+    ! r0          = 6356.766,                 & ! Earth radius (US Std. atm. 1976)  [km]
     R_air       = 287.05,                   & ! dry air constant  [J/kg/K]
     pi          = 4*atan(dble(1.)),         &
     T_zero      = -273.15

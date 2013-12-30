@@ -96,7 +96,7 @@ holla:grat
 FC = ifort
 
 # compiler flags
-FFLAGS = -fpp  -debug -warn all -traceback -v -openmp
+FFLAGS = -fpp  -debug -warn all -traceback -openmp
 # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
