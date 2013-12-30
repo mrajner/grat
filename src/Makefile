@@ -7,7 +7,7 @@ fssdif: grat
 		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
 		-S j                                   \
 		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
-		-M 3: $$i @ 0.32 -o:free               \
+		-M 3: $$i @ 0.31 -o:free               \
 		 -G@GN                                 \
 		-D2010 -wn -rt;                        \
 		exit ;                                 \
