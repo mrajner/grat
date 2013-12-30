@@ -1194,12 +1194,6 @@ subroutine convolve(site, date)
         endif
       enddo
     enddo
-    ! $OMP END PARALLEL DO!
-    !$OMP PARALLEL DO
-    do i=1,10
-      ! call sleep(10)
-    enddo
-    ! $OMP END PARALLEL DO!
   enddo
 
 
