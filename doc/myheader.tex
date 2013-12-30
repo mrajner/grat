@@ -1,0 +1,70 @@
+\documentclass{book}
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
+\usepackage{makeidx}
+\usepackage{natbib}
+\usepackage[noxcolor]{beamerarticle}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{ifthen}
+\usepackage[table]{xcolor}
+\usepackage{textcomp}
+\usepackage{alltt}
+\usepackage{ifpdf}
+%\ifpdf
+\usepackage[pdftex,
+            pagebackref=true,
+            colorlinks=true,
+            linkcolor=violet,
+            unicode
+           ]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+\usepackage{sectsty}
+\usepackage[titles]{tocloft}
+\usepackage{doxygen}
+%mr---
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{standalone}
+\usetikzlibrary{external}
+\usetikzlibrary{pgfplots.groupplots}
+\tikzexternalize
+%---
+\lstset{language=fortran,inputencoding=utf8,basicstyle=\small,breaklines=false,breakatwhitespace=true,tabsize=4,numbers=left }
+\makeindex
+\setcounter{tocdepth}{3}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\familydefault}{\sfdefault}
+\hfuzz=15pt
+\setlength{\emergencystretch}{15pt}
+\hbadness=750
+\tolerance=750
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\begin{document}
+\hypersetup{pageanchor=false,citecolor=violet}
+\begin{titlepage}
+%\vspace*{7cm}
+\phantom{D}
+\vfill
+%\begin{center}
+{
+  \includegraphics[width=0.6\textwidth]{/home/mrajner/src/grat/doc/figures/logo_grat.pdf}
+}
+\newpage
+\phantom{D}
+\vfill
+Marcin Rajner\\
+{\small Politechnika Warszawska | Warsaw University of~Technology}\\
+%\end{center}
+\end{titlepage}
+\clearemptydoublepage
+\pagenumbering{roman}
+\tableofcontents
+\clearemptydoublepage
+\pagenumbering{arabic}
+\hypersetup{pageanchor=true,citecolor=violet}

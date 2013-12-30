@@ -1,0 +1,6 @@
+*.a
+*.o
+*.mod
+doc/latex
+doc/html
+bin/*
