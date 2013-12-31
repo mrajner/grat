@@ -753,6 +753,7 @@ subroutine convolve(site, date)
                                 model(ind%model%vsh), r2d(lat), r2d(lon), val=aux,                  & 
                                 level=level%level(i-1), method = info(igreen)%interpolation, date=date%date)
                             ! TODO
+                            stop
                             ! if (.not.isnan(aux)) temperatures(iheight)=temperatures(iheight)*(1.+0.608*aux)
                           endif
 

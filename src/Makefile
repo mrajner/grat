@@ -1,6 +1,26 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+dsfsdfs: value_check
+	value_check -FERA@VSH -D2012 -Sj -Jm
+rsfsdfs: value_check
+	value_check \
+		-F \
+		NCEP @ GP! ,   \
+		NCEP @ VT! ,   \
+		NCEP @ SP! ,   \
+		NCEP @ VSH! ,   \
+		NCEP1 @ T! ,   \
+		NCEP @ HP! ,   \
+		full @ TP! ,   \
+		full @ TPF! ,   \
+		@RHO \
+		-S j \
+		-H \
+		-D 2010:2010 \
+		-o : rho : level:nc \
+		-J m  
+
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
@@ -22,9 +42,6 @@ fdofssdif: grat
 			-M 3:potential @ 0.10  \
 			-G@GN   \
 			-D2010:43@D -wn -r,t -H -o tmp60 &
-fsf: 
-		value_check \
-			-D2010:43@D -F NCEP@SP -Sff:52:21
 
 sdfsadf:grat
 	grat \

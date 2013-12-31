@@ -267,6 +267,9 @@ subroutine model_aliases(model, dryrun, year, month)
     case ("VT")
       model%names(1)="t"
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"t_l.",year_,month_,".nc"
+    case ("VSH")
+      model%names(1)="q"
+      write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"sh_l.",year_,month_,".nc"
     case ("T")
       model%names(1)="v2t"
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
@@ -812,7 +815,6 @@ subroutine check(status, success)
     if (present(success)) then
       success=.false.
     endif
-    stop "XXX"
     return
   else
     if (present(success)) then
@@ -845,7 +847,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   type(file), intent (in) :: model
   real(dp)  &
-      !, intent (in) &
+    !, intent (in) &
   :: lat, lon
   real(dp), intent(out) ::  val 
   character(1), optional, intent(in) :: method

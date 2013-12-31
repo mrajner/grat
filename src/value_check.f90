@@ -67,7 +67,11 @@ program value_check
       if (model(i)%if) then
         if ( &
             .not.(model(i)%autoloadname.eq."ERA" &
-            .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
+            .and.( &
+            model(i)%dataname.eq."GP" &
+            .or.model(i)%dataname.eq."VT" &
+            .or.model(i)%dataname.eq."VSH" &
+          )) &
             .and.(j.eq.1.and. model(i)%autoload &
             .or. (  &
             model(i)%autoload &
@@ -181,7 +185,7 @@ program value_check
 
         if (ind%model%tpf.ne.0) then
           if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t].eq.0)) &
-              call print_warning("not enough with @TPF")
+              call print_warning("not enough with @TPF", error=.true.)
           val(ind%model%tpf)= &
               standard_pressure ( &
               val(ind%model%gp), &
@@ -196,21 +200,13 @@ program value_check
           endif
           val(ind%model%tpf)=variable_modifier(val(ind%model%tpf),model(ind%model%tpf)%datanames(1))
         endif
+
         if (ind%model%rho.ne.0) then
           if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t,ind%model%vt].eq.0)) &
-              call print_warning("not enough with @rho")
+            call print_warning("not enough with @rho")
           val(ind%model%rho)= &
-              100.*level%level(ilevel)/(R_air * val(ind%model%vt))
+            100.*level%level(ilevel)/(R_air * val(ind%model%vt))
         endif
-
-        ! if (output%gp2h) then
-          ! val(ind%model%gp) = &
-              ! geop2geom( &
-              ! val(ind%model%gp)  & 
-              ! / ( (1. -0.002637 *cos (2. * d2r(site(i)%lat))) &
-              ! * earth%gravity%mean) &
-              ! )
-        ! endif
 
         write (output%unit , "("// output%form // '$)') val
         
