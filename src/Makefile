@@ -238,7 +238,8 @@ package:
 		../../grat/bin/.README
 
 doc: 
-	cd ../doc  &&  doxygen Doxyfile
+	make -C ../doc/figures/ 
+	cd ../doc  &&  (doxygen Doxyfile > /dev/null 2>/dev/null)
 
 docpdf: doc
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman

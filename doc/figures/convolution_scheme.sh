@@ -1,8 +1,5 @@
 #!/bin/bash - 
 #===============================================================================
-#
-#          FILE: podklad_do_convolution.sh
-#         USAGE: ./podklad_do_convolution.sh 
 # 
 #       OPTIONS: ---
 #  REQUIREMENTS: ---
@@ -15,14 +12,14 @@ set -o nounset                              # Treat unset variables as an error
 
 R=0/3/0/3
 I=1.0
-NAME=podklad ;
+NAME=convolution_scheme ;
 
 for i in 1 2
 do
   if [[ $i -eq 1 ]];then
-    NAME_out=podklad;E=""; Z=""
+    NAME_out=$NAME;E=""; Z=""
   else
-    NAME_out=podklad2; E=-E200;Z="-I0.01 -Q"
+    NAME_out=${NAME}2; E=-E200;Z="-I0.01 -Q"
   fi
   grdmath \
       -F \
@@ -64,5 +61,6 @@ do
     -P -Tf -A ${NAME_out}.ps
 
   rm ${NAME_out}.ps
+  rm ${NAME}.cpt
 
 done
