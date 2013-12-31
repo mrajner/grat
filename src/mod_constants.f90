@@ -12,9 +12,8 @@ module mod_constants
   integer , parameter :: sp = 4 
 
   real(dp) , parameter ::                   & 
-    ! r0          = 6356.766,                 & ! Earth radius (US Std. atm. 1976)  [km]
     R_air       = 287.05,                   & ! dry air constant  [J/kg/K]
-    pi          = 4*atan(dble(1.)),         &
+    pi          = 4.*atan(dble(1.)),        &
     T_zero      = -273.15
 
   !---------------------------------------
@@ -45,7 +44,7 @@ module mod_constants
   type(atmosphere_data) , parameter ::      & 
     atmosphere  = atmosphere_data (         & 
     pressure    = pressure_data (           & 
-    standard    = 101325                    & ! Pa (not hectoPascal!)
+    standard    = 101325.                   & ! Pa (not hectoPascal!)
     ),                                      & 
     temperature = temperature_data (        & 
     standard    = 288.15                    & ! K (15 degC)
@@ -93,11 +92,11 @@ module mod_constants
   end type
   type(celestial_object_data), parameter :: & 
     moon        = celestial_object_data (   & 
-    distance    = 384000000,                & ! m
+    distance    = 384000000.,               & ! m
     mass        = 7.35e22                   & ! kg
     ),                                      & 
     sun         = celestial_object_data (   & 
-    distance    = 149600000000 ,            & ! m
+    distance    = 149600000000. ,           & ! m
     mass        = 1.99e30                   & ! kg
     )
 
@@ -109,7 +108,7 @@ module mod_constants
   end type
   type(density_info), parameter :: &
     density = density_info ( &
-    water = 1000 & ! kg m-3
+    water = 1000. & ! kg m-3
     )
 
 end module mod_constants
