@@ -8,13 +8,13 @@
 module mod_constants
   implicit none
 
-  integer , parameter :: dp = 8 
-  integer , parameter :: sp = 4 
+  integer, parameter :: dp = 8 
+  integer, parameter :: sp = 4 
 
-  real(dp) , parameter ::                   & 
-    R_air       = 287.05,                   & ! dry air constant  [J/kg/K]
-    pi          = 4.*atan(dble(1.)),        &
-    T_zero      = -273.15
+  real(dp), parameter ::               & 
+    R_air  = 287.05,                   & ! dry air constant  [J/kg/K]
+    pi     = 4.*atan(dble(1.)),        &
+    T_zero = -273.15
 
   !---------------------------------------
   ! gravity
