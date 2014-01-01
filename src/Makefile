@@ -29,7 +29,7 @@ fssdif: grat
 		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
 		-M 3: $$i @ 0.31 -o:free               \
 		 -G@GN                                 \
-		-D2010 -wn -rt;                        \
+		-D2012 -wn -rt;                        \
 		done;
 
 fdofssdif: grat
@@ -106,28 +106,31 @@ holla:grat
 		-Sj \
 		-oholla -H
 
+TODO WOENSFDF VIENNA
+timetest: grat 
+	grat -G @GN, @GNc -F NCEP@SP, NCEP1@T, NCEP@HP, 100@H, VIENNA@RSP  -D2010 -Sj
+timetest2:
+	grat                                                             \
+		-S j                                                           \
+		-F NCEP@SP , NCEP@HP, NCEP1@T , ETOPO@H! , VIENNA@RSP \
+		-G @GN , @GNc , @GNdt, @GNdz , @GNdz2  \
+		-D 2011 -H -q
 
 
 # compiler
 FC = ifort
 
 # compiler flags
-FFLAGS = -auto -fpp  -debug  -traceback -parallel -warn all
-# -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+ARCH=$(shell arch)
+COMMONFLAGS = -fpp -O2 
+ifeq ($(ARCH),i686)
+	FFLAGS= $(COMMONFLAGS) -m32 -warn all 
+else
+	FFLAGS= $(COMMONFLAGS) -m64 -parallel -warn all
+endif
 
 # libraries 
 NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
-
-# data for computation
-DAT_DIR  = /home/mrajner/dat
-NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
-SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP\!:pres
-T        = $(NCEP_DIR)/air.sig995.2011.nc.reanalysis1@T:air
-LS       = $(NCEP_DIR)/land.nc@LS:land
-GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-H__      = $(NCEP_DIR)/hgt.sfc.nc@HP:hgt@g2h
-Hetopo   = /home/mrajner/dat/etopo/ETOPO1_Ice_c_gmt4.grd@H! : z : x: y
-	#todo vienna
 
 SRCS  = mod_constants.f90     \
 				mod_utilities.f90     \

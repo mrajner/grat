@@ -72,7 +72,6 @@ program grat
   integer :: isite, i, idate, start, iprogress = 0
   logical :: first_waning = .true.
 
-
   ! program starts here with time stamp
   call cpu_time(cpu(1))
 
