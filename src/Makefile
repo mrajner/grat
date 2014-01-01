@@ -112,7 +112,7 @@ holla:grat
 FC = ifort
 
 # compiler flags
-FFLAGS = -fpp  -debug  -traceback -parallel -warn all
+FFLAGS = -auto -fpp  -debug  -traceback -parallel -warn all
 # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
