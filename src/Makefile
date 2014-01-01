@@ -106,7 +106,7 @@ holla:grat
 		-Sj \
 		-oholla -H
 
-TODO WOENSFDF VIENNA
+#  TODO
 timetest: grat 
 	grat -G @GN, @GNc -F NCEP@SP, NCEP1@T, NCEP@HP, 100@H, VIENNA@RSP  -D2010 -Sj
 timetest2:
