@@ -1,36 +1,35 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
-dsfsdfs: value_check
-	value_check -FERA@VSH -D2012 -Sj -Jm
-rsfsdfs: value_check
-	value_check \
-		-F \
-		NCEP @ GP! ,   \
-		NCEP @ VT! ,   \
-		NCEP @ SP! ,   \
-		NCEP @ VSH! ,   \
-		NCEP1 @ T! ,   \
-		NCEP @ HP! ,   \
-		full @ TP! ,   \
-		full @ TPF! ,   \
-		@RHO \
-		-S j \
-		-H \
-		-D 2010:2010 \
-		-o : rho : level:nc \
-		-J m  
+#  dsfsdfs: value_check
+	#  value_check -FERA@VSH -D2011 -Sj -Jm
+#  rsfsdfs: value_check
+	#  value_check \
+		#  -F \
+		#  NCEP  @ GP! ,   \
+		#  NCEP  @ VT! ,   \
+		#  NCEP  @ SP! ,   \
+		#  NCEP1 @ VSH! ,   \
+		#  NCEP1 @ T! ,   \
+		#  NCEP @ HP! ,   \
+		#  full @ TP! ,   \
+		#  full @ TPF! ,   \
+		#  @RHO \
+		#  -S j \
+		#  -H \
+		#  -D 2010:2012 \
+		#  -o : rho : level:nc \
+		#  -J m  
 
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
 		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-		-S j                                   \
+		-S j,r,l                                   \
 		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
 		-M 3: $$i @ 0.31 -o:free               \
 		 -G@GN                                 \
 		-D2010 -wn -rt;                        \
-		exit ;                                 \
 		done;
 
 fdofssdif: grat
@@ -113,7 +112,7 @@ holla:grat
 FC = ifort
 
 # compiler flags
-FFLAGS = -fpp  -debug -warn all -traceback
+FFLAGS = -fpp  -debug  -traceback -parallel -warn all
 # -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
 
 # libraries 
