@@ -148,7 +148,7 @@ subroutine parse_model (cmd_line_entry)
     else
       !check autoload
       call model_aliases(model(i), dryrun=.true.)
-      if (.not.model(i)%if.and. .not.any(["TP","TPF"].eq.model(i)%dataname)) then
+      if (.not.model(i)%if.and. .not.any(["TP","TPF","RHO"].eq.model(i)%dataname)) then
         call print_warning ("model", more=trim(model(i)%name)//" : file do not exist", error=.false.)
       endif
     endif

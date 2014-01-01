@@ -26,7 +26,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
       then
-    call print_warning ("not accepted switch " // cmd_line_entry%switch)
+      call print_warning ("not accepted switch " // cmd_line_entry%switch)
     return
   endif
 
@@ -108,8 +108,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           method3d(3)=.true.
         case default
           call print_warning ("no explicit method3d given &
-              - falling into point mass (for backward compability, not &
-              recomended)")
+            - falling into point mass (for backward compability, not &
+            recomended)")
           method3d(1)=.true.
         endselect
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%dataname)) then
