@@ -1214,8 +1214,8 @@ subroutine convolve(site, date)
     enddo
   enddo
 
+  if (ind%green%g3d.ne.0) result(ind%green%g3d)=result(ind%green%g3d)-rsp
 
-  result(ind%green%g3d)=result(ind%green%g3d)-rsp
   ! results to output
   if (result_component) write (output%unit, "(" // output%form // '$)') result
   if (result_total) then
