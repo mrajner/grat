@@ -258,9 +258,11 @@ subroutine green_unification ()
   allocate (green_common(size(info)))
   allocate (which_green(size(info)))
   allocate (tmp(size(green)))
+  
   do iinfo=1, size(info)
+
     if (info(iinfo)%distance%step.eq.0) then
-      do i = 1, size(green)
+      do i=1, size(green)
         tmp(i) = count(                                          & 
           green(i)%distance.le.info(iinfo)%distance%stop       & 
           .and.green(i)%distance.ge.info(iinfo)%distance%start & 
@@ -278,18 +280,31 @@ subroutine green_unification ()
         imax = size(green(which_green(iinfo))%distance)
       endif
 
-      allocate(tmpgreen%distance(                                   & 
-        size_ntimes_denser(imax-imin+1, info(iinfo)%distance%denser) & 
-        ))
-      do ii = 1, imax - imin
-        do j = 1, info(iinfo)%distance%denser
-          tmpgreen%distance((ii-1)*info(iinfo)%distance%denser+j) = & 
-            green(which_green(iinfo))%distance(imin+ii-1)           & 
-            +(j-1)*(green(which_green(iinfo))%distance(imin+ii)     & 
-            -green(which_green(iinfo))%distance(imin+ii-1))         & 
-            /info(iinfo)%distance%denser
+      if (info(iinfo)%distance%denser.ge.0) then
+        allocate(tmpgreen%distance(                                   & 
+            size_ntimes_denser(imax-imin+1, info(iinfo)%distance%denser) & 
+            ))
+
+        do ii = 1, imax-imin
+          do j = 1, info(iinfo)%distance%denser
+            tmpgreen%distance((ii-1)*info(iinfo)%distance%denser+j) = & 
+                green(which_green(iinfo))%distance(imin+ii-1)           & 
+                +(j-1)*(green(which_green(iinfo))%distance(imin+ii)     & 
+                -green(which_green(iinfo))%distance(imin+ii-1))         & 
+                /info(iinfo)%distance%denser
+          enddo
         enddo
-      enddo
+      else
+        allocate(tmpgreen%distance((imax-imin)/-info(iinfo)%distance%denser &
+            +1+min(1,modulo(imax-imin,-info(iinfo)%distance%denser))))
+        ii=0
+        do j=1,imax-imin+1
+          if (j.eq.imax-imin+1.or.modulo(j-1,info(iinfo)%distance%denser).eq.0) then
+            ii=ii+1
+            tmpgreen%distance(ii)=green(which_green(iinfo))%distance(j)
+          endif
+        enddo
+      endif
 
       tmpgreen%distance(size(tmpgreen%distance)) = & 
         green(which_green(iinfo))%distance(imax)
@@ -323,6 +338,8 @@ subroutine green_unification ()
       green_common(iinfo)%stop(size(green_common(iinfo)%stop)) = &
         info(iinfo)%distance%stop
       deallocate(tmpgreen%distance)
+
+    !@DS =/ 0
     else
       allocate(green_common(iinfo)%distance( &
         ceiling( &
@@ -753,6 +770,7 @@ subroutine convolve(site, date)
                                 model(ind%model%vsh), r2d(lat), r2d(lon), val=aux,                  & 
                                 level=level%level(i-1), method = info(igreen)%interpolation, date=date%date)
                             ! TODO
+                            stop
                             ! if (.not.isnan(aux)) temperatures(iheight)=temperatures(iheight)*(1.+0.608*aux)
                           endif
 
@@ -1236,6 +1254,9 @@ subroutine convolve(site, date)
   ! green values : -L@g
   if(ind%moreverbose%g.ne.0) then
     do i = 1, size(green_common)
+    if (output%header) &
+        write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
+        "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
       do j=1,size(green_common(i)%distance)
         write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, 100f14.7)'), &
             j, green_common(i)%distance(j), &
