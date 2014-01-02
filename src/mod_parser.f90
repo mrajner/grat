@@ -392,12 +392,13 @@ subroutine check_arguments (program_calling)
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-J')) then
       call parse_level()
     endif
-    if ((method(2) &
+    if (((method(2).or.method(3)) &
         .and. inverted_barometer) &
         .and. (ind%model%ls.eq.0 &
         .or.(.not.model(ind%model%ls)%if &
         .and..not.model(ind%model%ls)%if_constant_value) &
-        )) then
+        ) &
+        .and. ind%green%ge.ne.0) then
       call print_warning( &
           "inverted barometer, but no landsea mask", &
           error=any(cmd_line%switch.eq."-B"))
