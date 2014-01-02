@@ -1,6 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+
 #  dsfsdfs: value_check
 	#  value_check -FERA@VSH -D2011 -Sj -Jm
 #  rsfsdfs: value_check
@@ -114,7 +115,7 @@ timetest2:
 		-S j                                                           \
 		-F NCEP@SP , NCEP@HP, NCEP1@T , ETOPO@H! , VIENNA@RSP \
 		-G @GN , @GNc , @GNdt, @GNdz , @GNdz2  \
-		-D 2011 -H -q
+		-D 2011 -H -I-2@DD 
 
 
 # compiler
