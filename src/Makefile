@@ -1,8 +1,15 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+gddfa:grat
+	grat -F NCEP@SP -G@GN -Sj \
+		-I 1@DD -H \
+		-D 2010 -Lb@g -otmp:time
+	grat -F NCEP@SP -G@GN -Sj \
+		-I -1@DD \
+		-D 2010 -La@g -otmp:time -H
 
-#  dsfsdfs: value_check
+dsfsdfs: value_check
 	#  value_check -FERA@VSH -D2011 -Sj -Jm
 #  rsfsdfs: value_check
 	#  value_check \
@@ -127,7 +134,7 @@ COMMONFLAGS = -fpp -O2
 ifeq ($(ARCH),i686)
 	FFLAGS= $(COMMONFLAGS) -m32 -warn all 
 else
-	FFLAGS= $(COMMONFLAGS) -m64 -parallel -warn all
+	FFLAGS= $(COMMONFLAGS) -m64 -warn all
 endif
 
 # libraries 

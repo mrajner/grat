@@ -403,10 +403,16 @@ end subroutine
 !! i.e. * * * *  -->  * . . * . . * . . * (3 times denser)
 ! ==============================================================================
 function size_ntimes_denser (size_original, ndenser)
+    use mod_printing
     integer :: size_ntimes_denser 
     integer, intent(in) :: size_original, ndenser
 
-    size_ntimes_denser= (size_original - 1) * (ndenser) + 1
+    if (ndenser.gt.0) then
+      size_ntimes_denser = (size_original-1)*(ndenser)+1
+    else
+      call print_warning("not allowed negative @DD", error=.true.)
+      size_ntimes_denser = (size_original-1)/(-ndenser)+1
+    endif
 end function
 
 ! =============================================================================
