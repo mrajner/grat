@@ -159,6 +159,7 @@ program grat
           cycle
         endif
       endif
+
       do isite = 1, size(site)
         iprogress = iprogress + 1
 
@@ -199,7 +200,6 @@ program grat
           endif
         enddo
         if (any(.not.model%exist).and..not.output%nan) cycle
-
 
         if (level%all.and..not.allocated(level%level)) then
           allocate(level%level(size(model(ind%model%gp)%level)))

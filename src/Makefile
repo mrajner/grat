@@ -1,6 +1,8 @@
+all: DEP=y
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+
 gddfa:grat
 	grat -F NCEP@SP -G@GN -Sj \
 		-I 1@DD -H \
@@ -36,7 +38,7 @@ fssdif: grat
 		-S j,r,l                                   \
 		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
 		-M 3: $$i @ 0.31 -o:free               \
-		 -G@GN                                 \
+		-G@GN                                 \
 		-D2012 -wn -rt;                        \
 		done;
 
@@ -48,7 +50,7 @@ fdofssdif: grat
 			-I 60@AS: 180@HS: 60000@HE :1@DD :40@3D \
 			-M 3:potential @ 0.10  \
 			-G@GN   \
-			-D2010:43@D -wn -r,t -H -o tmp60 &
+			-D2010:43@D -wn -r,t -H -o tmp60 
 
 sdfsadf:grat
 	grat \
@@ -79,7 +81,6 @@ gratx: grat
 	cat tmp
 
 MYMODEL=NCEP
-
 dfsdfsf: $(OBJS) grat
 	grat \
 		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,$(MYMODEL)@VT! \
@@ -114,31 +115,27 @@ holla:grat
 		-Sj \
 		-oholla -H
 
-#  TODO
-timetest: grat 
-	grat -G @GN, @GNc -F NCEP@SP, NCEP1@T, NCEP@HP, 100@H, VIENNA@RSP  -D2010 -Sj
-timetest2:
-	grat                                                             \
-		-S j                                                           \
-		-F NCEP@SP , NCEP@HP, NCEP1@T , ETOPO@H! , VIENNA@RSP \
-		-G @GN , @GNc , @GNdt, @GNdz , @GNdz2  \
-		-D 2011 -H -I-2@DD 
 
 
-# compiler
+# compiler:  currently only ifort is supported
+#  FC = gfortran
 FC = ifort
 
 # compiler flags
 ARCH=$(shell arch)
-COMMONFLAGS = -fpp -O2 
-ifeq ($(ARCH),i686)
-	FFLAGS= $(COMMONFLAGS) -m32 -warn all 
-else
-	FFLAGS= $(COMMONFLAGS) -m64 -warn all
-endif
+
+# for testing do not optimize
+FFLAGS = -O0 -xHost
+FFLAGS += -fpp -warn all -WB
+# for final do optimize
+all: FFLAGS+=-O2
 
 # libraries 
-NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
+NETCDFLIB = -I/usr/local/include \
+						-L/usr/local/lib     \
+						-lnetcdf             \
+						-lnetcdff            \
+						-lnetcdf
 
 SRCS  = mod_constants.f90     \
 				mod_utilities.f90     \
@@ -170,7 +167,7 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-ifdef DEP
+#  ifeq ($(DEP),y)
 mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
@@ -184,7 +181,7 @@ mod_polygon.o:mod_printing.o mod_cmdline.o
 mod_printing.o: mod_cmdline.o
 mod_cmdline.o: mod_utilities.o
 mod_normalization.o: mod_constants.o mod_utilities.o
-endif
+#  endif
 
 
 PROGS_DIR=../bin
