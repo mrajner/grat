@@ -421,7 +421,7 @@ subroutine gather_site_model_info()
     endif
     do i = 1 , size(site)
       if (ind%model%hp.ne.0) then
-        call get_variable( model(ind%model%hp))
+        call get_variable(model(ind%model%hp))
         site(i)%hp%if=.true.
         call get_value (                   & 
             model=model(ind%model%hp),     & 

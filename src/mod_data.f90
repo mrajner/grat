@@ -42,6 +42,7 @@ module mod_data
     character(10) :: autoloadname
   end type
   type(file), allocatable, dimension(:) :: model 
+  logical :: all_huge=.false.
 
   private :: dataname
 
@@ -86,9 +87,10 @@ subroutine parse_model (cmd_line_entry)
       ) then
         model(i)%huge=.true.
         model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
-        write(log%unit, form%i2) "!:huge"
+        write(log%unit, form%i3) "!:huge"
       endif
     endif
+    if (all_huge) model(i)%huge=.true.
 
     if (model(i)%name.eq."") then
       if (i.gt.1) then
@@ -432,26 +434,30 @@ subroutine read_netCDF (model, print, force)
   integer :: i 
 
   if (present(force) .and. force) then
-    if (allocated(model%data))   deallocate(model%data)
-    if (allocated(model%lat))    deallocate(model%lat)
-    if (allocated(model%lon))    deallocate(model%lon)
-    if (allocated(model%date))   deallocate(model%date)
-    if (allocated(model%level))  deallocate(model%level)
-    if (allocated(model%time))   deallocate(model%time)
+    if (allocated(model%data))  deallocate(model%data)
+    if (allocated(model%lat))   deallocate(model%lat)
+    if (allocated(model%lon))   deallocate(model%lon)
+    if (allocated(model%date))  deallocate(model%date)
+    if (allocated(model%level)) deallocate(model%level)
+    if (allocated(model%time))  deallocate(model%time)
   endif
+
   if (.not.file_exists(model%name)) &
       call print_warning("file not exist " // trim (model%name), &
       error=.true.) 
 
   if (.not. (present(print).and. .not. print)) then
-    write (log%unit, form%i3) "Opening file:", trim(basename(trim(model%name)))
+    write (log%unit, form%i3) &
+        "Opening file:", trim(basename(trim(model%name))), &
+        ", huge [T/F]:", model%huge
   endif
+
   call check (nf90_open (model%name, nf90_nowrite, model%ncid))
 
   do i = 2,5
     call get_dimension (model, i, print=print)
   enddo
-  if (size (model%time).ge.1) call nctime2date (model, print=print)
+  if (size(model%time).ge.1) call nctime2date (model, print=print)
 end subroutine
 
 ! =============================================================================

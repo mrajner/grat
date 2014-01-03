@@ -13,7 +13,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   use mod_site,    only: parse_site
   use mod_date,    only: parse_date
   use mod_polygon, only: parse_polygon
-  use mod_data,    only: parse_model, parse_level
+  use mod_data,    only: parse_model, parse_level, all_huge, model
   use mod_green,   only: parse_green
   use mod_cmdline
   use mod_utilities, only: file_exists, is_numeric
@@ -82,6 +82,10 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_admit(cmd_line_entry)
   case ('-F')
     call parse_model(cmd_line_entry)
+  case ('-!')
+    all_huge=.true.
+    write(log%unit, form%i2), 'all model as huge' 
+    if (size(model).ge.1) call print_warning("put -! before -F")
   case ("-G")
     call parse_green(cmd_line_entry)
   case ("-H")
@@ -207,7 +211,6 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           "force transfer SP from @HP to @H and RSP from @HRSP to @H [T/F]: ", transfer_sp%if
       write(log%unit, "(" // form%t2 //  "a$)") &
           "force transfer SP on"
-
     endif
   case ("-J")
     call parse_level(cmd_line_entry)
@@ -602,7 +605,7 @@ subroutine parse_info (cmd_line_entry)
 
     info%height%start=0.
     info%height%stop=60000.
-    info%height%step=5
+    info%height%step=25.
     info%height%denser=1
 
     info%distance%stop_3d=180.

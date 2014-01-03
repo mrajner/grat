@@ -618,7 +618,8 @@ subroutine convolve(site, date)
                   ]).ne.0) &
                   ) &
                   ) then
-                if (optimize.and.green_common(igreen)%distance(idist).gt.20) then
+
+                if (optimize.and.green_common(igreen)%distance(idist).gt.3) then
                   val(ind%model%h)=val(ind%model%hp)
                 else
                   call get_value ( & 

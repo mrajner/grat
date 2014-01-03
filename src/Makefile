@@ -1,35 +1,35 @@
-all: DEP=y
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
 
-dfdf:value_check
-	value_check \
-		-F \
-		NCEP  @ GP! ,   \
-		NCEP  @ VT! ,   \
-		NCEP  @ SP! ,   \
-		NCEP1 @ VSH! ,   \
-		NCEP1 @ T! ,   \
-		NCEP @ HP! ,   \
-		full @ TP! ,   \
-		full @ TPF! ,   \
-		@RHO \
-		-S j \
-		-H \
-		-D 2010 \
-		-o : rho : level:nc \
-		-J m  
-
+#  dfdf:value_check
+	#  value_check \
+		#  -F \
+		#  NCEP  @ GP! ,   \
+		#  NCEP  @ VT! ,   \
+		#  NCEP  @ SP! ,   \
+		#  NCEP1 @ VSH! ,   \
+		#  NCEP1 @ T! ,   \
+		#  NCEP @ HP! ,   \
+		#  full @ TP! ,   \
+		#  full @ TPF! ,   \
+		#  @RHO \
+		#  -S j \
+		#  -H \
+		#  -D 2010 \
+		#  -o : rho : level:nc \
+		#  -J m  
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
-		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-		-S j,r,l                                   \
-		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
-		-M 3: $$i @ 0.31 -o:free               \
-		-G@GN                                 \
-		-D2012 -wn -rt;                        \
+		-! \
+		-F ERA @SP, VIENNA@RSP,VIENNA@HRSP, ERA@T, ERA@HP, ETOPO@H!, NCEP@GP ,NCEP@VT \
+		-S l               -U                   \
+		-I 60@AS: 80@HS: 60000@HE:3@DE  \
+		-M 2: $$i @ 0.31 -o:/dev/null:free               \
+		-G@GN  , @GNdz                               \
+		-D2011:20110102 -H -Q -wn -rt;                        \
+		exit; \
 		done;
 
 fdofssdif: grat
@@ -115,8 +115,10 @@ FC = ifort
 ARCH=$(shell arch)
 
 # for testing do not optimize
-FFLAGS = -O0 -xHost
-FFLAGS += -fpp -warn all -WB
+FFLAGS = -O0 -xHost 
+MYFLAGS=
+FFLAGS += $(MYFLAGS)
+FFLAGS += -fpp -warn all 
 # for final do optimize
 all: FFLAGS+=-O2
 
@@ -157,7 +159,8 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
-#  ifeq ($(DEP),y)
+all: DEP+=yes
+ifdef DEP
 mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o
 mod_aggf.o: mod_constants.o mod_utilities.o mod_atmosphere.o mod_normalization.o
@@ -171,7 +174,7 @@ mod_polygon.o:mod_printing.o mod_cmdline.o
 mod_printing.o: mod_cmdline.o
 mod_cmdline.o: mod_utilities.o
 mod_normalization.o: mod_constants.o mod_utilities.o
-#  endif
+endif
 
 
 PROGS_DIR=../bin
