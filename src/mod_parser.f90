@@ -176,13 +176,15 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       output%rho=.true.
     endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
+
     if (file_exists(output%name).and.output%noclobber) then
-      call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
-          error=.true.)
+      call print_warning ("nc", more=trim(output%name), error=.true.)
     endif
+
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit, file = output%name, action = "write" )
     endif
+
   case ('-P')
     call parse_polygon(cmd_line_entry)
   case ('-w')
@@ -297,8 +299,8 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   if (.not.any(cmd_line%switch.eq.'-I')) then
     call parse_info()
   endif
+
   if (any(cmd_line%switch.eq.'-V')) then
-    !if_verbose = .true.
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
         if ( &
@@ -324,7 +326,8 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
             log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
           endif
           if (file_exists(log%name).and.log%noclobber) then
-            call print_warning ("I will not overwrite with -V : nc (noclobber) ... sorry", error=.true.)
+            if (.not.quiet) &
+            call print_warning ("nc", more=trim(log%name), error=.true.)
           endif
           open (newunit=log%unit, file = log%name, action='write')
         else
@@ -472,7 +475,7 @@ subroutine parse_moreverbose (cmd_line_entry)
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
           if (file_exists(moreverbose(i)%name)) then
-            call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
+            call print_warning ("nc", more=trim(moreverbose(i)%name), error=.true.)
           endif
         endif
         open(                            & 
