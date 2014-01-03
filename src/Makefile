@@ -3,33 +3,23 @@ all: DEP=y
 # for example: OBJS  = libgrat.a
 #
 
-gddfa:grat
-	grat -F NCEP@SP -G@GN -Sj \
-		-I 1@DD -H \
-		-D 2010 -Lb@g -otmp:time
-	grat -F NCEP@SP -G@GN -Sj \
-		-I -1@DD \
-		-D 2010 -La@g -otmp:time -H
-
-dsfsdfs: value_check
-	#  value_check -FERA@VSH -D2011 -Sj -Jm
-#  rsfsdfs: value_check
-	#  value_check \
-		#  -F \
-		#  NCEP  @ GP! ,   \
-		#  NCEP  @ VT! ,   \
-		#  NCEP  @ SP! ,   \
-		#  NCEP1 @ VSH! ,   \
-		#  NCEP1 @ T! ,   \
-		#  NCEP @ HP! ,   \
-		#  full @ TP! ,   \
-		#  full @ TPF! ,   \
-		#  @RHO \
-		#  -S j \
-		#  -H \
-		#  -D 2010:2012 \
-		#  -o : rho : level:nc \
-		#  -J m  
+dfdf:value_check
+	value_check \
+		-F \
+		NCEP  @ GP! ,   \
+		NCEP  @ VT! ,   \
+		NCEP  @ SP! ,   \
+		NCEP1 @ VSH! ,   \
+		NCEP1 @ T! ,   \
+		NCEP @ HP! ,   \
+		full @ TP! ,   \
+		full @ TPF! ,   \
+		@RHO \
+		-S j \
+		-H \
+		-D 2010 \
+		-o : rho : level:nc \
+		-J m  
 
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \

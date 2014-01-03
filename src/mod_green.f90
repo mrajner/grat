@@ -231,7 +231,7 @@ subroutine read_green (green, print)
         "columns:", green%column, &
         "lines:", size(green%distance)
     if (green%dataname.eq."GNc") then 
-      write(log%unit, form%i3) "gnc lossenes" , gnc_looseness
+      write(log%unit, form%i3) "gnc loosenes" , gnc_looseness
     endif
   endif
 

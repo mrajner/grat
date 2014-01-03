@@ -125,6 +125,7 @@ program value_check
     do ilevel=start_level, size(level%level)
       do i = 1 , size(site)
         iprogress = iprogress + 1
+
         ! add time stamp if -D option was specified
         if (j.gt.0) then
           write (output%unit , '(f10.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
@@ -155,6 +156,7 @@ program value_check
             if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
           endif
         enddo
+
         write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
         if (output%height) then
           write (output%unit, '(f10.3$)') site(i)%height
@@ -164,6 +166,11 @@ program value_check
           write (output%unit, '(i6$)') level%level(ilevel)
         elseif(output%level) then
           write (output%unit, '(i6$)') ilevel
+        endif
+
+        if(ind%model%vsh.ne.0) then
+          if (isnan(val(ind%model%vsh))) val(ind%model%vsh)=0
+          val(ind%model%vt)=val(ind%model%vt)*(1.+0.608*val(ind%model%vsh))
         endif
 
         if (ind%model%tp.ne.0) then
