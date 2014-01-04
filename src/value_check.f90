@@ -67,7 +67,11 @@ program value_check
       if (model(i)%if) then
         if ( &
             .not.(model(i)%autoloadname.eq."ERA" &
-            .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
+            .and.( &
+            model(i)%dataname.eq."GP" &
+            .or.model(i)%dataname.eq."VT" &
+            .or.model(i)%dataname.eq."VSH" &
+          )) &
             .and.(j.eq.1.and. model(i)%autoload &
             .or. (  &
             model(i)%autoload &
@@ -121,6 +125,7 @@ program value_check
     do ilevel=start_level, size(level%level)
       do i = 1 , size(site)
         iprogress = iprogress + 1
+
         ! add time stamp if -D option was specified
         if (j.gt.0) then
           write (output%unit , '(f10.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
@@ -151,6 +156,7 @@ program value_check
             if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
           endif
         enddo
+
         write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
         if (output%height) then
           write (output%unit, '(f10.3$)') site(i)%height
@@ -160,6 +166,11 @@ program value_check
           write (output%unit, '(i6$)') level%level(ilevel)
         elseif(output%level) then
           write (output%unit, '(i6$)') ilevel
+        endif
+
+        if(ind%model%vsh.ne.0) then
+          if (isnan(val(ind%model%vsh))) val(ind%model%vsh)=0
+          val(ind%model%vt)=val(ind%model%vt)*(1.+0.608*val(ind%model%vsh))
         endif
 
         if (ind%model%tp.ne.0) then
@@ -181,7 +192,7 @@ program value_check
 
         if (ind%model%tpf.ne.0) then
           if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t].eq.0)) &
-              call print_warning("not enough with @TPF")
+              call print_warning("not enough with @TPF", error=.true.)
           val(ind%model%tpf)= &
               standard_pressure ( &
               val(ind%model%gp), &
@@ -196,21 +207,13 @@ program value_check
           endif
           val(ind%model%tpf)=variable_modifier(val(ind%model%tpf),model(ind%model%tpf)%datanames(1))
         endif
+
         if (ind%model%rho.ne.0) then
           if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t,ind%model%vt].eq.0)) &
-              call print_warning("not enough with @rho")
+            call print_warning("not enough with @rho")
           val(ind%model%rho)= &
-              100.*level%level(ilevel)/(R_air * val(ind%model%vt))
+            100.*level%level(ilevel)/(R_air * val(ind%model%vt))
         endif
-
-        ! if (output%gp2h) then
-          ! val(ind%model%gp) = &
-              ! geop2geom( &
-              ! val(ind%model%gp)  & 
-              ! / ( (1. -0.002637 *cos (2. * d2r(site(i)%lat))) &
-              ! * earth%gravity%mean) &
-              ! )
-        ! endif
 
         write (output%unit , "("// output%form // '$)') val
         

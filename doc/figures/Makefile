@@ -1,6 +1,6 @@
 all: \
 	spher_area.pdf spher_area.svg \
-	podklad.pdf podklad2.pdf \
+	convolution_scheme.pdf convolution_scheme.pdf \
 	polygon_ilustration.pdf polygon_ilustration.png\
 	interpolation_ilustration.pdf\
 	interpolation_ilustration.svg \
@@ -33,7 +33,7 @@ logo_grat.png: logo_grat.pdf
 %.png:%.pdf
 	convert -resize 900 $< $@
 
-podklad.pdf podklad2.pdf: podklad_do_convolution.sh
+convolution_scheme.pdf convolution_scheme2.pdf: convolution_scheme.sh
 	bash $^
 
 other: 
@@ -53,8 +53,10 @@ clean:
 	rm -f mapa?.points *.cpt
 	rm -f mapa*{pdf,svg,png}
 	rm -f interp{b,l,n}1.dat *.ps
-	rm -f podklad*.{grd,dat}
+	rm -f *.{grd,dat}
 	latexmk -c -quiet
+	rm -f logo_gr@.{log,out,aux}
+	rm -f convolution-figure*
 
 favicon.ico: logo_gr@.pdf
 	convert $<  -bordercolor white -border 0 \

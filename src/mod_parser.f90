@@ -13,7 +13,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   use mod_site,    only: parse_site
   use mod_date,    only: parse_date
   use mod_polygon, only: parse_polygon
-  use mod_data,    only: parse_model, parse_level
+  use mod_data,    only: parse_model, parse_level, all_huge, model
   use mod_green,   only: parse_green
   use mod_cmdline
   use mod_utilities, only: file_exists, is_numeric
@@ -26,7 +26,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
       then
-    call print_warning ("not accepted switch " // cmd_line_entry%switch)
+      call print_warning ("not accepted switch " // cmd_line_entry%switch)
     return
   endif
 
@@ -82,6 +82,10 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_admit(cmd_line_entry)
   case ('-F')
     call parse_model(cmd_line_entry)
+  case ('-!')
+    all_huge=.true.
+    write(log%unit, form%i2), 'all model as huge' 
+    if (size(model).ge.1) call print_warning("put -! before -F")
   case ("-G")
     call parse_green(cmd_line_entry)
   case ("-H")
@@ -108,8 +112,8 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           method3d(3)=.true.
         case default
           call print_warning ("no explicit method3d given &
-              - falling into point mass (for backward compability, not &
-              recomended)")
+            - falling into point mass (for backward compability, not &
+            recomended)")
           method3d(1)=.true.
         endselect
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%dataname)) then
@@ -172,13 +176,15 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       output%rho=.true.
     endif
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
+
     if (file_exists(output%name).and.output%noclobber) then
-      call print_warning ("I will not overwrite with -o "//trim(output%name)//" : nc (noclobber) ... sorry", &
-          error=.true.)
+      call print_warning ("nc", more=trim(output%name), error=.true.)
     endif
+
     if (len(output%name).gt.0.and. output%name.ne."") then
       open (newunit = output%unit, file = output%name, action = "write" )
     endif
+
   case ('-P')
     call parse_polygon(cmd_line_entry)
   case ('-w')
@@ -207,7 +213,6 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           "force transfer SP from @HP to @H and RSP from @HRSP to @H [T/F]: ", transfer_sp%if
       write(log%unit, "(" // form%t2 //  "a$)") &
           "force transfer SP on"
-
     endif
   case ("-J")
     call parse_level(cmd_line_entry)
@@ -294,8 +299,8 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   if (.not.any(cmd_line%switch.eq.'-I')) then
     call parse_info()
   endif
+
   if (any(cmd_line%switch.eq.'-V')) then
-    !if_verbose = .true.
     do i=1,size(cmd_line)
       if (cmd_line(i).switch.eq."-V") then
         if ( &
@@ -321,7 +326,8 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
             log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
           endif
           if (file_exists(log%name).and.log%noclobber) then
-            call print_warning ("I will not overwrite with -V : nc (noclobber) ... sorry", error=.true.)
+            if (.not.quiet) &
+            call print_warning ("nc", more=trim(log%name), error=.true.)
           endif
           open (newunit=log%unit, file = log%name, action='write')
         else
@@ -392,12 +398,13 @@ subroutine check_arguments (program_calling)
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-J')) then
       call parse_level()
     endif
-    if ((method(2) &
+    if (((method(2).or.method(3)) &
         .and. inverted_barometer) &
         .and. (ind%model%ls.eq.0 &
         .or.(.not.model(ind%model%ls)%if &
         .and..not.model(ind%model%ls)%if_constant_value) &
-        )) then
+        ) &
+        .and. ind%green%ge.ne.0) then
       call print_warning( &
           "inverted barometer, but no landsea mask", &
           error=any(cmd_line%switch.eq."-B"))
@@ -468,7 +475,7 @@ subroutine parse_moreverbose (cmd_line_entry)
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
           if (file_exists(moreverbose(i)%name)) then
-            call print_warning ("I will not overwrite with -L : nc (noclobber) ... sorry", error=.true.)
+            call print_warning ("nc", more=trim(moreverbose(i)%name), error=.true.)
           endif
         endif
         open(                            & 
@@ -601,7 +608,7 @@ subroutine parse_info (cmd_line_entry)
 
     info%height%start=0.
     info%height%stop=60000.
-    info%height%step=5
+    info%height%step=25.
     info%height%denser=1
 
     info%distance%stop_3d=180.

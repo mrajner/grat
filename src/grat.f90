@@ -72,7 +72,6 @@ program grat
   integer :: isite, i, idate, start, iprogress = 0
   logical :: first_waning = .true.
 
-
   ! program starts here with time stamp
   call cpu_time(cpu(1))
 
@@ -80,7 +79,7 @@ program grat
   call intro ( &
     program_calling = "grat", &
       version = "pre-alpha", &
-      accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJQ", &
+      accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJQ!", &
       cmdlineargs=.true.)
 
     start = 0
@@ -160,6 +159,7 @@ program grat
           cycle
         endif
       endif
+
       do isite = 1, size(site)
         iprogress = iprogress + 1
 
@@ -200,7 +200,6 @@ program grat
           endif
         enddo
         if (any(.not.model%exist).and..not.output%nan) cycle
-
 
         if (level%all.and..not.allocated(level%level)) then
           allocate(level%level(size(model(ind%model%gp)%level)))

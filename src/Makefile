@@ -1,16 +1,35 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+
+#  dfdf:value_check
+	#  value_check \
+		#  -F \
+		#  NCEP  @ GP! ,   \
+		#  NCEP  @ VT! ,   \
+		#  NCEP  @ SP! ,   \
+		#  NCEP1 @ VSH! ,   \
+		#  NCEP1 @ T! ,   \
+		#  NCEP @ HP! ,   \
+		#  full @ TP! ,   \
+		#  full @ TPF! ,   \
+		#  @RHO \
+		#  -S j \
+		#  -H \
+		#  -D 2010 \
+		#  -o : rho : level:nc \
+		#  -J m  
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
-		-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-		-S j                                   \
-		-I 60@AS: 80@HS: 60000@HE :2@DD :3@DE  \
-		-M 3: $$i @ 0.31 -o:free               \
-		 -G@GN                                 \
-		-D2010 -wn -rt;                        \
-		exit ;                                 \
+		-! \
+		-F ERA @SP, VIENNA@RSP,VIENNA@HRSP, ERA@T, ERA@HP, ETOPO@H!, NCEP@GP ,NCEP@VT \
+		-S l               -U                   \
+		-I 60@AS: 80@HS: 60000@HE:3@DE  \
+		-M 2: $$i @ 0.31 -o:/dev/null:free               \
+		-G@GN  , @GNdz                               \
+		-D2011:20110102 -H -Q -wn -rt;                        \
+		exit; \
 		done;
 
 fdofssdif: grat
@@ -21,10 +40,7 @@ fdofssdif: grat
 			-I 60@AS: 180@HS: 60000@HE :1@DD :40@3D \
 			-M 3:potential @ 0.10  \
 			-G@GN   \
-			-D2010:43@D -wn -r,t -H -o tmp60 &
-fsf: 
-		value_check \
-			-D2010:43@D -F NCEP@SP -Sff:52:21
+			-D2010:43@D -wn -r,t -H -o tmp60 
 
 sdfsadf:grat
 	grat \
@@ -55,7 +71,6 @@ gratx: grat
 	cat tmp
 
 MYMODEL=NCEP
-
 dfsdfsf: $(OBJS) grat
 	grat \
 		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,$(MYMODEL)@VT! \
@@ -85,30 +100,34 @@ local:
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
+holla:grat
+	grat -F VIENNA @RSP,NCEP@SP, NCEP1@T,NCEP@HP, ETOPO@H\! -G@GNc, @GN, @GNdt, @GNdz,@GNdz2 -D2010:2011 \
+		-Sj \
+		-oholla -H
 
 
 
-
-# compiler
+# compiler:  currently only ifort is supported
+#  FC = gfortran
 FC = ifort
 
 # compiler flags
-FFLAGS = -fpp  -debug -warn all -traceback
-# -syntax-only # -O2  -CB    # -g -traceback -heap-arrays
+ARCH=$(shell arch)
+
+# for testing do not optimize
+FFLAGS = -O0 -xHost 
+MYFLAGS=
+FFLAGS += $(MYFLAGS)
+FFLAGS += -fpp -warn all 
+# for final do optimize
+all: FFLAGS+=-O2
 
 # libraries 
-NETCDFLIB = -I/usr/local/include -L/usr/local/lib -lnetcdf -lnetcdff -lnetcdf  
-
-# data for computation
-DAT_DIR  = /home/mrajner/dat
-NCEP_DIR = $(DAT_DIR)/ncep_reanalysis
-SP       = $(NCEP_DIR)/pres.sfc.2011.nc@SP\!:pres
-T        = $(NCEP_DIR)/air.sig995.2011.nc.reanalysis1@T:air
-LS       = $(NCEP_DIR)/land.nc@LS:land
-GPT      = $(NCEP_DIR)/hgt.2011.nc:hgt
-H__      = $(NCEP_DIR)/hgt.sfc.nc@HP:hgt@g2h
-Hetopo   = /home/mrajner/dat/etopo/ETOPO1_Ice_c_gmt4.grd@H! : z : x: y
-	#todo vienna
+NETCDFLIB = -I/usr/local/include \
+						-L/usr/local/lib     \
+						-lnetcdf             \
+						-lnetcdff            \
+						-lnetcdf
 
 SRCS  = mod_constants.f90     \
 				mod_utilities.f90     \
@@ -140,6 +159,7 @@ OBJS = $(SRCS:.f90=.o)
 
 
 # module dependencies
+all: DEP+=yes
 ifdef DEP
 mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o
@@ -218,7 +238,8 @@ package:
 		../../grat/bin/.README
 
 doc: 
-	cd ../doc  &&  doxygen Doxyfile
+	make -C ../doc/figures/ 
+	cd ../doc  &&  (doxygen Doxyfile > /dev/null 2>/dev/null)
 
 docpdf: doc
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman

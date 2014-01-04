@@ -98,6 +98,9 @@ subroutine print_warning (warn, unit, more, error, program_calling)
         write(def_unit, form%i0, advance="no") "-G is required"
       case("method")
         write(def_unit, form%i0, advance="no") "-M no method was set" 
+      case("nc")
+        print *, quiet
+        write(def_unit, form%i0, advance="no") "I will not overwrite with : nc (noclobber)"
       case default 
         write(def_unit, form%i0, advance="no") warn
       end select

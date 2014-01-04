@@ -20,7 +20,7 @@ program example_aggf
   call green_newtonian_compute( &
     ["green_newtonian_olsson.dat","green_newtonian_spotl.dat","green_newtonian.dat"])
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
-  call aggf_thin_layer ("/home/mrajner/src/grat/examples/tmp")
+  call aggf_thin_layer ("/home/mrajner/src/grat/examples/aggf_thin_layer.dat")
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_full.dat'  , method="full"       , predefined=.false.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_rough.dat' , predefined=.false., rough=.true.)
   call compute_tabulated_green_functions ('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method="simple"     , predefined=.false.)
@@ -303,6 +303,7 @@ subroutine aggf_resp_h (filename)
   else
     file_unit = output_unit
   endif
+  print *, "aggf_resp_h --->", filename
 
   call get_green_distances()
 
