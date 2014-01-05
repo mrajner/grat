@@ -2,23 +2,23 @@
 # for example: OBJS  = libgrat.a
 #
 
-#  dfdf:value_check
-	#  value_check \
-		#  -F \
-		#  NCEP  @ GP! ,   \
-		#  NCEP  @ VT! ,   \
-		#  NCEP  @ SP! ,   \
-		#  NCEP1 @ VSH! ,   \
-		#  NCEP1 @ T! ,   \
-		#  NCEP @ HP! ,   \
-		#  full @ TP! ,   \
-		#  full @ TPF! ,   \
-		#  @RHO \
-		#  -S j \
-		#  -H \
-		#  -D 2010 \
-		#  -o : rho : level:nc \
-		#  -J m  
+dfdf:value_check
+	value_check \
+		-F \
+		NCEP  @ GP! ,   \
+		NCEP  @ VT! ,   \
+		NCEP  @ SP! ,   \
+		NCEP1 @ VSH! ,   \
+		NCEP1 @ T! ,   \
+		NCEP @ HP! ,   \
+		full @ TP! ,   \
+		full @ TPF! ,   \
+		@RHO \
+		-S j \
+		-H \
+		-D 2010 \
+		-o : rho : level:nc \
+		-J m  
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
