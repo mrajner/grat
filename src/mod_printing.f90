@@ -80,7 +80,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
       case("site_file_format")
         write(def_unit, form%i0, advance="no") "Some records were rejected"
         write(def_unit, form%i0, advance="no") "you should specify for each &
-            line at least 3[4] parameters in free format:"
+          line at least 3[4] parameters in free format:"
         write(def_unit, form%i0, advance="no") "name lat lon [height] (rest will be skipped)"
       case("boundaries")
         write(def_unit, form%i0, advance="no") "something wrong with boundaries. IGNORED"
@@ -111,8 +111,8 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     if ((.not.warn.eq."args").and. warnings%time) then
       call date_and_time (values=execution_date)
       write(def_unit, & 
-          '("[",i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)","]")'),&
-          execution_date (1:3), execution_date(5:7), execution_date(4)/60
+        '("[",i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)","]")'),&
+        execution_date (1:3), execution_date(5:7), execution_date(4)/60
     else
       write(def_unit,*)
     endif
@@ -124,53 +124,53 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine progress(j, time, every)
-    use mod_constants, only: dp
-    use mod_cmdline, only: moreverbose, quiet_step
-    use iso_fortran_env, only: output_unit
-    implicit none
-    integer(kind=4)::j,k
-    integer:: ii
-    character(len=27)::bar="???% |                    |"
-    real(dp), optional :: time
-    integer, optional :: every
-    integer :: every_
-    integer,save :: step=0
+  use mod_constants, only: dp
+  use mod_cmdline, only: moreverbose, quiet_step
+  use iso_fortran_env, only: output_unit
+  implicit none
+  integer(kind=4)::j,k
+  integer:: ii
+  character(len=27)::bar="???% |                    |"
+  real(dp), optional :: time
+  integer, optional :: every
+  integer :: every_
+  integer,save :: step=0
 
-    if (present(every)) then
-      every_=every
-    else
-      every_=quiet_step
-    endif
+  if (present(every)) then
+    every_=every
+  else
+    every_=quiet_step
+  endif
 
-    step =step+1
-    if (modulo(step,every_).ne.0.and.j.ne.every_.and.step.ne.1) return
+  step =step+1
+  if (modulo(step,every_).ne.0.and.j.ne.every_.and.step.ne.1) return
 
-    write(unit=bar(1:3),fmt="(i3)") j
-    do k=1, j/5
-      bar(6+k:6+k)="*"
-    enddo
+  write(unit=bar(1:3),fmt="(i3)") j
+  do k=1, j/5
+    bar(6+k:6+k)="*"
+  enddo
 
-    if (present(time)) then
-      write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a)$)") &
-          '+',char(13), bar, &
-          time, "s", int(100.*time/j), trim(output%name), &
-          (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
-    else
-      write(unit=output_unit,fmt="(a1,a1,a27$)") '+',char(13), bar
-    endif
-    return
+  if (present(time)) then
+    write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a)$)") &
+      '+',char(13), bar, &
+      time, "s", int(100.*time/j), trim(output%name), &
+      (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
+  else
+    write(unit=output_unit,fmt="(a1,a1,a27$)") '+',char(13), bar
+  endif
+  return
 end subroutine progress
 
 ! =============================================================================
 ! =============================================================================
 function basename (file)
-    character(200) :: basename
-    character(*) :: file
+  character(200) :: basename
+  character(*) :: file
 
-    if (log%full) then
-      basename=file
-    else
-      basename=file(index(file,'/', back=.true.)+1:)
-    endif
+  if (log%full) then
+    basename=file
+  else
+    basename=file(index(file,'/', back=.true.)+1:)
+  endif
 end function
 end module mod_printing
