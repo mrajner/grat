@@ -69,33 +69,35 @@ program value_check
   do j = start, size(date)
     do i = 1 , size(model)
       if (model(i)%if) then
-        if ( &
-            .not.(model(i)%autoloadname.eq."ERA" &
-            .and.( &
-            model(i)%dataname.eq."GP" &
-            .or.model(i)%dataname.eq."VT" &
-            .or.model(i)%dataname.eq."VSH" &
-          )) &
-            .and.(j.eq.1.and. model(i)%autoload &
-            .or. (  &
-            model(i)%autoload &
-            .and. .not. date(j)%date(1).eq.date(j-1)%date(1) &
-            ) &
-            ) &
-            ) then
-          call model_aliases(model(i), year=date(j)%date(1))
-        else if ( &
-            j.eq.1.and. model(i)%autoload &
-            .or. (  &
-            model(i)%autoload &
-            .and. .not.( &
-            date(j)%date(1).eq.date(j-1)%date(1) &
-            .and.date(j)%date(2).eq.date(j-1)%date(2) &
-            ) &
-            ) &
-            ) then
-          call model_aliases( &
-              model(i), year=date(j)%date(1), month=date(j)%date(2))
+        if (model(i)%autoload  &
+            .and. &
+            .not.( &
+            model(i)%autoloadname.eq."ERA" &
+            .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) & 
+            )) then
+
+          if ( &
+              (j.eq.1 &
+              .or. .not. date(j)%date(1).eq.date(j-1)%date(1) &
+              ) &
+              ) then
+
+            call model_aliases(model(i), year=date(j)%date(1))
+          endif
+
+        else if (model(i)%autoload) then
+
+          if ( &
+              (j.eq.1 &
+              .or. .not.( &
+              date(j)%date(1).eq.date(j-1)%date(1) &
+              .and.date(j)%date(2).eq.date(j-1)%date(2)) &
+              ) &
+              ) then
+
+            call model_aliases( &
+                model(i), year=date(j)%date(1), month=date(j)%date(2))
+          endif
         endif
         if (allocated(date).and.model(i)%exist) then
           call get_variable (model(i), date = date(j)%date)
@@ -179,7 +181,7 @@ program value_check
 
 
         write (output%unit , "("// output%form // '$)') val
-        
+
         if (output%unit.ne.output_unit.and..not.quiet) then 
           call cpu_time(cpu(2))
           call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
