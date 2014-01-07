@@ -167,29 +167,40 @@ program grat
           if(model(i)%if) then
             select case (model(i)%dataname)
             case ("SP", "T", "GP", "VT", "VSH") 
-              if ( &
-                  .not.(model(i)%autoloadname.eq."ERA" &
-                  .and.(model(i)%dataname.eq."GP".or.model(i)%dataname.eq."VT")) &
-                  .and.(idate.eq.1.and. model(i)%autoload &
-                  .or. (  &
-                  model(i)%autoload &
-                  .and. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
-                  ) &
-                  ) &
-                  ) then
-                call model_aliases(model(i), year=date(idate)%date(1))
-              else if ( &
-                  idate.eq.1.and. model(i)%autoload &
-                  .or. (  &
-                  model(i)%autoload &
-                  .and. .not.( &
-                  date(idate)%date(1).eq.date(idate-1)%date(1) &
-                  .and.date(idate)%date(2).eq.date(idate-1)%date(2) &
-                  ) &
-                  ) &
-                  ) then
-                call model_aliases( &
-                    model(i), year=date(idate)%date(1), month=date(idate)%date(2))
+              if (model(i)%autoload  &
+                  .and. &
+                  .not.( &
+                  model(i)%autoloadname.eq."ERA" &
+                  .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) & 
+                  )) then
+
+                if ( &
+                    (idate.eq.1 &
+                    .or. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
+                    ) &
+                    .and. isite.eq.1 &
+                    ) then
+
+                  print * , isite, date(idate)%date(1).eq.date(idate-1)%date(1) &
+                      , date(idate)%date(1),date(idate-1)%date(1)
+
+                  call model_aliases(model(i), year=date(idate)%date(1))
+                endif
+
+              else if (model(i)%autoload) then
+
+                if ( &
+                    (idate.eq.1 &
+                    .or. .not.( &
+                    date(idate)%date(1).eq.date(idate-1)%date(1) &
+                    .and.date(idate)%date(2).eq.date(idate-1)%date(2)) &
+                    ) &
+                    .and. isite.eq.1 &
+                    ) then
+
+                  call model_aliases( &
+                      model(i), year=date(idate)%date(1), month=date(idate)%date(2))
+                endif
               endif
               if (size(date).eq.0.and.model(i)%exist) then
                 call get_variable (model(i))
