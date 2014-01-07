@@ -11,14 +11,16 @@ dfdf:value_check
 		NCEP1 @ VSH! ,   \
 		NCEP1 @ T! ,   \
 		NCEP @ HP! ,   \
-		full @ TP! ,   \
-		full @ TPF! ,   \
-		@RHO \
+		TP @ custom ,   \
+		TPF@ custom ,   \
+		@RHO, \
 		-S j \
 		-H \
 		-D 2010 \
-		-o : rho : level:nc \
+		-o : prune: rho : level:nc \
 		-J m  
+	cat oporowe |colrm 1 54
+
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \

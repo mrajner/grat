@@ -1190,4 +1190,57 @@ subroutine parse_level (cmd_line_entry)
   endif
 
 end subroutine
+
+
+! =============================================================================
+! =============================================================================
+! function tpf
+! end function
+        ! if(ind%model%vsh.ne.0) then
+          ! if (isnan(val(ind%model%vsh))) val(ind%model%vsh)=0
+          ! val(ind%model%vt)=val(ind%model%vt)*(1.+0.608*val(ind%model%vsh))
+        ! endif
+
+        ! if (ind%model%tp.ne.0) then
+          ! if (ind%model%gp.eq.0) call print_warning("need @GP with @TP")
+          ! val(ind%model%tp)= &
+              ! standard_pressure ( &
+              ! val(ind%model%gp), &
+              ! use_standard_temperature=.true., &
+              ! method = model(ind%model%tp)%name &
+              ! ) 
+
+          ! if (output%rho) then
+            ! val(ind%model%tp)=val(ind%model%tp)/(R_air * standard_temperature(val(ind%model%gp)))
+          ! endif
+
+          ! val(ind%model%tp)= &
+              ! variable_modifier(val(ind%model%tp),model(ind%model%tp)%datanames(1))
+        ! endif
+
+        ! if (ind%model%tpf.ne.0) then
+          ! if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t].eq.0)) &
+              ! call print_warning("not enough with @TPF", error=.true.)
+          ! val(ind%model%tpf)= &
+              ! standard_pressure ( &
+              ! val(ind%model%gp), &
+              ! p_zero=val(ind%model%sp), &
+              ! temperature=val(ind%model%t), &
+              ! use_standard_temperature=.true., &
+              ! h_zero=val(ind%model%hp), &
+              ! method = model(ind%model%tpf)%name &
+              ! )
+          ! if (output%rho) then
+            ! val(ind%model%tpf)=val(ind%model%tpf)/(R_air * standard_temperature(val(ind%model%gp)))
+          ! endif
+          ! val(ind%model%tpf)=variable_modifier(val(ind%model%tpf),model(ind%model%tpf)%datanames(1))
+        ! endif
+
+        ! if (ind%model%rho.ne.0) then
+          ! if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t,ind%model%vt].eq.0)) &
+            ! call print_warning("not enough with @rho")
+          ! val(ind%model%rho)= &
+            ! 100.*level%level(ilevel)/(R_air * val(ind%model%vt))
+        ! endif
+
 end module

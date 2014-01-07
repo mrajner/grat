@@ -41,15 +41,19 @@ program value_check
     start=1
     ! print header
     if (output%header) then
-      write (output%unit , '(a10,1x,a14,1x)' , advance = "no" ) "#mjd", "date"
+      if (.not.output%prune) then
+        write (output%unit , '(a10,1x,a14,1x)' , advance = "no" ) "#mjd", "date"
+      endif
     endif
   endif
 
   ! print header
   if (output%header.and.size(site).gt.0) then
-    write (output%unit, '(a8,2a10$)') "name", "lat", "lon"
-    if (output%height) then
-      write (output%unit, '(a10$)') "height"
+    if (.not.output%prune) then
+      write (output%unit, '(a8,2a10$)') "name", "lat", "lon"
+      if (output%height) then
+        write (output%unit, '(a10$)') "height"
+      endif
     endif
     if (output%level) then
       write (output%unit, '(a6$)') "level"
@@ -128,7 +132,9 @@ program value_check
 
         ! add time stamp if -D option was specified
         if (j.gt.0) then
-          write (output%unit , '(f10.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
+          if (.not.output%prune) then
+            write (output%unit , '(f10.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
+          endif
         endif
 
         ! if this point should not be used (polygon) leave as zero
@@ -157,9 +163,11 @@ program value_check
           endif
         enddo
 
-        write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
-        if (output%height) then
-          write (output%unit, '(f10.3$)') site(i)%height
+        if (.not.output%prune) then
+          write (output%unit , '(a8,2f10.4$)') site(i)%name, site(i)%lat, site(i)%lon
+          if (output%height) then
+            write (output%unit, '(f10.3$)') site(i)%height
+          endif
         endif
 
         if (output%level.and. allocated(level%level)) then
@@ -168,52 +176,7 @@ program value_check
           write (output%unit, '(i6$)') ilevel
         endif
 
-        if(ind%model%vsh.ne.0) then
-          if (isnan(val(ind%model%vsh))) val(ind%model%vsh)=0
-          val(ind%model%vt)=val(ind%model%vt)*(1.+0.608*val(ind%model%vsh))
-        endif
 
-        if (ind%model%tp.ne.0) then
-          if (ind%model%gp.eq.0) call print_warning("need @GP with @TP")
-          val(ind%model%tp)= &
-              standard_pressure ( &
-              val(ind%model%gp), &
-              use_standard_temperature=.true., &
-              method = model(ind%model%tp)%name &
-              ) 
-
-          if (output%rho) then
-            val(ind%model%tp)=val(ind%model%tp)/(R_air * standard_temperature(val(ind%model%gp)))
-          endif
-
-          val(ind%model%tp)= &
-              variable_modifier(val(ind%model%tp),model(ind%model%tp)%datanames(1))
-        endif
-
-        if (ind%model%tpf.ne.0) then
-          if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t].eq.0)) &
-              call print_warning("not enough with @TPF", error=.true.)
-          val(ind%model%tpf)= &
-              standard_pressure ( &
-              val(ind%model%gp), &
-              p_zero=val(ind%model%sp), &
-              temperature=val(ind%model%t), &
-              use_standard_temperature=.true., &
-              h_zero=val(ind%model%hp), &
-              method = model(ind%model%tpf)%name &
-              )
-          if (output%rho) then
-            val(ind%model%tpf)=val(ind%model%tpf)/(R_air * standard_temperature(val(ind%model%gp)))
-          endif
-          val(ind%model%tpf)=variable_modifier(val(ind%model%tpf),model(ind%model%tpf)%datanames(1))
-        endif
-
-        if (ind%model%rho.ne.0) then
-          if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t,ind%model%vt].eq.0)) &
-            call print_warning("not enough with @rho")
-          val(ind%model%rho)= &
-            100.*level%level(ilevel)/(R_air * val(ind%model%vt))
-        endif
 
         write (output%unit , "("// output%form // '$)') val
         
