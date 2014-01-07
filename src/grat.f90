@@ -77,10 +77,10 @@ program grat
 
   ! gather cmd line option decide where to put output
   call intro ( &
-    program_calling = "grat", &
-      version = "pre-alpha", &
-      accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJQ!", &
-      cmdlineargs=.true.)
+      program_calling = "grat", &
+        version = "pre-alpha", &
+        accepted_switches="VSBLGPqoFIDLvhRrMOAHUwJQ!", &
+    cmdlineargs=.true.)
 
     start = 0
     if (dryrun) then
@@ -150,7 +150,7 @@ program grat
     endif
 
 
-    do idate = start, size (date)
+    do idate=start, size (date)
       if (idate.ge.1) then 
         if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
           if (first_waning) call print_warning  &
@@ -210,6 +210,7 @@ program grat
             endselect
           endif
         enddo
+
         if (any(.not.model%exist).and..not.output%nan) cycle
 
         if (level%all.and..not.allocated(level%level)) then
