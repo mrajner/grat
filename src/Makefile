@@ -204,14 +204,13 @@ HOST=$(shell hostname)
 
 # prevent owervriting with new version on the server grat
 $(PROGS_DIR)/%:%.f90 $(OBJS) 
-ifeq ($(HOST),grat)
-	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@$(DATE) $(OBJS) 
-else
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+# add timestamp to executable (archive for testing purposes)
+ifdef UNIQ
+	cp $@ $@$(DATE) -ni
 endif
-ifdef TEST
-	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@$(TEST) $(OBJS) 
-endif
+
+
 
 # paralelization
 #../bin/value_check: value_check.f90 $(OBJS)
