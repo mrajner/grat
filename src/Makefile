@@ -26,9 +26,9 @@ fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
 		-! \
-		-F ERA @SP, VIENNA@RSP,VIENNA@HRSP, ERA@T, ERA@HP, ETOPO@H!, NCEP@GP ,NCEP@VT \
-		-S l               -U                   \
-		-I 6@AS: 80@HS: 60000@HE:3@DE  \
+		-F NCEP @SP, VIENNA@RSP,VIENNA@HRSP, NCEP1@T, NCEP@HP, ETOPO@H!, ERA@GP ,ERA@VT \
+		-S l,j               -U                   \
+		-I 46@AS: 80@HS: 60000@HE:3@DE  \
 		-M 3: $$i @ 0.31 -o:/dev/null:free               \
 		-G@GN  , @GNdz                               \
 		-D2011:20110102 -H -Q -wn -rt;                        \
