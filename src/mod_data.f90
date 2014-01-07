@@ -452,7 +452,10 @@ subroutine read_netCDF (model, print, force)
         ", huge [T/F]:", model%huge
   endif
 
+  if (model%ncid.ne.0) call check (nf90_close (model%ncid))
+
   call check (nf90_open (model%name, nf90_nowrite, model%ncid))
+  if(log%if) write(log%unit, *), "opening", trim(model%name)
 
   do i = 2,5
     call get_dimension (model, i, print=print)
