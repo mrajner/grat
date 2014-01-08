@@ -79,6 +79,7 @@ subroutine parse_model (cmd_line_entry)
     write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
     model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
     model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
+    if (model(i)%dataname.eq."custom") continue 
     if (model(i)%dataname.eq."") then
       model(i)%dataname="NN"
     else
@@ -118,7 +119,7 @@ subroutine parse_model (cmd_line_entry)
       write(log%unit, '(5(a,x))', advance="no"), (trim(model(i)%names(j)), j=1,5)
       model(i)%if=.true.
       write(log%unit, *) 
-      if (model(i)%dataname.ne."ascii") then
+      if (.not.any(model%dataname.ne.["ascii"])) then
         call read_netCDF(model(i))
       endif
 
@@ -150,7 +151,7 @@ subroutine parse_model (cmd_line_entry)
     else
       !check autoload
       call model_aliases(model(i), dryrun=.true.)
-      if (.not.model(i)%if.and. .not.any(["TP","TPF","RHO"].eq.model(i)%dataname)) then
+      if (.not.model(i)%if) then
         call print_warning ("model", more=trim(model(i)%name)//" : file do not exist", error=.false.)
       endif
     endif
