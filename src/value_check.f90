@@ -59,9 +59,14 @@ program value_check
       write (output%unit, '(a6$)') "level"
     endif
   endif
+
   do i = 1, size(model)
     if (output%header) then
-      write (output%unit,'(a13)', advance='no') trim(model(i)%dataname)
+      if (model(i)%dataname.eq."custom") then
+        write (output%unit,'(a6,"@custom")', advance='no') trim(model(i)%name)
+      else
+        write (output%unit,'(a13)', advance='no') trim(model(i)%dataname)
+      endif
     endif
   enddo
   if(output%header) write(output%unit, *)
@@ -146,8 +151,8 @@ program value_check
 
         imodel = 0
         do ii = 1 , size (model)
+          imodel = imodel + 1
           if (model(ii)%if.or.model(ii)%if_constant_value) then
-            imodel = imodel + 1
             if (iok.eq.1) then
               if (j.eq.0) then
                 call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
@@ -157,9 +162,23 @@ program value_check
                     method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
               endif
             else
-              val (imodel) = 0
             endif
             if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
+          else if (model(ii)%dataname.eq."custom") then
+            call customfile_value( &
+                what = model(imodel)%name, &
+                sp   = val(ind%model%sp), &
+                t    = val(ind%model%t), &
+                hp   = val(ind%model%hp), &
+                gp   = val(ind%model%gp), &
+                sh   = val(ind%model%vsh), &
+                vt    = val(ind%model%vt), &
+                level= level%level(ilevel), &
+                val  = val(imodel), &
+                rho = any(model%name.eq."RHO") &
+                )
+          else
+            val (imodel) = sqrt(-1.)
           endif
         enddo
 
@@ -175,7 +194,6 @@ program value_check
         elseif(output%level) then
           write (output%unit, '(i6$)') ilevel
         endif
-
 
 
         write (output%unit , "("// output%form // '$)') val

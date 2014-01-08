@@ -1194,53 +1194,63 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-! function tpf
-! end function
-        ! if(ind%model%vsh.ne.0) then
-          ! if (isnan(val(ind%model%vsh))) val(ind%model%vsh)=0
-          ! val(ind%model%vt)=val(ind%model%vt)*(1.+0.608*val(ind%model%vsh))
-        ! endif
+subroutine customfile_value (what, sp, t, hp, gp, sh, vt, level, val, rho)
+  use mod_printing, only: print_warning
+  use mod_atmosphere, only: standard_pressure, standard_temperature
+  use mod_constants, only: R_air
+  character(*), intent(in) :: what
+  real(dp), intent(in),optional :: sp,t, hp, gp, sh, vt
+  integer, intent(in),optional :: level
 
-        ! if (ind%model%tp.ne.0) then
-          ! if (ind%model%gp.eq.0) call print_warning("need @GP with @TP")
-          ! val(ind%model%tp)= &
-              ! standard_pressure ( &
-              ! val(ind%model%gp), &
-              ! use_standard_temperature=.true., &
-              ! method = model(ind%model%tp)%name &
-              ! ) 
+  ! convert pressure to density
+  logical, intent(in),optional :: rho
+  real(dp), intent(out) :: val
+  real(dp):: t_aux
 
-          ! if (output%rho) then
-            ! val(ind%model%tp)=val(ind%model%tp)/(R_air * standard_temperature(val(ind%model%gp)))
-          ! endif
+  ! use humidity if asked for
+  select case (what)
+  case ("TP+H","TPF+H")
+    t_aux=vt*(1.+0.608*sh)
+  case default
+    t_aux=vt
+  end select
 
-          ! val(ind%model%tp)= &
-              ! variable_modifier(val(ind%model%tp),model(ind%model%tp)%datanames(1))
-        ! endif
+  select case (what)
 
-        ! if (ind%model%tpf.ne.0) then
-          ! if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t].eq.0)) &
-              ! call print_warning("not enough with @TPF", error=.true.)
-          ! val(ind%model%tpf)= &
-              ! standard_pressure ( &
-              ! val(ind%model%gp), &
-              ! p_zero=val(ind%model%sp), &
-              ! temperature=val(ind%model%t), &
-              ! use_standard_temperature=.true., &
-              ! h_zero=val(ind%model%hp), &
-              ! method = model(ind%model%tpf)%name &
-              ! )
-          ! if (output%rho) then
-            ! val(ind%model%tpf)=val(ind%model%tpf)/(R_air * standard_temperature(val(ind%model%gp)))
-          ! endif
-          ! val(ind%model%tpf)=variable_modifier(val(ind%model%tpf),model(ind%model%tpf)%datanames(1))
-        ! endif
+  case ("TP","TP+H")
+    val= &
+        standard_pressure ( &
+        gp, &
+        use_standard_temperature=.true., &
+        method = "full" &
+        ) 
 
-        ! if (ind%model%rho.ne.0) then
-          ! if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t,ind%model%vt].eq.0)) &
-            ! call print_warning("not enough with @rho")
-          ! val(ind%model%rho)= &
-            ! 100.*level%level(ilevel)/(R_air * val(ind%model%vt))
-        ! endif
+  case ("TPF", "TPF+H")
+    val= &
+        standard_pressure ( &
+        gp, &
+        p_zero=sp, &
+        temperature=t, &
+        use_standard_temperature=.true., &
+        h_zero=hp, &
+        method = "full" &
+        )
 
+  case ("RHO")
+    val= &
+        100.*level/(R_air * standard_temperature(gp))
+
+  case default
+    call print_warning( &
+        "nothing I know for @custom file specification"//trim(what), &
+        error=.true.)
+  endselect
+
+  if (present(rho).and.what.ne."RHO") then
+    if(rho) then
+      val=val/(R_air * t_aux)
+    endif
+  endif
+
+end subroutine
 end module

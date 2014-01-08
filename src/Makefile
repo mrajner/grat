@@ -13,13 +13,15 @@ dfdf:value_check
 		NCEP @ HP! ,   \
 		TP @ custom ,   \
 		TPF@ custom ,   \
-		@RHO, \
+		RHO @custom , \
+		TP+H @ custom ,   \
+		TPF+H@ custom    \
 		-S j \
 		-H \
 		-D 2010 \
 		-o : prune: rho : level:nc \
 		-J m  
-	cat oporowe |colrm 1 54
+	cat mycustom |colrm 1 54
 
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
