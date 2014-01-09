@@ -1,26 +1,25 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
-
-#  dfdf:value_check
-	#  value_check \
-		#  -F \
-		#  NCEP  @ GP! ,   \
-		#  NCEP  @ VT! ,   \
-		#  NCEP  @ SP! ,   \
-		#  NCEP1 @ VSH! ,   \
-		#  NCEP1 @ T! ,   \
-		#  NCEP @ HP! ,   \
-		#  TP @ custom ,   \
-		#  TPF@ custom ,   \
-		#  @RHO, \
-		#  -S j \
-		#  -H \
-		#  -D 2010 \
-		#  -o : prune: rho : level:nc \
-		#  -J m  
-	#  cat oporowe |colrm 1 54
-
+dfdf:value_check
+	value_check \
+		-F \
+		NCEP  @ GP! ,   \
+		NCEP  @ VT! ,   \
+		NCEP  @ SP! ,   \
+		NCEP1 @ VSH! ,   \
+		NCEP1 @ T! ,   \
+		NCEP @ HP! ,   \
+		TP @ custom ,   \
+		TPF@ custom ,   \
+		RHO @custom , \
+		TPF+H@ custom    \
+		-S j \
+		-H \
+		-D 2010 \
+		-o : prune: rho : level:nc \
+		-J m  
+	cat mycustom |colrm 1 54
 
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \

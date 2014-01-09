@@ -255,4 +255,15 @@ real(dp) function geop2geom (geopotential_height, inverse)
     endif
 end function
 
+! =============================================================================
+!> Compute virtual temperature using temperature and specific humidity
+! =============================================================================
+function virtual_temperature(t, sh)
+  use mod_constants, only: dp
+  real(dp) :: virtual_temperature
+  real(dp), intent(in) :: t, sh
+
+  virtual_temperature=t*(1.+0.608*sh)
+end function
+
 end module
