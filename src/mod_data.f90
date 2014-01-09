@@ -1192,7 +1192,6 @@ subroutine parse_level (cmd_line_entry)
 
 end subroutine
 
-
 ! =============================================================================
 ! =============================================================================
 subroutine customfile_value (what, sp, t, hp, gp, sh, vt, level, val, rho)
@@ -1239,7 +1238,7 @@ subroutine customfile_value (what, sp, t, hp, gp, sh, vt, level, val, rho)
 
   case ("RHO")
     val= &
-        100.*level/(R_air * standard_temperature(gp))
+        100.*level/(R_air * t)
 
   case default
     call print_warning( &
