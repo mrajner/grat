@@ -16,7 +16,7 @@ program value_check
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
-  real (dp)    :: cpu(2)
+  real (dp)    :: cpu(2), sh
   integer      :: i, ii, j ,start, imodel, iprogress = 0
   integer(2)   :: iok
   integer(2)   :: ilevel, start_level
@@ -25,10 +25,10 @@ program value_check
   call cpu_time(cpu(1))
 
   call intro ( &
-    program_calling   = "value_check",      & 
-    accepted_switches = "VFoShvIDLPRqwHMJ", & 
-    version           = "beta",             & 
-    cmdlineargs       = .true.              & 
+    program_calling   = "value_check",       & 
+    accepted_switches = "VFoShvIDLPRqwHMJ!", & 
+    version           = "beta",              & 
+    cmdlineargs       = .true.               & 
     )
 
   ! for progress bar
@@ -164,19 +164,22 @@ program value_check
             else
             endif
             if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
+
           else if (model(ii)%dataname.eq."custom") then
+            if(imodel.eq.1) sh= val(ind%model%vsh)
             call customfile_value( &
-                what = model(imodel)%name, &
-                sp   = val(ind%model%sp), &
-                t    = val(ind%model%t), &
-                hp   = val(ind%model%hp), &
-                gp   = val(ind%model%gp), &
-                sh   = val(ind%model%vsh), &
-                vt    = val(ind%model%vt), &
-                level= level%level(ilevel), &
-                val  = val(imodel), &
-                rho = any(model%name.eq."RHO") &
-                )
+              what  = model(imodel)%name, &
+              sp    = val(ind%model%sp), &
+              t     = val(ind%model%t), &
+              hp    = val(ind%model%hp), &
+              sh    = sh, &
+              gp    = val(ind%model%gp), &
+              vsh   = val(ind%model%vsh), &
+              vt    = val(ind%model%vt), &
+              level = level%level(ilevel), &
+              val   = val(imodel), &
+              rho   = any(model%name.eq."RHO") &
+              )
           else
             val (imodel) = sqrt(-1.)
           endif
@@ -191,13 +194,13 @@ program value_check
 
         if (output%level.and. allocated(level%level)) then
           write (output%unit, '(i6$)') level%level(ilevel)
-        elseif(output%level) then
+          elseif(output%level) then
           write (output%unit, '(i6$)') ilevel
         endif
 
 
         write (output%unit , "("// output%form // '$)') val
-        
+
         if (output%unit.ne.output_unit.and..not.quiet) then 
           call cpu_time(cpu(2))
           call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
@@ -211,7 +214,7 @@ program value_check
     do i=1, size(model)
       do j=1, size(model(i)%time)
         write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
-            model(i)%time(j), model(i)%date(j,:)
+          model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif
@@ -220,7 +223,7 @@ program value_check
     do i = 1, size(model)
       do j = 1, size(model(i)%level)
         write (moreverbose(ind%moreverbose%j)%unit, '(i5)') &
-            model(i)%level(j) 
+          model(i)%level(j) 
       enddo
     enddo
   endif

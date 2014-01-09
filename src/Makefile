@@ -14,7 +14,6 @@ dfdf:value_check
 		TP @ custom ,   \
 		TPF@ custom ,   \
 		RHO @custom , \
-		TP+H @ custom ,   \
 		TPF+H@ custom    \
 		-S j \
 		-H \

@@ -1194,61 +1194,64 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine customfile_value (what, sp, t, hp, gp, sh, vt, level, val, rho)
+subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   use mod_printing, only: print_warning
-  use mod_atmosphere, only: standard_pressure, standard_temperature
+  use mod_atmosphere, only: standard_pressure, &
+    standard_temperature, virtual_temperature
   use mod_constants, only: R_air
   character(*), intent(in) :: what
-  real(dp), intent(in),optional :: sp,t, hp, gp, sh, vt
+  real(dp), intent(in),optional :: sp,t, hp, sh, gp, vsh, vt
   integer, intent(in),optional :: level
 
   ! convert pressure to density
   logical, intent(in),optional :: rho
   real(dp), intent(out) :: val
-  real(dp):: t_aux
+  real(dp):: t_aux, vt_aux
 
   ! use humidity if asked for
   select case (what)
-  case ("TP+H","TPF+H")
-    t_aux=vt*(1.+0.608*sh)
+  case ("TPF+H")
+    t_aux  = virtual_temperature(t,sh)
+    vt_aux = virtual_temperature(vt,vsh)
   case default
-    t_aux=vt
+    vt_aux=vt
+    t_aux=t
   end select
 
   select case (what)
 
-  case ("TP","TP+H")
+  case ("TP")
     val= &
-        standard_pressure ( &
-        gp, &
-        use_standard_temperature=.true., &
-        method = "full" &
-        ) 
+      standard_pressure ( &
+      gp, &
+      use_standard_temperature=.true., &
+      method = "full" &
+      ) 
 
   case ("TPF", "TPF+H")
     val= &
-        standard_pressure ( &
-        gp, &
-        p_zero=sp, &
-        temperature=t, &
-        use_standard_temperature=.true., &
-        h_zero=hp, &
-        method = "full" &
-        )
+      standard_pressure ( &
+      gp, &
+      p_zero=sp, &
+      temperature=t_aux, &
+      use_standard_temperature=.true., &
+      h_zero= hp, &
+      method= "full" &
+      )
 
   case ("RHO")
     val= &
-        100.*level/(R_air * t)
+      100.*level/(R_air * vt)
 
   case default
     call print_warning( &
-        "nothing I know for @custom file specification"//trim(what), &
-        error=.true.)
+      "nothing I know for @custom file specification"//trim(what), &
+      error=.true.)
   endselect
 
   if (present(rho).and.what.ne."RHO") then
     if(rho) then
-      val=val/(R_air * t_aux)
+      val=val/(R_air * vt_aux)
     endif
   endif
 
