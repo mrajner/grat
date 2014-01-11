@@ -13,7 +13,7 @@ dfdf:value_check
 		TP @ custom ,   \
 		TPF@ custom ,   \
 		RHO @custom , \
-		TPF+H@ custom    \
+		TP_TS@ custom    \
 		-S j \
 		-H \
 		-D 2010 \

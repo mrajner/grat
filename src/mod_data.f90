@@ -1261,7 +1261,7 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   end select
 
   select case (what)
-  case ("TP")
+  case ("TP","TP_TS")
     val=                               & 
       standard_pressure (              & 
       gp,                              & 
@@ -1273,11 +1273,11 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
     val=                               & 
       standard_pressure (              & 
       gp,                              & 
-      p_zero=sp,                       & 
-      temperature=t_aux,               & 
+      p_zero = sp,                     & 
+      temperature = t_aux,             & 
       use_standard_temperature=.true., & 
-      h_zero= hp,                      & 
-      method= "full"                   & 
+      h_zero = hp,                     & 
+      method = "full"                  & 
       )
 
   case ("RHO")
@@ -1291,17 +1291,12 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
 
   if (present(rho).and.what.ne."RHO") then
     if(rho) then
+      select case(what)
+      case("TP_TS")
+        vt_aux=standard_temperature(gp, t_zero=t)
+      end select
+
       val = val/(R_air * vt_aux)
-
-      ! val = val/(R_air * standard_temperature(gp))
-
-      ! if (gp.lt.5000) then
-        ! vt_aux=t-6.5e-3*(gp)
-      ! else
-        ! vt_aux=standard_temperature(gp)
-      ! endif
-      ! val = val/(R_air * vt_aux)
-
     endif
   endif
 

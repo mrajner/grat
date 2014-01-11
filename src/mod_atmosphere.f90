@@ -163,13 +163,14 @@ end function
 !! \li subarctic_summer
 !! \li subarctic_winter
 ! ==============================================================================
-function standard_temperature (height, fels_type)
+function standard_temperature (height, fels_type, t_zero)
     use mod_constants, only: dp, earth, atmosphere
     use mod_printing, only : log
 
     real(dp), intent(in)  :: height
     real(dp)  :: standard_temperature
     character (len=*), intent(in), optional  :: fels_type 
+    real(dp), intent(in), optional :: t_zero 
     real(dp) :: aux, cn, t
     integer :: i,indeks
     real(dp), dimension (10) :: z,c,d
@@ -230,6 +231,9 @@ function standard_temperature (height, fels_type)
       aux = aux + d(i) * (cn - c(i))  * dlog (dcosh ((height/1000. - z(i)) / d(i)) / dcosh (z(i)/d(i))) 
     enddo
     standard_temperature = t + c(1) * (height/1000.)/2. + aux/2.
+    if(present(t_zero)) then
+      standard_temperature = t_zero + c(1) * (height/1000.)/2. + aux/2.
+    endif
 end function
 
 ! =============================================================================
