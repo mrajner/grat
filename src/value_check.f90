@@ -9,26 +9,26 @@ program value_check
   use mod_data     
   use mod_date
   use mod_site
-  use mod_constants, only: dp, R_air, earth
-  use mod_polygon  , only: read_polygon, chkgon, polygon
+  use mod_constants,  only: dp, R_air, earth
+  use mod_polygon,    only: read_polygon, chkgon, polygon
   use mod_atmosphere, only: standard_pressure, standard_temperature, geop2geom
-  use mod_utilities, only: d2r
+  use mod_utilities,  only: d2r
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
-  real (dp)    :: cpu(2), sh
-  integer      :: i, ii, j ,start, imodel, iprogress = 0
-  integer(2)   :: iok
-  integer(2)   :: ilevel, start_level
+  real (dp)  :: cpu(2), sh
+  integer    :: i, ii, j ,start, imodel, iprogress = 0
+  integer(2) :: iok
+  integer(2) :: ilevel, start_level
 
 
   call cpu_time(cpu(1))
 
-  call intro ( &
-    program_calling   = "value_check",       & 
-    accepted_switches = "VFoShvIDLPRqwHMJ!", & 
-    version           = "beta",              & 
-    cmdlineargs       = .true.               & 
+  call intro (                                & 
+    program_calling   = "value_check",        & 
+    accepted_switches = "VFoShvIDLPRqwHMJ&!", & 
+    version           = "beta",               & 
+    cmdlineargs       = .true.                & 
     )
 
   ! for progress bar
@@ -75,17 +75,17 @@ program value_check
     do i = 1 , size(model)
       if (model(i)%if) then
         if (model(i)%autoload  &
-            .and. &
-            .not.( &
-            model(i)%autoloadname.eq."ERA" &
-            .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) & 
-            )) then
+          .and. &
+          .not.( &
+          model(i)%autoloadname.eq."ERA" &
+          .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) & 
+          )) then
 
           if ( &
-              (j.eq.1 &
-              .or. .not. date(j)%date(1).eq.date(j-1)%date(1) &
-              ) &
-              ) then
+            (j.eq.1 &
+            .or. .not. date(j)%date(1).eq.date(j-1)%date(1) &
+            ) &
+            ) then
 
             call model_aliases(model(i), year=date(j)%date(1))
           endif
@@ -93,15 +93,15 @@ program value_check
         else if (model(i)%autoload) then
 
           if ( &
-              (j.eq.1 &
-              .or. .not.( &
-              date(j)%date(1).eq.date(j-1)%date(1) &
-              .and.date(j)%date(2).eq.date(j-1)%date(2)) &
-              ) &
-              ) then
+            (j.eq.1 &
+            .or. .not.( &
+            date(j)%date(1).eq.date(j-1)%date(1) &
+            .and.date(j)%date(2).eq.date(j-1)%date(2)) &
+            ) &
+            ) then
 
             call model_aliases( &
-                model(i), year=date(j)%date(1), month=date(j)%date(2))
+              model(i), year=date(j)%date(1), month=date(j)%date(2))
           endif
         endif
         if (allocated(date).and.model(i)%exist) then
@@ -158,10 +158,10 @@ program value_check
             if (iok.eq.1) then
               if (j.eq.0) then
                 call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                    method=info(1)%interpolation, level=level%level(ilevel))
+                  method=info(1)%interpolation, level=level%level(ilevel))
               else
                 call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                    method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
+                  method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
               endif
             else
             endif
@@ -196,16 +196,21 @@ program value_check
 
         if (output%level.and. allocated(level%level)) then
           write (output%unit, '(i6$)') level%level(ilevel)
-          elseif(output%level) then
+        elseif(output%level) then
           write (output%unit, '(i6$)') ilevel
         endif
 
 
-        write (output%unit , "("// output%form // '$)') val
+        write (output%unit , "("//output%form//'$)') val
 
         if (output%unit.ne.output_unit.and..not.quiet) then 
           call cpu_time(cpu(2))
-          call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
+
+          call progress(                                  & 
+            100*iprogress/(max(size(date),1)              & 
+            *max(size(site),1)*max(size(level%level),1)), & 
+            cpu(2)-cpu(1)                                 & 
+            )
         endif
         if (size(val).gt.0) write (output%unit , *)
       enddo
@@ -232,10 +237,14 @@ program value_check
 
   call cpu_time(cpu(2))
   if (output%unit.ne.output_unit.and..not.quiet) then 
-    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1), every=1)
+    call progress(                                  & 
+      100*iprogress/(max(size(date),1)              & 
+      *max(size(site),1)*max(size(level%level),1)), & 
+      cpu(2)-cpu(1),                                & 
+      every=1                                       & 
+      )
     close(output_unit) 
   endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
-
 end program

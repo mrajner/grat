@@ -62,37 +62,37 @@ module mod_data
 
 contains
 
-  ! =============================================================================
-  !> This subroutine parse model information from command line entry
-  !!
-  !! \author M. Rajner
-  !! \date 2013.05.20
-  ! =============================================================================
-  subroutine parse_model (cmd_line_entry)
-    use mod_cmdline
-    use mod_printing
-    use mod_utilities, only: file_exists, is_numeric
-    type(cmd_line_arg)  :: cmd_line_entry
-    integer :: i, j
+! =============================================================================
+!> This subroutine parse model information from command line entry
+!!
+!! \author M. Rajner
+!! \date 2013.05.20
+! =============================================================================
+subroutine parse_model (cmd_line_entry)
+  use mod_cmdline
+  use mod_printing
+  use mod_utilities, only: file_exists, is_numeric
+  type(cmd_line_arg)  :: cmd_line_entry
+  integer :: i, j
 
-    if (allocated(model)) then
-      call print_warning ("repeated", more="-F")
-      return
-    endif
+  if (allocated(model)) then
+    call print_warning ("repeated", more="-F")
+    return
+  endif
 
-    allocate(model(size(cmd_line_entry%field)))
+  allocate(model(size(cmd_line_entry%field)))
 
-    do i = 1, size(cmd_line_entry%field)
-      model(i)%exist=.true.
-      write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
-      model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
-      model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
-      if (model(i)%dataname.eq."") then
-        model(i)%dataname="NN"
-      else
-        if ( &
-          index(model(i)%dataname,"!").ne.0 &
-        ) then
+  do i = 1, size(cmd_line_entry%field)
+    model(i)%exist=.true.
+    write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
+    model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
+    model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
+    if (model(i)%dataname.eq."") then
+      model(i)%dataname="NN"
+    else
+      if ( &
+        index(model(i)%dataname,"!").ne.0 &
+      ) then
         model(i)%huge=.true.
         model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
         write(log%unit, form%i3) "!:huge"
@@ -141,22 +141,27 @@ contains
         )
 
     else if (is_numeric(model(i)%name)) then
+
       model(i)%if_constant_value=.true.
-      write (log%unit, form%i3),              & 
+      write (log%unit, form%i3),            & 
         trim (dataname(model(i)%dataname)), & 
         "("//trim(model(i)%dataname)//")"
+
       read (model(i)%name, * ) model(i)%constant_value
       write(log%unit, '(' // form%t3 // "a," // output%form // ")") &
         'constant value was set:   ', model(i)%constant_value
+
       if (trim(model(i)%datanames(1)).ne."") then
         model(i)%constant_value= &
           variable_modifier( &
           model(i)%constant_value, model(i)%datanames(1),verbose=.true.)
       endif
+
       write(log%unit, '(' // form%t3 // "a," // output%form // ")") &
         'constant value was re-set:', model(i)%constant_value
-      model(i)%lonrange=[  0,360]
-      model(i)%latrange=[-90, 90]
+      model(i)%lonrange = [  0,360]
+      model(i)%latrange = [-90, 90]
+
     else
       !check autoload
       call model_aliases(model(i), dryrun=.true.)
@@ -316,6 +321,7 @@ subroutine model_aliases(model, dryrun, year, month)
       model%autoload=.false.
       model%if=.false.
     endselect
+
   case ("VIENNA")
     prefix="/home/mrajner/dat/refpres/"
     select case (model%dataname)
@@ -355,14 +361,16 @@ subroutine model_aliases(model, dryrun, year, month)
     model%if=.false.
     model%autoload=.false.
   endselect
+
   ! listing in log
-  model%constant_value=     & 
-    variable_modifier(        & 
+  model%constant_value=   & 
+    variable_modifier(    & 
     model%constant_value, & 
     model%datanames(1),   & 
-    verbose=.true.,          & 
-    list_only=.true.         & 
+    verbose   = .true.,   & 
+    list_only = .true.    & 
     )
+
   if (model%if.and..not.model%autoload) call read_netCDF(model)
 
   if(present(dryrun) .and. dryrun) return
@@ -914,84 +922,84 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
     .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
     ) then
-  val = sqrt(-1.)
-  return
-endif
-
-ilat = minloc(abs(model%lat-lat),1)
-ilon = minloc(abs(model%lon-lon),1)
-
-! do not look into data array - get value directly 
-if (model%huge) then
-  status=nf90_inq_varid (model%ncid, model%names(4), varid)
-  call check (nf90_inq_varid (model%ncid, model%names(1), varid))
-  if (status.eq.nf90_noerr) then
-    call check (& 
-      nf90_get_var(              & 
-      model%ncid, varid,                   & 
-      val,                                 & 
-      start = [                            & 
-      ilon,                                & 
-      ilat,                                & 
-      get_level_index(model, ilevel, success2),& 
-      get_time_index(model,date=date)           & 
-      ]),                                  & 
-      success=success)
-    if(.not.success2) val =sqrt(-1.)
-  else
-    call check (nf90_get_var(         & 
-      model%ncid, varid, val,       & 
-      start = [ilon,ilat,           & 
-      get_time_index(model,date=date)]), & 
-      success=success)
-  endif
-  if(.not. success) then
-    call print_warning ("skipping get_value")
     val = sqrt(-1.)
     return
   endif
 
-  call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset,status)
-  if (status==nf90_noerr) val = val *scale_factor + add_offset
-  if (trim(model%datanames(1)).ne."") then
-    val = variable_modifier (val, model%datanames(1))
-  endif
-  return
-endif
+  ilat = minloc(abs(model%lat-lat),1)
+  ilon = minloc(abs(model%lon-lon),1)
 
-if (present(method) .and. method .eq. "l" ) then
-  ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
-  ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
-
-  if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
-  else
-    array_aux (1, :) = [ model%lon(ilon), model%lat(ilat), model%data(ilon, ilat, ilevel) ]
-    array_aux (2, :) = [ model%lon(ilon), model%lat(ilat2), model%data(ilon, ilat2, ilevel) ]
-    array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat), model%data(ilon2, ilat, ilevel) ]
-    array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
-
-    if (ind%moreverbose%l.ne.0) then
-      write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")'), &
-        (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
-      write(moreverbose(ind%moreverbose%l)%unit, '(">")')
+  ! do not look into data array - get value directly 
+  if (model%huge) then
+    status=nf90_inq_varid (model%ncid, model%names(4), varid)
+    call check (nf90_inq_varid (model%ncid, model%names(1), varid))
+    if (status.eq.nf90_noerr) then
+      call check (& 
+        nf90_get_var(              & 
+        model%ncid, varid,                   & 
+        val,                                 & 
+        start = [                            & 
+        ilon,                                & 
+        ilat,                                & 
+        get_level_index(model, ilevel, success2),& 
+        get_time_index(model,date=date)           & 
+        ]),                                  & 
+        success=success)
+      if(.not.success2) val =sqrt(-1.)
+    else
+      call check (nf90_get_var(         & 
+        model%ncid, varid, val,       & 
+        start = [ilon,ilat,           & 
+        get_time_index(model,date=date)]), & 
+        success=success)
     endif
-    val = bilinear ( lon, lat, array_aux )
+    if(.not. success) then
+      call print_warning ("skipping get_value")
+      val = sqrt(-1.)
+      return
+    endif
+
+    call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset,status)
+    if (status==nf90_noerr) val = val *scale_factor + add_offset
+    if (trim(model%datanames(1)).ne."") then
+      val = variable_modifier (val, model%datanames(1))
+    endif
     return
   endif
-endif
 
-! if the last element is the neares then check if the firt is not nearer
-! i.e. search in 0-357.5E for 359E
-if (ilon .eq. size (model%lon) ) then
-  if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
-endif
-if (ind%moreverbose%n.ne.0) then
-  write(moreverbose(ind%moreverbose%n)%unit,  '(3f15.4," n")'), &
-    model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
-  write(moreverbose(ind%moreverbose%n)%unit,  '(">")')
-endif
-val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
-if (.not.success2) val=sqrt(-1.)
+  if (present(method) .and. method .eq. "l" ) then
+    ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
+    ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
+
+    if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
+    else
+      array_aux (1, :) = [ model%lon(ilon), model%lat(ilat), model%data(ilon, ilat, ilevel) ]
+      array_aux (2, :) = [ model%lon(ilon), model%lat(ilat2), model%data(ilon, ilat2, ilevel) ]
+      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat), model%data(ilon2, ilat, ilevel) ]
+      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
+
+      if (ind%moreverbose%l.ne.0) then
+        write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")'), &
+          (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
+        write(moreverbose(ind%moreverbose%l)%unit, '(">")')
+      endif
+      val = bilinear ( lon, lat, array_aux )
+      return
+    endif
+  endif
+
+  ! if the last element is the neares then check if the firt is not nearer
+  ! i.e. search in 0-357.5E for 359E
+  if (ilon .eq. size (model%lon) ) then
+    if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
+  endif
+  if (ind%moreverbose%n.ne.0) then
+    write(moreverbose(ind%moreverbose%n)%unit,  '(3f15.4," n")'), &
+      model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
+    write(moreverbose(ind%moreverbose%n)%unit,  '(">")')
+  endif
+  val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
+  if (.not.success2) val=sqrt(-1.)
 
 end subroutine 
 
@@ -1115,31 +1123,31 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
       endif
       if ((valls.eq.0.and..not.inverted_landsea_mask) &
         .or.(valls.eq.1 .and. inverted_landsea_mask)) then
-      call get_value(model, model%lat(ilat), model%lon(ilon), val)
-      ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
-      valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
-      model%data(ilon,ilat,1) = -9999
-    endif
+        call get_value(model, model%lat(ilat), model%lon(ilon), val)
+        ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
+        valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
+        model%data(ilon,ilat,1) = -9999
+      endif
+    enddo
   enddo
-enddo
-where (model%data.eq.-9999)
-  model%data=valoceanarea/ ocean_area
-end where
+  where (model%data.eq.-9999)
+    model%data=valoceanarea/ ocean_area
+  end where
 
-if (ind%moreverbose%o.ne.0) then
-  if (output%header)  then
-    if (present(date)) then
-      write (moreverbose(ind%moreverbose%o)%unit,'(a12,x,a14)', advance='no'), "mjd", "date"
+  if (ind%moreverbose%o.ne.0) then
+    if (output%header)  then
+      if (present(date)) then
+        write (moreverbose(ind%moreverbose%o)%unit,'(a12,x,a14)', advance='no'), "mjd", "date"
+      endif
+      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)'), "ocean[%]", "mean_val"
     endif
-    write (moreverbose(ind%moreverbose%o)%unit,'(2a12)'), "ocean[%]", "mean_val"
+    if (present(date)) then
+      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no'), mjd(date), date
+    endif
+    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
+      ocean_area/total_area*100.,                                & 
+      valoceanarea/ocean_area
   endif
-  if (present(date)) then
-    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no'), mjd(date), date
-  endif
-  write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
-    ocean_area/total_area*100.,                                & 
-    valoceanarea/ocean_area
-endif
 end subroutine
 
 ! =============================================================================
@@ -1220,47 +1228,51 @@ end subroutine
 ! =============================================================================
 subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   use mod_printing, only: print_warning
-  use mod_atmosphere, only: standard_pressure, &
-    standard_temperature, virtual_temperature
+  use mod_atmosphere, only: & 
+    standard_pressure,      & 
+    standard_temperature,   & 
+    virtual_temperature
   use mod_constants, only: R_air
   character(*), intent(in) :: what
-  real(dp), intent(in),optional :: sp,t, hp, sh, gp, vsh, vt
-  integer, intent(in),optional :: level
-
-  ! convert pressure to density
-  logical, intent(in),optional :: rho
+  real(dp), intent(in), optional :: sp,t, hp, sh, gp, vsh, vt
+  integer,  intent(in), optional :: level
+  logical,  intent(in), optional :: rho
   real(dp), intent(out) :: val
   real(dp):: t_aux, vt_aux
 
-  ! use humidity if asked for
+    print *,sh,vsh
   select case (what)
+
+  ! use humidity if asked for
   case ("TPF+H")
     t_aux  = virtual_temperature(t,sh)
     vt_aux = virtual_temperature(vt,vsh)
+
   case default
-    vt_aux=vt
-    t_aux=t
+    t_aux  = t
+    vt_aux = vt
+
   end select
 
   select case (what)
 
   case ("TP")
-    val= &
-      standard_pressure ( &
-      gp, &
-      use_standard_temperature=.true., &
-      method = "full" &
+    val=                               & 
+      standard_pressure (              & 
+      gp,                              & 
+      use_standard_temperature=.true., & 
+      method = "full"                  & 
       ) 
 
   case ("TPF", "TPF+H")
-    val= &
-      standard_pressure ( &
-      gp, &
-      p_zero=sp, &
-      temperature=t_aux, &
-      use_standard_temperature=.true., &
-      h_zero= hp, &
-      method= "full" &
+    val=                               & 
+      standard_pressure (              & 
+      gp,                              & 
+      p_zero=sp,                       & 
+      temperature=t_aux,               & 
+      use_standard_temperature=.true., & 
+      h_zero= hp,                      & 
+      method= "full"                   & 
       )
 
   case ("RHO")
@@ -1268,14 +1280,14 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
       100.*level/(R_air * vt)
 
   case default
-    call print_warning( &
-      "nothing I know for @custom file specification"//trim(what), &
+    call print_warning(                                            & 
+      "nothing I know for @custom file specification"//trim(what), & 
       error=.true.)
   endselect
 
   if (present(rho).and.what.ne."RHO") then
     if(rho) then
-      val=val/(R_air * vt_aux)
+      val = val/(R_air * vt_aux)
     endif
   endif
 
