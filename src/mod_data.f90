@@ -1013,9 +1013,9 @@ function bilinear (x, y, aux )
   real(dp) :: bilinear
   real(dp) :: x, y, aux(4,3) 
   real(dp) :: a, b, c
-  a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
-  b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 
-  c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
+  a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
+  b = a * (aux(3,3) - aux(1,3)) + aux(1,3) 
+  c = a * (aux(4,3) - aux(2,3)) + aux(2,3)
   bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
 end function
 
@@ -1114,7 +1114,7 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   valoceanarea    = 0
 
   do ilat = 1, size(model%lat)
-    do ilon =1,size(model%lon)
+    do ilon = 1, size(model%lon)
       total_area = total_area + cos(d2r(model%lat(ilat)))
       call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
       if (ind%polygon%e.ne.0) then
@@ -1178,15 +1178,23 @@ subroutine total_mass (model, date)
   enddo
 
   if (output%header)  then
+
     if (present(date)) then
-      write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14)', advance='no'), "mjd",  "date"
+      write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14$)'), &
+        "mjd",  "date"
     endif
+
     write (moreverbose(ind%moreverbose%t)%unit,'(a12)'), "mean_val"
+
   endif
+
   if (present(date)) then
-    write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no'), mjd(date), date
+    write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2$)'), &
+      mjd(date), date
   endif
-  write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)'),  valarea/ totalarea
+
+  write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)'), &
+    valarea/totalarea
 end subroutine
 
 ! =============================================================================
@@ -1240,10 +1248,8 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   real(dp), intent(out) :: val
   real(dp):: t_aux, vt_aux
 
-    print *,sh,vsh
   select case (what)
 
-  ! use humidity if asked for
   case ("TPF+H")
     t_aux  = virtual_temperature(t,sh)
     vt_aux = virtual_temperature(vt,vsh)
@@ -1255,7 +1261,6 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   end select
 
   select case (what)
-
   case ("TP")
     val=                               & 
       standard_pressure (              & 
@@ -1276,8 +1281,7 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
       )
 
   case ("RHO")
-    val= &
-      100.*level/(R_air * vt)
+    val= 100.*level/(R_air * vt)
 
   case default
     call print_warning(                                            & 
@@ -1288,6 +1292,16 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   if (present(rho).and.what.ne."RHO") then
     if(rho) then
       val = val/(R_air * vt_aux)
+
+      ! val = val/(R_air * standard_temperature(gp))
+
+      ! if (gp.lt.5000) then
+        ! vt_aux=t-6.5e-3*(gp)
+      ! else
+        ! vt_aux=standard_temperature(gp)
+      ! endif
+      ! val = val/(R_air * vt_aux)
+
     endif
   endif
 

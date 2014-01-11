@@ -86,7 +86,6 @@ program value_check
             .or. .not. date(j)%date(1).eq.date(j-1)%date(1) &
             ) &
             ) then
-
             call model_aliases(model(i), year=date(j)%date(1))
           endif
 
@@ -168,7 +167,7 @@ program value_check
             if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
 
           else if (model(ii)%dataname.eq."custom") then
-            if(imodel.eq.1) sh= val(ind%model%vsh)
+            if(ilevel.eq.1) sh=val(ind%model%vsh)
             call customfile_value( &
               what  = model(imodel)%name, &
               sp    = val(ind%model%sp), &
@@ -199,7 +198,6 @@ program value_check
         elseif(output%level) then
           write (output%unit, '(i6$)') ilevel
         endif
-
 
         write (output%unit , "("//output%form//'$)') val
 

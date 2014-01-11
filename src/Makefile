@@ -19,7 +19,6 @@ dfdf:value_check
 		-D 2010 \
 		-o : prune: rho : level:nc \
 		-J m  
-	cat mycustom |colrm 1 54
 
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
