@@ -1,6 +1,6 @@
 ! ==============================================================================
 !> Define constant values.
-!! 
+!!
 !! This module define some constant values oftenly used.
 !! \author M. Rajner
 !! \date 2013-03-04
@@ -8,23 +8,23 @@
 module mod_constants
   implicit none
 
-  integer, parameter :: dp = 8 
-  integer, parameter :: sp = 4 
+  integer, parameter :: dp = 8
+  integer, parameter :: sp = 4
 
-  real(dp), parameter ::               & 
-    R_air  = 287.05,                   & ! dry air constant  [J/kg/K]
-    pi     = 4.*atan(dble(1.)),        &
+  real(dp), parameter ::        &
+    R_air  = 287.05,            & ! dry air constant  [J/kg/K]
+    pi     = 4.*atan(dble(1.)), &
     T_zero = -273.15
 
   !---------------------------------------
   ! gravity
   !---------------------------------------
   type gravity_data
-    real(dp) :: constant 
+    real(dp) :: constant
   end type
-  type(gravity_data) , parameter ::         & 
-    gravity  = gravity_data(                & 
-    constant = 6.674e-11                    & ! m3 kg-1 s-2 
+  type(gravity_data) , parameter :: &
+    gravity  = gravity_data(        &
+    constant = 6.674e-11            & ! m3 kg-1 s-2
     )
 
   !---------------------------------------
@@ -33,22 +33,24 @@ module mod_constants
   type pressure_data
     real(dp) :: standard
   end type
+
   type temperature_data
     real(dp) :: standard
   end type
+
   type atmosphere_data
     type(pressure_data)    :: pressure
     type(temperature_data) :: temperature
   end type
 
-  type(atmosphere_data) , parameter ::      & 
-    atmosphere  = atmosphere_data (         & 
-    pressure    = pressure_data (           & 
-    standard    = 101325.                   & ! Pa (not hectoPascal!)
-    ),                                      & 
-    temperature = temperature_data (        & 
-    standard    = 288.15                    & ! K (15 degC)
-    )                                       & 
+  type(atmosphere_data) , parameter :: &
+    atmosphere  = atmosphere_data (    &
+    pressure    = pressure_data (      &
+    standard    = 101325.              & ! Pa (not hectoPascal!)
+    ),                                 &
+    temperature = temperature_data (   &
+    standard    = 288.15               & ! K (15 degC)
+    )                                  &
     )
 
   !---------------------------------------
@@ -57,10 +59,12 @@ module mod_constants
   type earth_gravity
     real(dp) :: mean
   end type
+
   type earth_density
     real(dp) :: crust
     real(dp) :: mean
   end type
+
   type earth_data
     real(dp) :: mass
     real(dp) :: radius
@@ -69,18 +73,18 @@ module mod_constants
     type(earth_density) :: density
   end type
 
-  type(earth_data), parameter ::            & 
-    earth       = earth_data (              & 
+  type(earth_data), parameter ::            &
+    earth       = earth_data (              &
     mass        = 5.97219e24,               & ! kg
     radius      = 6371000.,                 & ! m
     gm          = 398600.4419,              & ! m3 s-2
-    gravity     = earth_gravity(            & 
+    gravity     = earth_gravity(            &
     mean        = 9.80665                   & ! m s-2
-    ),                                      & 
-    density     = earth_density(            & 
+    ),                                      &
+    density     = earth_density(            &
     crust       = 2670.,                    & ! kg m-3
     mean        = 5500.                     & ! kg m-3
-    )                                       & 
+    )                                       &
     )
 
   !---------------------------------------
@@ -90,12 +94,12 @@ module mod_constants
     real(dp)      :: mass
     real(dp)      :: distance
   end type
-  type(celestial_object_data), parameter :: & 
-    moon        = celestial_object_data (   & 
+  type(celestial_object_data), parameter :: &
+    moon        = celestial_object_data (   &
     distance    = 384000000.,               & ! m
     mass        = 7.35e22                   & ! kg
-    ),                                      & 
-    sun         = celestial_object_data (   & 
+    ),                                      &
+    sun         = celestial_object_data (   &
     distance    = 149600000000. ,           & ! m
     mass        = 1.99e30                   & ! kg
     )

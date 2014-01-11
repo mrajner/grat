@@ -1,35 +1,36 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+dfdf:value_check
+	value_check \
+		-F \
+		NCEP  @ GP! ,   \
+		NCEP  @ VT! ,   \
+		NCEP  @ SP! ,   \
+		NCEP1 @ VSH! ,   \
+		NCEP1 @ T! ,   \
+		NCEP @ HP! ,   \
+		TP @ custom ,   \
+		TPF@ custom ,   \
+		RHO @custom , \
+		TPF+H@ custom    \
+		-S j \
+		-H \
+		-D 2010 \
+		-o : prune: rho : level:nc \
+		-J m  
+	cat mycustom |colrm 1 54
 
-#  dfdf:value_check
-	#  value_check \
-		#  -F \
-		#  NCEP  @ GP! ,   \
-		#  NCEP  @ VT! ,   \
-		#  NCEP  @ SP! ,   \
-		#  NCEP1 @ VSH! ,   \
-		#  NCEP1 @ T! ,   \
-		#  NCEP @ HP! ,   \
-		#  full @ TP! ,   \
-		#  full @ TPF! ,   \
-		#  @RHO \
-		#  -S j \
-		#  -H \
-		#  -D 2010 \
-		#  -o : rho : level:nc \
-		#  -J m  
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
 		-! \
-		-F ERA @SP, VIENNA@RSP,VIENNA@HRSP, ERA@T, ERA@HP, ETOPO@H!, NCEP@GP ,NCEP@VT \
-		-S l               -U                   \
-		-I 60@AS: 80@HS: 60000@HE:3@DE  \
-		-M 2: $$i @ 0.31 -o:/dev/null:free               \
+		-F NCEP @SP, VIENNA@RSP,VIENNA@HRSP, NCEP1@T, NCEP@HP, ETOPO@H!, ERA@GP ,ERA@VT \
+		-S l,j               -U                   \
+		-I 46@AS: 80@HS: 60000@HE:3@DE  \
+		-M 3: $$i @ 0.31 -o:/dev/null:free               \
 		-G@GN  , @GNdz                               \
 		-D2011:20110102 -H -Q -wn -rt;                        \
-		exit; \
 		done;
 
 fdofssdif: grat
@@ -202,14 +203,13 @@ HOST=$(shell hostname)
 
 # prevent owervriting with new version on the server grat
 $(PROGS_DIR)/%:%.f90 $(OBJS) 
-ifeq ($(HOST),grat)
-	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@$(DATE) $(OBJS) 
-else
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+# add timestamp to executable (archive for testing purposes)
+ifdef UNIQ
+	cp $@ $@$(DATE) -ni
 endif
-ifdef TEST
-	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@$(TEST) $(OBJS) 
-endif
+
+
 
 # paralelization
 #../bin/value_check: value_check.f90 $(OBJS)

@@ -166,6 +166,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nan")) then
       output%nan=.true.
     endif
+    if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."prune")) then
+      output%prune=.true.
+    endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."level")) then
       output%level=.true.
     endif
@@ -785,12 +788,6 @@ subroutine parse_info (cmd_line_entry)
         ind%model%hp = i
       case ("GP")
         ind%model%gp = i
-      case ("TP")
-        ind%model%tp = i
-      case ("TPF")
-        ind%model%tpf = i
-      case ("RHO")
-        ind%model%rho = i
       case ("VT")
         ind%model%vt = i
       case ("VSH")
