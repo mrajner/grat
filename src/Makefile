@@ -5,12 +5,20 @@ fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
 		-! \
-		-F NCEP @SP, VIENNA@RSP,VIENNA@HRSP, NCEP1@T, NCEP@HP, ETOPO@H!, ERA@GP ,ERA@VT \
+		-F NCEP @SP, \
+	   VIENNA@RSP, \
+		 VIENNA@HRSP, \
+		 NCEP1@T, \
+		 NCEP@HP, \
+		 ETOPO@H!, ERA@GP , \
+		 ERA@VSH, \
+		 ERA@VT \
 		-S l      \
-		-I 6@AS: 80@HS: 60000@HE:3@DE  \
+		-I 46@AS: 80@HS: 60000@HE:3@DE  \
 		-M 3: $$i @ 0.31 -o:/dev/null:free               \
 		-G@GN  , @GNdz                               \
 		-D2011:20110102 -H -Q -wn -rt;                        \
+		exit ;\
 		done;
 
 fdofssdif: grat

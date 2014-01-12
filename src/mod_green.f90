@@ -303,8 +303,8 @@ subroutine green_unification ()
           enddo
         enddo
 
-        ! if @DD is negative make distance sparse
       else
+        ! if @DD is negative make distance sparse
         allocate(tmpgreen%distance((imax-imin)/-info(iinfo)%distance%denser &
           +1+min(1,modulo(imax-imin,-info(iinfo)%distance%denser))))
         ii=0
@@ -359,12 +359,16 @@ subroutine green_unification ()
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
 
-      green_common(iinfo)%start = &
-        [(info(iinfo)%distance%start + &
-        (i-1)*info(iinfo)%distance%step, &
-        i=1, size(green_common(iinfo)%distance)) ]
+      green_common(iinfo)%start =                & 
+        [                                        & 
+        (info(iinfo)%distance%start +            & 
+        (i-1)*info(iinfo)%distance%step,         & 
+        i=1, size(green_common(iinfo)%distance)) & 
+        ]
+
       green_common(iinfo)%stop = green_common(iinfo)%start(2:) 
-      green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = info(iinfo)%distance%stop
+      green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = &
+        info(iinfo)%distance%stop
       green_common(iinfo)%distance = &
         (green_common(iinfo)%stop + green_common(iinfo)%start)/2
     endif
@@ -606,17 +610,17 @@ subroutine convolve(site, date)
 
               ! get H
               if (ind%model%h.ne.0 & 
-                .and.( &
-                transfer_sp%if &
-                .or.any(([ &
-                ind%green%gndt, &
-                ind%green%gndz, &
-                ind%green%gndz2, &
-                ind%green%gndh, &
-                ind%green%gnc, &
-                ind%green%g3d &
-                ]).ne.0) &
-                ) &
+                .and.(             & 
+                transfer_sp%if     & 
+                .or.any(([         & 
+                ind%green%gndt,    & 
+                ind%green%gndz,    & 
+                ind%green%gndz2,   & 
+                ind%green%gndh,    & 
+                ind%green%gnc,     & 
+                ind%green%g3d      & 
+                ]).ne.0)           & 
+                )                  & 
                 ) then
 
                 if (optimize.and.green_common(igreen)%distance(idist).gt.3) then
@@ -630,23 +634,24 @@ subroutine convolve(site, date)
 
               if (ind%model%sp.ne.0) then
                 ! transfer SP if necessary on terrain
-                if (transfer_sp%if &
-                  .and.any ([ &
-                  ind%green%ge, &
-                  ind%green%gnc, &
-                  ind%green%g3d, &
-                  ind%green%gegdt, &
-                  ind%green%gg &
-                  ].ne.0) &
+                if (transfer_sp%if & 
+                  .and.any ([      & 
+                  ind%green%ge,    & 
+                  ind%green%gnc,   & 
+                  ind%green%g3d,   & 
+                  ind%green%gegdt, & 
+                  ind%green%gg     & 
+                  ].ne.0)          & 
                   ) then
+
                   val(ind%model%sp) = standard_pressure( & 
-                    height=val(ind%model%h),           & 
-                    h_zero=val(ind%model%hp),          & 
-                    p_zero=old_val_sp,          & 
-                    method=transfer_sp%method,         & 
-                    temperature=val(ind%model%t),      & 
-                    use_standard_temperature           & 
-                    = ind%model%t.eq.0,                & 
+                    height=val(ind%model%h),             & 
+                    h_zero=val(ind%model%hp),            & 
+                    p_zero=old_val_sp,                   & 
+                    method=transfer_sp%method,           & 
+                    temperature=val(ind%model%t),        & 
+                    use_standard_temperature             & 
+                    = ind%model%t.eq.0,                  & 
                     nan_as_zero=.false.)
 
                   if(all([ind%model%rsp, ind%model%hrsp].ne.0)) then
@@ -671,15 +676,15 @@ subroutine convolve(site, date)
                   if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
                     ! GE
                     if (ind%green%ge.ne.0) then
-                      result(ind%green%ge) = result(ind%green%ge) +        & 
-                        val(ind%model%sp) *                              & 
-                        green_common(igreen)%data(idist, ind%green%ge) * & 
-                        area * normalize
+                      result(ind%green%ge) = result(ind%green%ge)        & 
+                        + val(ind%model%sp)                              & 
+                        * green_common(igreen)%data(idist, ind%green%ge) & 
+                        * area * normalize
                     endif
 
                     ! GEGdt pressure part from Guo 2004
                     if (ind%green%gegdt.ne.0) then
-                      result(ind%green%gegdt) = result(ind%green%gegdt) +     & 
+                      result(ind%green%gegdt) = result(ind%green%gegdt) +   & 
                         val(ind%model%sp) *                                 & 
                         val(ind%model%t) * 1e-4 *                           & 
                         green_common(igreen)%data(idist, ind%green%gegdt) * & 
@@ -689,10 +694,11 @@ subroutine convolve(site, date)
                     ! GG
                     if (ind%green%gg.ne.0) then
                       aux = mmwater2pascal(val(ind%model%sp), inverted=.true.) & 
-                        * area/ (d2r(green_common(igreen)%distance(idist)) * & 
+                        * area/ (d2r(green_common(igreen)%distance(idist)) *   & 
                         earth%radius*1e18)
-                      result(ind%green%gg) = result(ind%green%gg) +            & 
-                        green_common(igreen)%data(idist, ind%green%gg) *     & 
+
+                      result(ind%green%gg) = result(ind%green%gg) +      & 
+                        green_common(igreen)%data(idist, ind%green%gg) * & 
                         aux * 1e8 ! m s-2 -> microGal
                     endif
                   endif
@@ -746,21 +752,34 @@ subroutine convolve(site, date)
                       if (.not. allocated(level%humidity)) allocate (level%humidity(size(level%level)))
 
                       do i=1,size(level%level)
-                        call get_value (                                                               & 
+                        call get_value (                                                             & 
                           model(ind%model%gp), r2d(lat), r2d(lon), level%height(i),                  & 
                           level=level%level(i), method = info(igreen)%interpolation, date=date%date)
 
                         if (ind%model%vt.ne.0) then
-                          call get_value (                                                               & 
-                            model(ind%model%vt), r2d(lat), r2d(lon), level%temperature(i),                  & 
-                            level=level%level(i), method = info(igreen)%interpolation, date=date%date)
+                          call get_value (                           & 
+                            model(ind%model%vt), r2d(lat), r2d(lon), & 
+                            val    = level%temperature(i),           & 
+                            level  = level%level(i),                 & 
+                            method = info(igreen)%interpolation,     & 
+                            date   = date%date                       & 
+                            )
                         endif
 
                         if (ind%model%vsh.ne.0) then
-                          call get_value (                                                               & 
-                            model(ind%model%vsh), r2d(lat), r2d(lon), val=level%humidity(i),                  & 
-                            level=level%level(i), method = info(igreen)%interpolation, date=date%date)
-                          if (.not.isnan(level%humidity(i))) level%temperature(i)=level%temperature(i)*(1.+0.608*level%humidity(i))
+                          call get_value (                            & 
+                            model(ind%model%vsh), r2d(lat), r2d(lon), & 
+                            val    = level%humidity(i),               & 
+                            level  = level%level(i),                  & 
+                            method = info(igreen)%interpolation,      & 
+                            date   = date%date                        & 
+                            )
+
+                          print *,level%level(i),level%temperature(i),level%humidity(i)
+                          if (.not.isnan(level%humidity(i))) then
+                            level%temperature(i)=level%temperature(i)*(1.+0.608*level%humidity(i))
+                          endif
+
                         endif
                       enddo
 
