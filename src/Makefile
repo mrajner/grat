@@ -1,32 +1,13 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
-#
-dfdf:value_check
-	value_check \
-		-F \
-		NCEP  @ GP! ,   \
-		NCEP  @ VT! ,   \
-		NCEP  @ SP! ,   \
-		NCEP1 @ VSH! ,   \
-		NCEP1 @ T! ,   \
-		NCEP @ HP! ,   \
-		TP @ custom ,   \
-		TPF@ custom ,   \
-		RHO @custom , \
-		TP_TS@ custom    \
-		-S j \
-		-H \
-		-D 2010 \
-		-o : prune: rho : level:nc \
-		-J m  
 
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
 		-! \
 		-F NCEP @SP, VIENNA@RSP,VIENNA@HRSP, NCEP1@T, NCEP@HP, ETOPO@H!, ERA@GP ,ERA@VT \
-		-S l,j               -U                   \
-		-I 46@AS: 80@HS: 60000@HE:3@DE  \
+		-S l      \
+		-I 6@AS: 80@HS: 60000@HE:3@DE  \
 		-M 3: $$i @ 0.31 -o:/dev/null:free               \
 		-G@GN  , @GNdz                               \
 		-D2011:20110102 -H -Q -wn -rt;                        \
@@ -88,13 +69,6 @@ tmp: grat local
 		-H  \
 		-D 2009:20090102  -M1,2 -G@GN -o tmp
 
-tmp2:
-	grat \
-		-F NCEP@SP! \
-		-S local_site  \
-		-H  \
-		-D 2009:2011  -M1,2 -G@GN -o tmp2 
-
 local: 
 	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
@@ -108,7 +82,7 @@ holla:grat
 
 
 # compiler:  currently only ifort is supported
-#  FC = gfortran
+# FC = gfortran
 FC = ifort
 
 # compiler flags

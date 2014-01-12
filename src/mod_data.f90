@@ -1296,7 +1296,7 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
         vt_aux=standard_temperature(gp, t_zero=t)
       end select
 
-      val = val/(R_air * vt_aux)
+      val = val/(R_air*vt_aux)
     endif
   endif
 
