@@ -2,8 +2,8 @@
 # for example: OBJS  = libgrat.a
 
 fssdif: grat
-	time for i in  none potential cylinder; do                                                  \
-		grat \
+	@time for i in  none potential cylinder; do                                                  \
+		time grat \
 		-! \
 		-F NCEP @SP, \
 	   VIENNA@RSP, \
@@ -15,7 +15,7 @@ fssdif: grat
 		 ERA@VSH, \
 		 ERA@VT \
 		-S l      \
-		-I 46@AS: 80@HS: 60000@HE:3@DE  \
+		-I 10@AS: -2@DD: 80@HS: 60000@HE:3@DE  \
 		-M 3: $$i @ 0.31 -o:/dev/null:free               \
 		-G@GN  , @GNdz                               \
 		-D2011:20110102 -H -Q -wn -rt;                        \

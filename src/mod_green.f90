@@ -68,11 +68,14 @@ subroutine parse_green (cmd_line_entry)
 
   if (present(cmd_line_entry)) then
     do i = 1, size(cmd_line_entry%field)
+
       write(log%unit, form%i2) trim(basename(trim(cmd_line_entry%field(i)%full)))
       green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
+
       if (i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
         green(i)%name = green(i-1)%name
       endif
+
       if (any(green%dataname.eq.cmd_line_entry%field(i)%subfield(1)%dataname )) then
         call print_warning("repeated dataname for Green")
         continue
@@ -87,9 +90,13 @@ subroutine parse_green (cmd_line_entry)
           read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
           green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
         endif
-        if (green(i)%dataname.eq."GNc".and.ii.eq.1) gnc_looseness=green(i)%column(ii)
+
+        if (green(i)%dataname.eq."GNc".and.ii.eq.1) &
+          gnc_looseness=green(i)%column(ii)
       enddo
+
       call read_green(green(i))
+
     enddo
   endif
 
@@ -128,6 +135,7 @@ subroutine read_green (green, print)
   )) then
     green%name="merriam"
   endif
+
   select case (green%name)
   case ("merriam", "compute", "/home/mrajner/src/grat/dat/merriam_green.dat")
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
@@ -152,6 +160,7 @@ subroutine read_green (green, print)
         more=trim(green%dataname), &
         error=.true.)
     endselect
+
   case ("huang", "/home/mrajner/src/grat/dat/huang_green.dat" ) 
     green%name="/home/mrajner/src/grat/dat/huang_green.dat"
     select case (green%dataname)
@@ -168,6 +177,7 @@ subroutine read_green (green, print)
         trim(green%dataname) //" not found in " &
         // trim(green%name), error=.true.)
     endselect
+
   case ("rajner", "/home/mrajner/src/grat/dat/rajner_green.dat")
     green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
     select case (green%dataname)
@@ -417,9 +427,11 @@ subroutine convolve(site, date)
   use mod_printing
   use mod_normalization, only: green_normalization
   use mod_aggf, only: aggf
-  use mod_atmosphere, only: standard_pressure, standard_temperature
+  use mod_atmosphere, only: &
+    standard_pressure, standard_temperature, virtual_temperature
   use mod_3d
-  type(site_info), intent(in) :: site
+
+  type(site_info),  intent(in) :: site
   type(dateandmjd), intent(in), optional :: date
 
   integer  :: igreen, idist, iazimuth, nazimuth
@@ -667,7 +679,8 @@ subroutine convolve(site, date)
                   endif
                 endif
 
-                if(ind%model%rsp.ne.0) val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+                if(ind%model%rsp.ne.0) &
+                  val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
 
                 ! if the cell is not over sea and inverted barometer assumption was not set 
                 ! and is not excluded by polygon
@@ -729,8 +742,8 @@ subroutine convolve(site, date)
                         call print_warning("3D but no RSP", error=.true.)
                       endif
 
-                      if (allocated(heights)) deallocate(heights)
-                      if (allocated(pressures)) deallocate(pressures)
+                      if (allocated(heights))      deallocate(heights)
+                      if (allocated(pressures))    deallocate(pressures)
                       if (allocated(temperatures)) deallocate(temperatures)
 
                       nheight= &
@@ -747,9 +760,9 @@ subroutine convolve(site, date)
                           +(iheight-0.5)*info(igreen)%height%step
                       enddo
 
-                      if (.not. allocated(level%height)) allocate (level%height(size(level%level)))
-                      if (.not. allocated(level%temperature)) allocate (level%temperature(size(level%level)))
-                      if (.not. allocated(level%humidity)) allocate (level%humidity(size(level%level)))
+                      if (.not.allocated(level%height))      allocate (level%height(size(level%level)))
+                      if (.not.allocated(level%temperature)) allocate (level%temperature(size(level%level)))
+                      if (.not.allocated(level%humidity))    allocate (level%humidity(size(level%level)))
 
                       do i=1,size(level%level)
                         call get_value (                                                             & 
@@ -775,9 +788,9 @@ subroutine convolve(site, date)
                             date   = date%date                        & 
                             )
 
-                          print *,level%level(i),level%temperature(i),level%humidity(i)
                           if (.not.isnan(level%humidity(i))) then
-                            level%temperature(i)=level%temperature(i)*(1.+0.608*level%humidity(i))
+                            level%temperature(i)= &
+                              virtual_temperature(level%temperature(i),level%humidity(i))
                           endif
 
                         endif
@@ -787,6 +800,7 @@ subroutine convolve(site, date)
                       do while(level%height(i).lt.heights(1).and.i.ne.size(level%level))
                         i=i+1
                       end do
+
                       do iheight=1, nheight
 
                         if (iheight.eq.1) then
@@ -795,19 +809,13 @@ subroutine convolve(site, date)
                           ! h2=level%height(i)
                           ! v2=1.e2*dble(level%level(i))
 
-                          temperatures(iheight)=level%temperature(i)-6.5e-3*(val(ind%model%h)-val(ind%model%hp))
+                          temperatures(iheight)= &
+                            level%temperature(i)-6.5e-3*(val(ind%model%h)-val(ind%model%hp))
 
-                          if (ind%model%vsh.ne.0) then
-                            call get_value (                                                               & 
-                              model(ind%model%vsh), r2d(lat), r2d(lon), val=aux,                  & 
-                              level=level%level(i-1), method = info(igreen)%interpolation, date=date%date)
-                            ! TODO
-                            stop
-                            ! if (.not.isnan(aux)) temperatures(iheight)=temperatures(iheight)*(1.+0.608*aux)
+                          if (.not.isnan(level%humidity(i))) then
+                            val(ind%model%t) = &
+                              virtual_temperature(val(ind%model%t), level%humidity(1))
                           endif
-
-                          ! print * ,  aux
-                          ! stop
 
                           pressures(iheight) = standard_pressure(        & 
                             heights(iheight),                            & 
@@ -840,23 +848,30 @@ subroutine convolve(site, date)
                             ! h2=level%height(i+1)
                             ! v2=1.e2*dble(level%level(i+1))
 
-                            pressures(iheight)= standard_pressure( &
-                              height=heights(iheight), &
-                              p_zero=1.e2*dble(level%level(i)), &
-                              h_zero=level%height(i), &
-                              method="standard", &
-                              use_standard_temperature=.true., &
-                              temperature=temperatures(iheight), &
-                              nan_as_zero=.true.)
+                            pressures(iheight) =                                    & 
+                              standard_pressure(                                    & 
+                              height                   = heights(iheight),          & 
+                              p_zero                   = 1.e2*dble(level%level(i)), & 
+                              h_zero                   = level%height(i),           & 
+                              method                   = "standard",                & 
+                              use_standard_temperature = .true.,                    & 
+                              temperature              = temperatures(iheight),     & 
+                              nan_as_zero              = .true.                     & 
+                              )
+
                           else
-                            pressures(iheight)= standard_pressure( &
-                              height=heights(iheight), &
-                              p_zero=pressures(iheight-1), &
-                              h_zero=heights(iheight-1), &
-                              method="standard", &
-                              use_standard_temperature=.true., &
-                              temperature=temperatures(iheight), &
-                              nan_as_zero=.true.)
+
+                            pressures(iheight)=                                 & 
+                              standard_pressure(                                & 
+                              height                   = heights(iheight),      & 
+                              p_zero                   = pressures(iheight-1),  & 
+                              h_zero                   = heights(iheight-1),    & 
+                              method                   = "standard",            & 
+                              use_standard_temperature = .true.,                & 
+                              temperature              = temperatures(iheight), & 
+                              nan_as_zero              = .true.                 & 
+                              )
+
                           endif
                         endif
 
@@ -872,8 +887,10 @@ subroutine convolve(site, date)
                             * pressures(iheight)/(temperatures(iheight))  &
                             * area * info(igreen)%height%step &
                             *(-gravity%constant)*1e8/R_air
+
                         else if (method3d(2)) then
-                          result(ind%green%g3d) = result(ind%green%g3d)      & 
+                          result(ind%green%g3d) =                            & 
+                            result(ind%green%g3d)                            & 
                             + potential(                                     & 
                             psi1=d2r(green_common(igreen)%start(idist)),     & 
                             psi2=d2r(green_common(igreen)%stop(idist)),      & 
@@ -882,15 +899,17 @@ subroutine convolve(site, date)
                             z1= heights(iheight)-info(igreen)%height%step/2, & 
                             z2= heights(iheight)+info(igreen)%height%step/2  & 
                             )                                                & 
-                            * pressures(iheight)/(temperatures(iheight))  &
+                            * pressures(iheight)/(temperatures(iheight))     & 
                             *(-gravity%constant)*1e8/R_air
                           if (isnan(result(ind%green%g3d)))  then
                             ! small distances can cause numerical problems
                             result(ind%green%g3d)=0
                           endif
+
                         else if (method3d(3)) then
-                          result(ind%green%g3d) = result(ind%green%g3d)      & 
-                            + cylinder(                                     & 
+                          result(ind%green%g3d) =                            & 
+                            result(ind%green%g3d)                            & 
+                            + cylinder(                                      & 
                             psi1=d2r(green_common(igreen)%start(idist)),     & 
                             psi2=d2r(green_common(igreen)%stop(idist)),      & 
                             dazimuth=d2r(dazimuth),                          & 
@@ -898,7 +917,7 @@ subroutine convolve(site, date)
                             z1= heights(iheight)-info(igreen)%height%step/2, & 
                             z2= heights(iheight)+info(igreen)%height%step/2  & 
                             )                                                & 
-                            * pressures(iheight)/(temperatures(iheight))  &
+                            * pressures(iheight)/(temperatures(iheight))     & 
                             *(-gravity%constant)*1e8/R_air
                         endif
                       enddo
