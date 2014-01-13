@@ -2,23 +2,24 @@
 # for example: OBJS  = libgrat.a
 
 fssdif: grat
-	@time for i in  none potential cylinder; do                                                  \
+	@time for i in  none; do \
 		time grat \
 		-! \
-		-F NCEP @SP, \
+		-F ERA @SP, \
 	   VIENNA@RSP, \
 		 VIENNA@HRSP, \
-		 NCEP1@T, \
-		 NCEP@HP, \
+		 ERA@T, \
+		 ERA@HP, \
 		 ETOPO@H!, \
 		 ERA@GP , \
 		 ERA@VSH, \
 		 ERA@VT \
 		-S l      \
-		-I 10@AS: -2@DD: 80@HS: 60000@HE:3@DE  \
-		-M 3: $$i @ 0.31 -o:/dev/null:free               \
+		-I 2@AS: -2@DD: 80@HS: 40000@HE:3@DE  \
+		-M 3: $$i @ 0.8\
+		-o tmp_sh_all:nc:/dev/null               \
 		-G@GN  , @GNdz                               \
-		-D2011:20110102 -H -Q -wn -rt;                        \
+		-D2011:201102 -H -rt;                        \
 		exit ;\
 		done;
 

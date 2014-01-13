@@ -812,7 +812,7 @@ subroutine convolve(site, date)
                           temperatures(iheight)= &
                             level%temperature(i)-6.5e-3*(val(ind%model%h)-val(ind%model%hp))
 
-                          if (.not.isnan(level%humidity(i))) then
+                          if (.not.isnan(level%humidity(1))) then
                             val(ind%model%t) = &
                               virtual_temperature(val(ind%model%t), level%humidity(1))
                           endif
