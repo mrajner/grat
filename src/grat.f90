@@ -75,11 +75,11 @@ program grat
   call cpu_time(cpu(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                       &
-    program_calling   = "grat",                      &
-    version           = "pre-alpha",                 &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ!", &
-  cmdlineargs         = .true.                       &
+  call intro (                                         & 
+    program_calling   = "grat",                        &
+    version           = "pre-alpha",                   &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n", &
+    cmdlineargs       = .true.                         &
     )
 
   start = 0
