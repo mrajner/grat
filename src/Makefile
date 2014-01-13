@@ -10,7 +10,8 @@ fssdif: grat
 		 VIENNA@HRSP, \
 		 NCEP1@T, \
 		 NCEP@HP, \
-		 ETOPO@H!, ERA@GP , \
+		 ETOPO@H!, \
+		 ERA@GP , \
 		 ERA@VSH, \
 		 ERA@VT \
 		-S l      \
