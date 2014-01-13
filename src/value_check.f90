@@ -9,26 +9,26 @@ program value_check
   use mod_data     
   use mod_date
   use mod_site
-  use mod_constants,  only: dp, R_air, earth
-  use mod_polygon,    only: read_polygon, chkgon, polygon
+  use mod_constants, only: dp, R_air, earth
+  use mod_polygon  , only: read_polygon, chkgon, polygon
   use mod_atmosphere, only: standard_pressure, standard_temperature, geop2geom
-  use mod_utilities,  only: d2r
+  use mod_utilities, only: d2r
 
   implicit none
   real (dp) , allocatable , dimension(:) :: val
-  real (dp)  :: cpu(2), sh
-  integer    :: i, ii, j ,start, imodel, iprogress = 0
-  integer(2) :: iok
-  integer(2) :: ilevel, start_level
+  real (dp)    :: cpu(2)
+  integer      :: i, ii, j ,start, imodel, iprogress = 0
+  integer(2)   :: iok
+  integer(2)   :: ilevel, start_level
 
 
   call cpu_time(cpu(1))
 
-  call intro (                                & 
-    program_calling   = "value_check",        & 
-    accepted_switches = "VFoShvIDLPRqwHMJ&!", & 
-    version           = "beta",               & 
-    cmdlineargs       = .true.                & 
+  call intro ( &
+    program_calling   = "value_check",      & 
+    accepted_switches = "VFoShvIDLPRqwHMJ", & 
+    version           = "beta",             & 
+    cmdlineargs       = .true.              & 
     )
 
   ! for progress bar
@@ -59,14 +59,9 @@ program value_check
       write (output%unit, '(a6$)') "level"
     endif
   endif
-
   do i = 1, size(model)
     if (output%header) then
-      if (model(i)%dataname.eq."custom") then
-        write (output%unit,'(a6,"@custom")', advance='no') trim(model(i)%name)
-      else
-        write (output%unit,'(a13)', advance='no') trim(model(i)%dataname)
-      endif
+      write (output%unit,'(a13)', advance='no') trim(model(i)%dataname)
     endif
   enddo
   if(output%header) write(output%unit, *)
@@ -74,35 +69,33 @@ program value_check
   do j = start, size(date)
     do i = 1 , size(model)
       if (model(i)%if) then
-        if (model(i)%autoload  &
-          .and. &
-          .not.( &
-          model(i)%autoloadname.eq."ERA" &
-          .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) & 
-          )) then
-
-          if ( &
-            (j.eq.1 &
-            .or. .not. date(j)%date(1).eq.date(j-1)%date(1) &
+        if ( &
+            .not.(model(i)%autoloadname.eq."ERA" &
+            .and.( &
+            model(i)%dataname.eq."GP" &
+            .or.model(i)%dataname.eq."VT" &
+            .or.model(i)%dataname.eq."VSH" &
+          )) &
+            .and.(j.eq.1.and. model(i)%autoload &
+            .or. (  &
+            model(i)%autoload &
+            .and. .not. date(j)%date(1).eq.date(j-1)%date(1) &
+            ) &
             ) &
             ) then
-
-            call model_aliases(model(i), year=date(j)%date(1))
-          endif
-
-        else if (model(i)%autoload) then
-
-          if ( &
-            (j.eq.1 &
-            .or. .not.( &
+          call model_aliases(model(i), year=date(j)%date(1))
+        else if ( &
+            j.eq.1.and. model(i)%autoload &
+            .or. (  &
+            model(i)%autoload &
+            .and. .not.( &
             date(j)%date(1).eq.date(j-1)%date(1) &
-            .and.date(j)%date(2).eq.date(j-1)%date(2)) &
+            .and.date(j)%date(2).eq.date(j-1)%date(2) &
+            ) &
             ) &
             ) then
-
-            call model_aliases( &
+          call model_aliases( &
               model(i), year=date(j)%date(1), month=date(j)%date(2))
-          endif
         endif
         if (allocated(date).and.model(i)%exist) then
           call get_variable (model(i), date = date(j)%date)
@@ -153,37 +146,20 @@ program value_check
 
         imodel = 0
         do ii = 1 , size (model)
-          imodel = imodel + 1
           if (model(ii)%if.or.model(ii)%if_constant_value) then
+            imodel = imodel + 1
             if (iok.eq.1) then
               if (j.eq.0) then
                 call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                  method=info(1)%interpolation, level=level%level(ilevel))
+                    method=info(1)%interpolation, level=level%level(ilevel))
               else
                 call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                  method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
+                    method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
               endif
             else
+              val (imodel) = 0
             endif
             if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
-
-          else if (model(ii)%dataname.eq."custom") then
-            if(imodel.eq.1) sh= val(ind%model%vsh)
-            call customfile_value( &
-              what  = model(imodel)%name, &
-              sp    = val(ind%model%sp), &
-              t     = val(ind%model%t), &
-              hp    = val(ind%model%hp), &
-              sh    = sh, &
-              gp    = val(ind%model%gp), &
-              vsh   = val(ind%model%vsh), &
-              vt    = val(ind%model%vt), &
-              level = level%level(ilevel), &
-              val   = val(imodel), &
-              rho   = any(model%name.eq."RHO") &
-              )
-          else
-            val (imodel) = sqrt(-1.)
           endif
         enddo
 
@@ -201,16 +177,12 @@ program value_check
         endif
 
 
-        write (output%unit , "("//output%form//'$)') val
 
+        write (output%unit , "("// output%form // '$)') val
+        
         if (output%unit.ne.output_unit.and..not.quiet) then 
           call cpu_time(cpu(2))
-
-          call progress(                                  & 
-            100*iprogress/(max(size(date),1)              & 
-            *max(size(site),1)*max(size(level%level),1)), & 
-            cpu(2)-cpu(1)                                 & 
-            )
+          call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1))
         endif
         if (size(val).gt.0) write (output%unit , *)
       enddo
@@ -221,7 +193,7 @@ program value_check
     do i=1, size(model)
       do j=1, size(model(i)%time)
         write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
-          model(i)%time(j), model(i)%date(j,:)
+            model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
   endif
@@ -230,21 +202,17 @@ program value_check
     do i = 1, size(model)
       do j = 1, size(model(i)%level)
         write (moreverbose(ind%moreverbose%j)%unit, '(i5)') &
-          model(i)%level(j) 
+            model(i)%level(j) 
       enddo
     enddo
   endif
 
   call cpu_time(cpu(2))
   if (output%unit.ne.output_unit.and..not.quiet) then 
-    call progress(                                  & 
-      100*iprogress/(max(size(date),1)              & 
-      *max(size(site),1)*max(size(level%level),1)), & 
-      cpu(2)-cpu(1),                                & 
-      every=1                                       & 
-      )
+    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)*max(size(level%level),1)), cpu(2)-cpu(1), every=1)
     close(output_unit) 
   endif
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
+
 end program

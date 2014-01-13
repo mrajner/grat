@@ -1,6 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
+
 dfdf:value_check
 	value_check \
 		-F \
@@ -12,25 +13,25 @@ dfdf:value_check
 		NCEP @ HP! ,   \
 		TP @ custom ,   \
 		TPF@ custom ,   \
-		RHO @custom , \
-		TPF+H@ custom    \
+		@RHO, \
 		-S j \
 		-H \
 		-D 2010 \
 		-o : prune: rho : level:nc \
 		-J m  
-	cat mycustom |colrm 1 54
+	cat oporowe |colrm 1 54
 
 fssdif: grat
 	time for i in  none potential cylinder; do                                                  \
 		grat \
 		-! \
-		-F NCEP @SP, VIENNA@RSP,VIENNA@HRSP, NCEP1@T, NCEP@HP, ETOPO@H!, ERA@GP ,ERA@VT \
-		-S l,j               -U                   \
-		-I 46@AS: 80@HS: 60000@HE:3@DE  \
-		-M 3: $$i @ 0.31 -o:/dev/null:free               \
+		-F ERA @SP, VIENNA@RSP,VIENNA@HRSP, ERA@T, ERA@HP, ETOPO@H!, NCEP@GP ,NCEP@VT \
+		-S l               -U                   \
+		-I 60@AS: 80@HS: 60000@HE:3@DE  \
+		-M 2: $$i @ 0.31 -o:/dev/null:free               \
 		-G@GN  , @GNdz                               \
 		-D2011:20110102 -H -Q -wn -rt;                        \
+		exit; \
 		done;
 
 fdofssdif: grat
