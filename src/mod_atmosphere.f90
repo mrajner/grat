@@ -165,7 +165,6 @@ end function
 ! ==============================================================================
 function standard_temperature (height, fels_type, t_zero)
     use mod_constants, only: dp, earth, atmosphere
-    use mod_printing, only : log
 
     real(dp), intent(in)  :: height
     real(dp)  :: standard_temperature
@@ -228,7 +227,7 @@ function standard_temperature (height, fels_type, t_zero)
       else
         cn = c(i+1)
       endif
-      aux = aux + d(i) * (cn - c(i))  * dlog (dcosh ((height/1000. - z(i)) / d(i)) / dcosh (z(i)/d(i))) 
+      aux = aux + d(i) * (cn - c(i))  * log (cosh ((height/1000. - z(i)) / d(i)) / cosh (z(i)/d(i))) 
     enddo
     standard_temperature = t + c(1) * (height/1000.)/2. + aux/2.
     if(present(t_zero)) then

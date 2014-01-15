@@ -1,38 +1,6 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-fssdif: grat
-	@time for i in  none; do \
-		time grat \
-		-! \
-		-F ERA @SP, \
-	   VIENNA@RSP, \
-		 VIENNA@HRSP, \
-		 ERA@T, \
-		 ERA@HP, \
-		 ETOPO@H!, \
-		 ERA@GP , \
-		 ERA@VSH, \
-		 ERA@VT \
-		-S l      \
-		-I 2@AS: -2@DD: 80@HS: 40000@HE:3@DE  \
-		-M 3: $$i @ 0.8\
-		-o tmp_sh_all:nc:/dev/null               \
-		-G@GN  , @GNdz                               \
-		-D2011:201102 -H -rt;                        \
-		exit ;\
-		done;
-
-fdofssdif: grat
-		grat \
-			-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-			, NCEP1@VSH \
-			-S jj:52:21:60  \
-			-I 60@AS: 180@HS: 60000@HE :1@DD :40@3D \
-			-M 3:potential @ 0.10  \
-			-G@GN   \
-			-D2010:43@D -wn -r,t -H -o tmp60 
-
 sdfsadf:grat
 	grat \
 		-F NCEP @SP, VIENNA@RSP, NCEP1@T, NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP@GP! ,NCEP@VT! \
