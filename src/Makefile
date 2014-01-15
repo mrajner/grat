@@ -1,52 +1,20 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-gratx: grat
-	time grat -M2,3:cylinder  \
-		-F  \
-		NCEP@GP \! ,   \
-		NCEP@VT \! ,   \
-		NCEP@SP\! ,    \
-		VIENNA@RSP\!,  \
-		VIENNA@HRSP\!, \
-		NCEP1@T\!,     \
-		NCEP@HP\!,      \
-		ETOPO@H!,\
-		NCEP@LS\!      \
-		-H \
-		-rt \
-		-G@GN   \
-		-o tmp: free \
-		-D20100103:4@D:1@D  -Sj -I1@DE -U
-	cat tmp
-
-MYMODEL=NCEP
-dfsdfsf: $(OBJS) grat
-	grat \
-		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,$(MYMODEL)@VT! \
-		-M1,2,3 -G@GN  \
-		-S j \
-		-H   \
-		-D 20100101:2010010623 \
-		-I 60@AS: 50@HS: 40000@HE :1@DD :3@DE  \
-		-o$(MYMODEL)_U:free:time  -A-0.43 -U
-
 tmp: grat local
-	grat \
-		-F NCEP@SP! \
-		-S local_site , j, local@L \
-		-H  \
-		-D 2009:20090102  -M1,2 -G@GN -o tmp
+	grat                      \
+		-F NCEP@SP, VIENNA@RSP  \
+		-S local_site , local@L \
+		-H                      \
+		-D 2009:20090102        \
+		-M1,2 -G@GN             \
+		-o :free
 
 local: 
-	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
+	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                                    \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
-holla:grat
-	grat -F VIENNA @RSP,NCEP@SP, NCEP1@T,NCEP@HP, ETOPO@H\! -G@GNc, @GN, @GNdt, @GNdz,@GNdz2 -D2010:2011 \
-		-Sj \
-		-oholla -H
 
 
 
@@ -88,7 +56,7 @@ SRCS  = mod_constants.f90     \
 				mod_parser.f90        \
 				mod_admit.f90         \
 				mod_normalization.f90 \
-				mod_3d.f90          \
+				mod_3d.f90            \
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \

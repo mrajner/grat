@@ -84,16 +84,22 @@ subroutine parse_green (cmd_line_entry)
       endif
 
       do ii=1, 2
-        green(i)%column(ii) =green(i-1)%column(ii)
+        green(i)%column(ii) = green(i-1)%column(ii)
         green(i)%columndataname(ii) = green(i-1)%columndataname(ii) 
         if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
           read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
           green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
         endif
 
-        if (green(i)%dataname.eq."GNc".and.ii.eq.1) &
-          gnc_looseness=green(i)%column(ii)
       enddo
+      if (green(i)%dataname.eq."GNc") then
+        if(is_numeric(cmd_line_entry%field(i)%subfield(2)%name)) then
+          read(cmd_line_entry%field(i)%subfield(2)%name, *) gnc_looseness
+          if (gnc_looseness.lt.1) then
+            call print_warning("gnc_looseness < 1", error=.true.) 
+          endif
+        endif
+      endif
 
       call read_green(green(i))
 
