@@ -693,17 +693,22 @@ subroutine convolve(site, date)
                   endif
                 endif
 
-                if(                                         &
-                  ind%model%rsp.ne.0                        &
-                  .and.green_common(igreen)%distance(idist) &
-                  .ge.local_pressure_distance               &
-                  ) then
-                  val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
-                endif
+                if (ind%model%rsp.ne.0) then
 
-                if (site%lp%if.and.first_reduction.and. ind%model%rsp.ne.0) then
-                  val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
-                  first_reduction=.false.
+                  if (                                   &
+                    (site%lp%if.and.first_reduction)     &
+                    .or.(.not.site%lp%if)                &
+                    .or.(                                &
+                    site%lp%if                           &
+                    .and.                                &
+                    green_common(igreen)%distance(idist) &
+                    .ge.local_pressure_distance)         &
+                    ) then
+
+                    val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+                    if (first_reduction) first_reduction=.false.
+
+                  endif
                 endif
 
                 ! if the cell is not over sea and inverted barometer assumption was not set 
