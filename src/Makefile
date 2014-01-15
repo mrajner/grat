@@ -1,18 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 
-sdfsadf:grat
-	grat \
-		-F NCEP @SP, VIENNA@RSP, NCEP1@T, NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP@GP! ,NCEP@VT! \
-		-M1,2,3 -G@GN  \
-		-S j \
-		-H   \
-		-rt \
-		-D 20100101 \
-		-I 4@AS: 50@HS: 50000@HE : 0.2 @ DE :0.1@3D  \
-		-o   -q -A-0.43  
 gratx: grat
-	grat -M2,3:cylinder  \
+	time grat -M2,3:cylinder  \
 		-F  \
 		NCEP@GP \! ,   \
 		NCEP@VT \! ,   \
@@ -21,12 +11,13 @@ gratx: grat
 		VIENNA@HRSP\!, \
 		NCEP1@T\!,     \
 		NCEP@HP\!,      \
+		ETOPO@H!,\
 		NCEP@LS\!      \
 		-H \
-		-G@GN, @GE   \
+		-rt \
+		-G@GN   \
 		-o tmp: free \
-		-r t \
-		-D20100103  -Sj -I10@DE:0.4@3D :0.1@DS:50@AS 
+		-D20100103:4@D:1@D  -Sj -I1@DE -U
 	cat tmp
 
 MYMODEL=NCEP
