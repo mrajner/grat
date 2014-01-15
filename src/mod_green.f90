@@ -694,15 +694,11 @@ subroutine convolve(site, date)
                 endif
 
                 if (ind%model%rsp.ne.0) then
-
-                  if (                                   &
-                    (site%lp%if.and.first_reduction)     &
-                    .or.(.not.site%lp%if)                &
-                    .or.(                                &
-                    site%lp%if                           &
-                    .and.                                &
-                    green_common(igreen)%distance(idist) &
-                    .ge.local_pressure_distance)         &
+                  if (.not. &
+                    (site%lp%if &
+                    .and.green_common(igreen)%distance(idist).lt.local_pressure_distance &
+                    .and..not.first_reduction &
+                    ) &
                     ) then
 
                     val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
