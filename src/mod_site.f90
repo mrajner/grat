@@ -29,6 +29,9 @@ module mod_site
   type(site_info), allocatable, dimension(:) :: site
   logical :: site_height_from_model=.false.
 
+  ! if using -S @LP substitute model values till this distance
+  real(dp) :: local_pressure_distance = 0.25
+
 contains
 ! =============================================================================
 !> 

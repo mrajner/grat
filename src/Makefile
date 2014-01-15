@@ -3,8 +3,8 @@
 
 tmp: grat local
 	grat                      \
-		-F NCEP@SP  \
-		-S j, local@LP \
+		-F NCEP@SP, VIENNA@RSP  \
+		-S j \
 		-H                      \
 		-D 2009:20090102        \
 		-M1,2 -G@GN             \

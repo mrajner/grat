@@ -422,7 +422,7 @@ end subroutine
 subroutine convolve(site, date)
   use mod_constants
   use iso_fortran_env
-  use mod_site, only : site_info
+  use mod_site, only : site_info, local_pressure_distance
   use mod_cmdline
   use mod_utilities, &
     only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring
@@ -456,6 +456,9 @@ subroutine convolve(site, date)
   real(dp) :: rsp
   real(dp), dimension(:), allocatable :: result_partial
 
+  logical :: first_reduction
+  first_reduction=.true.
+
 
   if (transfer_sp%if) then
     if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
@@ -466,16 +469,17 @@ subroutine convolve(site, date)
     call green_unification()
   endif
 
+  val=0
+
   if (site%lp%if) then
-    val=0
     do i=1, size(site%lp%date)
       if(all(site%lp%date(i, 1:6).eq.date%date(1:6))) then
-        val=site%lp%data(i)
+        val(ind%model%sp) = site%lp%data(i)
         exit
       endif
+      val(ind%model%sp) = sqrt(-1.)
       if(i.eq.size(site%lp%date)) &
-        ! call print_warning("date not found in @LP")
-      val=sqrt(-1.)
+        call print_warning("date not found in @LP")
     enddo
   endif
 
@@ -572,10 +576,14 @@ subroutine convolve(site, date)
             ) then
 
             ! get SP
-            if (.not.(site%lp%if.and.green_common(igreen)%distance(idist).lt.0.3)) then
+            if (.not.(site%lp%if                      &
+              .and.green_common(igreen)%distance(idist) &
+              .lt.local_pressure_distance)) then
               call get_value (                                              & 
                 model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), & 
-                level=1, method = info(igreen)%interpolation, date=date%date)
+                level=1,                                                    & 
+                method = info(igreen)%interpolation,                        & 
+                date=date%date)
             endif
             old_val_sp=val(ind%model%sp)
 
@@ -685,8 +693,18 @@ subroutine convolve(site, date)
                   endif
                 endif
 
-                if(ind%model%rsp.ne.0) &
+                if(                                         &
+                  ind%model%rsp.ne.0                        &
+                  .and.green_common(igreen)%distance(idist) &
+                  .ge.local_pressure_distance               &
+                  ) then
                   val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+                endif
+
+                if (site%lp%if.and.first_reduction.and. ind%model%rsp.ne.0) then
+                  val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+                  first_reduction=.false.
+                endif
 
                 ! if the cell is not over sea and inverted barometer assumption was not set 
                 ! and is not excluded by polygon
