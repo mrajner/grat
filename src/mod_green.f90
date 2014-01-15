@@ -132,10 +132,10 @@ subroutine read_green (green, print)
   logical, optional :: print 
 
   ! change the paths accordingly
-  if (.not.file_exists(green%name) &
-    .and. (.not. green%name.eq."merriam" &
-    .and.  .not. green%name.eq."huang" &
-    .and.  .not. green%name.eq."rajner" &
+  if (.not.file_exists(green%name)       & 
+    .and. (.not. green%name.eq."merriam" & 
+    .and.  .not. green%name.eq."huang"   & 
+    .and.  .not. green%name.eq."rajner"  & 
     ! this will be feature added for hydrosphere loading later...
   ! .and.  .not. green%name.eq."GB" &
   )) then

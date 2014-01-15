@@ -3,8 +3,8 @@
 
 tmp: grat local
 	grat                      \
-		-F NCEP@SP, VIENNA@RSP  \
-		-S local_site , local@L \
+		-F NCEP@SP  \
+		-S j, local@LP \
 		-H                      \
 		-D 2009:20090102        \
 		-M1,2 -G@GN             \
@@ -14,8 +14,6 @@ local:
 	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                                    \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
-
-
 
 
 # compiler:  currently only ifort is supported
@@ -30,7 +28,8 @@ FFLAGS = -O0 -xHost
 MYFLAGS=
 FFLAGS += $(MYFLAGS)
 FFLAGS += -fpp -warn all 
-# for final do optimize
+
+# for final compilation do optimize
 all: FFLAGS+=-O2
 
 # libraries 
@@ -67,7 +66,6 @@ PROGSSRCS =  grat.f90               \
 EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
-
 
 # module dependencies
 all: DEP+=yes
@@ -120,10 +118,9 @@ ifdef UNIQ
 endif
 
 
-
 # paralelization
 #../bin/value_check: value_check.f90 $(OBJS)
-#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) /home/mrajner/src/ncl_ncarg-6.1.2/ni/src/lib/nfpfort/int2p_dp.f
+#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS)
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
