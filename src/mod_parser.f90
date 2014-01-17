@@ -596,17 +596,24 @@ subroutine parse_info (cmd_line_entry)
       enddo
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
-      write(log%unit, &
-        "("//form%t3//" &
-        'DB:',f7.2, & 
-        '|DE:',f8.3, &
-        '|I:',a, &
-        '|DD:',i2, &
-        '|DS:',f6.2, &
-        )"), &
-        info(i)%distance%start, info(i)%distance%stop, &
+      write(log%unit,                                   &
+        "("//form%t3//"                                 &
+        'DB:' , f7.2,                                   &
+        '|DE:', f8.3,                                   &
+        '|I:' , a   ,                                   &
+        '|DD:', i2  ,                                   &
+        '|DS:', f6.2,                                   &
+        '|HB:', f6.2,                                   &
+        '|HE:', f6.2,                                   &
+        '|HS:', f6.2,                                   &
+        )"),                                            &
+        info(i)%distance%start, info(i)%distance%stop,  &
         info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step
+        info(i)%distance%step,                          &
+        info(i)%height%start,                           &
+        info(i)%height%stop,                            &
+        info(i)%height%step
+
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then
         call print_warning("stop_3d distance is less then stop distance &
