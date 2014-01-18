@@ -199,11 +199,14 @@ program grat
                 model(i), year=date(idate)%date(1), month=date(idate)%date(2))
             endif
           endif
+
           if (size(date).eq.0.and.model(i)%exist) then
+            stop "temporary"
             call get_variable (model(i))
           elseif (model(i)%exist) then
             call get_variable (model(i), date = date(idate)%date)
           endif
+
         end select
       endif
     enddo

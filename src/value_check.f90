@@ -103,11 +103,13 @@ program value_check
               model(i), year=date(j)%date(1), month=date(j)%date(2))
           endif
         endif
+
         if (allocated(date).and.model(i)%exist) then
           call get_variable (model(i), date = date(j)%date)
         elseif (model(i)%exist) then
           call get_variable (model(i))
         endif
+
       endif
     enddo
 

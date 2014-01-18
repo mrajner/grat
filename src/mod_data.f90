@@ -743,7 +743,9 @@ subroutine get_variable(model, date, print, level)
     .or..not. model%if) return
 
   index_time = 0
+
   status = nf90_inq_varid (model%ncid, model%names(1), varid)
+
   if (status /= nf90_noerr) then
     call nc_info(model)
     call print_warning( &
@@ -752,12 +754,13 @@ subroutine get_variable(model, date, print, level)
   endif
 
   if (allocated(model%data)) deallocate(model%data)
-  allocate ( &
-    model%data ( &
-    size(model%lon), &
-    size(model%lat), &
+
+  allocate (          &
+    model%data (      &
+    size(model%lon),  &
+    size(model%lat),  &
     size(model%level) &
-    ) &
+    )                 &
     )
 
   if (size(date).gt.0 .and. present(date)) then                       
