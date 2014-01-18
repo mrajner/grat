@@ -1,4 +1,4 @@
-! ===================================================
+! =============================================================================
 !> This modele gives routines to read, and write data
 !!
 !! The netCDF format is widely used in geoscienses. Moreover it is
@@ -13,10 +13,13 @@ module mod_data
   use mod_constants, only: dp
 
   implicit none
+
   type file
     character(90) :: name 
     ! varname,lonname,latname,levelname,timename
-    character(len=50) :: names(5) = ["z", "lon", "lat", "level", "time"]
+    character(len=50) :: names(5) = &
+      ["z", "lon", "lat", "level", "time"]
+
     character(len=100) :: datanames(5)=" "
 
     character(len=15) :: dataname
@@ -24,9 +27,9 @@ module mod_data
     ! if file was determined
     logical :: if =.false.
 
-    real(dp), allocatable, dimension(:) :: lat, lon, time
-    integer, allocatable, dimension(:) :: level
-    integer, allocatable, dimension(:,:) :: date
+    real(dp), allocatable, dimension(:)   :: lat, lon, time
+    integer , allocatable, dimension(:)   :: level
+    integer , allocatable, dimension(:,:) :: date
 
     real (dp), dimension(2) :: latrange, lonrange
 
@@ -36,24 +39,29 @@ module mod_data
     real(dp), allocatable, dimension(:,:,:) :: data
 
     integer :: ncid
-    logical :: huge=.false.
-    logical :: autoload=.false.
-    logical :: exist=.false.
+    logical :: huge     = .false.
+    logical :: autoload = .false.
+    logical :: exist    = .false.
     character(10) :: autoloadname
   end type
+
   type(file), allocatable, dimension(:) :: model 
+
   logical :: all_huge=.false.
 
   private :: dataname
 
   type level_info
-    integer, allocatable, dimension(:) :: level
-    real(dp), allocatable, dimension(:) :: height, temperature, humidity
+    integer,  allocatable, dimension(:) :: level
+    real(dp), allocatable, dimension(:) :: &
+      height, temperature, humidity
     logical :: all=.false.
   end type
+
   type(level_info) :: level
 
 contains
+
 ! =============================================================================
 !> This subroutine parse model information from command line entry
 !!
@@ -83,7 +91,7 @@ subroutine parse_model (cmd_line_entry)
       model(i)%dataname="NN"
     else
       if ( &
-          index(model(i)%dataname,"!").ne.0 &
+        index(model(i)%dataname,"!").ne.0 &
       ) then
         model(i)%huge=.true.
         model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
@@ -105,6 +113,7 @@ subroutine parse_model (cmd_line_entry)
         model(i)%datanames(j-1)=cmd_line_entry%field(i)%subfield(j)%dataname
       endif
     enddo
+
     if (file_exists (model(i)%name) ) then
       do j =2, size (cmd_line_entry%field(i)%subfield)
         if (cmd_line_entry%field(i)%subfield(j)%name.ne."") then
@@ -113,8 +122,8 @@ subroutine parse_model (cmd_line_entry)
       enddo
 
       write (log%unit, form%i3,advance='no'), &
-          trim (dataname(model(i)%dataname)), &
-          "("//trim(model(i)%dataname)//")"
+        trim (dataname(model(i)%dataname)), &
+        "("//trim(model(i)%dataname)//")"
       write(log%unit, '(5(a,x))', advance="no"), (trim(model(i)%names(j)), j=1,5)
       model(i)%if=.true.
       write(log%unit, *) 
@@ -123,34 +132,40 @@ subroutine parse_model (cmd_line_entry)
       endif
 
       ! listing in log
-      model(i)%constant_value=     & 
-          variable_modifier(        & 
-          model(i)%constant_value, & 
-          model(i)%datanames(1),   & 
-          verbose=.true.,          & 
-          list_only=.true.         & 
-          )
+      model(i)%constant_value=   & 
+        variable_modifier(       & 
+        model(i)%constant_value, & 
+        model(i)%datanames(1),   & 
+        verbose=.true.,          & 
+        list_only=.true.         & 
+        )
+
     else if (is_numeric(model(i)%name)) then
+
       model(i)%if_constant_value=.true.
-      write (log%unit, form%i3),              & 
-          trim (dataname(model(i)%dataname)), & 
-          "("//trim(model(i)%dataname)//")"
+      write (log%unit, form%i3),            & 
+        trim (dataname(model(i)%dataname)), & 
+        "("//trim(model(i)%dataname)//")"
+
       read (model(i)%name, * ) model(i)%constant_value
       write(log%unit, '(' // form%t3 // "a," // output%form // ")") &
-          'constant value was set:   ', model(i)%constant_value
+        'constant value was set:   ', model(i)%constant_value
+
       if (trim(model(i)%datanames(1)).ne."") then
         model(i)%constant_value= &
-            variable_modifier( &
-            model(i)%constant_value, model(i)%datanames(1),verbose=.true.)
+          variable_modifier( &
+          model(i)%constant_value, model(i)%datanames(1),verbose=.true.)
       endif
+
       write(log%unit, '(' // form%t3 // "a," // output%form // ")") &
-          'constant value was re-set:', model(i)%constant_value
-      model(i)%lonrange=[  0,360]
-      model(i)%latrange=[-90, 90]
+        'constant value was re-set:', model(i)%constant_value
+      model(i)%lonrange = [  0,360]
+      model(i)%latrange = [-90, 90]
+
     else
       !check autoload
       call model_aliases(model(i), dryrun=.true.)
-      if (.not.model(i)%if.and. .not.any(["TP","TPF","RHO"].eq.model(i)%dataname)) then
+      if (.not.model(i)%if) then
         call print_warning ("model", more=trim(model(i)%name)//" : file do not exist", error=.false.)
       endif
     endif
@@ -174,8 +189,8 @@ subroutine model_aliases(model, dryrun, year, month)
       month_=month
     endif
   else
-    year_=9999
-    month_=99
+    year_  = 9999
+    month_ = 99
   endif
 
   if(.not. model%autoload) model%autoloadname=model%name
@@ -188,10 +203,12 @@ subroutine model_aliases(model, dryrun, year, month)
     else
       prefix="/home/mrajner/dat/ncep_reanalysis/"
     endif
+
     select case (model%dataname)
     case ("SP")
       model%names(1)="pres"
       write(model%name,'(a,a,i4,a)') trim(prefix),"pres.sfc.",year_,".nc"
+
     case ("GP")
       model%names(1)="hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.",year_,".nc"
@@ -202,12 +219,15 @@ subroutine model_aliases(model, dryrun, year, month)
           model%datanames(1) = "gh2h@"// trim(model%datanames(1))
         endif
       endif
+
     case ("VT")
       model%names(1)="air"
       write(model%name,'(a,a,i4,a)') trim(prefix),"air.",year_,".nc"
+
     case ("VRH")
       model%names(1)="rhum"
       write(model%name,'(a,a,i4,a)') trim(prefix),"rhum.",year_,".nc"
+
     case ("VSH")
       if (model%autoloadname.eq."NCEP1") then
         model%names(1)="shum"
@@ -215,6 +235,7 @@ subroutine model_aliases(model, dryrun, year, month)
       else
         call print_warning ("not yet NCEP@VSH", error=.true.)
       endif
+
     case ("SRH")
       if (model%autoloadname.eq."NCEP1") then
         model%names(1)="rhum"
@@ -222,6 +243,7 @@ subroutine model_aliases(model, dryrun, year, month)
       else
         call print_warning ("not yet NCEP@SRH", error=.true.)
       endif
+
     case ("T")
       if (model%autoloadname.eq."NCEP1") then
         model%names(1)="air"
@@ -230,6 +252,7 @@ subroutine model_aliases(model, dryrun, year, month)
         model%names(1)="temp"
         call print_warning ("not yet NCEP@T", error=.true.)
       endif
+
     case ("HP","H")
       model%names(1)="hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.sfc.nc"
@@ -241,18 +264,22 @@ subroutine model_aliases(model, dryrun, year, month)
           model%datanames(1) = "gh2h@"// trim(model%datanames(1))
         endif
       endif
+
     case ("LS")
       model%names(1:3)=["z", "x", "y"]
       model%name="/home/mrajner/dat/landsea/ncep_closed_seas_caspian.nc"
       model%autoload=.false.
+
     case default
       model%autoload=.false.
       model%if=.false.
       return
     endselect
+
   case ("ERA")
     if (.not.model%autoload) model%autoload=.true.
     prefix="/home/mrajner/dat/erainterim/"
+
     select case (model%dataname)
     case ("SP")
       model%names(1)="sp"
@@ -294,6 +321,7 @@ subroutine model_aliases(model, dryrun, year, month)
       model%autoload=.false.
       model%if=.false.
     endselect
+
   case ("VIENNA")
     prefix="/home/mrajner/dat/refpres/"
     select case (model%dataname)
@@ -333,14 +361,16 @@ subroutine model_aliases(model, dryrun, year, month)
     model%if=.false.
     model%autoload=.false.
   endselect
+
   ! listing in log
-  model%constant_value=     & 
-      variable_modifier(        & 
-      model%constant_value, & 
-      model%datanames(1),   & 
-      verbose=.true.,          & 
-      list_only=.true.         & 
-      )
+  model%constant_value=   & 
+    variable_modifier(    & 
+    model%constant_value, & 
+    model%datanames(1),   & 
+    verbose   = .true.,   & 
+    list_only = .true.    & 
+    )
+
   if (model%if.and..not.model%autoload) call read_netCDF(model)
 
   if(present(dryrun) .and. dryrun) return
@@ -358,67 +388,67 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 function variable_modifier (val, modifier, verbose, list_only)
-    use mod_atmosphere, only: geop2geom
-    use mod_constants,  only: earth
-    use mod_utilities,  only: ntokens
-    use mod_printing,   only: print_warning, form, log, output
-    real(dp) :: variable_modifier
-    real(dp), intent(in) :: val
-    character(*), intent(in) :: modifier
-    character(20) :: key, keyval
-    character(100) :: modifier_
-    real(dp) :: numerickeyval
-    integer :: i
-    logical, optional, intent(in) :: verbose, list_only
+  use mod_atmosphere, only: geop2geom
+  use mod_constants,  only: earth
+  use mod_utilities,  only: ntokens
+  use mod_printing,   only: print_warning, form, log, output
+  real(dp) :: variable_modifier
+  real(dp), intent(in) :: val
+  character(*), intent(in) :: modifier
+  character(20) :: key, keyval
+  character(100) :: modifier_
+  real(dp) :: numerickeyval
+  integer :: i
+  logical, optional, intent(in) :: verbose, list_only
 
 
-    variable_modifier = val
-    modifier_=modifier
-    do i = 1, ntokens(modifier_,"@")
-      keyval=" "
-      if (ntokens(modifier_,"@").eq.1) then
-        key = modifier_
-      else
-        key = modifier_(1: index(modifier_, "@")-1)
-      endif
-      if (index(key,"=").gt.0)  then
-        keyval = trim(key(index(key,"=")+1:))
-        key    = trim(key(1:index(key,"=")-1))
-      endif
-      if (present(verbose).and.verbose) &
-          write(log%unit, "("//form%t3//"a,a6,a7$)" ) &
-          "var modifier: ", trim(key), trim(keyval)
-      select case (key)
-      case ("gh2h") ! g2h is obsolete
-        variable_modifier=geop2geom(variable_modifier)
+  variable_modifier = val
+  modifier_=modifier
+  do i = 1, ntokens(modifier_,"@")
+    keyval=" "
+    if (ntokens(modifier_,"@").eq.1) then
+      key = modifier_
+    else
+      key = modifier_(1: index(modifier_, "@")-1)
+    endif
+    if (index(key,"=").gt.0)  then
+      keyval = trim(key(index(key,"=")+1:))
+      key    = trim(key(1:index(key,"=")-1))
+    endif
+    if (present(verbose).and.verbose) &
+      write(log%unit, "("//form%t3//"a,a6,a7$)" ) &
+      "var modifier: ", trim(key), trim(keyval)
+    select case (key)
+    case ("gh2h") ! g2h is obsolete
+      variable_modifier=geop2geom(variable_modifier)
       ! case ("gp2gh")
-        ! variable_modifier=variable_modifier/earth%gravity%mean
-      case ("gp2h")
-        variable_modifier=geop2geom(variable_modifier)/earth%gravity%mean
-      case ("nan")
-        read(keyval,*) numerickeyval
-        if (isnan(variable_modifier)) variable_modifier=numerickeyval 
-      case ("scale")
-        read(keyval,*) numerickeyval
-        variable_modifier=numerickeyval*variable_modifier
-      case ("invscale")
-        read(keyval,*) numerickeyval
-        variable_modifier=1./numerickeyval*variable_modifier
-      case ("offset")
-        read(keyval,*) numerickeyval
-        variable_modifier=numerickeyval+variable_modifier
-      case default
-        call print_warning ("variable modifier not found" // key, error=.true.)
-      endselect
-      if (.not.present(list_only)) then
-        if(present(verbose).and.verbose) &
-            write (log%unit, '('// output%form // ')') variable_modifier
-      else
-        if(present(verbose).and.verbose) &
-            write (log%unit, *)
-      endif
-      modifier_ = modifier_(index(modifier_, "@")+1:)
-    enddo
+      ! variable_modifier=variable_modifier/earth%gravity%mean
+    case ("gp2h")
+      variable_modifier=geop2geom(variable_modifier)/earth%gravity%mean
+    case ("nan")
+      read(keyval,*) numerickeyval
+      if (isnan(variable_modifier)) variable_modifier=numerickeyval 
+    case ("scale")
+      read(keyval,*) numerickeyval
+      variable_modifier=numerickeyval*variable_modifier
+    case ("invscale")
+      read(keyval,*) numerickeyval
+      variable_modifier=1./numerickeyval*variable_modifier
+    case ("offset")
+      read(keyval,*) numerickeyval
+      variable_modifier=numerickeyval+variable_modifier
+    case default
+      call print_warning ("variable modifier not found" // key, error=.true.)
+    endselect
+    if (.not.present(list_only)) then
+      if(present(verbose).and.verbose) &
+        write (log%unit, '('// output%form // ')') variable_modifier
+    else
+      if(present(verbose).and.verbose) &
+        write (log%unit, *)
+    endif
+    modifier_ = modifier_(index(modifier_, "@")+1:)
+  enddo
 end function
 
 ! =============================================================================
@@ -443,13 +473,13 @@ subroutine read_netCDF (model, print, force)
   endif
 
   if (.not.file_exists(model%name)) &
-      call print_warning("file not exist " // trim (model%name), &
-      error=.true.) 
+    call print_warning("file not exist " // trim (model%name), &
+    error=.true.) 
 
   if (.not. (present(print).and. .not. print)) then
     write (log%unit, form%i3) &
-        "Opening file:", trim(basename(trim(model%name))), &
-        ", huge [T/F]:", model%huge
+      "Opening file:", trim(basename(trim(model%name))), &
+      ", huge [T/F]:", model%huge
   endif
 
   if (model%ncid.ne.0) call check (nf90_close (model%ncid))
@@ -499,11 +529,11 @@ subroutine get_dimension (model, i, print)
   endif
   if(status /= nf90_noerr.and.any(i.eq.[2,3])) then 
     call print_warning("key variable not found: " &
-        // trim(model%names(i)), error=.true.)
+      // trim(model%names(i)), error=.true.)
   elseif(status /= nf90_noerr) then 
     if (.not. (present(print).and..not.print))then
       write (log%unit, '(a6,1x,a)') &
-          trim(model%names(i)),"not found, allocating (1)..." 
+        trim(model%names(i)),"not found, allocating (1)..." 
       call nc_info(model)
     endif
     length=1
@@ -518,7 +548,7 @@ subroutine get_dimension (model, i, print)
     allocate(model%lat(length))
     call check(nf90_get_var (model%ncid, varid, model%lat))
     status = nf90_get_att(model%ncid, varid, &
-        "actual_range", model%latrange) 
+      "actual_range", model%latrange) 
     if (status /= nf90_noerr ) then
       model%latrange =[model%lat(1), model%lat(size(model%lat)) ]
     endif
@@ -526,9 +556,9 @@ subroutine get_dimension (model, i, print)
     allocate(model%lon(length))
     call check(nf90_get_var (model%ncid,  varid, model%lon))
     status = nf90_get_att ( model%ncid, varid, &
-        "actual_range", model%lonrange) 
+      "actual_range", model%lonrange) 
     if (status /= nf90_noerr ) model%lonrange &
-        =[model%lon(1), model%lon(size(model%lon)) ]
+      =[model%lon(1), model%lon(size(model%lon)) ]
     where (model%lonrange.ge.357.5) 
       model%lonrange=360
     end where
@@ -708,27 +738,27 @@ subroutine get_variable(model, date, print, level)
   character (20) :: aux
 
   if ( &
-      model%huge &
-      .or.model%if_constant_value &
-      .or..not. model%if) return
+    model%huge &
+    .or.model%if_constant_value &
+    .or..not. model%if) return
 
   index_time = 0
   status = nf90_inq_varid (model%ncid, model%names(1), varid)
   if (status /= nf90_noerr) then
     call nc_info(model)
     call print_warning( &
-        "variable not found: " // trim(model%names(1)), &
-        error=.true.)
+      "variable not found: " // trim(model%names(1)), &
+      error=.true.)
   endif
 
   if (allocated(model%data)) deallocate(model%data)
   allocate ( &
-      model%data ( &
-      size(model%lon), &
-      size(model%lat), &
-      size(model%level) &
-      ) &
-      )
+    model%data ( &
+    size(model%lon), &
+    size(model%lat), &
+    size(model%level) &
+    ) &
+    )
 
   if (size(date).gt.0 .and. present(date)) then                       
     index_time = get_time_index(model, date)
@@ -737,7 +767,7 @@ subroutine get_variable(model, date, print, level)
         if (.not.log%sparse) then
           write(aux, '(i4.4,5i2.2)') date
           call print_warning("cannot find date: "// aux & 
-              // "var: " // trim(model%names(1)) // " in file: " // trim(model%name))
+            // "var: " // trim(model%names(1)) // " in file: " // trim(model%name))
         endif
       endif
       model%data= sqrt(-1.)
@@ -752,20 +782,20 @@ subroutine get_variable(model, date, print, level)
   case ("VT","GP", "VRH", "VSH")
     startv = [1,1,1,index_time]
     call check (nf90_get_var ( & 
-        ncid=model%ncid,         & 
-        varid=varid,             & 
-        values=model%data,       & 
-        start=startv)             & 
-        )
+      ncid=model%ncid,         & 
+      varid=varid,             & 
+      values=model%data,       & 
+      start=startv)             & 
+      )
 
   case default
     start = [1,1,index_time]
     call check (nf90_get_var ( & 
-        ncid=model%ncid,         & 
-        varid=varid,             & 
-        values=model%data,       & 
-        start=start)             & 
-        )
+      ncid=model%ncid,         & 
+      varid=varid,             & 
+      values=model%data,       & 
+      start=start)             & 
+      )
   end select
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
@@ -820,7 +850,7 @@ subroutine check(status, success)
 
   if(status /= nf90_noerr) then 
     call print_warning( &
-        "check " // trim(nf90_strerror(status)))
+      "check " // trim(nf90_strerror(status)))
     if (present(success)) then
       success=.false.
     endif
@@ -888,10 +918,10 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360 
   if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
   if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
-      .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
-      .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
-      .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
-      ) then
+    .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
+    .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
+    .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
+    ) then
     val = sqrt(-1.)
     return
   endif
@@ -905,23 +935,23 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     call check (nf90_inq_varid (model%ncid, model%names(1), varid))
     if (status.eq.nf90_noerr) then
       call check (& 
-          nf90_get_var(              & 
-          model%ncid, varid,                   & 
-          val,                                 & 
-          start = [                            & 
-          ilon,                                & 
-          ilat,                                & 
-          get_level_index(model, ilevel, success2),& 
-          get_time_index(model,date=date)           & 
-          ]),                                  & 
-          success=success)
+        nf90_get_var(              & 
+        model%ncid, varid,                   & 
+        val,                                 & 
+        start = [                            & 
+        ilon,                                & 
+        ilat,                                & 
+        get_level_index(model, ilevel, success2),& 
+        get_time_index(model,date=date)           & 
+        ]),                                  & 
+        success=success)
       if(.not.success2) val =sqrt(-1.)
     else
       call check (nf90_get_var(         & 
-          model%ncid, varid, val,       & 
-          start = [ilon,ilat,           & 
-          get_time_index(model,date=date)]), & 
-          success=success)
+        model%ncid, varid, val,       & 
+        start = [ilon,ilat,           & 
+        get_time_index(model,date=date)]), & 
+        success=success)
     endif
     if(.not. success) then
       call print_warning ("skipping get_value")
@@ -950,7 +980,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
       if (ind%moreverbose%l.ne.0) then
         write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")'), &
-            (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
+          (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
         write(moreverbose(ind%moreverbose%l)%unit, '(">")')
       endif
       val = bilinear ( lon, lat, array_aux )
@@ -965,7 +995,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   endif
   if (ind%moreverbose%n.ne.0) then
     write(moreverbose(ind%moreverbose%n)%unit,  '(3f15.4," n")'), &
-        model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
+      model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
     write(moreverbose(ind%moreverbose%n)%unit,  '(">")')
   endif
   val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
@@ -983,9 +1013,9 @@ function bilinear (x, y, aux )
   real(dp) :: bilinear
   real(dp) :: x, y, aux(4,3) 
   real(dp) :: a, b, c
-  a  = ( x - aux(1,1) ) /(aux(4,1)-aux(1,1))
-  b = a * (aux(3,3)  - aux(1,3)) + aux(1,3) 
-  c = a * (aux(4,3)  - aux(2,3)) + aux(2,3)
+  a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
+  b = a * (aux(3,3) - aux(1,3)) + aux(1,3) 
+  c = a * (aux(4,3) - aux(2,3)) + aux(2,3)
   bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
 end function
 
@@ -1084,7 +1114,7 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   valoceanarea    = 0
 
   do ilat = 1, size(model%lat)
-    do ilon =1,size(model%lon)
+    do ilon = 1, size(model%lon)
       total_area = total_area + cos(d2r(model%lat(ilat)))
       call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
       if (ind%polygon%e.ne.0) then
@@ -1092,7 +1122,7 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
         if (iok.eq.0) cycle
       endif
       if ((valls.eq.0.and..not.inverted_landsea_mask) &
-          .or.(valls.eq.1 .and. inverted_landsea_mask)) then
+        .or.(valls.eq.1 .and. inverted_landsea_mask)) then
         call get_value(model, model%lat(ilat), model%lon(ilon), val)
         ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
         valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
@@ -1115,8 +1145,8 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
       write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no'), mjd(date), date
     endif
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), & 
-        ocean_area/total_area*100.,                                & 
-        valoceanarea/ocean_area
+      ocean_area/total_area*100.,                                & 
+      valoceanarea/ocean_area
   endif
 end subroutine
 
@@ -1148,15 +1178,23 @@ subroutine total_mass (model, date)
   enddo
 
   if (output%header)  then
+
     if (present(date)) then
-      write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14)', advance='no'), "mjd",  "date"
+      write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14$)'), &
+        "mjd",  "date"
     endif
+
     write (moreverbose(ind%moreverbose%t)%unit,'(a12)'), "mean_val"
+
   endif
+
   if (present(date)) then
-    write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no'), mjd(date), date
+    write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2$)'), &
+      mjd(date), date
   endif
-  write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)'),  valarea/ totalarea
+
+  write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)'), &
+    valarea/totalarea
 end subroutine
 
 ! =============================================================================
@@ -1194,56 +1232,73 @@ subroutine parse_level (cmd_line_entry)
 
 end subroutine
 
-
 ! =============================================================================
 ! =============================================================================
-! function tpf
-! end function
-        ! if(ind%model%vsh.ne.0) then
-          ! if (isnan(val(ind%model%vsh))) val(ind%model%vsh)=0
-          ! val(ind%model%vt)=val(ind%model%vt)*(1.+0.608*val(ind%model%vsh))
-        ! endif
+subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
+  use mod_printing, only: print_warning
+  use mod_atmosphere, only: & 
+    standard_pressure,      & 
+    standard_temperature,   & 
+    virtual_temperature
+  use mod_constants, only: R_air
+  character(*), intent(in) :: what
+  real(dp), intent(in), optional :: sp,t, hp, sh, gp, vsh, vt
+  integer,  intent(in), optional :: level
+  logical,  intent(in), optional :: rho
+  real(dp), intent(out) :: val
+  real(dp):: t_aux, vt_aux
 
-        ! if (ind%model%tp.ne.0) then
-          ! if (ind%model%gp.eq.0) call print_warning("need @GP with @TP")
-          ! val(ind%model%tp)= &
-              ! standard_pressure ( &
-              ! val(ind%model%gp), &
-              ! use_standard_temperature=.true., &
-              ! method = model(ind%model%tp)%name &
-              ! ) 
+  select case (what)
 
-          ! if (output%rho) then
-            ! val(ind%model%tp)=val(ind%model%tp)/(R_air * standard_temperature(val(ind%model%gp)))
-          ! endif
+  case ("TPF+H")
+    t_aux  = virtual_temperature(t,sh)
+    vt_aux = virtual_temperature(vt,vsh)
 
-          ! val(ind%model%tp)= &
-              ! variable_modifier(val(ind%model%tp),model(ind%model%tp)%datanames(1))
-        ! endif
+  case default
+    t_aux  = t
+    vt_aux = vt
 
-        ! if (ind%model%tpf.ne.0) then
-          ! if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t].eq.0)) &
-              ! call print_warning("not enough with @TPF", error=.true.)
-          ! val(ind%model%tpf)= &
-              ! standard_pressure ( &
-              ! val(ind%model%gp), &
-              ! p_zero=val(ind%model%sp), &
-              ! temperature=val(ind%model%t), &
-              ! use_standard_temperature=.true., &
-              ! h_zero=val(ind%model%hp), &
-              ! method = model(ind%model%tpf)%name &
-              ! )
-          ! if (output%rho) then
-            ! val(ind%model%tpf)=val(ind%model%tpf)/(R_air * standard_temperature(val(ind%model%gp)))
-          ! endif
-          ! val(ind%model%tpf)=variable_modifier(val(ind%model%tpf),model(ind%model%tpf)%datanames(1))
-        ! endif
+  end select
 
-        ! if (ind%model%rho.ne.0) then
-          ! if (any([ind%model%gp,ind%model%sp,ind%model%hp,ind%model%t,ind%model%vt].eq.0)) &
-            ! call print_warning("not enough with @rho")
-          ! val(ind%model%rho)= &
-            ! 100.*level%level(ilevel)/(R_air * val(ind%model%vt))
-        ! endif
+  select case (what)
+  case ("TP","TP_TS")
+    val=                               & 
+      standard_pressure (              & 
+      gp,                              & 
+      use_standard_temperature=.true., & 
+      method = "full"                  & 
+      ) 
 
+  case ("TPF", "TPF+H")
+    val=                               & 
+      standard_pressure (              & 
+      gp,                              & 
+      p_zero = sp,                     & 
+      temperature = t_aux,             & 
+      use_standard_temperature=.true., & 
+      h_zero = hp,                     & 
+      method = "full"                  & 
+      )
+
+  case ("RHO")
+    val= 100.*level/(R_air * vt)
+
+  case default
+    call print_warning(                                            & 
+      "nothing I know for @custom file specification"//trim(what), & 
+      error=.true.)
+  endselect
+
+  if (present(rho).and.what.ne."RHO") then
+    if(rho) then
+      select case(what)
+      case("TP_TS")
+        vt_aux=standard_temperature(gp, t_zero=t)
+      end select
+
+      val = val/(R_air*vt_aux)
+    endif
+  endif
+
+end subroutine
 end module

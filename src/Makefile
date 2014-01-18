@@ -1,116 +1,48 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
-#
-
-dfdf:value_check
-	value_check \
-		-F \
-		NCEP  @ GP! ,   \
-		NCEP  @ VT! ,   \
-		NCEP  @ SP! ,   \
-		NCEP1 @ VSH! ,   \
-		NCEP1 @ T! ,   \
-		NCEP @ HP! ,   \
-		TP @ custom ,   \
-		TPF@ custom ,   \
-		@RHO, \
-		-S j \
-		-H \
-		-D 2010 \
-		-o : prune: rho : level:nc \
-		-J m  
-	cat oporowe |colrm 1 54
-
-fssdif: grat
-	time for i in  none potential cylinder; do                                                  \
-		grat \
-		-! \
-		-F ERA @SP, VIENNA@RSP,VIENNA@HRSP, ERA@T, ERA@HP, ETOPO@H!, NCEP@GP ,NCEP@VT \
-		-S l               -U                   \
-		-I 60@AS: 80@HS: 60000@HE:3@DE  \
-		-M 2: $$i @ 0.31 -o:/dev/null:free               \
-		-G@GN  , @GNdz                               \
-		-D2011:20110102 -H -Q -wn -rt;                        \
-		exit; \
-		done;
-
-fdofssdif: grat
-		grat \
-			-F NCEP @SP!, VIENNA@RSP!,VIENNA@HRSP!, NCEP1@T!, NCEP@HP!, ETOPO@H! , NCEP@GP! ,NCEP@VT! \
-			, NCEP1@VSH \
-			-S jj:52:21:60  \
-			-I 60@AS: 180@HS: 60000@HE :1@DD :40@3D \
-			-M 3:potential @ 0.10  \
-			-G@GN   \
-			-D2010:43@D -wn -r,t -H -o tmp60 
-
-sdfsadf:grat
-	grat \
-		-F NCEP @SP, VIENNA@RSP, NCEP1@T, NCEP@HP, ETOPO@H! , VIENNA@HRSP, NCEP@GP! ,NCEP@VT! \
-		-M1,2,3 -G@GN  \
-		-S j \
-		-H   \
-		-rt \
-		-D 20100101 \
-		-I 4@AS: 50@HS: 50000@HE : 0.2 @ DE :0.1@3D  \
-		-o   -q -A-0.43  
-gratx: grat
-	grat -M2,3:cylinder  \
-		-F  \
-		NCEP@GP \! ,   \
-		NCEP@VT \! ,   \
-		NCEP@SP\! ,    \
-		VIENNA@RSP\!,  \
-		VIENNA@HRSP\!, \
-		NCEP1@T\!,     \
-		NCEP@HP\!,      \
-		NCEP@LS\!      \
-		-H \
-		-G@GN, @GE   \
-		-o tmp: free \
-		-r t \
-		-D20100103  -Sj -I10@DE:0.4@3D :0.1@DS:50@AS 
-	cat tmp
-
-MYMODEL=NCEP
-dfsdfsf: $(OBJS) grat
-	grat \
-		-F $(MYMODEL) @SP, VIENNA@RSP, NCEP1@T, $(MYMODEL)@HP, ETOPO@H! , VIENNA@HRSP, $(MYMODEL)@GP! ,$(MYMODEL)@VT! \
-		-M1,2,3 -G@GN  \
-		-S j \
-		-H   \
-		-D 20100101:2010010623 \
-		-I 60@AS: 50@HS: 40000@HE :1@DD :3@DE  \
-		-o$(MYMODEL)_U:free:time  -A-0.43 -U
+fsdfds:grat
+	grat                        \
+		-F                        \
+		NCEP @SP,                 \
+		VIENNA@RSP,               \
+		NCEP1@T,                  \
+		NCEP@HP,                  \
+		ETOPO@H!,                 \
+		VIENNA@HRSP,              \
+		NCEP@GP!,                 \
+		NCEP@VT!,                 \
+		NCEP1@VSH!                \
+		-M1,2,3:potential@0.5     \
+		-G@GN, @GNdt,@GNdz,@GNdz2 \
+		-S j                      \
+		-wn                       \
+		-H                        \
+		-D 2011                   \
+		-V                        \
+		-I                        \
+		 4    @DE:                \
+		${AS}     @AS:            \
+		${d3stop} @3D             \
+		-o                        \
+		-A-0.43 -U
 
 tmp: grat local
-	grat \
-		-F NCEP@SP! \
-		-S local_site , j, local@L \
-		-H  \
-		-D 2009:20090102  -M1,2 -G@GN -o tmp
-
-tmp2:
-	grat \
-		-F NCEP@SP! \
-		-S local_site  \
-		-H  \
-		-D 2009:2011  -M1,2 -G@GN -o tmp2 
+	grat                      \
+		-F NCEP@SP, VIENNA@RSP  \
+		-S j \
+		-H                      \
+		-D 2009:20090102        \
+		-M1,2 -G@GN             \
+		-o :free
 
 local: 
-	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
+	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                                    \
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
-holla:grat
-	grat -F VIENNA @RSP,NCEP@SP, NCEP1@T,NCEP@HP, ETOPO@H\! -G@GNc, @GN, @GNdt, @GNdz,@GNdz2 -D2010:2011 \
-		-Sj \
-		-oholla -H
-
-
 
 # compiler:  currently only ifort is supported
-#  FC = gfortran
+# FC = gfortran
 FC = ifort
 
 # compiler flags
@@ -121,7 +53,8 @@ FFLAGS = -O0 -xHost
 MYFLAGS=
 FFLAGS += $(MYFLAGS)
 FFLAGS += -fpp -warn all 
-# for final do optimize
+
+# for final compilation do optimize
 all: FFLAGS+=-O2
 
 # libraries 
@@ -147,7 +80,7 @@ SRCS  = mod_constants.f90     \
 				mod_parser.f90        \
 				mod_admit.f90         \
 				mod_normalization.f90 \
-				mod_3d.f90          \
+				mod_3d.f90            \
 
 PROGSSRCS =  grat.f90               \
 						 value_check.f90        \
@@ -158,7 +91,6 @@ PROGSSRCS =  grat.f90               \
 EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
-
 
 # module dependencies
 all: DEP+=yes
@@ -211,10 +143,9 @@ ifdef UNIQ
 endif
 
 
-
 # paralelization
 #../bin/value_check: value_check.f90 $(OBJS)
-#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) /home/mrajner/src/ncl_ncarg-6.1.2/ni/src/lib/nfpfort/int2p_dp.f
+#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS)
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
