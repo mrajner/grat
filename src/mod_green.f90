@@ -955,6 +955,24 @@ subroutine convolve(site, date)
                             * pressures(iheight)/(temperatures(iheight))     & 
                             *(-gravity%constant)*1e8/R_air
                         endif
+
+                        if (method3d_compute_reference) then
+                          result(ind%green%g3d) = result(ind%green%g3d)    &
+                            - geometry(                                    &
+                            psi=d2r(green_common(igreen)%distance(idist)), &
+                            h=site%height, z=heights(iheight)              &
+                            )                                              &
+                            * standard_pressure(                           &
+                            height=heights(iheight),                       &
+                            h_zero=site%height,                            &
+                            nan_as_zero=.true. ,                           &
+                            method="standard"                              &
+                            )                                              &
+                            /(temperatures(iheight))                       &
+                            * area * info(igreen)%height%step              &
+                            *(-gravity%constant)*1e8/R_air
+                        endif
+
                       enddo
                     endif
                   endif
@@ -1093,39 +1111,44 @@ subroutine convolve(site, date)
                   ! GNdz2
                   if (ind%green%gndz2.ne.0) then
                     if (any(                                                & 
-                      [ &
-                      ind%model%sp, ind%model%h, ind%model%rsp           & 
-                      ].eq.0)) &
-                      call print_warning("not enough data model for GNdz2", &
+                      [                                                     & 
+                      ind%model%sp, ind%model%h, ind%model%rsp              & 
+                      ].eq.0))                                              & 
+                      call print_warning("not enough data model for GNdz2", & 
                       error=.true.)
-                    result_partial(ind%green%gndz2) =                   & 
+                    result_partial(ind%green%gndz2) =                                  & 
                       val(ind%model%sp)                                                & 
                       * green_common(igreen)%data(idist, ind%green%gndz2)              & 
                       * ( (val(ind%model%h)-site%height)                               & 
-                      /(earth%radius * d2r(green_common(igreen)%distance(idist))) )**2 & 
+                      /(earth%radius * d2r(green_common(igreen)%distance(idist))))**2 & 
                       *  area * normalize
-                    result(ind%green%gndz2) = result(ind%green%gndz2) +                  & 
-                      result_partial(ind%green%gndz2)
+
+                    result(ind%green%gndz2) = result(ind%green%gndz2) & 
+                      + result_partial(ind%green%gndz2)
                   endif
 
                   ! reference 2D for 3D method
                   if (ind%green%g3d.ne.0) then
+
                     if(green_common(igreen)%distance(idist).lt.info(igreen)%distance%stop_3d) then
-                      rsp = rsp+ &
-                        val(ind%model%rsp) *                              & 
-                        green_common(igreen)%data(idist, ind%green%gn) * & 
-                        area * normalize
+                      rsp = rsp                                          & 
+                        + val(ind%model%rsp)                            & 
+                        * green_common(igreen)%data(idist, ind%green%gn) & 
+                        * area * normalize
+
                     else
-                      result(ind%green%g3d) = result(ind%green%g3d) + & 
-                        sum(result_partial, &
-                        mask=( &
-                        green%dataname.eq."GN" &
-                        .or.green%dataname.eq."GNdt" &
-                        .or.green%dataname.eq."GNdz" &
-                        .or.green%dataname.eq."GNdz2" &
-                        .or.green%dataname.eq."GNdh" &
+                      result(ind%green%g3d) =         & 
+                        result(ind%green%g3d)         & 
+                        + sum(result_partial,         & 
+                        mask=(                        & 
+                        green%dataname.eq."GN"        & 
+                        .or.green%dataname.eq."GNdt"  & 
+                        .or.green%dataname.eq."GNdz"  & 
+                        .or.green%dataname.eq."GNdz2" & 
+                        .or.green%dataname.eq."GNdh"  & 
                         ))
                     endif
+
                   endif
 
                 endif
@@ -1300,7 +1323,9 @@ subroutine convolve(site, date)
     enddo
   enddo
 
-  if (ind%green%g3d.ne.0) result(ind%green%g3d)=result(ind%green%g3d)-rsp
+
+  if (ind%green%g3d.ne.0 .and. .not. method3d_compute_reference) &
+    result(ind%green%g3d)=result(ind%green%g3d) - rsp
 
   ! results to output
   if (result_component) write (output%unit, "(" // output%form // '$)') result

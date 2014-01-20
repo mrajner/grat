@@ -1,7 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 fsdfds:grat
-	grat                        \
+	time grat                        \
 		-F                        \
 		NCEP @SP,                 \
 		VIENNA@RSP,               \
@@ -12,19 +12,13 @@ fsdfds:grat
 		NCEP@GP!,                 \
 		NCEP@VT!,                 \
 		NCEP1@VSH!                \
-		-M1,2,3:potential@0.5     \
+		-M1,2,3::ref    \
 		-G@GN, @GNdt,@GNdz,@GNdz2 \
 		-S j                      \
-		-wn                       \
 		-H                        \
 		-D 2011                   \
-		-V                        \
-		-I                        \
-		 4    @DE:                \
-		${AS}     @AS:            \
-		${d3stop} @3D             \
-		-o                        \
-		-A-0.43 -U
+	 	-o                        \
+		-A-0.43 -U -I170@3D -V 
 
 tmp: grat local
 	grat                      \

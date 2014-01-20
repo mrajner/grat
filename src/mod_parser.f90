@@ -117,6 +117,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         method(2) =.true.
       case ("3D", "3")
         method(3) =.true.
+
         select case (cmd_line_entry%field(i)%subfield(2)%name) 
         case ("point")
           method3d(1)=.true.
@@ -130,6 +131,21 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
             recomended)")
           method3d(1)=.true.
         endselect
+
+        select case (cmd_line_entry%field(i)%subfield(3)%name) 
+        case ("reference", "ref")
+          method3d_compute_reference=.true.
+        case ("potential")
+          method3d(2)=.true.
+        case ("cylinder")
+          method3d(3)=.true.
+        case default
+          call print_warning ("no explicit method3d given &
+            - falling into point mass (for backward compability, not &
+            recomended)")
+          method3d(1)=.true.
+        endselect
+
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%dataname)) then
           read(cmd_line_entry%field(i)%subfield(2)%dataname, *) method3d_refinment_distance
         endif
@@ -596,24 +612,27 @@ subroutine parse_info (cmd_line_entry)
       enddo
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
-      write(log%unit,                                   &
-        "("//form%t3//"                                 &
-        'DB:' , f7.2,                                   &
-        '|DE:', f8.3,                                   &
-        '|I:' , a   ,                                   &
-        '|DD:', i2  ,                                   &
-        '|DS:', f6.2,                                   &
-        '|HB:', f6.2,                                   &
-        '|HE:', f6.2,                                   &
-        '|HS:', f6.2,                                   &
-        )"),                                            &
-        info(i)%distance%start, info(i)%distance%stop,  &
-        info(i)%interpolation, info(i)%distance%denser, &
-        info(i)%distance%step,                          &
-        info(i)%height%start,                           &
-        info(i)%height%stop,                            &
-        info(i)%height%step
-
+      write(log%unit,            &
+        "("//form%t3//"          &
+        'DB:' , f7.2,            &
+        '|DE:', f8.3,            &
+        '|I:' , a   ,            &
+        '|DD:', i2  ,            &
+        '|DS:', f7.2,            &
+        '|HB:', f7.2,            &
+        '|HE:', f10.1,           &
+        '|HS:', f7.2,            &
+        '|3D:', f7.2,            &
+        )"),                     &
+        info(i)%distance%start,  &
+        info(i)%distance%stop,   &
+        info(i)%interpolation,   &
+        info(i)%distance%denser, &
+        info(i)%distance%step,   &
+        info(i)%height%start,    &
+        info(i)%height%stop,     &
+        info(i)%height%step,     &
+        info(i)%distance%stop_3d
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then
         call print_warning("stop_3d distance is less then stop distance &
@@ -649,7 +668,7 @@ subroutine parse_info (cmd_line_entry)
     info%height%step=25.
     info%height%denser=1
 
-    info%distance%stop_3d=180.
+    info%distance%stop_3d=10.
 
   end subroutine
 

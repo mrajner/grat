@@ -132,7 +132,8 @@ module mod_cmdline
     ! potential  - method3d(2)=.true.
     ! cylinder   - method3d(3)=.true.
     logical :: method3d(3) 
-    real :: method3d_refinment_distance=0.1
+    logical :: method3d_compute_reference  = .false.
+    real    :: method3d_refinment_distance = 0.1
     logical :: dryrun
 
     logical :: result_total=.false., result_component=.true.
