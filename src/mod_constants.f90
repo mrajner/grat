@@ -8,8 +8,8 @@
 module mod_constants
   implicit none
 
-  integer, parameter :: dp = 8
-  integer, parameter :: sp = 4
+  integer, parameter :: dp = selected_real_kind(15)
+  integer, parameter :: sp = selected_real_kind(6)
 
   real(dp), parameter ::        &
     R_air  = 287.05,            & ! dry air constant  [J/kg/K]
@@ -24,7 +24,7 @@ module mod_constants
   end type
   type(gravity_data) , parameter :: &
     gravity  = gravity_data(        &
-    constant = 6.674e-11            & ! m3 kg-1 s-2
+    constant = 6.674e-11_dp         & ! m3 kg-1 s-2
     )
 
   !---------------------------------------
@@ -46,10 +46,10 @@ module mod_constants
   type(atmosphere_data) , parameter :: &
     atmosphere  = atmosphere_data (    &
     pressure    = pressure_data (      &
-    standard    = 101325.              & ! Pa (not hectoPascal!)
+    standard    = 101325._dp           & ! Pa (not hectoPascal!)
     ),                                 &
     temperature = temperature_data (   &
-    standard    = 288.15               & ! K (15 degC)
+    standard    = 288.15_dp            & ! K (15 degC)
     )                                  &
     )
 
@@ -75,7 +75,7 @@ module mod_constants
 
   type(earth_data), parameter ::            &
     earth       = earth_data (              &
-    mass        = 5.97219e24,               & ! kg
+    mass        = 5.97219e24_dp,            & ! kg
     radius      = 6371000.,                 & ! m
     gm          = 398600.4419,              & ! m3 s-2
     gravity     = earth_gravity(            &
@@ -100,8 +100,8 @@ module mod_constants
     mass        = 7.35e22                   & ! kg
     ),                                      &
     sun         = celestial_object_data (   &
-    distance    = 149600000000. ,           & ! m
-    mass        = 1.99e30                   & ! kg
+    distance    = 149600000000._dp ,        & ! m
+    mass        = 1.99e30_dp                & ! kg
     )
 
   !---------------------------------------
@@ -112,7 +112,7 @@ module mod_constants
   end type
   type(density_info), parameter :: &
     density = density_info ( &
-    water = 1000. & ! kg m-3
+    water = 1000._dp & ! kg m-3
     )
 
 end module mod_constants

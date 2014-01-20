@@ -599,9 +599,11 @@ subroutine nctime2date (model, print)
   call check (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
+
   if (.not. (present(print).and..not.print))then
     write(log%unit, form%i4) "Converting time: ", trim(dummy)
   endif
+
   if (dummy.eq. "hours since 1-1-1 00:00:0.0") then
     ! -2 is necessary to keep it with ncep convention
     ! this may need (?) change for other data fields
