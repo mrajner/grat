@@ -135,14 +135,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         select case (cmd_line_entry%field(i)%subfield(3)%name) 
         case ("reference", "ref")
           method3d_compute_reference=.true.
-        case ("potential")
-          method3d(2)=.true.
-        case ("cylinder")
-          method3d(3)=.true.
         case default
-          call print_warning ("no explicit method3d given &
-            - falling into point mass (for backward compability, not &
-            recomended)")
+          call print_warning ("no explicit ref for 3d given &
+            - using @GN[...] if any")
           method3d(1)=.true.
         endselect
 

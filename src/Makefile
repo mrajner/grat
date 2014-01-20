@@ -12,13 +12,13 @@ fsdfds:grat
 		NCEP@GP!,                 \
 		NCEP@VT!,                 \
 		NCEP1@VSH!                \
-		-M1,2,3::ref    \
+		-M1,2,3:potenial:ref    \
 		-G@GN, @GNdt,@GNdz,@GNdz2 \
 		-S j                      \
 		-H                        \
 		-D 2011                   \
 	 	-o                        \
-		-A-0.43 -U -I170@3D -V 
+		-A-0.43 -U -I0.3@3D  
 
 tmp: grat local
 	grat                      \
@@ -76,18 +76,16 @@ SRCS  = mod_constants.f90     \
 				mod_normalization.f90 \
 				mod_3d.f90            \
 
-PROGSSRCS =  grat.f90               \
-						 value_check.f90        \
-						 polygon_check.f90      \
-						 real_vs_standard.f90   \
-						 barometric_formula.f90
+PROGSSRCS =  grat.f90          \
+						 value_check.f90   \
+						 polygon_check.f90
 
 EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
-all: DEP+=yes
+all: DEP=yes
 ifdef DEP
 mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o

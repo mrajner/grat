@@ -498,8 +498,8 @@ subroutine convolve(site, date)
   tot_area      = 0
   tot_area_used = 0
 
-  result=0
-  rsp=0
+  result = 0
+  rsp    = 0
 
   do igreen = 1, size(green_common)
     do idist = 1, size(green_common(igreen)%distance)
@@ -860,6 +860,10 @@ subroutine convolve(site, date)
                             use_standard_temperature=.true.,             & 
                             temperature=val(ind%model%t)                 & 
                             )
+                          if (method3d_compute_reference) then
+                            pressures(iheight) = &
+                              pressures(iheight) - val(ind%model%rsp)
+                          endif
 
                         else
                           do while(level%height(i+1).lt.heights(iheight).and. i.ne.size(level%level))
@@ -907,6 +911,19 @@ subroutine convolve(site, date)
                               nan_as_zero              = .true.                 & 
                               )
 
+                            if (method3d_compute_reference) then
+                              ! pressures(iheight) = &
+                                ! pressures(iheight) - &
+                                ! standard_pressure(                           &
+                                ! height=heights(iheight),                       &
+                                 ! p_zero=old_val_rsp,                            &
+                               ! h_zero=val(ind%model%h),                       &
+                               ! nan_as_zero=.true. ,                           &
+                               ! use_standard_temperature=.true.,               &
+                              ! method="standard"                              &
+                                ! )                                              
+                                TODO
+                            endif
                           endif
                         endif
 
@@ -956,22 +973,6 @@ subroutine convolve(site, date)
                             *(-gravity%constant)*1e8/R_air
                         endif
 
-                        if (method3d_compute_reference) then
-                          result(ind%green%g3d) = result(ind%green%g3d)    &
-                            - geometry(                                    &
-                            psi=d2r(green_common(igreen)%distance(idist)), &
-                            h=site%height, z=heights(iheight)              &
-                            )                                              &
-                            * standard_pressure(                           &
-                            height=heights(iheight),                       &
-                            h_zero=site%height,                            &
-                            nan_as_zero=.true. ,                           &
-                            method="standard"                              &
-                            )                                              &
-                            / standard_temperature(heights(iheight))       &
-                            * area * info(igreen)%height%step              &
-                            *(-gravity%constant)*1e8/R_air
-                        endif
 
                       enddo
                     endif
@@ -979,28 +980,29 @@ subroutine convolve(site, date)
 
                   !C before GN GNdt etc because it needs SP on H not on site 
                   if(ind%green%gnc.ne.0) then
-                    if ( &
-                      any ([ &
+                    if (            &
+                      any ([        &
                       ind%model%sp, &
                       ind%model%hp, &
-                      ind%model%h, &
-                      ind%model%t &
-                      ].eq.0)) &
+                      ind%model%h,  &
+                      ind%model%t   &
+                      ].eq.0))      &
                       call print_warning ("with @GNc you need to give @T @HP @H", error=.true.)
-                    result(ind%green%gnc) = result(ind%green%gnc)  & 
-                      + val(ind%model%sp)                        & 
-                      * aggf(                                    & 
-                      d2r(green_common(igreen)%distance(idist)), & 
-                      zmin=val(ind%model%h),                     & 
-                      t_zero=val(ind%model%t),                   & 
-                      h=site%height,                             & 
-                      dz= gnc_looseness*10. &
-                      *merge(10._dp, &
-                      merge(0.1_dp,1._dp, &
-                      green_common(igreen)%distance(idist).le.1e-5_dp ), &
-                      green_common(igreen)%distance(idist).ge.1e-2_dp ), &
-                      method="standard",                         & 
-                      predefined=.true.)                         & 
+
+                    result(ind%green%gnc) = result(ind%green%gnc)        & 
+                      + val(ind%model%sp)                                & 
+                      * aggf(                                            & 
+                      d2r(green_common(igreen)%distance(idist)),         & 
+                      zmin=val(ind%model%h),                             & 
+                      t_zero=val(ind%model%t),                           & 
+                      h=site%height,                                     & 
+                      dz= gnc_looseness*10.                              & 
+                      *merge(10._dp,                                     & 
+                      merge(0.1_dp,1._dp,                                & 
+                      green_common(igreen)%distance(idist).le.1e-5_dp ), & 
+                      green_common(igreen)%distance(idist).ge.1e-2_dp ), & 
+                      method="standard",                                 & 
+                      predefined=.true.)                                 & 
                       * area * normalize
 
                     if (.not.quiet) then
@@ -1116,10 +1118,11 @@ subroutine convolve(site, date)
                       ].eq.0))                                              & 
                       call print_warning("not enough data model for GNdz2", & 
                       error=.true.)
-                    result_partial(ind%green%gndz2) =                                  & 
-                      val(ind%model%sp)                                                & 
-                      * green_common(igreen)%data(idist, ind%green%gndz2)              & 
-                      * ( (val(ind%model%h)-site%height)                               & 
+
+                    result_partial(ind%green%gndz2) =                                 & 
+                      val(ind%model%sp)                                               & 
+                      * green_common(igreen)%data(idist, ind%green%gndz2)             & 
+                      * ( (val(ind%model%h)-site%height)                              & 
                       /(earth%radius * d2r(green_common(igreen)%distance(idist))))**2 & 
                       *  area * normalize
 
@@ -1132,7 +1135,7 @@ subroutine convolve(site, date)
 
                     if(green_common(igreen)%distance(idist).lt.info(igreen)%distance%stop_3d) then
                       rsp = rsp                                          & 
-                        + val(ind%model%rsp)                            & 
+                        + val(ind%model%rsp)                             & 
                         * green_common(igreen)%data(idist, ind%green%gn) & 
                         * area * normalize
 
