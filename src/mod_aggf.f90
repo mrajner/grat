@@ -110,7 +110,9 @@ end function
 ! ==============================================================================
 function aggf (         & 
     psi,                & 
-    zmin, zmax, dz,     & 
+    zmin, &
+    zmax, &
+    dz,     & 
     t_zero,             & 
     h,                  & 
     first_derivative_h, & 
@@ -125,13 +127,13 @@ function aggf (         &
   use mod_atmosphere 
   use mod_normalization, only : green_normalization
 
-  real(dp), intent(in)          :: psi       ! spherical distance from site [rad]
+  real(dp), intent(in)          :: psi ! spherical distance from site [rad]
   real(dp), intent(in),optional :: & 
-    zmin,   & ! minimum height, starting point [m]     (default = 0)
-    zmax,   & ! maximum height, ending point   [m]     (default = 60000)
-    dz,     & ! integration step               [m]     (default = 0.1 -> 10 cm)
-    t_zero, & ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
-    h         ! station height                 [m]     (default = 0)
+    zmin,                          &   ! minimum height, starting point [m]     (default = 0)
+    zmax,                          &   ! maximum height, ending point   [m]     (default = 60000)
+    dz,                            &   ! integration step               [m]     (default = 0.1 -> 10 cm)
+    t_zero,                        &   ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
+    h                                  ! station height                 [m]     (default = 0)
   logical, intent(in), optional :: &
     first_derivative_h, first_derivative_z, predefined, rough
   character (len=*), intent(in), optional  :: fels_type, method

@@ -1,6 +1,7 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 fsdfds:grat
+	for ref in "" ref ; do \
 	time grat                        \
 		-F                        \
 		NCEP @SP,                 \
@@ -12,13 +13,16 @@ fsdfds:grat
 		NCEP@GP!,                 \
 		NCEP@VT!,                 \
 		NCEP1@VSH!                \
-		-M1,2,3:potenial:ref    \
+		-M1,2,3:potenial:$${ref}    \
 		-G@GN, @GNdt,@GNdz,@GNdz2 \
 		-S j                      \
 		-H                        \
 		-D 2011                   \
 	 	-o                        \
-		-A-0.43 -U -I0.3@3D  
+		-A-0.43 -U \
+		-L g$${ref}.g @g \
+		-I0.03@3D : 20110@HB: 50000 @HE  ; \
+		done
 
 tmp: grat local
 	grat                      \
@@ -85,7 +89,6 @@ EXAMPLESSRC = example_aggf.f90
 OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
-all: DEP=yes
 ifdef DEP
 mod_utilities.o: mod_constants.o
 mod_atmosphere.o: mod_printing.o mod_utilities.o

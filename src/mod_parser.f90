@@ -128,7 +128,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         case default
           call print_warning ("no explicit method3d given &
             - falling into point mass (for backward compability, not &
-            recomended)")
+            recomended, use -M3 : potential|cylinder)")
           method3d(1)=.true.
         endselect
 
@@ -137,7 +137,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           method3d_compute_reference=.true.
         case default
           call print_warning ("no explicit ref for 3d given &
-            - using @GN[...] if any")
+            - using @GN[...] if any or put -M3 : : ref")
           method3d(1)=.true.
         endselect
 
@@ -245,7 +245,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (.not. log%sparse) then
       write(log%unit,form%i2) &
         "force transfer SP from @HP to @H and RSP from @HRSP to @H [T/F]: ", transfer_sp%if
-      write(log%unit, "(" // form%t2 //  "a$)") &
+      write(log%unit, "(" // form%t2 //  "a)") &
         "force transfer SP on"
     endif
 

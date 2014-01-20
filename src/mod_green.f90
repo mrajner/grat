@@ -271,9 +271,10 @@ end subroutine
 ! =============================================================================
 subroutine green_unification ()
   use mod_utilities, only: size_ntimes_denser, spline_interpolation, d2r
-  use mod_cmdline,   only: info, moreverbose, ind
+  use mod_cmdline,   only: info, moreverbose, ind, method3d_compute_reference
   use mod_printing
   use mod_site, only: site
+  use mod_aggf, only: aggf
 
   type(green_functions) :: tmpgreen
   integer :: i, iinfo, imin, imax, j, ii
@@ -292,6 +293,7 @@ subroutine green_unification ()
           .and.green(i)%distance.ge.info(iinfo)%distance%start & 
           ) 
       enddo
+
       which_green(iinfo) = maxloc(tmp, 1)
 
       imin=minloc( & 
@@ -353,11 +355,15 @@ subroutine green_unification ()
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
 
       green_common(iinfo)%start=(green_common(iinfo)%distance)
+
       do i =1, size(green_common(iinfo)%distance)
+
         green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
           green_common(iinfo)%distance(i-1) ) / 2.
+
         green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
           green_common(iinfo)%distance(i+1) ) / 2.
+
       enddo
 
       green_common(iinfo)%start(1)= info(iinfo)%distance%start
@@ -407,9 +413,27 @@ subroutine green_unification ()
           )
         green_common(iinfo)%data(:, i)=0
       end where
+
       green_common(iinfo)%dataname(i) = green(i)%dataname
+
+      if(green_common(iinfo)%dataname(i) == "G3D") then
+        if (method3d_compute_reference) then
+          do ii=1,size(green_common(iinfo)%data(:,i))
+            green_common(iinfo)%data(ii,i) =                  &
+              aggf(                                           &
+              psi    = d2r(green_common(iinfo)%distance(ii)), &
+              dz     = info(iinfo)%height%step,               &
+              zmin   = info(iinfo)%height%start,              &
+              zmax   = info(iinfo)%height%stop,               &
+              method = "standard"                             &
+              )
+          enddo
+        endif
+      endif
+
     enddo
   enddo
+
 end subroutine
 
 
@@ -566,7 +590,8 @@ subroutine convolve(site, date)
         ! GE, GN, ...
         if (any([&
           ind%green%gn,   ind%green%ge, ind%green%gg, &
-          ind%green%gndt, ind%green%gnc, ind%green%gegdt, ind%green%g3d &
+          ind%green%gndt, ind%green%gnc, ind%green%gegdt, &
+          ind%green%g3d &
           ].ne.0) &
           ) then
 
@@ -774,8 +799,6 @@ subroutine convolve(site, date)
                       if( &
                         info(igreen)%height%stop <= max(info(igreen)%height%start,val(ind%model%h)) &
                         ) then 
-                        result(ind%green%g3d) =                            & 
-                          result(ind%green%g3d)                             
                         cycle
                       endif
 
@@ -860,10 +883,6 @@ subroutine convolve(site, date)
                             use_standard_temperature=.true.,             & 
                             temperature=val(ind%model%t)                 & 
                             )
-                          if (method3d_compute_reference) then
-                            pressures(iheight) = &
-                              pressures(iheight) - val(ind%model%rsp)
-                          endif
 
                         else
                           do while(level%height(i+1).lt.heights(iheight).and. i.ne.size(level%level))
@@ -910,20 +929,6 @@ subroutine convolve(site, date)
                               temperature              = temperatures(iheight), & 
                               nan_as_zero              = .true.                 & 
                               )
-
-                            if (method3d_compute_reference) then
-                              ! pressures(iheight) = &
-                                ! pressures(iheight) - &
-                                ! standard_pressure(                           &
-                                ! height=heights(iheight),                       &
-                                 ! p_zero=old_val_rsp,                            &
-                               ! h_zero=val(ind%model%h),                       &
-                               ! nan_as_zero=.true. ,                           &
-                               ! use_standard_temperature=.true.,               &
-                              ! method="standard"                              &
-                                ! )                                              
-                                TODO
-                            endif
                           endif
                         endif
 
@@ -1134,10 +1139,21 @@ subroutine convolve(site, date)
                   if (ind%green%g3d.ne.0) then
 
                     if(green_common(igreen)%distance(idist).lt.info(igreen)%distance%stop_3d) then
-                      rsp = rsp                                          & 
-                        + val(ind%model%rsp)                             & 
-                        * green_common(igreen)%data(idist, ind%green%gn) & 
-                        * area * normalize
+                      if (info(igreen)%height%start.gt.1) then
+                        rsp = rsp                                           & 
+                          + standard_pressure(                              & 
+                          height = info(igreen)%height%start,               & 
+                          h_zero = val(ind%model%hrsp),                     & 
+                          p_zero = val(ind%model%rsp),                      & 
+                          method = "standard")                              & 
+                          * green_common(igreen)%data(idist, ind%green%g3d) & 
+                          * area * normalize
+                      else
+                        rsp = rsp                                           & 
+                          + val(ind%model%rsp)                              & 
+                          * green_common(igreen)%data(idist, ind%green%g3d) & 
+                          * area * normalize
+                      endif
 
                     else
                       result(ind%green%g3d) =         & 
@@ -1327,7 +1343,7 @@ subroutine convolve(site, date)
   enddo
 
 
-  if (ind%green%g3d.ne.0 .and. .not. method3d_compute_reference) &
+  if (ind%green%g3d.ne.0) &
     result(ind%green%g3d)=result(ind%green%g3d) - rsp
 
   ! results to output
