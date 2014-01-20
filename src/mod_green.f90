@@ -968,7 +968,7 @@ subroutine convolve(site, date)
                             nan_as_zero=.true. ,                           &
                             method="standard"                              &
                             )                                              &
-                            /(temperatures(iheight))                       &
+                            / standard_temperature(heights(iheight))       &
                             * area * info(igreen)%height%step              &
                             *(-gravity%constant)*1e8/R_air
                         endif
