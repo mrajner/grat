@@ -772,7 +772,7 @@ subroutine convolve(site, date)
                       if (allocated(temperatures)) deallocate(temperatures)
 
                       if( &
-                        info(igreen)%height%stop < max(info(igreen)%height%start,val(ind%model%h)) &
+                        info(igreen)%height%stop <= max(info(igreen)%height%start,val(ind%model%h)) &
                         ) then 
                         result(ind%green%g3d) =                            & 
                           result(ind%green%g3d)                             
