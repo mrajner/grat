@@ -96,8 +96,8 @@ module mod_constants
   end type
   type(celestial_object_data), parameter :: &
     moon        = celestial_object_data (   &
-    distance    = 384000000.,               & ! m
-    mass        = 7.35e22                   & ! kg
+    distance    = 384000000._dp,            & ! m
+    mass        = 7.35e22_dp                & ! kg
     ),                                      &
     sun         = celestial_object_data (   &
     distance    = 149600000000._dp ,        & ! m
