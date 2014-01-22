@@ -143,7 +143,8 @@ subroutine parse_admit(cmd_line_entry)
   if (cmd_line_entry%field(1)%subfield(1)%name.ne."") then
     read(cmd_line_entry%field(1)%subfield(1)%name, *) admitance%value
   endif
-  write(log%unit, '('//form%t2//',a,x,f6.2,x,a)') "admitance:", admitance%value, "uGal/hPa"
+  if (.not.log%sparse) &
+    write(log%unit, '('//form%t2//',a,x,f6.2,x,a)') "admitance:", admitance%value, "uGal/hPa"
 
   ! not sure what trying to achive
   ! if (size(cmd_line_entry%field(1)%subfield).gt.1 &

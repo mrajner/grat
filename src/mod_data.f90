@@ -84,18 +84,24 @@ subroutine parse_model (cmd_line_entry)
 
   do i = 1, size(cmd_line_entry%field)
     model(i)%exist=.true.
-    write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
+    if (.not.log%sparse) &
+      write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
+
     model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
     model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
+
     if (model(i)%dataname.eq."") then
       model(i)%dataname="NN"
     else
       if ( &
         index(model(i)%dataname,"!").ne.0 &
       ) then
+
         model(i)%huge=.true.
         model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
-        write(log%unit, form%i3) "!:huge"
+
+        if (.not.log%sparse) &
+          write(log%unit, form%i3) "!:huge"
       endif
     endif
     if (all_huge) model(i)%huge=.true.
@@ -121,14 +127,17 @@ subroutine parse_model (cmd_line_entry)
         endif
       enddo
 
-      write (log%unit, form%i3,advance='no'), &
-        trim (dataname(model(i)%dataname)), &
-        "("//trim(model(i)%dataname)//")"
-      write(log%unit, '(5(a,x))', advance="no"), (trim(model(i)%names(j)), j=1,5)
+      if (.not.log%sparse) then
+        write (log%unit, form%i3,advance='no'), &
+          trim (dataname(model(i)%dataname)), &
+          "("//trim(model(i)%dataname)//")"
+        write(log%unit, '(5(a,x))', advance="no"), (trim(model(i)%names(j)), j=1,5)
+        write(log%unit, *) 
+      endif
+
       model(i)%if=.true.
-      write(log%unit, *) 
       if (model(i)%dataname.ne."ascii") then
-        call read_netCDF(model(i))
+        call read_netCDF(model(i),print=.not.log%sparse)
       endif
 
       ! listing in log
@@ -136,7 +145,7 @@ subroutine parse_model (cmd_line_entry)
         variable_modifier(       & 
         model(i)%constant_value, & 
         model(i)%datanames(1),   & 
-        verbose=.true.,          & 
+        verbose=.not.log%sparse, & 
         list_only=.true.         & 
         )
 
@@ -152,9 +161,12 @@ subroutine parse_model (cmd_line_entry)
         'constant value was set:   ', model(i)%constant_value
 
       if (trim(model(i)%datanames(1)).ne."") then
-        model(i)%constant_value= &
-          variable_modifier( &
-          model(i)%constant_value, model(i)%datanames(1),verbose=.true.)
+        model(i)%constant_value=   &
+          variable_modifier(       &
+          model(i)%constant_value, &
+          model(i)%datanames(1),   &
+          verbose=.not.log%sparse  &
+          )
       endif
 
       write(log%unit, '(' // form%t3 // "a," // output%form // ")") &
@@ -363,15 +375,15 @@ subroutine model_aliases(model, dryrun, year, month)
   endselect
 
   ! listing in log
-  model%constant_value=   & 
-    variable_modifier(    & 
-    model%constant_value, & 
-    model%datanames(1),   & 
-    verbose   = .true.,   & 
-    list_only = .true.    & 
+  model%constant_value=          & 
+    variable_modifier(           & 
+    model%constant_value,        & 
+    model%datanames(1),          & 
+    verbose   = .not.log%sparse, & 
+    list_only = .true.           & 
     )
 
-  if (model%if.and..not.model%autoload) call read_netCDF(model)
+  if (model%if.and..not.model%autoload) call read_netCDF(model, print=.not.log%sparse)
 
   if(present(dryrun) .and. dryrun) return
 
@@ -392,6 +404,7 @@ function variable_modifier (val, modifier, verbose, list_only)
   use mod_constants,  only: earth
   use mod_utilities,  only: ntokens
   use mod_printing,   only: print_warning, form, log, output
+
   real(dp) :: variable_modifier
   real(dp), intent(in) :: val
   character(*), intent(in) :: modifier
@@ -488,7 +501,7 @@ subroutine read_netCDF (model, print, force)
   if(log%if) write(log%unit, *), "opening", trim(model%name)
 
   do i = 2,5
-    call get_dimension (model, i, print=print)
+    call get_dimension (model, i, print=.not.log%sparse)
   enddo
   if (size(model%time).ge.1) call nctime2date (model, print=print)
 end subroutine

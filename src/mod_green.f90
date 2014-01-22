@@ -69,7 +69,9 @@ subroutine parse_green (cmd_line_entry)
   if (present(cmd_line_entry)) then
     do i = 1, size(cmd_line_entry%field)
 
-      write(log%unit, form%i2) trim(basename(trim(cmd_line_entry%field(i)%full)))
+      if (.not.log%sparse) &
+        write(log%unit, form%i2) trim(basename(trim(cmd_line_entry%field(i)%full)))
+
       green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
 
       if (i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
@@ -242,11 +244,13 @@ subroutine read_green (green, print)
   endif
 
   if (.not.present(print)) then
-    write(log%unit, form%i3) &
+    if (.not.log%sparse) &
+      write(log%unit, form%i3) &
       trim(basename(trim(green%name))), trim(green%dataname), &
       "columns:", green%column, &
       "lines:", size(green%distance)
-    if (green%dataname.eq."GNc") then 
+
+      if (green%dataname.eq."GNc") then 
       write(log%unit, form%i3) "gnc loosenes" , gnc_looseness
     endif
   endif

@@ -60,7 +60,9 @@ subroutine parse_date(cmd_line_entry)
     endif
 
     interval_unit = "h"
-    write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
+
+    if (.not.log%sparse) &
+      write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
       if (size(model(1)%date).eq.0) then
@@ -87,8 +89,8 @@ subroutine parse_date(cmd_line_entry)
     endif
 
     if (size(cmd_line_entry%field(i_)%subfield).ge.2  &
-        .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
-        ) then
+      .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
+      ) then
       if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
         stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
       else if (cmd_line_entry%field(i_)%subfield(2)%dataname.ne."") then
@@ -137,10 +139,13 @@ subroutine parse_date(cmd_line_entry)
       step=6
     endif
 
-    write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))')  "start date:", start
-    if (mjd(start).ne.mjd(stop)) then
-      write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))') "stop  date:", stop
-      write (log%unit, "(" // form%t3// "a, f5.1, a)") "interval:", step, interval_unit
+    if (.not.log%sparse) then
+      write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))')  "start date:", start
+
+      if (mjd(start).ne.mjd(stop)) then
+        write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))') "stop  date:", stop
+        write (log%unit, "(" // form%t3// "a, f5.1, a)") "interval:", step, interval_unit
+      endif
     endif
 
     ! allow that stop is previous than start and list in reverse order
@@ -160,7 +165,7 @@ subroutine parse_date(cmd_line_entry)
       endif
       if (interval_unit.eq."M") then
         call more_dates &
-            (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
+          (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
         date(start_index)%date=start
         date(start_index)%mjd=mjd(date(start_index)%date)
         do i= start_index+1, size(date)
@@ -179,12 +184,12 @@ subroutine parse_date(cmd_line_entry)
       endif
     else
       if (cmd_line_entry%field(i_)%subfield(1)%name=="m" &
-          .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
-          .and. ( &
-          size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
-          cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
-          ) &
-          ) then
+        .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
+        .and. ( &
+        size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
+        cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
+        ) &
+        ) then
         if (size(cmd_line_entry%field(i_)%subfield).lt.3) step=1
         if (step.gt.size(model(1)%time)) step=size(model(1)%time)
         call more_dates (ceiling(size(model(1)%time)/step), start_index)
@@ -207,9 +212,10 @@ subroutine parse_date(cmd_line_entry)
       endif
     endif
   enddo
-  write (log%unit, form%i3) "dates total:", size(date)
+  if (.not.log%sparse) &
+    write (log%unit, form%i3) "dates total:", size(date)
 
- end subroutine
+end subroutine
 
 ! =============================================================================
 ! =============================================================================
@@ -252,7 +258,7 @@ subroutine string2date (string, date, success)
   date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
-   do j = 1, 6 
+  do j = 1, 6 
     if (j.eq.1) then
       end_char=min(len(string), start_char+3)
     else

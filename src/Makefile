@@ -20,7 +20,6 @@ fsdfds:grat
 		-D 2011                   \
 	 	-o                        \
 		-A-0.43 -U \
-		-L g$${ref}.g @g \
 		-I0.03@3D : 20110@HB: 50000 @HE \
 		-V:s; \
 		done
