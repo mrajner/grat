@@ -488,8 +488,8 @@ subroutine check_arguments (program_calling)
 
   if (method(3)) then
     if ( &
-      any([ind%model%sp,ind%model%gp].eq.0)) then
-      call print_warning ("some data is missing (@SP,@GP )", error=.true.)
+      any([ind%model%gp].eq.0)) then
+      call print_warning ("@GP is missing", error=.true.)
     endif
 
   endif
