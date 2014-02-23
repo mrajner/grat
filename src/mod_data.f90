@@ -385,7 +385,7 @@ subroutine model_aliases(model, dryrun, year, month)
 
   if (model%if.and..not.model%autoload) call read_netCDF(model, print=.not.log%sparse)
 
-  if(present(dryrun) .and. dryrun) return
+  if(present(dryrun).and.dryrun) return
 
   if (.not.file_exists(model%name)) then
     call print_warning ("model", more=trim(model%name)//" : file do not exist", error=.false.)
@@ -394,6 +394,7 @@ subroutine model_aliases(model, dryrun, year, month)
   else
     model%exist=.true.
   endif
+
   call read_netCDF(model, force=.true., print=.not.log%sparse)
 end subroutine
 
@@ -985,9 +986,9 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     return
   endif
 
-  if (present(method) .and. method .eq. "l" ) then
-    ilon2 = minloc(abs(model%lon-lon),1, model%lon/=model%lon(ilon))
-    ilat2 = minloc(abs(model%lat-lat),1, model%lat/=model%lat(ilat))
+  if (present(method) .and. method .eq."l") then
+    ilon2 = minloc(abs(model%lon-lon), 1, model%lon/=model%lon(ilon))
+    ilat2 = minloc(abs(model%lat-lat), 1, model%lat/=model%lat(ilat))
 
     if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
     else
@@ -1225,10 +1226,12 @@ subroutine parse_level (cmd_line_entry)
   integer :: i
 
   if (present(cmd_line_entry)) then
+
     if (allocated(level%level)) then
       call print_warning ("repeated", more="-J")
       return
     endif
+
     if (cmd_line_entry%field(1)%subfield(1)%name.eq."m") then
       level%all=.true.
     else

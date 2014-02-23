@@ -26,7 +26,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
     then
-    call print_warning ("not accepted switch " // cmd_line_entry%switch)
+    call print_warning ("not accepted switch "//cmd_line_entry%switch)
     return
   endif
 
@@ -161,11 +161,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     endif
 
     if (method(3).and.(method3d(2).or.method3d(3))) then
-      write(log%unit, form_62, advance="no"), "method refinment for near 3d"
+      write(log%unit, form_62, advance="no"), "method refinment for near area using 3D"
       if (method3d(2)) write(log%unit,'(a$)') "cuboid"
       if (method3d(3)) write(log%unit,'(a$)') "cylinder"
       write(log%unit,*) method3d_refinment_distance 
     endif
+
     if (.not.any(method).and..not.dryrun) then
       call print_warning("no correct method found", error=.true.)
     endif
@@ -210,6 +211,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."rho")) then
       output%rho=.true.
     endif
+
     if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
 
     if (file_exists(output%name).and.output%noclobber) then
@@ -298,10 +300,11 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   call get_command_cleaned(dummy)
   call collect_args(dummy)
 
-  if (any(cmd_line%switch.eq.'-h') &
+  if (any(cmd_line%switch.eq.'-h')                   &
     .and.if_accepted_switch("-h",accepted_switches)) &
     then
-    call print_help(program_calling=program_calling, &
+    call print_help(                         &
+      program_calling   = program_calling,   &
       accepted_switches = accepted_switches)
     call exit
   endif
@@ -314,7 +317,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     call exit
   endif
 
-  if (any(cmd_line%switch.eq.'-w') &
+  if (any(cmd_line%switch.eq.'-w')                   &
     .and.if_accepted_switch("-w",accepted_switches)) &
     then
 
@@ -427,6 +430,8 @@ subroutine check_arguments (program_calling)
   integer :: i
 
   if (program_calling.eq."grat") then
+
+    ! assume method using for computation if not given explicitly
     if (.not.any(cmd_line%switch.eq.'-M')) then
       if (any(cmd_line%switch.eq.'-G')) then
         method(2)=.true.
@@ -436,16 +441,20 @@ subroutine check_arguments (program_calling)
         if (.not.quiet) call print_warning("method", more= "assuming 1D")
       endif
     endif
+
     if (method(2) .and. .not.any(cmd_line%switch.eq.'-G')) then
       call print_warning("green_missing", error=.true.)
     endif
+
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-G')) then
       call print_warning("no method 2D, so 3D result will be shifted")
       call parse_green()
     endif
+    
     if (method(3) .and. .not.any(cmd_line%switch.eq.'-J')) then
       call parse_level()
     endif
+    
     if (((method(2).or.method(3)) &
       .and. inverted_barometer) &
       .and. (ind%model%ls.eq.0 &
@@ -458,6 +467,7 @@ subroutine check_arguments (program_calling)
         error=any(cmd_line%switch.eq."-B"))
     endif
   endif
+  
   do i=1, size(model)
     if (model(i)%autoload) then
       if (.not. allocated(date)) then
@@ -465,12 +475,23 @@ subroutine check_arguments (program_calling)
       endif
     endif
   enddo
+  
   call gather_site_model_info()
+  
   if (ind%model%hp.ne.0.and. .not.transfer_sp%if) then
     call print_warning ("maybe use -U")
   endif
+  
   if (transfer_sp%if .and. ind%model%hp.eq.0) then
     call print_warning ("-U but no @HP found")
+  endif
+
+  if (method(3)) then
+    if ( &
+      any([ind%model%sp,ind%model%gp].eq.0)) then
+      call print_warning ("some data is missing (@SP,@GP )", error=.true.)
+    endif
+
   endif
 end subroutine
 

@@ -97,8 +97,7 @@ program grat
   endif
 
   if(output%header) then
-    write (output%unit, '(a8,3(x,a9$))') &
-      "name", "lat", "lon", "h"
+    write (output%unit, '(a8,3(x,a9$))') "name", "lat", "lon", "h"
   endif
 
   if(output%header) then
@@ -187,7 +186,7 @@ program grat
             endif
 
           else if (model(i)%autoload) then
-            if (                                                   &
+            if (                                                 &
               (idate.eq.1                                        &
               .or. .not.(                                        &
               date(idate)%date(1).eq.date(idate-1)%date(1)       &

@@ -1,5 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
+ttt: grat
+	grat -F NCEP2 @SP ,ERA@GP!, ERA@VT!, VIENNA@RSP, VIENNA @HRSP -Sj -D2010 -M3 -V
+
 fsdfds:grat
 	for ref in "" ref ; do \
 	time grat                        \

@@ -450,7 +450,8 @@ end subroutine
 subroutine convolve(site, date)
   use mod_constants
   use iso_fortran_env
-  use mod_site, only : site_info, local_pressure_distance
+  use mod_site, &
+    only : site_info, local_pressure_distance
   use mod_cmdline
   use mod_utilities, &
     only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring
@@ -501,10 +502,12 @@ subroutine convolve(site, date)
 
   if (site%lp%if) then
     do i=1, size(site%lp%date)
+
       if(all(site%lp%date(i, 1:6).eq.date%date(1:6))) then
         val(ind%model%sp) = site%lp%data(i)
         exit
       endif
+
       val(ind%model%sp) = sqrt(-1.)
       if(i.eq.size(site%lp%date)) &
         call print_warning("date not found in @LP")
@@ -532,9 +535,10 @@ subroutine convolve(site, date)
   do igreen = 1, size(green_common)
     do idist = 1, size(green_common(igreen)%distance)
       if (allocated(azimuths)) deallocate (azimuths)
+
       if (info(igreen)%azimuth%step.eq.0) then
-        nazimuth = &
-          (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 * &
+        nazimuth =                                                            &
+          (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 *        &
           max(int(360*sin(d2r(green_common(igreen)%distance(idist)))), 100) * &
           info(igreen)%azimuth%denser
         if (nazimuth.eq.0) nazimuth=1
@@ -543,7 +547,6 @@ subroutine convolve(site, date)
         dazimuth = info(igreen)%azimuth%step
         nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
       endif
-
 
       ! calculate area using spherical formulae
       area = spher_area(                        & 
@@ -582,9 +585,15 @@ subroutine convolve(site, date)
 
         ! get LS
         if (ind%model%ls.ne.0.and.inverted_barometer) then
-          call get_value ( & 
-            model(ind%model%ls), r2d(lat), r2d(lon), val(ind%model%ls), & 
-            level=1, method=info(igreen)%interpolation, date=date%date)
+          call get_value (                       &
+            model(ind%model%ls),                 &
+            lat    = r2d(lat),                   &
+            lon    = r2d(lon),                   &
+            val    = val(ind%model%ls),          &
+            level  = 1,                          &
+            method = info(igreen)%interpolation, &
+            date   = date%date                   &
+            )
         endif
 
         if (iok(1).eq.1 & .and. int(val(ind%model%ls)).eq.1) then
@@ -699,38 +708,37 @@ subroutine convolve(site, date)
                   ].ne.0)          & 
                   ) then
 
-                  val(ind%model%sp) = standard_pressure( & 
-                    height=val(ind%model%h),             & 
-                    h_zero=val(ind%model%hp),            & 
-                    p_zero=old_val_sp,                   & 
-                    method=transfer_sp%method,           & 
-                    temperature=val(ind%model%t),        & 
-                    use_standard_temperature             & 
-                    = ind%model%t.eq.0,                  & 
-                    nan_as_zero=.false.)
+                  val(ind%model%sp) = standard_pressure(           & 
+                    height                   = val(ind%model%h),   & 
+                    h_zero                   = val(ind%model%hp),  & 
+                    p_zero                   = old_val_sp,         & 
+                    method                   = transfer_sp%method, & 
+                    temperature              = val(ind%model%t),   & 
+                    use_standard_temperature = ind%model%t.eq.0,   & 
+                    nan_as_zero              = .false.)
 
                   if(all([ind%model%rsp, ind%model%hrsp].ne.0)) then
-                    val(ind%model%rsp) = standard_pressure(          & 
-                      height=val(ind%model%h),                       & 
-                      h_zero=val(ind%model%hrsp),                    & 
-                      p_zero=old_val_rsp,                            & 
-                      method=transfer_sp%method,                     & 
-                      temperature=val(ind%model%t),                  & 
-                      use_standard_temperature                       & 
-                      = ind%model%t.eq.0,                            & 
-                      nan_as_zero=.false.)
+                    val(ind%model%rsp) = standard_pressure(           & 
+                      height                   = val(ind%model%h),    & 
+                      h_zero                   = val(ind%model%hrsp), & 
+                      p_zero                   = old_val_rsp,         & 
+                      method                   = transfer_sp%method,  & 
+                      temperature              = val(ind%model%t),    & 
+                      use_standard_temperature = ind%model%t.eq.0,    & 
+                      nan_as_zero              = .false.)
                   endif
                 endif
 
                 if (ind%model%rsp.ne.0) then
-                  if (.not. &
-                    (site%lp%if &
+                  if (.not.                                                              &
+                    (site%lp%if                                                          &
                     .and.green_common(igreen)%distance(idist).lt.local_pressure_distance &
-                    .and..not.first_reduction &
-                    ) &
+                    .and..not.first_reduction                                            &
+                    )                                                                    &
                     ) then
 
                     val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+
                     if (first_reduction) first_reduction=.false.
 
                   endif
@@ -795,6 +803,9 @@ subroutine convolve(site, date)
                       if (ind%model%rsp.eq.0) then
                         call print_warning("3D but no RSP", error=.true.)
                       endif
+                      if (ind%model%hrsp.eq.0) then
+                        call print_warning("3D but no HRSP", error=.true.)
+                      endif
 
                       if (allocated(heights))      deallocate(heights)
                       if (allocated(pressures))    deallocate(pressures)
@@ -806,12 +817,10 @@ subroutine convolve(site, date)
                         cycle
                       endif
 
-                      nheight= &
-                        ceiling((info(igreen)%height%stop &
+                      nheight=                                            &
+                        ceiling((info(igreen)%height%stop                 &
                         -max(info(igreen)%height%start,val(ind%model%h))) &
                         /info(igreen)%height%step)
-
-
 
                       allocate(heights(nheight))
                       allocate(pressures(nheight))
