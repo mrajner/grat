@@ -486,12 +486,11 @@ subroutine check_arguments (program_calling)
     call print_warning ("-U but no @HP found")
   endif
 
+  ! just to avoid error when no levels are found
   if (method(3)) then
-    if ( &
-      any([ind%model%gp].eq.0)) then
+    if (any([ind%model%gp].eq.0)) then
       call print_warning ("@GP is missing", error=.true.)
     endif
-
   endif
 end subroutine
 
