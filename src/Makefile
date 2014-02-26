@@ -41,18 +41,19 @@ local:
 
 
 # compiler:  currently only ifort is supported
-# FC = gfortran
 FC = ifort
+
+# TODO
+# FC = gfortran
 
 # compiler flags
 ARCH=$(shell arch)
 
 # for testing do not optimize
-FFLAGS = -O0 -xHost 
-MYFLAGS=
-FFLAGS += $(MYFLAGS)
-FFLAGS += -fpp -warn all 
+FFLAGS = -O0 -xHost -fpp -warn all 
 
+
+$(PROGS): FFLAGS+=-O3
 # for final compilation do optimize
 all: FFLAGS+=-O2
 
@@ -122,7 +123,6 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 # implicit rules for object files
 %.o: %.f90
 	$(FC) $(FFLAGS) $< -c
-
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
@@ -204,6 +204,7 @@ rmlib:
 	-sudo rm \
 		/usr/local/include/mod_* \
 		/usr/local/lib/libgrat.a 
+
 rmlink:
 	-rm $(LINKS)
 
