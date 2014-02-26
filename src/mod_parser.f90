@@ -446,15 +446,17 @@ subroutine check_arguments (program_calling)
       call print_warning("green_missing", error=.true.)
     endif
 
-    if (method(3) .and. .not.any(cmd_line%switch.eq.'-G')) then
-      call print_warning("no method 2D, so 3D result will be shifted")
-      call parse_green()
+    if (method(3)) then
+      if(.not.any(cmd_line%switch.eq.'-G')) then
+        call print_warning("no method 2D, so 3D result will be shifted")
+        call parse_green()
+      endif
+      if (.not.any(cmd_line%switch.eq.'-J')) then
+        call parse_level()
+      endif
     endif
-    
-    if (method(3) .and. .not.any(cmd_line%switch.eq.'-J')) then
-      call parse_level()
-    endif
-    
+
+
     if (((method(2).or.method(3)) &
       .and. inverted_barometer) &
       .and. (ind%model%ls.eq.0 &
@@ -466,8 +468,9 @@ subroutine check_arguments (program_calling)
         "inverted barometer, but no landsea mask", &
         error=any(cmd_line%switch.eq."-B"))
     endif
+
   endif
-  
+
   do i=1, size(model)
     if (model(i)%autoload) then
       if (.not. allocated(date)) then
@@ -475,13 +478,13 @@ subroutine check_arguments (program_calling)
       endif
     endif
   enddo
-  
+
   call gather_site_model_info()
-  
+
   if (ind%model%hp.ne.0.and. .not.transfer_sp%if) then
     call print_warning ("maybe use -U")
   endif
-  
+
   if (transfer_sp%if .and. ind%model%hp.eq.0) then
     call print_warning ("-U but no @HP found")
   endif
@@ -507,8 +510,10 @@ logical function if_accepted_switch (switch, accepted_switches)
     if_accepted_switch=.true.
     return
   endif
+
   ! default
   if_accepted_switch=.false.
+
   ! loop trough accepted switches
   do i =1, len(accepted_switches)
     if (switch(2:2).eq.accepted_switches(i:i)) then
@@ -534,10 +539,14 @@ subroutine parse_moreverbose (cmd_line_entry)
     call print_warning ("repeated")
     return
   endif
+
   allocate(moreverbose(size(cmd_line_entry%field)))
+
   do i = 1, size(cmd_line_entry%field)
-    moreverbose(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
+
+    moreverbose(i)%name     = trim(cmd_line_entry%field(i)%subfield(1)%name)
     moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
+
     if (dataname(moreverbose(i)%dataname).ne."unknown") then 
       if (moreverbose(i)%name.ne."") then
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
@@ -555,11 +564,14 @@ subroutine parse_moreverbose (cmd_line_entry)
         moreverbose(i)%unit = output_unit
       endif
     endif
+
     write (log%unit, form_62), trim(moreverbose(i)%name), &
       "<-", dataname(moreverbose(i)%dataname)
+
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
       moreverbose(i)%sparse=.true.
     endif
+
   enddo
 end subroutine
 
