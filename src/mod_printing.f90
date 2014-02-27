@@ -174,4 +174,28 @@ function basename (file)
     basename=file(index(file,'/', back=.true.)+1:)
   endif
 end function
+
+! =============================================================================
+!> Print version of program depending on program calling
+!! 
+!! \author M. Rajner
+!! \date 2013-03-06
+! =============================================================================
+subroutine print_version (program_calling, version)
+  character(*) :: program_calling 
+  character(*), optional :: version
+
+  write(log%unit, form_header )
+  write(log%unit, form_inheader ), trim(program_calling)
+  write(log%unit, form_inheader ), version
+  write(log%unit, form_inheader ), "compiled on "//__DATE__
+  write(log%unit, form_inheader_n ), &
+    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+  write(log%unit, form_header )
+  write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
+  write(log%unit, form_inheader ), 'Warsaw University of Technology'
+  write(log%unit, form_inheader ), 'License: GPL v3 or later'
+  write(log%unit, form_header )
+end subroutine
+
 end module mod_printing

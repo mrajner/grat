@@ -1,5 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
+#
+gradd: grat
+	grat -v
 
 fsdfds:grat
 	for ref in "" ref ; do \

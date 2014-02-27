@@ -393,8 +393,13 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     ! support this name
     open (newunit=log%unit, file = "/dev/null", action = "write" )
   endif
-  if (.not. log%sparse) call print_version(program_calling=program_calling, version=version)
+
+  if (.not. log%sparse) then
+    call print_version(program_calling=program_calling, version=version)
+  endif
+
   call date_and_time (values = execution_date)
+
   write(log%unit, & 
     '("Program started:", & 
     1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
@@ -705,29 +710,6 @@ subroutine info_defaults(info)
 
   info%distance%stop_3d=10.
 
-end subroutine
-
-! =============================================================================
-!> Print version of program depending on program calling
-!! 
-!! \author M. Rajner
-!! \date 2013-03-06
-! =============================================================================
-subroutine print_version (program_calling, version)
-  character(*) :: program_calling 
-  character(*), optional :: version
-
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), trim(program_calling)
-  write(log%unit, form_inheader ), version
-  write(log%unit, form_inheader ), "compiled on "//__DATE__
-  write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), 'Copyright 2013 by Marcin Rajner'
-  write(log%unit, form_inheader ), 'Warsaw University of Technology'
-  write(log%unit, form_inheader ), 'License: GPL v3 or later'
-  write(log%unit, form_header )
 end subroutine
 
 !! =============================================================================
