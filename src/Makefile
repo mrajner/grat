@@ -1,7 +1,8 @@
 # todo at the very and link not to objects but to library
 # for example: OBJS  = libgrat.a
 #
-gradd: grat
+gradd: 
+	echo $(HOST)
 	grat -v
 	echo $(FLAGS)
 	echo $(FFLAGS)
@@ -53,9 +54,6 @@ DEP = n
 # TODO
 # FC = gfortran
 
-# compiler flags
-ARCH=$(shell arch)
-
 FLAGS =           \
 			  -xHost    \
 			  -fpp      \
@@ -67,7 +65,7 @@ FFLAGS =                           \
 
 
 
-ifeq ($(ARCH),grat)
+ifeq ($(HOST),grat)
 # always optimize for server and resolve dependencies
 FLAGS+=-O2
 DEP=y
