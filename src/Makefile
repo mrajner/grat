@@ -13,13 +13,6 @@ FFLAGS =                           \
 				 $(FLAGS)                  \
 				 -D__FFLAGS__='"$(FLAGS)"'
 
-gradd: 
-	echo $(HOST)
-	echo $(FLAGS)
-	echo $(FFLAGS)
-	echo $(DEP)
-
-
 ifeq ($(HOST),grat)
 # always optimize for server and resolve dependencies
 FLAGS += -O2
