@@ -5,6 +5,7 @@ gradd: grat
 	grat -v
 	echo $(FLAGS)
 	echo $(FFLAGS)
+	echo $(DEP)
 
 fsdfds:grat
 	for ref in "" ref ; do \
@@ -46,7 +47,8 @@ local:
 
 
 # compiler:  currently only ifort is supported
-FC = ifort
+FC  := ifort
+DEP = n
 
 # TODO
 # FC = gfortran
@@ -66,8 +68,9 @@ FFLAGS =                           \
 
 
 ifeq ($(ARCH),grat)
-# always optimize for server
+# always optimize for server and resolve dependencies
 FLAGS+=-O2
+DEP=y
 else
 # for testing do not optimize
 ../bin/grat ../bin/value_check: FLAGS+=-O0
@@ -109,13 +112,13 @@ EXAMPLESSRC = example_aggf.f90
 OBJS = $(SRCS:.f90=.o)
 
 # module dependencies
-ifdef DEP
+ifeq ($(DEP),y)
 mod_utilities.o:     mod_constants.o
 mod_mjd.o:           mod_constants.o
 mod_cmdline.o:       mod_utilities.o
 mod_normalization.o: mod_utilities.o
 mod_printing.o:      mod_cmdline.o
-mod_polygon.o:       mod_printing.o  mod_cmdline.o
+mod_polygon.o:       mod_printing.o
 mod_atmosphere.o:    mod_printing.o  mod_utilities.o
 mod_aggf.o:          mod_constants.o mod_atmosphere.o mod_normalization.o
 mod_site.o:          mod_printing.o  mod_utilities.o  mod_constants.o     mod_data.o      mod_cmdline.o  mod_date.o
