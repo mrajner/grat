@@ -21,7 +21,7 @@ else
 # for testing do not optimize
 FLAGS += -O0
 # for final compilation do optimize
-all: FLAGS += -O2 
+all: FLAGS += -O2
 endif
 
 fsdfds: grat
@@ -158,6 +158,7 @@ all:          \
 	$(LINKS)    \
 	$(EXAMPLES) 
 
+libgrat.a: DEP=y
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
 
@@ -184,8 +185,7 @@ dochtml: doc
 docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
 
-install: all $(PROGS) installlib
-
+install: clean all $(PROGS) /usr/local/lib/libgrat.a
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
@@ -193,13 +193,12 @@ $(LINKS_DIR)/%: $(PROGS_DIR)/%
 	ln -sf $(realpath $<) $@
 
 $(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
-	sudo cp $(realpath $<) $@
+	sudo cp -uv $(realpath $<) $@
 
 install-httpd: $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
 
 # Change this path according to your system settings
 # This could require root privilages 
-installlib: /usr/local/lib/libgrat.a
 /usr/local/lib/libgrat.a: libgrat.a
 	@sudo cp -uv libgrat.a /usr/local/lib
 	@sudo cp -uv *.mod /usr/local/include
@@ -210,11 +209,16 @@ rmlib:
 		/usr/local/include/mod_* \
 		/usr/local/lib/libgrat.a 
 
-rmlink:
-	-rm $(LINKS)
 
-clean: rmlib 
+clean:
 	rm -f *.o *.mod *.a fort?????? tmp*
+
+CLEAN: clean
+	-sudo rm \
+		/usr/local/include/mod_* \
+		/usr/local/lib/libgrat.a 
+	-rm $(LINKS)
+	-sudo rm $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
 
 HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 HELPS=$(addprefix ../dat/, $(HELP_NAMES))
