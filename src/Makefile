@@ -3,6 +3,8 @@
 #
 gradd: grat
 	grat -v
+	echo $(FLAGS)
+	echo $(FFLAGS)
 
 fsdfds:grat
 	for ref in "" ref ; do \
@@ -52,13 +54,26 @@ FC = ifort
 # compiler flags
 ARCH=$(shell arch)
 
+FLAGS =           \
+			  -xHost    \
+			  -fpp      \
+			  -warn all
+
+FFLAGS =                           \
+				 $(FLAGS)                  \
+				 -D__FFLAGS__='"$(FLAGS)"'
+
+
+
+ifeq ($(ARCH),grat)
+# always optimize for server
+FLAGS+=-O2
+else
 # for testing do not optimize
-FFLAGS = -O0 -xHost -fpp -warn all 
-
-
-$(PROGS): FFLAGS+=-O3
+../bin/grat ../bin/value_check: FLAGS+=-O0
 # for final compilation do optimize
-all: FFLAGS+=-O2
+all: FLAGS+=-O2
+endif
 
 # libraries 
 NETCDFLIB = -I/usr/local/include \
