@@ -1,14 +1,37 @@
-# todo at the very and link not to objects but to library
-# for example: OBJS  = libgrat.a
-#
+# compiler:  currently only ifort is supported
+FC   := ifort
+# FC := gfortran
+DEP  := n
+HOST := $(shell hostname)
+
+FLAGS =           \
+			  -xHost    \
+			  -fpp      \
+			  -warn all
+
+FFLAGS =                           \
+				 $(FLAGS)                  \
+				 -D__FFLAGS__='"$(FLAGS)"'
+
 gradd: 
 	echo $(HOST)
-	grat -v
 	echo $(FLAGS)
 	echo $(FFLAGS)
 	echo $(DEP)
 
-fsdfds:grat
+
+ifeq ($(HOST),grat)
+# always optimize for server and resolve dependencies
+FLAGS += -O2
+DEP    = y
+else
+# for testing do not optimize
+FLAGS += -O0
+# for final compilation do optimize
+all: FLAGS += -O2 
+endif
+
+fsdfds: grat
 	for ref in "" ref ; do \
 	time grat                        \
 		-F                        \
@@ -46,35 +69,6 @@ local:
 			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
-
-# compiler:  currently only ifort is supported
-FC  := ifort
-DEP = n
-
-# TODO
-# FC = gfortran
-
-FLAGS =           \
-			  -xHost    \
-			  -fpp      \
-			  -warn all
-
-FFLAGS =                           \
-				 $(FLAGS)                  \
-				 -D__FFLAGS__='"$(FLAGS)"'
-
-
-
-ifeq ($(HOST),grat)
-# always optimize for server and resolve dependencies
-FLAGS+=-O2
-DEP=y
-else
-# for testing do not optimize
-../bin/grat ../bin/value_check: FLAGS+=-O0
-# for final compilation do optimize
-all: FLAGS+=-O2
-endif
 
 # libraries 
 NETCDFLIB = -I/usr/local/include \
@@ -147,7 +141,6 @@ EXAMPLES = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/, $@)
 
-HOST=$(shell hostname)
 
 # prevent owervriting with new version on the server grat
 $(PROGS_DIR)/%:%.f90 $(OBJS) 
