@@ -15,10 +15,9 @@ module mod_date
   type(dateandmjd), allocatable, dimension (:) :: date
 
 contains
+
 ! =============================================================================
-!> Parse date given as 20110503020103  to yy mm dd hh mm ss and mjd
-!! 
-!! \warning decimal seconds are not allowed
+! TODO
 ! =============================================================================
 subroutine strip_hyphen_date_iso(string)
   use mod_utilities, only: count_separator
@@ -26,12 +25,10 @@ subroutine strip_hyphen_date_iso(string)
   integer :: i
 
   do i=1, count_separator(string,'-')
-    if(len(trim(string(index(string,'-')+1:))).eq.1) then
-      string=string(1:index(string,'-')-1)//'0'//string(index(string,'-')+1:)
-    else
-      string=string(1:index(string,'-')-1)//string(index(string,'-')+1:)
-    endif
+    string=string(1:index(string,'-')-1)//'0'//string(index(string,'-')+1:)
   enddo
+
+  call print_warning('iso_date not supported for parser yet', error=.true.)
 end subroutine
 
 ! =============================================================================

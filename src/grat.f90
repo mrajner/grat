@@ -143,9 +143,11 @@ program grat
   if (ind%model%ls.ne.0) then
     call get_variable (model(ind%model%ls))
   endif
+
   if (ind%model%rsp.ne.0) then
     call get_variable (model(ind%model%rsp))
   endif
+
   if (ind%model%hrsp.ne.0) then
     call get_variable (model(ind%model%hrsp))
   endif

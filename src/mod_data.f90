@@ -177,9 +177,11 @@ subroutine parse_model (cmd_line_entry)
     else
       !check autoload
       call model_aliases(model(i), dryrun=.true.)
+
       if (.not.model(i)%if) then
         call print_warning ("model", more=trim(model(i)%name)//" : file do not exist", error=.false.)
       endif
+
     endif
   enddo
 end subroutine
@@ -503,6 +505,7 @@ subroutine read_netCDF (model, print, force)
   do i = 2,5
     call get_dimension (model, i, print=.not.log%sparse)
   enddo
+
   if (size(model%time).ge.1) call nctime2date (model, print=print)
 end subroutine
 
@@ -524,31 +527,41 @@ subroutine get_dimension (model, i, print)
   if (.not. (present(print).and..not.print))then
     write (log%unit, form%i4, advance='no') "Getting dim:",trim(model%names(i)), ".."
   endif
+
   status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
+
   if (status /=nf90_noerr) then
     if(model%names(i).eq."lon") then
       model%names(i)="longitude"
+
       if (.not.(present(print).and..not.print)) then
         write(log%unit, '(a)', advance='no') "longitude"
       endif
+
       status = nf90_inq_dimid(model%ncid,"longitude", dimid)
+
     else if(model%names(i).eq."lat") then
       model%names(i)="latitude"
       if (.not. (present(print).and..not.print))then
         write(log%unit, '(a)', advance='no') "latitude"
       endif
     endif
+
     status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
   endif
+
   if(status /= nf90_noerr.and.any(i.eq.[2,3])) then 
     call print_warning("key variable not found: " &
       // trim(model%names(i)), error=.true.)
+
   elseif(status /= nf90_noerr) then 
-    if (.not. (present(print).and..not.print))then
+
+    if (.not.(present(print).and..not.print))then
       write (log%unit, '(a6,1x,a)') &
         trim(model%names(i)),"not found, allocating (1)..." 
       call nc_info(model)
     endif
+
     length=1
   else
 
@@ -557,6 +570,7 @@ subroutine get_dimension (model, i, print)
     endif
 
     call check(nf90_inquire_dimension(model%ncid, dimid, len=length))
+
     call check(nf90_inq_varid(model%ncid, model%names(i), varid))
 
   endif
@@ -564,8 +578,10 @@ subroutine get_dimension (model, i, print)
   if (i.eq.3 ) then
     allocate(model%lat(length))
     call check(nf90_get_var (model%ncid, varid, model%lat))
+
     status = nf90_get_att(model%ncid, varid, &
       "actual_range", model%latrange) 
+
     if (status /= nf90_noerr ) then
       model%latrange =[model%lat(1), model%lat(size(model%lat)) ]
     endif
@@ -573,10 +589,13 @@ subroutine get_dimension (model, i, print)
   else if (i.eq.2 ) then
     allocate(model%lon(length))
     call check(nf90_get_var (model%ncid,  varid, model%lon))
+
     status = nf90_get_att ( model%ncid, varid, &
       "actual_range", model%lonrange) 
+
     if (status /= nf90_noerr ) model%lonrange &
       =[model%lon(1), model%lon(size(model%lon)) ]
+
     where (model%lonrange.ge.357.5) 
       model%lonrange=360
     end where
@@ -617,6 +636,7 @@ subroutine nctime2date (model, print)
 
   status = nf90_inq_varid (model%ncid, model%names(5), varid)
   if (status /=nf90_noerr) return
+
   call check (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
@@ -705,11 +725,13 @@ function get_level_index(model, level, sucess)
   logical :: first_fail=.true.
 
   get_level_index=1
+
   if (.not.present(level).or.size(model%level).le.1) then
     get_level_index=1
     if (present(sucess)) sucess=.true.
     return
   endif
+
   do i = 1, size(model%level)
     if (model%level(i).eq.level) then
       get_level_index=i
@@ -717,9 +739,12 @@ function get_level_index(model, level, sucess)
       return
     endif
   enddo 
+
   if (present(sucess)) sucess=.false.
+
   if (first_fail) call print_warning("level not found (no warning again)")
   first_fail=.false.
+
 end function
 
 ! =============================================================================
@@ -737,9 +762,11 @@ subroutine nc_info(model)
   allocate(name(nvars))
 
   call check (nf90_inq_varids(model%ncid, nvars, varids))
+
   do i=1, nvars
     call check(nf90_inquire_variable(model%ncid, varids(i), name(i)))
   enddo
+
   write(log%unit, form%i5 ) (trim(name(i))//",", i =1,nvars)
 end subroutine
 
@@ -752,8 +779,7 @@ subroutine get_variable(model, date, print, level)
   type (file), intent(inout) :: model
   integer, optional, intent(in), dimension(6) ::date
   integer :: varid, status
-  integer :: start(3)
-  integer :: startv(4)
+  integer :: start(4)
   integer :: index_time, i, j, k
   real (dp) :: scale_factor, add_offset
   logical, optional :: print
@@ -788,7 +814,9 @@ subroutine get_variable(model, date, print, level)
 
   if (size(date).gt.0 .and. present(date)) then                       
     index_time = get_time_index(model, date)
+
     if (index_time.eq.0) then
+
       if (.not. (present(print).and..not.print))then
         if (.not.log%sparse) then
           write(aux, '(i4.4,5i2.2)') date
@@ -796,6 +824,7 @@ subroutine get_variable(model, date, print, level)
             // "var: " // trim(model%names(1)) // " in file: " // trim(model%name))
         endif
       endif
+
       model%data= sqrt(-1.)
       return
     endif
@@ -803,29 +832,32 @@ subroutine get_variable(model, date, print, level)
     index_time = 1
   endif
 
-  if(present(level)) stop "XXXXXXX"
-  select case (model%dataname)
-  case ("VT","GP", "VRH", "VSH")
-    startv = [1,1,1,index_time]
-    call check (nf90_get_var ( & 
-      ncid=model%ncid,         & 
-      varid=varid,             & 
-      values=model%data,       & 
-      start=startv)             & 
-      )
+  if(present(level)) stop '!?! look into source -- strange (not probable) execution!'
 
-  case default
-    start = [1,1,index_time]
-    call check (nf90_get_var ( & 
-      ncid=model%ncid,         & 
-      varid=varid,             & 
-      values=model%data,       & 
-      start=start)             & 
-      )
-  end select
+  ! is level in nc file?
+  status = nf90_inq_dimid(model%ncid,model%names(4),i)
+  if (status == nf90_noerr)  then
+    start = [1,1,2,index_time]
+    start = [1,1,2,1]
+    ! call print_warning('you should not read whole file with levels into memory', error=.true.)
+  else
+    start = [1,1,index_time,1]
+  endif
+
+  call check (nf90_get_var ( & 
+    ncid   = model%ncid,     & 
+    varid  = varid,          & 
+    values = model%data,     & 
+    start  = start           & 
+    )                        & 
+    )
+
+  ! print *, 'ondex' , index_time
+  ! stop
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
-  model%data = model%data*scale_factor + add_offset
+  model%data = model%data * scale_factor + add_offset
+
   if (trim(model%datanames(1)).ne."") then
     do i =1, size(model%data,1)
       do j =1, size(model%data,2)
@@ -957,28 +989,39 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   ! do not look into data array - get value directly 
   if (model%huge) then
+
     status=nf90_inq_varid (model%ncid, model%names(4), varid)
+
     call check (nf90_inq_varid (model%ncid, model%names(1), varid))
+
     if (status.eq.nf90_noerr) then
-      call check (& 
-        nf90_get_var(              & 
-        model%ncid, varid,                   & 
-        val,                                 & 
-        start = [                            & 
-        ilon,                                & 
-        ilat,                                & 
-        get_level_index(model, ilevel, success2),& 
+      call check (                                & 
+        nf90_get_var(                             & 
+        model%ncid,                               & 
+        varid,                                    & 
+        val,                                      & 
+        start = [                                 & 
+        ilon,                                     & 
+        ilat,                                     & 
+        get_level_index(model, ilevel, success2), & 
         get_time_index(model,date=date)           & 
-        ]),                                  & 
+        ]),                                       & 
         success=success)
       if(.not.success2) val =sqrt(-1.)
+
     else
       call check (nf90_get_var(         & 
-        model%ncid, varid, val,       & 
-        start = [ilon,ilat,           & 
-        get_time_index(model,date=date)]), & 
+        model%ncid,                     & 
+        varid,                          & 
+        val,                            & 
+        start = [                       & 
+        ilon,                           & 
+        ilat,                           & 
+        get_time_index(model,date=date) & 
+        ]),                             & 
         success=success)
     endif
+
     if(.not. success) then
       call print_warning ("skipping get_value")
       val = sqrt(-1.)
@@ -991,6 +1034,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
       val = variable_modifier (val, model%datanames(1))
     endif
     return
+
   endif
 
   if (present(method) .and. method .eq."l") then
@@ -999,9 +1043,9 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
     if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
     else
-      array_aux (1, :) = [ model%lon(ilon), model%lat(ilat), model%data(ilon, ilat, ilevel) ]
-      array_aux (2, :) = [ model%lon(ilon), model%lat(ilat2), model%data(ilon, ilat2, ilevel) ]
-      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat), model%data(ilon2, ilat, ilevel) ]
+      array_aux (1, :) = [ model%lon(ilon),  model%lat(ilat),  model%data(ilon,  ilat,  ilevel) ]
+      array_aux (2, :) = [ model%lon(ilon),  model%lat(ilat2), model%data(ilon,  ilat2, ilevel) ]
+      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat),  model%data(ilon2, ilat,  ilevel) ]
       array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
 
       if (ind%moreverbose%l.ne.0) then
@@ -1009,8 +1053,10 @@ subroutine get_value(model, lat, lon, val, level, method, date)
           (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
         write(moreverbose(ind%moreverbose%l)%unit, '(">")')
       endif
+
       val = bilinear ( lon, lat, array_aux )
       return
+
     endif
   endif
 
@@ -1019,11 +1065,13 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   if (ilon .eq. size (model%lon) ) then
     if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
   endif
+
   if (ind%moreverbose%n.ne.0) then
     write(moreverbose(ind%moreverbose%n)%unit,  '(3f15.4," n")'), &
       model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
     write(moreverbose(ind%moreverbose%n)%unit,  '(">")')
   endif
+
   val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
   if (.not.success2) val=sqrt(-1.)
 
@@ -1226,7 +1274,7 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine parse_level (cmd_line_entry)
-  use mod_cmdline, only: cmd_line_arg
+  use mod_cmdline,  only: cmd_line_arg
   use mod_printing, only: print_warning, form, log
 
   type(cmd_line_arg), optional :: cmd_line_entry

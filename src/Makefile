@@ -25,34 +25,36 @@ all: FLAGS += -O2
 endif
 
 fsdkljf: value_check
-	value_check -F /home/mrajner/dat/ncep_reanalysis/air.2012.nc@T : air \
+	value_check \
+		-F /home/mrajner/dat/ncep_reanalysis/air.2012.nc@ : air  \
 		-S j  \
-		-o :level -D2012-2:2012-3 \
-		-V
+		-o :level -D20120225:20123 \
+		-V -J1000,850 
+	tail oporowe
 
 
 fsdfds: grat
-	for ref in "" ref ; do \
-	time grat                        \
-		-F                        \
-		NCEP @SP,                 \
-		VIENNA@RSP,               \
-		NCEP1@T,                  \
-		NCEP@HP,                  \
-		ETOPO@H!,                 \
-		VIENNA@HRSP,              \
-		NCEP@GP!,                 \
-		NCEP@VT!,                 \
-		NCEP1@VSH!                \
-		-M1,2,3:potenial:$${ref}    \
-		-G@GN, @GNdt,@GNdz,@GNdz2 \
-		-S j                      \
-		-H                        \
-		-D 2011                   \
-	 	-o                        \
-		-A-0.43 -U \
+	for ref in "" ref ; do            \
+	time grat                         \
+		-F                              \
+		NCEP @SP,                       \
+		VIENNA@RSP,                     \
+		NCEP1@T,                        \
+		NCEP@HP,                        \
+		ETOPO@H!,                       \
+		VIENNA@HRSP,                    \
+		NCEP@GP!,                       \
+		NCEP@VT!,                       \
+		NCEP1@VSH!                      \
+		-M1,2,3:potenial:$${ref}        \
+		-G@GN, @GNdt,@GNdz,@GNdz2       \
+		-S j                            \
+		-H                              \
+		-D 2011                         \
+	 	-o                              \
+		-A-0.43 -U                      \
 		-I0.03@3D : 20110@HB: 50000 @HE \
-		-V:s; \
+		-V:s;                           \
 		done
 
 tmp: grat local
@@ -65,15 +67,14 @@ tmp: grat local
 		-o :free
 
 local: 
-	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                                    \
-			 grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
-			 cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
+	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
+	grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
+	cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 
 # libraries 
 NETCDFLIB = -I/usr/local/include \
 						-L/usr/local/lib     \
-						-lnetcdf             \
 						-lnetcdff            \
 						-lnetcdf
 

@@ -229,12 +229,14 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (.not.log%sparse) write(log%unit, form%i2) "warnings"
 
   case ('-q')
-    quiet=.true.
+
     if (cmd_line_entry%field(1)%full.ne."") then
       read (cmd_line_entry%field(1)%full,*) quiet_step
     else
+      quiet=.true.
       quiet_step=0
     endif
+
     write(log%unit,form%i2) &
       "quiet step", quiet_step
 
@@ -456,6 +458,7 @@ subroutine check_arguments (program_calling)
         call print_warning("no method 2D, so 3D result will be shifted")
         call parse_green()
       endif
+
       if (.not.any(cmd_line%switch.eq.'-J')) then
         call parse_level()
       endif
