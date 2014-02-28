@@ -551,12 +551,16 @@ subroutine get_dimension (model, i, print)
     endif
     length=1
   else
+
     if (.not. (present(print).and..not.print))then
       write (log%unit, '(a6,1x,a)') "ok"
     endif
+
     call check(nf90_inquire_dimension(model%ncid, dimid, len=length))
     call check(nf90_inq_varid(model%ncid, model%names(i), varid))
+
   endif
+
   if (i.eq.3 ) then
     allocate(model%lat(length))
     call check(nf90_get_var (model%ncid, varid, model%lat))
@@ -565,6 +569,7 @@ subroutine get_dimension (model, i, print)
     if (status /= nf90_noerr ) then
       model%latrange =[model%lat(1), model%lat(size(model%lat)) ]
     endif
+
   else if (i.eq.2 ) then
     allocate(model%lon(length))
     call check(nf90_get_var (model%ncid,  varid, model%lon))
@@ -575,15 +580,18 @@ subroutine get_dimension (model, i, print)
     where (model%lonrange.ge.357.5) 
       model%lonrange=360
     end where
+
   else if (i.eq.4 ) then
     allocate(model%level(length))
     status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
+
     if (status.ne.nf90_noerr) then 
       model%level=0
       return
     else
       status = nf90_get_var (model%ncid, varid, model%level)
     endif
+
   elseif (i.eq.5 ) then
     allocate(model%time (length) )
     status = nf90_get_var (model%ncid, varid, model%time)

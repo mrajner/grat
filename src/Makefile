@@ -24,8 +24,11 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-fsdkljf: grat value_check
-	value_check -D2010-1 : 2011 - 11 - 3  : 50 @D  -L@d -Mn -Sj -V
+fsdkljf: value_check
+	value_check -F /home/mrajner/dat/ncep_reanalysis/air.2012.nc@T : air \
+		-S j  \
+		-o :level -D2012-2:2012-3 \
+		-V
 
 
 fsdfds: grat
