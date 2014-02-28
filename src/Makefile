@@ -24,6 +24,10 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
+fsdkljf: grat
+	grat -D2010 : 2011-11 : 10 @D  -L@d -Mn -Sj
+
+
 fsdfds: grat
 	for ref in "" ref ; do \
 	time grat                        \

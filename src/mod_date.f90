@@ -37,24 +37,31 @@ subroutine parse_date(cmd_line_entry)
     call print_warning ("repeated")
     return
   endif
+
   do i_ = 1, size(cmd_line_entry%field)
-    if (trim(cmd_line_entry%field(i_)%full).eq."" &
-      ) then
+
+    if (trim(cmd_line_entry%field(i_)%full).eq."") then
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
 
+    print *, cmd_line_entry%field(i_)%subfield(2)
+    stop
+
     if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"  &
       .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
-      call print_warning("date not numeric "// trim(cmd_line_entry%field(i_)%full))
+      call print_warning( &
+        "date not numeric "// trim(cmd_line_entry%field(i_)%full), &
+        error=.true. &
+        )
       cycle
     endif
 
     if (any( [( &
-    is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name) &
-    .and.index(cmd_line_entry%field(i_)%subfield(i_aux)%name,".").ne.0 , &
-    i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
+      is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name) &
+      .and.index(cmd_line_entry%field(i_)%subfield(i_aux)%name,".").ne.0 , &
+      i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
       call print_warning("decimal date not supported "// trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
