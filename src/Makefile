@@ -24,8 +24,8 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-fsdkljf: grat
-	grat -D2010 : 2011-11 : 10 @D  -L@d -Mn -Sj
+fsdkljf: grat value_check
+	value_check -D2010-1 : 2011 - 11 - 3  : 50 @D  -L@d -Mn -Sj -V
 
 
 fsdfds: grat

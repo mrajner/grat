@@ -20,6 +20,25 @@ contains
 !! 
 !! \warning decimal seconds are not allowed
 ! =============================================================================
+subroutine strip_hyphen_date_iso(string)
+  use mod_utilities, only: count_separator
+  character(*), intent(inout) :: string
+  integer :: i
+
+  do i=1, count_separator(string,'-')
+    if(len(trim(string(index(string,'-')+1:))).eq.1) then
+      string=string(1:index(string,'-')-1)//'0'//string(index(string,'-')+1:)
+    else
+      string=string(1:index(string,'-')-1)//string(index(string,'-')+1:)
+    endif
+  enddo
+end subroutine
+
+! =============================================================================
+!> Parse date given as 20110503020103  to yy mm dd hh mm ss and mjd
+!! 
+!! \warning decimal seconds are not allowed
+! =============================================================================
 subroutine parse_date(cmd_line_entry) 
   use mod_cmdline
   use mod_mjd, only: mjd, invmjd
@@ -40,13 +59,17 @@ subroutine parse_date(cmd_line_entry)
 
   do i_ = 1, size(cmd_line_entry%field)
 
+
     if (trim(cmd_line_entry%field(i_)%full).eq."") then
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
 
-    print *, cmd_line_entry%field(i_)%subfield(2)
-    stop
+    do i_aux=1, min(size(cmd_line_entry%field(i_)%subfield),2)
+      if(index(cmd_line_entry%field(i_)%subfield(i_aux)%name,'-').gt.1) then
+        call strip_hyphen_date_iso(cmd_line_entry%field(i_)%subfield(i_aux)%name)
+      endif
+    enddo
 
     if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"  &
       .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
