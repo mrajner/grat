@@ -446,12 +446,12 @@ subroutine standard1976(filename)
     'height', 'T', 'g', 'p', 'rho'
   do height=0.,68000., 1000
     ! print results to file
-    write( file_unit,'(5f15.5, e12.3)'), & 
-      height/1000.,                        & 
-      standard_temperature(height),        & 
-      standard_gravity(height),            & 
-      standard_pressure(height, method="standard")/100.,      &  ! --> hPa
-      standard_pressure(height, method="standard") &
+    write( file_unit,'(5f15.5, e12.3)'),                                     & 
+      height/1000.,                                                          & 
+      standard_temperature(height),                                          & 
+      standard_gravity(height),                                              & 
+      standard_pressure(height, method="standard", nan_as_zero=.true.)/100., & 
+      standard_pressure(height, method="standard", nan_as_zero=.true.)       & 
       /(R_air*standard_temperature(height))
   enddo
   close( file_unit )
