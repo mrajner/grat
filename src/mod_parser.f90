@@ -33,7 +33,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   select case (cmd_line_entry%switch)
 
   case ('-V')
-    if (.not.log%sparse) write(log%unit, form%i3) 'verbose mode' 
+    if (.not.log%sparse) write(log%unit, form%i2) 'verbose mode' 
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
     endif
@@ -657,8 +657,8 @@ subroutine parse_info (cmd_line_entry)
         '|I:' , a   ,            &
         '|DD:', i2  ,            &
         '|DS:', f7.2,            &
-        '|HB:', f7.2,            &
-        '|HE:', f10.1,           &
+        '|HB:', f8.1,            &
+        '|HE:', f8.1,            &
         '|HS:', f7.2,            &
         '|3D:', f7.2,            &
         )"),                     &

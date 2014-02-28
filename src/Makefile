@@ -185,7 +185,13 @@ dochtml: doc
 docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
 
-install: clean all $(PROGS) /usr/local/lib/libgrat.a
+install:                   \
+	clean                    \
+	all                      \
+	$(PROGS)                 \
+	/usr/local/lib/libgrat.a \
+	$(LINKS_DIR_ALL)/grat    \
+	$(LINKS_DIR_ALL)/value_check
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
@@ -195,7 +201,6 @@ $(LINKS_DIR)/%: $(PROGS_DIR)/%
 $(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
 	sudo cp -uv $(realpath $<) $@
 
-install-httpd: $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
 
 # Change this path according to your system settings
 # This could require root privilages 
