@@ -163,7 +163,7 @@ program grat
         if (first_waning) then
           call print_warning (                           &
             "hours not matching model dates (0,6,12,18)" &
-            "are rejecting and not shown in output"      &
+            //"are rejecting and not shown in output"    &
             )
         endif
 
@@ -177,15 +177,16 @@ program grat
 
         select case (model(i)%dataname)
         case ("SP", "T", "GP", "VT", "VSH")
-          if (model(i)%autoload                                  &
-            .and.                                              &
-            .not.(                                             &
-            model(i)%autoloadname.eq."ERA"                     &
+          if (                                                   &
+            model(i)%autoload                                    &
+            .and.                                                &
+            .not.(                                               &
+            model(i)%autoloadname.eq."ERA"                       &
             .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])))) &
             then
 
-            if ( &
-              (idate.eq.1 &
+            if (                                                      &
+              (idate.eq.1                                             &
               .or. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
               )) then
 

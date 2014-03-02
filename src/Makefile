@@ -28,9 +28,8 @@ fsdkljf: value_check
 	value_check \
 		-F /home/mrajner/dat/ncep_reanalysis/hgt.2012.nc :hgt \
 		-S j  \
-		-o :level:free -D20120225:20123 \
-		-V -J1000,500,50 
-	tail oporowe
+		-o :level:free -D20120229:201203 \
+		-V -J1000 > tmp
 
 
 fsdfds: grat

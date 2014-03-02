@@ -784,6 +784,7 @@ subroutine get_variable(model, date, print, level)
   logical, optional :: print
   integer, optional :: level
   character (20) :: aux
+  logical :: first_warning=.true.
 
   if ( &
     model%huge &
@@ -839,7 +840,10 @@ subroutine get_variable(model, date, print, level)
   status = nf90_inq_dimid(model%ncid,model%names(4),i)
   if (status == nf90_noerr)  then
     start = [1,1,1,index_time]
-    call print_warning('reading whole file with levels into memory could slow down computation')
+    if (first_warning) then
+      call print_warning('reading whole file with levels into memory could slow down computation')
+      first_warning=.false.
+    endif
   else
     start = [1,1,index_time,1]
   endif
