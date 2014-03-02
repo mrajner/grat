@@ -39,6 +39,7 @@ program value_check
   start=0 
   if (size(date).gt.0) then
     start=1
+
     ! print header
     if (output%header) then
       if (.not.output%prune) then
@@ -55,9 +56,11 @@ program value_check
         write (output%unit, '(a10$)') "height"
       endif
     endif
+
     if (output%level) then
       write (output%unit, '(a6$)') "level"
     endif
+
   endif
 
   do i = 1, size(model)
@@ -170,17 +173,18 @@ program value_check
 
           else if (model(ii)%dataname.eq."custom") then
             if(ilevel.eq.1) sh=val(ind%model%vsh)
-            call customfile_value( &
-              what  = model(imodel)%name, &
-              sp    = val(ind%model%sp), &
-              t     = val(ind%model%t), &
-              hp    = val(ind%model%hp), &
-              sh    = sh, &
-              gp    = val(ind%model%gp), &
-              vsh   = val(ind%model%vsh), &
-              vt    = val(ind%model%vt), &
-              level = level%level(ilevel), &
-              val   = val(imodel), &
+
+            call customfile_value(             &
+              what  = model(imodel)%name,      &
+              sp    = val(ind%model%sp),       &
+              t     = val(ind%model%t),        &
+              hp    = val(ind%model%hp),       &
+              sh    = sh,                      &
+              gp    = val(ind%model%gp),       &
+              vsh   = val(ind%model%vsh),      &
+              vt    = val(ind%model%vt),       &
+              level = level%level(ilevel),     &
+              val   = val(imodel),             &
               rho   = any(model%name.eq."RHO") &
               )
           else
@@ -236,6 +240,7 @@ program value_check
   endif
 
   call cpu_time(cpu(2))
+
   if (output%unit.ne.output_unit.and..not.quiet) then 
     call progress(                                  & 
       100*iprogress/(max(size(date),1)              & 
@@ -245,6 +250,7 @@ program value_check
       )
     close(output_unit) 
   endif
+
   write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
   write(log%unit, form_separator)
 end program

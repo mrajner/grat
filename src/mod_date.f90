@@ -17,7 +17,7 @@ module mod_date
 contains
 
 ! =============================================================================
-! TODO
+! convert date 2010-01-02 into grat format 20100102
 ! =============================================================================
 subroutine strip_hyphen_date_iso(string)
   use mod_utilities, only: count_separator
