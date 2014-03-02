@@ -12,8 +12,8 @@
 !! \warning This program is written in Fortran90 standard but uses some featerus
 !! of 2003 specification (e.g., \c 'newunit='). It was also written
 !! for <tt>Intel Fortran Compiler</tt> hence some commands can be unavailable
-!! for other compilers (e.g., \c <integer_parameter> for \c IO statements. This should be
-!! easily modifiable according to your output needs.
+!! for other compilers (e.g., \c <integer_parameter> for \c IO statements).
+!! This should be easily modifiable according to your output needs.
 !! Also you need to have \c iso_fortran_env module available to guess the number
 !! of output_unit for your compiler.
 !! When you don't want a \c log_file and you don't switch \c verbose all
@@ -156,12 +156,17 @@ program grat
     model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
   endif
 
-
   do idate=start, size (date)
     if (idate.ge.1) then
       if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
-        if (first_waning) call print_warning  &
-          ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
+
+        if (first_waning) then
+          call print_warning (                           &
+            "hours not matching model dates (0,6,12,18)" &
+            "are rejecting and not shown in output"      &
+            )
+        endif
+
         first_waning=.false.
         cycle
       endif
@@ -224,6 +229,7 @@ program grat
 
     ! if ocean mass should be conserved (-O C)
     if (ocean_conserve_mass) then
+
       if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
         if(size(date).eq.0) then
           call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
@@ -245,26 +251,25 @@ program grat
       endif
     endif
 
-
     do isite = 1, size(site)
       iprogress = iprogress + 1
 
       if (idate.gt.0) then
-        write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
+        write(output%unit, '(f12.3,x,i4.4,5(i2.2),x$)', advance="no") &
           date(idate)%mjd, date(idate)%date
       endif
 
-      write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
-        site(isite)%name,                            &
-        site(isite)%lat,                             &
-        site(isite)%lon,                             &
+      write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)'), &
+        site(isite)%name,                             &
+        site(isite)%lat,                              &
+        site(isite)%lon,                              &
         site(isite)%height
 
       if (method(1)) then
         write (output%unit, "("// output%form // '$)'), &
-          admit(                                      &
-          site(isite),                              &
-          date=date(idate)%date                     &
+          admit(                                        &
+          site(isite),                                  &
+          date=date(idate)%date                         &
           )
       endif
 
@@ -278,13 +283,14 @@ program grat
       if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then
         open(unit=output_unit, carriagecontrol='fortran')
         call cpu_time(cpu(2))
-        call progress(                       &
+        call progress(                     &
           100*iprogress/(max(size(date),1) &
           *max(size(site),1)),             &
           cpu(2)-cpu(1),                   &
           every=quiet_step                 &
           )
       endif
+
     enddo
   enddo
 

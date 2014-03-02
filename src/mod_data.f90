@@ -744,7 +744,6 @@ function get_level_index(model, level, sucess)
 
   if (first_fail) call print_warning("level not found (no warning again)")
   first_fail=.false.
-
 end function
 
 ! =============================================================================
@@ -827,7 +826,9 @@ subroutine get_variable(model, date, print, level)
 
       model%data= sqrt(-1.)
       return
+
     endif
+
   else
     index_time = 1
   endif
@@ -837,9 +838,8 @@ subroutine get_variable(model, date, print, level)
   ! is level in nc file?
   status = nf90_inq_dimid(model%ncid,model%names(4),i)
   if (status == nf90_noerr)  then
-    start = [1,1,2,index_time]
-    start = [1,1,2,1]
-    ! call print_warning('you should not read whole file with levels into memory', error=.true.)
+    start = [1,1,1,index_time]
+    call print_warning('reading whole file with levels into memory could slow down computation')
   else
     start = [1,1,index_time,1]
   endif
@@ -851,9 +851,6 @@ subroutine get_variable(model, date, print, level)
     start  = start           & 
     )                        & 
     )
-
-  ! print *, 'ondex' , index_time
-  ! stop
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
   model%data = model%data * scale_factor + add_offset
@@ -891,7 +888,6 @@ subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
   if (status /=nf90_noerr) add_offset=0
 end subroutine
 
-!
 ! =============================================================================
 !> Check the return code from netCDF manipulation
 !!

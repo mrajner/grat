@@ -26,10 +26,10 @@ endif
 
 fsdkljf: value_check
 	value_check \
-		-F /home/mrajner/dat/ncep_reanalysis/air.2012.nc@ : air  \
+		-F /home/mrajner/dat/ncep_reanalysis/hgt.2012.nc :hgt \
 		-S j  \
-		-o :level -D20120225:20123 \
-		-V -J1000,850 
+		-o :level:free -D20120225:20123 \
+		-V -J1000,500,50 
 	tail oporowe
 
 
@@ -67,7 +67,7 @@ tmp: grat local
 		-o :free
 
 local: 
-	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*)); \
+	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
 	grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 	cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
