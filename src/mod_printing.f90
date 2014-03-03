@@ -76,35 +76,47 @@ subroutine print_warning (warn, unit, more, error, program_calling)
       endif
 
       select case(warn)
+
       case("args")
         write(def_unit, form%i0, advance="no") "no cmd line args! try: "// program_calling // " -h"
+
       case("site_file_format")
         write(def_unit, form%i0, advance="no") "Some records were rejected"
         write(def_unit, form%i0, advance="no") "you should specify for each &
           line at least 3[4] parameters in free format:"
         write(def_unit, form%i0, advance="no") "name lat lon [height] (rest will be skipped)"
+
       case("boundaries")
         write(def_unit, form%i0, advance="no") "something wrong with boundaries. IGNORED"
+
       case("site")
         write(def_unit, form%i0, advance="no") "something wrong with -S|-R specification. IGNORED"
+        
       case ("repeated") 
         write(def_unit, form%i0, advance="no") "reapeted specification"
+
       case ("date") 
         write(def_unit, form%i0, advance="no") "something wrong with date format -D. IGNORED"
+
       case ("model") 
         write(def_unit, form%i0, advance="no") "something wrong with -F."
+
       case("alias_without_date")
         write(def_unit, form%i0, advance="no") "-D is required with aliased data"
+
       case("green_missing")
         write(def_unit, form%i0, advance="no") "-G is required"
+
       case("method")
         write(def_unit, form%i0, advance="no") "-M no method was set" 
+
       case("nc")
-        print *, quiet
         write(def_unit, form%i0, advance="no") "I will not overwrite with : nc (noclobber)"
+
       case default 
         write(def_unit, form%i0, advance="no") warn
       end select
+
       if (present(more)) write(def_unit, form%i0, advance="no") more
     endif
   endif
@@ -188,9 +200,9 @@ subroutine print_version (program_calling, version)
   write(log%unit, form_header )
   write(log%unit, form_inheader ), trim(program_calling)
   write(log%unit, form_inheader ), version
-  write(log%unit, form_inheader ), "compiled on "//__DATE__
   write(log%unit, form_inheader_n ), &
     "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+  write(log%unit, form_inheader ), "compiled on "//__C_DATE__
   write(log%unit, form_inheader ), 'FFLAGS = '//__FFLAGS__
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013, 2014 by Marcin Rajner'

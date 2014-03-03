@@ -1,8 +1,9 @@
 # compiler:  currently only ifort is supported
-FC   := ifort
-# FC := gfortran
-DEP  := n
-HOST := $(shell hostname)
+FC     := ifort
+# FC   := gfortran
+DEP    := n
+HOST   := $(shell hostname)
+C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
 
 FLAGS =           \
 			  -xHost    \
@@ -11,7 +12,8 @@ FLAGS =           \
 
 FFLAGS =                           \
 				 $(FLAGS)                  \
-				 -D__FFLAGS__='"$(FLAGS)"'
+				 -D__FFLAGS__='"$(FLAGS)"' \
+				 -D__C_DATE__='"$(C_DATE)"'
 
 ifeq ($(HOST),grat)
 # always optimize for server and resolve dependencies
@@ -24,11 +26,13 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
+ffdf: grat 
+	grat -v
 fsdkljf: value_check
 	value_check \
 		-! \
 		-F /home/mrajner/dat/ncep_reanalysis/hgt.2012.nc :hgt \
-		-S j  -Dm -J100 
+		-S j  -Dm -J100  -o tmp -ws 
 
 
 fsdfds: grat
