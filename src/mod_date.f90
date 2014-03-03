@@ -14,6 +14,8 @@ module mod_date
   real(dp) :: cpu_start, cpu_finish  
   type(dateandmjd), allocatable, dimension (:) :: date
 
+  ! private
+
 contains
 
 ! =============================================================================
@@ -55,7 +57,6 @@ subroutine parse_date(cmd_line_entry)
   endif
 
   do i_ = 1, size(cmd_line_entry%field)
-
 
     if (trim(cmd_line_entry%field(i_)%full).eq."") then
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
