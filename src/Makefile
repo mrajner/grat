@@ -26,9 +26,7 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-ffdf: grat 
-	grat -v
-fsdkljf: value_check
+fsdkljf: value_check grat
 	value_check \
 		-! \
 		-F /home/mrajner/dat/ncep_reanalysis/hgt.2012.nc :hgt \

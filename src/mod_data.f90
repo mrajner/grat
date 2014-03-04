@@ -339,10 +339,10 @@ subroutine model_aliases(model, dryrun, year, month)
   case ("VIENNA")
     prefix="/home/mrajner/dat/refpres/"
     select case (model%dataname)
-    case ("RSP")
+    case ("RSP", "SP")
       model%names(1)="rp"
       write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
-    case ("H", "HRSP")
+    case ("H", "HRSP", "HP")
       model%names(1)="height"
       write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
     case default
@@ -385,7 +385,9 @@ subroutine model_aliases(model, dryrun, year, month)
     list_only = .true.           & 
     )
 
-  if (model%if.and..not.model%autoload) call read_netCDF(model, print=.not.log%sparse)
+  if (model%if.and..not.model%autoload) then
+    call read_netCDF(model, print=.not.log%sparse)
+  endif
 
   if(present(dryrun).and.dryrun) return
 
@@ -422,18 +424,23 @@ function variable_modifier (val, modifier, verbose, list_only)
   modifier_=modifier
   do i = 1, ntokens(modifier_,"@")
     keyval=" "
+
     if (ntokens(modifier_,"@").eq.1) then
       key = modifier_
     else
       key = modifier_(1: index(modifier_, "@")-1)
     endif
+
     if (index(key,"=").gt.0)  then
       keyval = trim(key(index(key,"=")+1:))
       key    = trim(key(1:index(key,"=")-1))
     endif
-    if (present(verbose).and.verbose) &
+
+    if (present(verbose).and.verbose) then
       write(log%unit, "("//form%t3//"a,a6,a7$)" ) &
-      "var modifier: ", trim(key), trim(keyval)
+        "var modifier: ", trim(key), trim(keyval)
+    endif
+
     select case (key)
     case ("gh2h") ! g2h is obsolete
       variable_modifier=geop2geom(variable_modifier)
@@ -454,8 +461,9 @@ function variable_modifier (val, modifier, verbose, list_only)
       read(keyval,*) numerickeyval
       variable_modifier=numerickeyval+variable_modifier
     case default
-      call print_warning ("variable modifier not found" // key, error=.true.)
+      call print_warning ("variable modifier not found " // key, error=.true.)
     endselect
+
     if (.not.present(list_only)) then
       if(present(verbose).and.verbose) &
         write (log%unit, '('// output%form // ')') variable_modifier
@@ -463,6 +471,7 @@ function variable_modifier (val, modifier, verbose, list_only)
       if(present(verbose).and.verbose) &
         write (log%unit, *)
     endif
+
     modifier_ = modifier_(index(modifier_, "@")+1:)
   enddo
 end function
@@ -786,8 +795,8 @@ subroutine get_variable(model, date, print, level)
   character (20) :: aux
   logical :: first_warning=.true.
 
-  if ( &
-    model%huge &
+  if (                          &
+    model%huge                  &
     .or.model%if_constant_value &
     .or..not. model%if) return
 
@@ -989,7 +998,6 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   ! do not look into data array - get value directly 
   if (model%huge) then
-
     status=nf90_inq_varid (model%ncid, model%names(4), varid)
 
     call check (nf90_inq_varid (model%ncid, model%names(1), varid))
