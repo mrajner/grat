@@ -68,11 +68,13 @@ program grat
 
   implicit none
   real(dp) :: cpu(2)
+  integer :: execution_time(3)
   integer  :: isite, i, idate, start, iprogress = 0
   logical  :: first_waning = .true.
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
+  call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
   call intro (                                         & 
@@ -284,11 +286,14 @@ program grat
       if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then
         open(unit=output_unit, carriagecontrol='fortran')
         call cpu_time(cpu(2))
+        call system_clock(execution_time(2),execution_time(3))
+
         call progress(                     &
           100*iprogress/(max(size(date),1) &
           *max(size(site),1)),             &
-          cpu(2)-cpu(1),                   &
-          every=quiet_step                 &
+          time  = cpu(2)-cpu(1),           &
+          cpu   = cpu(2)-cpu(1),           &
+          every = quiet_step               &
           )
       endif
 
@@ -297,11 +302,20 @@ program grat
 
   ! execution time-stamp
   call cpu_time(cpu(2))
+  call system_clock(execution_time(2),execution_time(3))
+
   if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then
-    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1), every=1)
+    call progress(                     &
+      100*iprogress/(max(size(date),1) &
+      *max(size(site),1)),             &
+      time  = cpu(2)-cpu(1),           &
+      cpu   = cpu(2)-cpu(1),           &
+      every = quiet_step               &
+      )
     close(output_unit)
   endif
-  write(log%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
-  if (output%time) write(output%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
-  write(log%unit, form_separator)
+
+  write(log%unit, '("Execution time:",1x,f10.4," seconds (proc time:",1x,f10.4,1x,"s)")') &
+    real(execution_time(2)-execution_time(1))/(execution_time(3)), &
+    cpu(2)-cpu(1)
 end program

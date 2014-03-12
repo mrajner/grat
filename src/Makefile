@@ -26,6 +26,10 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
+sadfew:  grat value_check
+	grat -F NCEP@SP -D2010:2011 -Sj  -od -wn
+	value_check -F NCEP@SP -D2014 -Sj -od -wn -q 1000
+
 fsdfds: grat
 	for ref in "" ref ; do            \
 	time grat                         \

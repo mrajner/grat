@@ -17,17 +17,19 @@ program value_check
   implicit none
   real (dp) , allocatable , dimension(:) :: val
   real (dp)  :: cpu(2), sh
+  integer :: execution_time(3)
   integer    :: i, ii, j ,start, imodel, iprogress = 0
   integer(2) :: iok
   integer(2) :: ilevel, start_level
 
 
   call cpu_time(cpu(1))
+  call system_clock(execution_time(1))
 
-  call intro (                                & 
-    program_calling   = "value_check",        & 
-    accepted_switches = "VFoShvIDLPRqwHMJ&!", & 
-    version           = "beta",               & 
+  call intro (                                &
+    program_calling   = "value_check",        &
+    accepted_switches = "VFoShvIDLPRqwHMJ&!", &
+    version           = "beta",               &
     cmdlineargs       = .true.                & 
     )
 
@@ -209,12 +211,15 @@ program value_check
 
         if (output%unit.ne.output_unit.and..not.quiet) then 
           call cpu_time(cpu(2))
+          call system_clock(execution_time(2),execution_time(3))
 
-          call progress(                                  & 
-            100*iprogress/(max(size(date),1)              & 
-            *max(size(site),1)*max(size(level%level),1)), & 
-            cpu(2)-cpu(1)                                 & 
-            )
+        call progress(                     &
+          100*iprogress/(max(size(date),1) &
+          *max(size(site),1)),             &
+          time  = cpu(2)-cpu(1),           &
+          cpu   = cpu(2)-cpu(1),           &
+          every = quiet_step               &
+          )
         endif
         if (size(val).gt.0) write (output%unit , *)
       enddo
@@ -240,17 +245,24 @@ program value_check
   endif
 
   call cpu_time(cpu(2))
+  call system_clock(execution_time(2),execution_time(3))
 
   if (output%unit.ne.output_unit.and..not.quiet) then 
-    call progress(                                  & 
-      100*iprogress/(max(size(date),1)              & 
-      *max(size(site),1)*max(size(level%level),1)), & 
-      cpu(2)-cpu(1),                                & 
-      every=1                                       & 
-      )
+        call progress(                     &
+          100*iprogress/(max(size(date),1) &
+          *max(size(site),1)),             &
+          time  = cpu(2)-cpu(1),           &
+          cpu   = cpu(2)-cpu(1),           &
+          every = quiet_step               &
+          )
     close(output_unit) 
   endif
 
-  write(log%unit, '(/,"Execution time:",1x,f16.9," seconds")') cpu(2)-cpu(1)
+  write(log%unit, form_separator)
+
+  write(log%unit, '("Execution time:",1x,f10.4," seconds (proc time:",1x,f10.4,1x,"s)")') &
+    real(execution_time(2)-execution_time(1))/(execution_time(3)), &
+    cpu(2)-cpu(1)
+
   write(log%unit, form_separator)
 end program

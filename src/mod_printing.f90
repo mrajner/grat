@@ -41,7 +41,6 @@ module mod_printing
       sparse    = .false.,      &
       height    = .false.,      &
       level     = .false.,      &
-      time      = .false.,      &
       rho       = .false.,      &
       gp2h      = .false.,      &
       prune     = .false.,      &
@@ -132,20 +131,21 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     endif
     call exit(1)
   endif
+
   if(.not.quiet.and.warnings%if) write(def_unit,*)
 end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine progress(j, time, every)
+subroutine progress(j, time, cpu, every)
   use mod_constants, only: dp
-  use mod_cmdline, only: moreverbose, quiet_step
+  use mod_cmdline,   only: moreverbose, quiet_step
   use iso_fortran_env, only: output_unit
   implicit none
   integer(kind=4)::j,k
   integer:: ii
   character(len=27)::bar="???% |                    |"
-  real(dp), optional :: time
+  real(dp) :: time, cpu
   integer, optional :: every
   integer :: every_
   integer,save :: step=0
@@ -164,14 +164,18 @@ subroutine progress(j, time, every)
     bar(6+k:6+k)="*"
   enddo
 
-  if (present(time)) then
-    write(unit=output_unit,fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a)$)") &
-      '+',char(13), bar, &
-      time, "s", int(100.*time/j), trim(output%name), &
-      (trim(moreverbose(ii)%name),ii=1,size(moreverbose))
-  else
-    write(unit=output_unit,fmt="(a1,a1,a27$)") '+',char(13), bar
-  endif
+  write(                                                   &
+    unit=output_unit,                                      &
+    fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']',               &
+    f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a)$)" &
+    )                                                      &
+    '+',char(13), bar,                                     &
+    time, "s", int(100.*time/j),                           &
+    cpu, "s", int(100.*cpu/j),                             &
+    trim(output%name),                                     &
+    (                                                      &
+    trim(moreverbose(ii)%name), ii=1, size(moreverbose)    &
+    )
   return
 end subroutine progress
 
