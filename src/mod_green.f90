@@ -1025,10 +1025,12 @@ subroutine convolve(site, date)
 
                     if (.not.quiet) then
                       open(unit=output_unit, carriagecontrol='fortran')
-                      call progress(                                                 & 
-                        100*igreen*idist                                           & 
-                        /(size(green_common(igreen)%distance)*size(green_common)), & 
-                        every=1 &
+                      call progress(                                               &
+                        100*igreen*idist                                           &
+                        /(size(green_common(igreen)%distance)*size(green_common)), &
+                        time = 0., &
+                        cpu = 0., &
+                        every=1                                                    &
                         )
                     endif
                   endif
@@ -1044,7 +1046,7 @@ subroutine convolve(site, date)
                     ].ne.0) &
                     ) then
                     val(ind%model%sp) = standard_pressure( & 
-                      height=site%height,                  & 
+                      height=site%height,                  &
                       h_zero=val(ind%model%hp),            & 
                       p_zero=old_val_sp,                   & 
                       method=transfer_sp%method,           & 

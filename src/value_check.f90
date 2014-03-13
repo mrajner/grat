@@ -15,8 +15,9 @@ program value_check
   use mod_utilities,  only: d2r
 
   implicit none
-  real (dp) , allocatable , dimension(:) :: val
-  real (dp)  :: cpu(2), sh
+  real(dp) , allocatable , dimension(:) :: val
+  real :: cpu(2)
+  real(dp)  :: sh
   integer :: execution_time(3)
   integer    :: i, ii, j ,start, imodel, iprogress = 0
   integer(2) :: iok
@@ -79,32 +80,32 @@ program value_check
   do j = start, size(date)
     do i = 1 , size(model)
       if (model(i)%if) then
-        if (model(i)%autoload  &
-          .and. &
-          .not.( &
-          model(i)%autoloadname.eq."ERA" &
-          .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) & 
+        if (model(i)%autoload                                &
+          .and.                                              &
+          .not.(                                             &
+          model(i)%autoloadname.eq."ERA"                     &
+          .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) &
           )) then
 
-          if ( &
-            (j.eq.1 &
+          if (                                              &
+            (j.eq.1                                         &
             .or. .not. date(j)%date(1).eq.date(j-1)%date(1) &
-            ) &
+            )                                               &
             ) then
             call model_aliases(model(i), year=date(j)%date(1))
           endif
 
         else if (model(i)%autoload) then
 
-          if ( &
-            (j.eq.1 &
-            .or. .not.( &
-            date(j)%date(1).eq.date(j-1)%date(1) &
+          if (                                         &
+            (j.eq.1                                    &
+            .or. .not.(                                &
+            date(j)%date(1).eq.date(j-1)%date(1)       &
             .and.date(j)%date(2).eq.date(j-1)%date(2)) &
-            ) &
+            )                                          &
             ) then
 
-            call model_aliases( &
+            call model_aliases(                                      &
               model(i), year=date(j)%date(1), month=date(j)%date(2))
           endif
         endif
@@ -248,12 +249,12 @@ program value_check
   call system_clock(execution_time(2),execution_time(3))
 
   if (output%unit.ne.output_unit.and..not.quiet) then 
-        call progress(                     &
-          100*iprogress/(max(size(date),1) &
-          *max(size(site),1)),             &
-          time  = cpu(2)-cpu(1),           &
-          cpu   = cpu(2)-cpu(1),           &
-          every = quiet_step               &
+        call progress(                                                         &
+          100*iprogress/(max(size(date),1)                                     &
+          *max(size(site),1)),                                                 &
+          time  = real(execution_time(2)-execution_time(1))/execution_time(3), &
+          cpu   = cpu(2)-cpu(1),                                               &
+          every = quiet_step                                                   &
           )
     close(output_unit) 
   endif

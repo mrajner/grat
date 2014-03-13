@@ -67,10 +67,10 @@ program grat
   use mod_utilities, only: Bubble_Sort
 
   implicit none
-  real(dp) :: cpu(2)
+  real    :: cpu(2)
   integer :: execution_time(3)
-  integer  :: isite, i, idate, start, iprogress = 0
-  logical  :: first_waning = .true.
+  integer :: isite, i, idate, start, iprogress = 0
+  logical :: first_waning = .true.
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))

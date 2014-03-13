@@ -146,7 +146,7 @@ subroutine progress(j, time, cpu, every)
   integer(kind=4)::j, k
   integer:: ii
   character(len=27)::bar="???% |                    |"
-  real(dp) :: time, cpu
+  real :: time, cpu
   integer, optional :: every
   integer :: every_
   integer,save :: step=0
