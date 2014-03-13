@@ -138,17 +138,19 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine progress(j, time, cpu, every)
-  use mod_constants, only: dp
-  use mod_cmdline,   only: moreverbose, quiet_step
+  use mod_constants,   only: dp
+  use mod_cmdline,     only: moreverbose, quiet_step
   use iso_fortran_env, only: output_unit
+
   implicit none
-  integer(kind=4)::j,k
+  integer(kind=4)::j, k
   integer:: ii
   character(len=27)::bar="???% |                    |"
   real(dp) :: time, cpu
   integer, optional :: every
   integer :: every_
   integer,save :: step=0
+  character(len=1) :: timeunit
 
   if (present(every)) then
     every_=every
@@ -156,25 +158,44 @@ subroutine progress(j, time, cpu, every)
     every_=quiet_step
   endif
 
-  step =step+1
-  if (modulo(step,every_).ne.0.and.j.ne.every_.and.step.ne.1) return
+  step = step + 1
+  
+  if (                       &
+    modulo(step,every_).ne.0 &
+    .and.j.ne.every_         &
+    .and.j.ne.100            &
+    .and.step.ne.1           &
+    ) return
 
   write(unit=bar(1:3),fmt="(i3)") j
   do k=1, j/5
     bar(6+k:6+k)="*"
   enddo
 
-  write(                                                   &
-    unit=output_unit,                                      &
-    fmt="(a1,a1,a27,f6.1,a1,' [eta', i7,']',               &
-    f6.1,a1,' [eta', i7,']', <size(moreverbose)+1>(x,a)$)" &
-    )                                                      &
-    '+',char(13), bar,                                     &
-    time, "s", int(100.*time/j),                           &
-    cpu, "s", int(100.*cpu/j),                             &
-    trim(output%name),                                     &
-    (                                                      &
-    trim(moreverbose(ii)%name), ii=1, size(moreverbose)    &
+  if (time.gt.60000) then
+    time = time/3600
+    cpu  = cpu/3600
+    timeunit = "h"
+  else if (time.gt.1000) then
+    time = time/60
+    cpu  = cpu/60
+    timeunit = "m"
+  else
+    timeunit="s"
+  endif
+
+  write(                                                &
+    unit=output_unit,                                   &
+    fmt="(a1,a1,a27,                                    &
+    f5.1,a1,1x,a,f5.1,a,1x,                             &
+    a,f5.1,a1,f5.1,a,<size(moreverbose)+1>(x,a)$)"      &
+    )                                                   &
+    '+',char(13), bar,                                  &
+    time, timeunit, "[eta", 100.*time/j,"]",            &
+    "(proc:",cpu,"[",100.*cpu/j,"])",                   &
+    trim(output%name),                                  &
+    (                                                   &
+    trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
     )
   return
 end subroutine progress
