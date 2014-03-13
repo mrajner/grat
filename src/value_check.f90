@@ -214,12 +214,13 @@ program value_check
           call cpu_time(cpu(2))
           call system_clock(execution_time(2),execution_time(3))
 
-        call progress(                     &
-          100*iprogress/(max(size(date),1) &
-          *max(size(site),1)),             &
-          time  = cpu(2)-cpu(1),           &
-          cpu   = cpu(2)-cpu(1),           &
-          every = quiet_step               &
+        call progress(                                      &
+          100*iprogress/(max(size(date),1)                  &
+          *max(size(site),1)),                              &
+          time  = real(execution_time(2)-execution_time(1)) &
+          /execution_time(3),                               &
+          cpu   = cpu(2)-cpu(1),                            &
+          every = quiet_step                                &
           )
         endif
         if (size(val).gt.0) write (output%unit , *)
@@ -249,12 +250,13 @@ program value_check
   call system_clock(execution_time(2),execution_time(3))
 
   if (output%unit.ne.output_unit.and..not.quiet) then 
-        call progress(                                                         &
-          100*iprogress/(max(size(date),1)                                     &
-          *max(size(site),1)),                                                 &
-          time  = real(execution_time(2)-execution_time(1))/execution_time(3), &
-          cpu   = cpu(2)-cpu(1),                                               &
-          every = quiet_step                                                   &
+        call progress(                                      &
+          100*iprogress/(max(size(date),1)                  &
+          *max(size(site),1)),                              &
+          time  = real(execution_time(2)-execution_time(1)) &
+          /execution_time(3),                               &
+          cpu   = cpu(2)-cpu(1),                            &
+          every = quiet_step                                &
           )
     close(output_unit) 
   endif

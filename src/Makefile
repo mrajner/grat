@@ -26,12 +26,9 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-sadfew:  grat value_check
-	grat -S r,j,o -FNCEP@SP -D2010 -o tmp:c -q50 -V dff:C
-
-fdsfs:
-	#  grat -F NCEP@SP -D2010:2011 -Sj,r,o  -od
-	#  value_check -F NCEP@SP -D2012 -Sj -od   -q  100
+fdsfs: grat 
+	grat -F NCEP@SP -D2010:2011 -Sj,r,o  -od
+	value_check -F NCEP@SP -D2012 -Sj -od   -q  100
 
 fsdfds: grat
 	for ref in "" ref ; do            \
