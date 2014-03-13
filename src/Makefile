@@ -26,10 +26,6 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-fdsfs: grat 
-	grat -F NCEP@SP -D2010:2011 -Sj,r,o  -od
-	value_check -F NCEP@SP -D2012 -Sj -od   -q  100
-
 fsdfds: grat
 	for ref in "" ref ; do            \
 	time grat                         \
@@ -51,7 +47,7 @@ fsdfds: grat
 	 	-o                              \
 		-A-0.43 -U                      \
 		-I0.03@3D : 20110@HB: 50000 @HE \
-		-V:s;                           \
+		 -o tmp;                           \
 		done
 
 tmp: grat local
