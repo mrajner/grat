@@ -96,20 +96,23 @@ function standard_pressure (  &
     endif
 
     alpha = -6.5e-3
+
     if (present (method)) then
       select case (method)
       case("berg")
         standard_pressure = sfc_pressure *(1-2.26e-5*(height-sfc_height))**(5.225)
+
       case ("simple")
         standard_pressure = sfc_pressure &
-            *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air) 
+          *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air) 
+
       case ("full")
         if (.not.present(use_standard_temperature)) then
           call print_warning(                    & 
-              "error: you have to specify        & 
-              use_standard_temperature with      & 
-              full method in standard_pressure", & 
-              error=.true.)
+            "error: you have to specify        & 
+            use_standard_temperature with      & 
+            full method in standard_pressure", & 
+            error=.true.)
         endif
         standard_pressure=0.
         if (present(dz)) then
@@ -117,26 +120,30 @@ function standard_pressure (  &
         else
           dz_ = 0.1
         endif
+
         if (sfc_height.gt.height) dz_=-dz_
         do z_=sfc_height+dz_/2, height, dz_
           if (present(use_standard_temperature) .and. use_standard_temperature) then
             if (present(temperature).and.(abs(z_-sfc_height).lt.5000).and.temperature.gt.100.) then
-                t_=sfc_temperature+alpha*(z_-sfc_height)
+              t_=sfc_temperature+alpha*(z_-sfc_height)
             else
               t_=standard_temperature(z_,fels_type=fels_type)
             endif
           endif
           standard_pressure = standard_pressure &
-              + standard_gravity(sfc_height)/(R_air*t_)*dz_
+            + standard_gravity(sfc_height)/(R_air*t_)*dz_
         enddo
         standard_pressure = sfc_pressure*exp(-standard_pressure)
+
       case ("standard")
         !http://en.wikipedia.org/wiki/Barometric_formula
         standard_pressure= sfc_pressure &
-            * (sfc_temperature /(sfc_temperature + alpha*(height-sfc_height))) &
-            **(earth%gravity%mean /R_air/alpha)
+          * (sfc_temperature /(sfc_temperature + alpha*(height-sfc_height))) &
+          **(earth%gravity%mean /R_air/alpha)
+
       case default
         call print_warning ("standard pressure: Method not known", error=.true.)
+
       endselect
     else
       call print_warning("standard_pressure: set method explicitly",error=.true.)
@@ -145,25 +152,25 @@ function standard_pressure (  &
       if (isnan(standard_pressure)) standard_pressure=0
     endif
     !  if (sfc_height.gt.height) standard_pressure=-standard_pressure
-end function
+  end function
 
 
-! =============================================================================
-!> \brief Compute standard temperature [K] for specific height [km]
-!!
-!! if t_zero is specified use this as surface temperature
-!! otherwise use T0.
-!! A set of predifined temperature profiles ca be set using
-!! optional argument \argument fels_type 
-!! \cite Fels86
-!! \li US standard atmosphere (default)
-!! \li tropical 
-!! \li subtropical_summer
-!! \li subtropical_winter
-!! \li subarctic_summer
-!! \li subarctic_winter
-! ==============================================================================
-function standard_temperature (height, fels_type, t_zero)
+  ! =============================================================================
+  !> \brief Compute standard temperature [K] for specific height [km]
+  !!
+  !! if t_zero is specified use this as surface temperature
+  !! otherwise use T0.
+  !! A set of predifined temperature profiles ca be set using
+  !! optional argument \argument fels_type 
+  !! \cite Fels86
+  !! \li US standard atmosphere (default)
+  !! \li tropical 
+  !! \li subtropical_summer
+  !! \li subtropical_winter
+  !! \li subarctic_summer
+  !! \li subarctic_winter
+  ! ==============================================================================
+  function standard_temperature (height, fels_type, t_zero)
     use mod_constants, only: dp, earth, atmosphere
 
     real(dp), intent(in)  :: height
@@ -233,15 +240,15 @@ function standard_temperature (height, fels_type, t_zero)
     if(present(t_zero)) then
       standard_temperature = t_zero + c(1) * (height/1000.)/2. + aux/2.
     endif
-end function
+  end function
 
-! =============================================================================
-!> Compute geometric height from geopotential heights
-!!
-!! \author M. Rajner
-!! \date 2013-03-19
-! =============================================================================
-real(dp) function geop2geom (geopotential_height, inverse)
+  ! =============================================================================
+  !> Compute geometric height from geopotential heights
+  !!
+  !! \author M. Rajner
+  !! \date 2013-03-19
+  ! =============================================================================
+  real(dp) function geop2geom (geopotential_height, inverse)
     use mod_constants, only: dp, earth
     real (dp) :: geopotential_height
     logical, intent(in), optional:: inverse
@@ -249,24 +256,24 @@ real(dp) function geop2geom (geopotential_height, inverse)
     if (present(inverse).and.inverse) then
       !conversion from geometric to geopotential height
       geop2geom = geopotential_height &
-          *(earth%radius/(earth%radius + geopotential_height))
+        *(earth%radius/(earth%radius + geopotential_height))
     else
       !conversion from  geopotential to geometric height
       geop2geom = geopotential_height &
-         * (earth%radius + geopotential_height) &
-         /(earth%radius) 
+        * (earth%radius + geopotential_height) &
+        /(earth%radius) 
     endif
-end function
+  end function
 
-! =============================================================================
-!> Compute virtual temperature using temperature and specific humidity
-! =============================================================================
-function virtual_temperature(t, sh)
-  use mod_constants, only: dp
-  real(dp) :: virtual_temperature
-  real(dp), intent(in) :: t, sh
+  ! =============================================================================
+  !> Compute virtual temperature using temperature and specific humidity
+  ! =============================================================================
+  function virtual_temperature(t, sh)
+    use mod_constants, only: dp
+    real(dp) :: virtual_temperature
+    real(dp), intent(in) :: t, sh
 
-  virtual_temperature=t*(1.+0.608*sh)
-end function
+    virtual_temperature=t*(1.+0.608*sh)
+  end function
 
 end module
