@@ -1,6 +1,6 @@
 # compiler:  currently only ifort is supported
 FC     := ifort
-# FC   := gfortran
+#  FC   := gfortran
 DEP    := n
 HOST   := $(shell hostname)
 C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
@@ -14,6 +14,10 @@ FFLAGS =                           \
 				 $(FLAGS)                  \
 				 -D__FFLAGS__='"$(FLAGS)"' \
 				 -D__C_DATE__='"$(C_DATE)"'
+
+ifeq ($(FC),gfortran)
+FFLAGS=
+endif
 
 ifeq ($(HOST),grat)
 # always optimize for server and resolve dependencies
@@ -105,8 +109,8 @@ mod_cmdline.o:       mod_utilities.o
 mod_normalization.o: mod_utilities.o
 mod_printing.o:      mod_cmdline.o
 mod_polygon.o:       mod_printing.o
-mod_atmosphere.o:    mod_printing.o  mod_utilities.o
-mod_aggf.o:          mod_constants.o mod_atmosphere.o mod_normalization.o
+mod_atmosphere.o:    mod_printing.o 
+mod_aggf.o:          mod_atmosphere.o mod_normalization.o
 mod_site.o:          mod_printing.o  mod_utilities.o  mod_constants.o     mod_data.o      mod_cmdline.o  mod_date.o
 mod_parser.o:        mod_cmdline.o   mod_data.o       mod_polygon.o       mod_green.o     mod_admit.o    mod_date.o
 mod_green.o:         mod_data.o      mod_polygon.o    mod_date.o          mod_spherical.o mod_site.o     mod_normalization.o mod_aggf.o mod_3d.o mod_data.o

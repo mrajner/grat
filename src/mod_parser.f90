@@ -674,8 +674,8 @@ subroutine parse_info (cmd_line_entry)
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then
         call print_warning( &
-          " stop_3d distance is less"// &
-          " then stop distance - distant area filled with 2D result GN[d..] if any")
+          "stop_3d distance is less " // &
+          "then stop distance - distant area filled with 2D result GN[d..] if any")
       endif
 
     enddo
