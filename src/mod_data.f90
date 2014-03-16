@@ -361,8 +361,11 @@ subroutine model_aliases(model, dryrun, year, month)
       model%if=.false.
     endselect
   case ("LANDSEA")
-    write(*, *) "use ERA or NCEP @LS!, or ETOPO@LS (not corrected for closed seas)"
-    call exit(1)
+    call print_warning(                              &
+      "use ERA or NCEP @LS"//                        &
+      "or ETOPO@LS (not corrected for closed seas)", &
+      error=.true.                                   &
+      )
     prefix="/home/mrajner/dat/landsea/"
     select case (model%dataname)
     case ("LS")
