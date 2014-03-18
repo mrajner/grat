@@ -50,8 +50,8 @@ fsdfds: grat
 		-D 2011                         \
 	 	-o                              \
 		-A-0.43 -U                      \
-		-I0.03@3D : 20110@HB: 50000 @HE \
-		 -o tmp;                           \
+		-I0.03@3D :-20@DD: 20110@HB: 50000 @HS \
+		 -o tmp -Laaa@ddd;                           \
 		done
 
 tmp: grat local

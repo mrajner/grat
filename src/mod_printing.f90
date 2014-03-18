@@ -188,11 +188,14 @@ subroutine progress(j, time, cpu, every)
     unit=output_unit,                                   &
     fmt="(a1,a1,a27,                                    &
     f5.1,a1,1x,a,f5.1,a,1x,                             &
-    a,f5.1,a1,a,<size(moreverbose)+1>(x,a)$)"      &
+    a,f5.1,x,                                           &
+    a,f5.1,a1,                                          &
+    x,a,<size(moreverbose)+1>(x,a)$)"                   &
     )                                                   &
     '+',char(13), bar,                                  &
     time, timeunit, "[eta", 100.*time/j,"]",            &
-    "(proc:",cpu,")",                   &
+    "(proc:",cpu,                                       &
+    "| %:",cpu/time*100,")",                            &
     trim(output%name),                                  &
     (                                                   &
     trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
