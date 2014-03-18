@@ -30,6 +30,8 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
+fsf: grat
+	grat -V
 fsdfds: grat
 	for ref in "" ref ; do            \
 	time grat                         \
@@ -63,13 +65,13 @@ tmp: grat local
 		-M1,2 -G@GN             \
 		-o :free
 
-local: 
+local:
 	file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
 	grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 	cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 
-# libraries 
+# libraries
 NETCDFLIB = -I/usr/local/include \
 						-L/usr/local/lib     \
 						-lnetcdff            \
@@ -109,7 +111,7 @@ mod_cmdline.o:       mod_utilities.o
 mod_normalization.o: mod_utilities.o
 mod_printing.o:      mod_cmdline.o
 mod_polygon.o:       mod_printing.o
-mod_atmosphere.o:    mod_printing.o 
+mod_atmosphere.o:    mod_printing.o
 mod_aggf.o:          mod_atmosphere.o mod_normalization.o
 mod_site.o:          mod_printing.o  mod_utilities.o  mod_constants.o     mod_data.o      mod_cmdline.o  mod_date.o
 mod_parser.o:        mod_cmdline.o   mod_data.o       mod_polygon.o       mod_green.o     mod_admit.o    mod_date.o
@@ -141,8 +143,8 @@ $(PROGS_SHORTCUTS):
 
 
 # prevent owervriting with new version on the server grat
-$(PROGS_DIR)/%:%.f90 $(OBJS) 
-	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS) 
+$(PROGS_DIR)/%:%.f90 $(OBJS)
+	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS)
 # add timestamp to executable (archive for testing purposes)
 ifdef UNIQ
 	cp $@ $@$(DATE) -ni
@@ -161,7 +163,7 @@ all:          \
 	$(OBJS)     \
 	$(PROGS)    \
 	$(LINKS)    \
-	$(EXAMPLES) 
+	$(EXAMPLES)
 
 libgrat.a: DEP=y
 libgrat.a: $(OBJS)
@@ -176,8 +178,8 @@ package:
 		../../grat/dat/*.dat                    \
 		../../grat/bin/.README
 
-doc: 
-	make -C ../doc/figures/ 
+doc:
+	make -C ../doc/figures/
 	cd ../doc  &&  (doxygen Doxyfile > /dev/null 2>/dev/null)
 
 docpdf: doc
@@ -208,7 +210,7 @@ $(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
 
 
 # Change this path according to your system settings
-# This could require root privilages 
+# This could require root privilages
 /usr/local/lib/libgrat.a: libgrat.a
 	@sudo cp -uv libgrat.a /usr/local/lib
 	@sudo cp -uv *.mod /usr/local/include
@@ -217,7 +219,7 @@ $(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
 rmlib:
 	-sudo rm \
 		/usr/local/include/mod_* \
-		/usr/local/lib/libgrat.a 
+		/usr/local/lib/libgrat.a
 
 
 clean:
@@ -226,15 +228,15 @@ clean:
 CLEAN: clean
 	-sudo rm \
 		/usr/local/include/mod_* \
-		/usr/local/lib/libgrat.a 
+		/usr/local/lib/libgrat.a
 	-rm $(LINKS)
 	-sudo rm $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
 
 HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 HELPS=$(addprefix ../dat/, $(HELP_NAMES))
-helps: $(HELPS) 
+helps: $(HELPS)
 $(HELPS): $(PROGS)
-%.hlp: 
+%.hlp:
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
 settings_for_gnc: grat

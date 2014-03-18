@@ -77,7 +77,7 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                         & 
+  call intro (                                         &
     program_calling   = "grat",                        &
     version           = "pre-alpha",                   &
     accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n", &
@@ -317,7 +317,9 @@ program grat
     close(output_unit)
   endif
 
-  write(log%unit, '("Execution time:",1x,f10.4," seconds (proc time:",1x,f10.4,1x,"s)")') &
-    real(execution_time(2)-execution_time(1))/(execution_time(3)), &
-    cpu(2)-cpu(1)
+  write(log%unit,                                                           &
+    '("Execution time:",1x,f10.4," seconds (proc time:",1x,f6.2,1x,"s | %", f6.2,")")') &
+    real(execution_time(2)-execution_time(1))/(execution_time(3)),          &
+    cpu(2)-cpu(1),                                                          &
+   100.*(cpu(2)-cpu(1))/ (real(execution_time(2)-execution_time(1))/(execution_time(3)) )
 end program

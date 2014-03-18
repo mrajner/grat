@@ -44,7 +44,7 @@ subroutine parse_green (cmd_line_entry)
   use mod_cmdline
   use mod_printing
   type (cmd_line_arg), optional  :: cmd_line_entry
-  integer :: i, ii 
+  integer :: i, ii
 
   if (allocated(green)) then
     call print_warning ("repeated")
@@ -87,7 +87,7 @@ subroutine parse_green (cmd_line_entry)
 
       do ii=1, 2
         green(i)%column(ii) = green(i-1)%column(ii)
-        green(i)%columndataname(ii) = green(i-1)%columndataname(ii) 
+        green(i)%columndataname(ii) = green(i-1)%columndataname(ii)
         if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
           read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
           green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
