@@ -3,10 +3,10 @@
 !! \date 2013-01-09
 !! \author M. Rajner
 ! =============================================================================
-program value_check 
-  use mod_cmdline 
+program value_check
+  use mod_cmdline
   use mod_parser
-  use mod_data     
+  use mod_data
   use mod_date
   use mod_site
   use mod_constants,  only: dp, R_air, earth
@@ -31,7 +31,7 @@ program value_check
     program_calling   = "value_check",        &
     accepted_switches = "VFoShvIDLPRqwHMJ&!", &
     version           = "beta",               &
-    cmdlineargs       = .true.                & 
+    cmdlineargs       = .true.                &
     )
 
   ! for progress bar
@@ -39,7 +39,7 @@ program value_check
 
   allocate (val (size(model)))
 
-  start=0 
+  start=0
   if (size(date).gt.0) then
     start=1
 
@@ -210,7 +210,7 @@ program value_check
 
         write (output%unit , "("//output%form//'$)') val
 
-        if (output%unit.ne.output_unit.and..not.quiet) then 
+        if (output%unit.ne.output_unit.and..not.quiet) then
           call cpu_time(cpu(2))
           call system_clock(execution_time(2),execution_time(3))
 
@@ -241,7 +241,7 @@ program value_check
     do i = 1, size(model)
       do j = 1, size(model(i)%level)
         write (moreverbose(ind%moreverbose%j)%unit, '(i5)') &
-          model(i)%level(j) 
+          model(i)%level(j)
       enddo
     enddo
   endif
@@ -249,7 +249,7 @@ program value_check
   call cpu_time(cpu(2))
   call system_clock(execution_time(2),execution_time(3))
 
-  if (output%unit.ne.output_unit.and..not.quiet) then 
+  if (output%unit.ne.output_unit.and..not.quiet) then
         call progress(                                      &
           100*iprogress/(max(size(date),1)                  &
           *max(size(site),1)),                              &
@@ -258,7 +258,7 @@ program value_check
           cpu   = cpu(2)-cpu(1),                            &
           every = quiet_step                                &
           )
-    close(output_unit) 
+    close(output_unit)
   endif
 
   write(log%unit, form_separator)

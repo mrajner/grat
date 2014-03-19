@@ -843,7 +843,8 @@ subroutine convolve(site, date)
                         heights=logspace(                                        &
                           max(info(igreen)%height%start, val(ind%model%h))+0.05, &
                           info(igreen)%height%stop,                              &
-                          nheight )
+                          nheight                                                &
+                          )
                       else
                         do iheight=1, nheight
                           heights(iheight)=max(info(igreen)%height%start, val(ind%model%h)) &
