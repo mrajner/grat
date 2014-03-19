@@ -30,18 +30,6 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-sdfdfsfre: grat
-	for rrr in "" P ; do \
-	time grat                        \
-		-F                        \
-		NCEP@SP,                  \
-		NCEP@VT,                  \
-		VIENNA@RSP,               \
-		VIENNA@HRSP,              \
-		NCEP@GP                   \
-		-M3:potential:ref -Sj -D2011:20@D  \
-		-I3@DD:100@HS$${rrr}:4000@HE \
-		-oa$${rrr}:free -G@GN -q 2 ; done
 
 fsdfds: grat
 	for ref in "" ref ; do            \
