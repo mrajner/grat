@@ -606,38 +606,55 @@ subroutine parse_info (cmd_line_entry)
       do j = 1, size(cmd_line_entry%field(i)%subfield)
         if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
+
           case ("DB")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
             if (info(i)%distance%start.lt.0) then
               call print_warning("changing -I@DB to 0")
               info(i)%distance%start = 0 
             endif
+
           case ("DE")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
             if (info(i)%distance%stop.gt.180) then
               call print_warning("changing -I@DE to 180")
               info(i)%distance%stop = 180 
             endif
+
           case ("DS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%step
+
           case ("DD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%denser
+
           case ("AB")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%start
+
           case ("AE")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%stop
+
           case ("AD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%denser
+
           case ("AS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%azimuth%step
+
           case ("HB")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%start
+
           case ("HE")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%stop
+
           case ("HD")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%denser
+
           case ("HS")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%step
+
+          case ("HSP")
+            info(i)%height_progressive=.true.
+            read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%height%step
+
           case ("3D")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop_3d
           endselect
@@ -650,26 +667,28 @@ subroutine parse_info (cmd_line_entry)
       enddo
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
-      write(log%unit,            &
-        "("//form%t3//"          &
-        'DB:' , f7.2,            &
-        '|DE:', f8.3,            &
-        '|I:' , a   ,            &
-        '|DD:', i2  ,            &
-        '|DS:', f7.2,            &
-        '|HB:', f8.1,            &
-        '|HE:', f8.1,            &
-        '|HS:', f7.2,            &
-        '|3D:', f7.2,            &
-        )"),                     &
-        info(i)%distance%start,  &
-        info(i)%distance%stop,   &
-        info(i)%interpolation,   &
-        info(i)%distance%denser, &
-        info(i)%distance%step,   &
-        info(i)%height%start,    &
-        info(i)%height%stop,     &
-        info(i)%height%step,     &
+      write(log%unit,               &
+        "("//form%t3//"             &
+        'DB:' , f7.2,               &
+        '|DE:', f8.3,               &
+        '|I:' , a   ,               &
+        '|DD:', i2  ,               &
+        '|DS:', f7.2,               &
+        '|HB:', f8.1,               &
+        '|HE:', f8.1,               &
+        '|HS:', f7.2,               &
+        '|HSP:', l,                 &
+        '|3D:', f7.2,               &
+        )"),                        &
+        info(i)%distance%start,     &
+        info(i)%distance%stop,      &
+        info(i)%interpolation,      &
+        info(i)%distance%denser,    &
+        info(i)%distance%step,      &
+        info(i)%height%start,       &
+        info(i)%height%stop,        &
+        info(i)%height%step,        &
+        info(i)%height_progressive, &
         info(i)%distance%stop_3d
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then

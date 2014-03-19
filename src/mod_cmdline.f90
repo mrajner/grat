@@ -16,17 +16,20 @@ module mod_cmdline
       character (len=100) :: name
       character (len=100) :: dataname
     end type
+
     type field_info
       character (len=355) :: full
       type(subfield_info), allocatable, &
           dimension(:) :: subfield
     end type
+
     type cmd_line_arg
       character(2) :: switch
       type (field_info), allocatable, &
           dimension(:) :: field
       character (len=455) :: full
     end type
+
     type(cmd_line_arg), allocatable, dimension(:) :: cmd_line
 
     private :: check_if_switch_or_minus 
@@ -39,6 +42,7 @@ module mod_cmdline
       integer :: unit
       logical :: noclobber = .false.
     end type
+
     type(moreverbose_info), allocatable, dimension(:) :: moreverbose
 
     !----------------------------------------------------
@@ -52,10 +56,13 @@ module mod_cmdline
       real(dp):: stop_3d
       ! logical :: stop_3d_if
     end type
+
     type info_info
-      type (range):: distance,azimuth, height
+      type (range):: distance, azimuth, height
       character (1) :: interpolation
+      logical :: height_progressive = .false.
     end type
+
     type(info_info), dimension(:), allocatable:: info
 
     !----------------------------------------------------

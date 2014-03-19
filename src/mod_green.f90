@@ -35,7 +35,7 @@ contains
 !> This subroutine parse -G option -- Greens function.
 !!
 !! This subroutines takes the -G argument specified as follows:
-!!   -G 
+!!   -G
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
@@ -98,7 +98,7 @@ subroutine parse_green (cmd_line_entry)
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%name)) then
           read(cmd_line_entry%field(i)%subfield(2)%name, *) gnc_looseness
           if (gnc_looseness.lt.1) then
-            call print_warning("gnc_looseness < 1", error=.true.) 
+            call print_warning("gnc_looseness < 1", error=.true.)
           endif
         endif
       endif
@@ -131,7 +131,7 @@ subroutine read_green (green, print)
   integer :: lines, fileunit, io_status, i
   real (dp), allocatable, dimension(:) :: tmp
   type(green_functions) :: green
-  logical, optional :: print 
+  logical, optional :: print
 
   ! change the paths accordingly
   if (.not.file_exists(green%name)       &
@@ -150,7 +150,7 @@ subroutine read_green (green, print)
     select case (green%dataname)
     case("GN")
       green%column=[1, 2]
-    case("GNdt") 
+    case("GNdt")
       green%column=[1, 3]
     case("GNdz")
       green%column=[1, 4]
@@ -169,12 +169,12 @@ subroutine read_green (green, print)
         error=.true.)
     endselect
 
-  case ("huang", "/home/mrajner/src/grat/dat/huang_green.dat" ) 
+  case ("huang", "/home/mrajner/src/grat/dat/huang_green.dat" )
     green%name="/home/mrajner/src/grat/dat/huang_green.dat"
     select case (green%dataname)
     case("GN")
       green%column=[1, 2]
-    case("GNdt") 
+    case("GNdt")
       green%column=[1, 3]
     case("GNdh")
       green%column=[1, 4]
@@ -191,7 +191,7 @@ subroutine read_green (green, print)
     select case (green%dataname)
     case("GN")
       green%column=[1, 2]
-    case("GNdt") 
+    case("GNdt")
       green%column=[1, 3]
     case("GNdh")
       green%column=[1, 4]
@@ -210,7 +210,7 @@ subroutine read_green (green, print)
     allocate(tmp(max(green%column(1), green%column(2))))
     lines = 0
     open (newunit =fileunit, file=green%name, action="read", status="old")
-    do 
+    do
       call skip_header (fileunit)
       read (fileunit, *, iostat = io_status) tmp
       if (io_status == iostat_end) exit
@@ -221,12 +221,12 @@ subroutine read_green (green, print)
     allocate (green%data(lines))
     rewind(fileunit)
     lines = 0
-    do 
+    do
       call skip_header (fileunit)
       lines = lines + 1
       read (fileunit, *, iostat = io_status) tmp
       if (io_status == iostat_end) then
-        close(fileunit) 
+        close(fileunit)
         exit
       endif
       green%distance(lines) = tmp (green%column(1))
@@ -235,10 +235,10 @@ subroutine read_green (green, print)
     deallocate(tmp)
   endif
 
-  ! file specific 
+  ! file specific
   if (green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat") then
     select case(green%dataname)
-    case("GNdz") 
+    case("GNdz")
       green%data = green%data * 1.e-3
     endselect
   endif
@@ -250,7 +250,7 @@ subroutine read_green (green, print)
       "columns:", green%column, &
       "lines:", size(green%distance)
 
-      if (green%dataname.eq."GNc") then 
+      if (green%dataname.eq."GNc") then
       write(log%unit, form%i3) "gnc loosenes" , gnc_looseness
     endif
   endif
@@ -295,13 +295,13 @@ subroutine green_unification ()
         tmp(i) = count(                                          &
           green(i)%distance.le.info(iinfo)%distance%stop       &
           .and.green(i)%distance.ge.info(iinfo)%distance%start &
-          ) 
+          )
       enddo
 
       which_green(iinfo) = maxloc(tmp, 1)
 
       imin=minloc( &
-        abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start), 1)-1 
+        abs(green(which_green(iinfo))%distance - info(iinfo)%distance%start), 1)-1
       imax=minloc( &
         abs(green(which_green(iinfo))%distance - info(iinfo)%distance%stop), 1)+1
 
@@ -341,7 +341,7 @@ subroutine green_unification ()
       tmpgreen%distance(size(tmpgreen%distance)) = &
         green(which_green(iinfo))%distance(imax)
 
-      imin = count(tmpgreen%distance.le.info(iinfo)%distance%start) 
+      imin = count(tmpgreen%distance.le.info(iinfo)%distance%start)
       imax = size(tmpgreen%distance) - &
         count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
 
@@ -392,7 +392,7 @@ subroutine green_unification ()
         i=1, size(green_common(iinfo)%distance)) &
         ]
 
-      green_common(iinfo)%stop = green_common(iinfo)%start(2:) 
+      green_common(iinfo)%stop = green_common(iinfo)%start(2:)
       green_common(iinfo)%stop(ubound(green_common(iinfo)%stop)) = &
         info(iinfo)%distance%stop
       green_common(iinfo)%distance = &
@@ -455,7 +455,7 @@ subroutine convolve(site, date)
     only : site_info, local_pressure_distance
   use mod_cmdline
   use mod_utilities, &
-    only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring
+    only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace
   use mod_spherical
   use mod_data
   use mod_date, only : dateandmjd
@@ -557,12 +557,12 @@ subroutine convolve(site, date)
         radius=earth%radius,                    &
         alternative_method=.true.)
 
-      ! normalization according to Merriam (1992) 
+      ! normalization according to Merriam (1992)
       normalize= 1e8 / &
         (green_normalization("m", psi = d2r(green_common(igreen)%distance(idist))))
 
       allocate(azimuths(nazimuth))
-      azimuths = [(info(igreen)%azimuth%start + (i-1) * dazimuth, i= 1, nazimuth)] 
+      azimuths = [(info(igreen)%azimuth%start + (i-1) * dazimuth, i= 1, nazimuth)]
 
       do iazimuth  = 1, nazimuth
         azimuth = azimuths(iazimuth)
@@ -750,9 +750,9 @@ subroutine convolve(site, date)
                   endif
                 endif
 
-                ! if the cell is not over sea and inverted barometer assumption was not set 
+                ! if the cell is not over sea and inverted barometer assumption was not set
                 ! and is not excluded by polygon
-                if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then 
+                if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
                   !IB or NIB
                   if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
                     ! GE
@@ -800,7 +800,10 @@ subroutine convolve(site, date)
                   .or.(ind%polygon%n.eq.0)                             &
                   ) then
 
-                  !3D 
+                  !3D
+                  !TODO mv this to separate module and make progressive height change
+                  !(variable HS -- smaller near the site and bigger later)
+
                   if (method(3)) then
 
                     ! if distance%stop_3d was set restrict computation of 3D to this distance
@@ -819,32 +822,49 @@ subroutine convolve(site, date)
 
                       if( &
                         info(igreen)%height%stop <= max(info(igreen)%height%start,val(ind%model%h)) &
-                        ) then 
+                        ) then
                         cycle
                       endif
 
-                      nheight=                                            &
-                        ceiling((info(igreen)%height%stop                 &
-                        -max(info(igreen)%height%start,val(ind%model%h))) &
-                        /info(igreen)%height%step)
+                      if (info(igreen)%height_progressive) then
+                        nheight = info(igreen)%height%step
+                      else
+                        nheight=                                            &
+                          ceiling((info(igreen)%height%stop                 &
+                          -max(info(igreen)%height%start,val(ind%model%h))) &
+                          /info(igreen)%height%step)
+                      endif
 
                       allocate(heights(nheight))
                       allocate(pressures(nheight))
                       allocate(temperatures(nheight))
 
-                      do iheight=1, nheight
-                        heights(iheight)=max(info(igreen)%height%start, val(ind%model%h)) &
-                          +(iheight-0.5)*info(igreen)%height%step
-                      enddo
+                      if (info(igreen)%height_progressive) then
+                        heights=logspace(                                        &
+                          max(info(igreen)%height%start, val(ind%model%h))+0.05, &
+                          info(igreen)%height%stop,                              &
+                          nheight )
+                      else
+                        do iheight=1, nheight
+                          heights(iheight)=max(info(igreen)%height%start, val(ind%model%h)) &
+                            +(iheight-0.5)*info(igreen)%height%step
+                        enddo
+                      endif
 
                       if (.not.allocated(level%height))      allocate (level%height(size(level%level)))
                       if (.not.allocated(level%temperature)) allocate (level%temperature(size(level%level)))
                       if (.not.allocated(level%humidity))    allocate (level%humidity(size(level%level)))
 
                       do i=1,size(level%level)
-                        call get_value (                                                             &
-                          model(ind%model%gp), r2d(lat), r2d(lon), level%height(i),                  &
-                          level=level%level(i), method = info(igreen)%interpolation, date=date%date)
+                        call get_value (                       &
+                          model(ind%model%gp),                 &
+                          r2d(lat),                            &
+                          r2d(lon),                            &
+                          level%height(i),                     &
+                          level  = level%level(i),             &
+                          method = info(igreen)%interpolation, &
+                          date   = date%date &
+                          )
 
                         if (ind%model%vt.ne.0) then
                           call get_value (                           &
@@ -881,6 +901,9 @@ subroutine convolve(site, date)
                       do iheight=1, nheight
 
                         if (iheight.eq.1) then
+                          if (info(igreen)%height_progressive) then
+                            info(igreen)%height%step=(heights(iheight+1)-heights(iheight))
+                          endif
                           ! h1=val(ind%model%h)
                           ! v1=val(ind%model%sp)+val(ind%model%rsp)
                           ! h2=level%height(i)
@@ -904,22 +927,28 @@ subroutine convolve(site, date)
                             )
 
                         else
+
+                          if (info(igreen)%height_progressive) then
+                            info(igreen)%height%step=(heights(iheight)-heights(iheight-1))
+                          endif
+
                           do while(level%height(i+1).lt.heights(iheight).and. i.ne.size(level%level))
                             i=i+1
                           end do
 
                           ! temperature linear interpolation
                           if(i.lt.size(level%level)) then
-                            temperatures(iheight)= &
-                              level%temperature(i) &
+                            temperatures(iheight)=                            &
+                              level%temperature(i)                            &
                               + (level%temperature(i+1)-level%temperature(i)) &
-                              /(level%height(i+1)-level%height(i))*(heights(iheight)-level%height(i))
+                              /(level%height(i+1)-level%height(i))            &
+                              *(heights(iheight)-level%height(i))
                           else
-                            temperatures(iheight)= &
-                              level%temperature(i) 
+                            temperatures(iheight) &
+                              = level%temperature(i)
                           endif
 
-                          if(heights(iheight-1).lt.level%height(i).and.(heights(iheight).gt.level%height(i))) then 
+                          if(heights(iheight-1).lt.level%height(i).and.(heights(iheight).gt.level%height(i))) then
                             ! h1=level%height(i)
                             ! v1=1.e2*dble(level%level(i))
                             ! h2=level%height(i+1)
@@ -997,12 +1026,11 @@ subroutine convolve(site, date)
                             *(-gravity%constant)*1e8/R_air
                         endif
 
-
                       enddo
                     endif
                   endif
 
-                  !C before GN GNdt etc because it needs SP on H not on site 
+                  !C before GN GNdt etc because it needs SP on H not on site height
                   if(ind%green%gnc.ne.0) then
                     if (            &
                       any ([        &
@@ -1061,7 +1089,7 @@ subroutine convolve(site, date)
                       = ind%model%t.eq.0,                  &
                       nan_as_zero=.false.)
 
-                    if(all([ind%model%rsp, ind%model%hrsp].ne.0)) then
+                    if (all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                       val(ind%model%rsp) = standard_pressure(          &
                         height=site%height,                            &
                         h_zero=val(ind%model%hrsp),                    &
@@ -1072,7 +1100,9 @@ subroutine convolve(site, date)
                         = ind%model%t.eq.0,                            &
                         nan_as_zero=.false.)
                     endif
-                    if(ind%model%rsp.ne.0) val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+
+                    if (ind%model%rsp.ne.0) val(ind%model%sp) &
+                      = val(ind%model%sp) - val(ind%model%rsp)
                   endif
 
                   ! GN
@@ -1098,7 +1128,7 @@ subroutine convolve(site, date)
                       * (val(ind%model%t)-atmosphere%temperature%standard) &
                       *  area * normalize
                     result(ind%green%gndt) = result(ind%green%gndt) +       &
-                      result_partial(ind%green%gndt) 
+                      result_partial(ind%green%gndt)
                   endif
 
                   ! GNdh
@@ -1265,11 +1295,11 @@ subroutine convolve(site, date)
             if (result_total) then
               if (method(2)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(a13, $)') "G2D_t" 
+                  '(a13, $)') "G2D_t"
               endif
               if (method(3)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(a13, $)') "G3D_t" 
+                  '(a13, $)') "G3D_t"
               endif
             endif
 
@@ -1438,7 +1468,7 @@ subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, dista
   real(dp) ::  lat, lon, distancestart, distancestop
 
   call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon) 
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
   call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
   write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
   call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
@@ -1452,7 +1482,7 @@ end subroutine
 !! \date 2013-07-02
 !! \author M. Rajner
 !! \warning input spherical distance in radian
-!! 
+!!
 !! method:
 !!   default see equation in Rajnerdr
 !!   spotl   see \cite spotl manual

@@ -30,11 +30,23 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-fsf: grat
-	grat -V
+sdfdfsfre: grat
+	for rrr in "" P ; do \
+	time grat                        \
+		-F                        \
+		NCEP@SP,                  \
+		NCEP@VT,                  \
+		VIENNA@RSP,               \
+		VIENNA@HRSP,              \
+		NCEP@GP                   \
+		-M3:potential:ref -Sj -D2011:20@D  \
+		-I3@DD:100@HS$${rrr}:4000@HE \
+		-oa$${rrr}:free -G@GN -q 2 ; done
+
 fsdfds: grat
 	for ref in "" ref ; do            \
 	time grat                         \
+	  -! \
 		-F                              \
 		NCEP @SP,                       \
 		VIENNA@RSP,                     \
@@ -52,8 +64,8 @@ fsdfds: grat
 		-D 2011                         \
 	 	-o                              \
 		-A-0.43 -U                      \
-		-I0.03@3D :-20@DD: 20110@HB: 50000 @HS \
-		 -o tmp -Laaa@ddd;                           \
+		-I0.03@3D :-10@DD: 20110@HB: 50000 @HS \
+		 -o tmp ;                           \
 		done
 
 tmp: grat local

@@ -1,3 +1,6 @@
+variable modifer call only if necessary, do not correct all fields
+
+
 move RSP to HRSP in 2D? (twice, on terrain GE, and site GN)
 
 higro Merriam s. 491
