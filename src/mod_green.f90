@@ -147,29 +147,33 @@ subroutine read_green (green, print)
   select case (green%name)
   case ("merriam", "compute", "/home/mrajner/src/grat/dat/merriam_green.dat")
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+
+    print *, green%dataname,green%name
     select case (green%dataname)
     case("GN")
-      green%column=[1, 2]
+      green%column=[1,2]
+
     case("GNdt")
-      green%column=[1, 3]
+      green%column=[1,3]
     case("GNdz")
-      green%column=[1, 4]
+      green%column=[1,4]
     case("GNdz2")
-      green%column=[1, 5]
+      green%column=[1,5]
     case("GE")
-      green%column=[1, 6]
+      green%column=[1,6]
     case("GNc")
-      green%column=[1, 2]
+      green%column=[1,2]
     case("G3D")
-      green%column=[1, 2]
+      green%column=[1,2]
     case default
-      call print_warning( &
-        "green type not found", &
-        more=trim(green%dataname), &
-        error=.true.)
+      call print_warning(             &
+        "green type not found",       &
+        more  = trim(green%dataname), &
+        error = .true.                &
+        )
     endselect
 
-  case ("huang", "/home/mrajner/src/grat/dat/huang_green.dat" )
+  case ("huang", "/home/mrajner/src/grat/dat/huang_green.dat")
     green%name="/home/mrajner/src/grat/dat/huang_green.dat"
     select case (green%dataname)
     case("GN")
@@ -988,42 +992,47 @@ subroutine convolve(site, date)
                         ! endif
 
                         if (method3d(1).or.green_common(igreen)%distance(idist).gt.method3d_refinment_distance) then
-                          result(ind%green%g3d) = result(ind%green%g3d) &
-                            + geometry(psi=d2r(green_common(igreen)%distance(idist)), h=site%height, z=heights(iheight)) &
-                            * pressures(iheight)/(temperatures(iheight))  &
-                            * area * info(igreen)%height%step &
+                          result(ind%green%g3d) = result(ind%green%g3d)      &
+                            + geometry(                                      &
+                            psi = d2r(green_common(igreen)%distance(idist)), &
+                            h   = site%height,                               &
+                            z   = heights(iheight)                           &
+                            )                                                &
+                            * pressures(iheight)/(temperatures(iheight))     &
+                            * area * info(igreen)%height%step                &
                             *(-gravity%constant)*1e8/R_air
 
                         else if (method3d(2)) then
-                          result(ind%green%g3d) =                            &
-                            result(ind%green%g3d)                            &
-                            + potential(                                     &
-                            psi1=d2r(green_common(igreen)%start(idist)),     &
-                            psi2=d2r(green_common(igreen)%stop(idist)),      &
-                            dazimuth=d2r(dazimuth),                          &
-                            h=site%height,                                   &
-                            z1= heights(iheight)-info(igreen)%height%step/2, &
-                            z2= heights(iheight)+info(igreen)%height%step/2  &
-                            )                                                &
-                            * pressures(iheight)/(temperatures(iheight))     &
+                          result(ind%green%g3d) =                                   &
+                            result(ind%green%g3d)                                   &
+                            + potential(                                            &
+                            psi1     = d2r(green_common(igreen)%start(idist)),      &
+                            psi2     = d2r(green_common(igreen)%stop(idist)),       &
+                            dazimuth = d2r(dazimuth),                               &
+                            h        = site%height,                                 &
+                            z1       = heights(iheight)-info(igreen)%height%step/2, &
+                            z2       = heights(iheight)+info(igreen)%height%step/2  &
+                            )                                                       &
+                            * pressures(iheight)/(temperatures(iheight))            &
                             *(-gravity%constant)*1e8/R_air
+
                           if (isnan(result(ind%green%g3d)))  then
                             ! small distances can cause numerical problems
                             result(ind%green%g3d)=0
                           endif
 
                         else if (method3d(3)) then
-                          result(ind%green%g3d) =                            &
-                            result(ind%green%g3d)                            &
-                            + cylinder(                                      &
-                            psi1=d2r(green_common(igreen)%start(idist)),     &
-                            psi2=d2r(green_common(igreen)%stop(idist)),      &
-                            dazimuth=d2r(dazimuth),                          &
-                            h=site%height,                                   &
-                            z1= heights(iheight)-info(igreen)%height%step/2, &
-                            z2= heights(iheight)+info(igreen)%height%step/2  &
-                            )                                                &
-                            * pressures(iheight)/(temperatures(iheight))     &
+                          result(ind%green%g3d) =                                   &
+                            result(ind%green%g3d)                                   &
+                            + cylinder(                                             &
+                            psi1     = d2r(green_common(igreen)%start(idist)),      &
+                            psi2     = d2r(green_common(igreen)%stop(idist)),       &
+                            dazimuth = d2r(dazimuth),                               &
+                            h        = site%height,                                 &
+                            z1       = heights(iheight)-info(igreen)%height%step/2, &
+                            z2       = heights(iheight)+info(igreen)%height%step/2  &
+                            )                                                       &
+                            * pressures(iheight)/(temperatures(iheight))            &
                             *(-gravity%constant)*1e8/R_air
                         endif
 

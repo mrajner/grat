@@ -82,7 +82,7 @@ subroutine spline (x, y, b, c, d, n)
     c(i) = c(i+1) - c(i)
   end do
   !
-  ! step 2: end conditions 
+  ! step 2: end conditions
   !
   b(1) = -d(1)
   b(n) = -d(n-1)
@@ -95,7 +95,7 @@ subroutine spline (x, y, b, c, d, n)
     c(n) = -c(n)*d(n-1)**2/(x(n)-x(n-3))
   end if
   !
-  ! step 3: forward elimination 
+  ! step 3: forward elimination
   !
   do i = 2, n
     h = d(i-1)/b(i-1)
@@ -179,15 +179,15 @@ real (dp) function ispline(u, x, y, b, c, d, n, method)
   dx = u - x(i)
 
   if (present (method)) then
-    if (method == "nearest") then 
+    if (method == "nearest") then
       if ((x(i+1)-u) < dx) then
-        ispline = y(i+1) 
+        ispline = y(i+1)
         return
       else
-        ispline = y(i) 
+        ispline = y(i)
         return
       endif
-    elseif (method == "linear") then 
+    elseif (method == "linear") then
       ispline = y(i) + (y(i+1)-y(i))/(x(i+1)-x(i)) * dx
       return
     endif
@@ -199,7 +199,7 @@ end function ispline
 !> This function counts the word in line separated with space or multispaces
 !!
 !! taken from ArkM http://www.tek-tips.com/viewthread.cfm?qid=1688013
-!! 
+!!
 !! or other optional separator
 !! added Marcin Rajner 2013.10.08
 ! ==============================================================================
@@ -221,7 +221,7 @@ function ntokens(line, separator)
   toks = 0
   ntokens = 0
   do while(i <= n)
-    do while(line(i:i) == separator_) 
+    do while(line(i:i) == separator_)
       i = i + 1
       if (n < i) return
     enddo
@@ -233,14 +233,14 @@ function ntokens(line, separator)
       if (line(i:i) == separator_) exit
     enddo
   enddo
-end function 
+end function
 
 ! ==============================================================================
 !> This routine skips the lines with comment chars (default '#')
 !! from opened files (unit) to read
 ! ==============================================================================
 subroutine skip_header (unit, comment_char_optional )
-  integer, intent (in) :: unit 
+  integer, intent (in) :: unit
   character (len = 1), optional :: comment_char_optional
   character (len = 60 ) :: dummy
   character (len = 1)  :: comment_char
@@ -255,7 +255,7 @@ subroutine skip_header (unit, comment_char_optional )
   read ( unit, *, iostat = io_stat) dummy
   if(io_stat == iostat_end) return
 
-  do while ( dummy(1:1) .eq. comment_char ) 
+  do while ( dummy(1:1) .eq. comment_char )
     read ( unit, *, iostat = io_stat ) dummy
     if(io_stat == iostat_end) return
   enddo
@@ -267,26 +267,26 @@ end subroutine
 !!
 !! \author Taken from www
 !! \date 2013-03-19
-!! 
+!!
 !! \date 2013.07.16 added exception e.g /home/...
 ! =============================================================================
 function is_numeric(string)
-  logical :: is_numeric  
+  logical :: is_numeric
   character(len=*), intent(in) :: string
   real :: x
   integer :: e
   if (string(1:1).eq."/") then
-    is_numeric=.false. 
+    is_numeric=.false.
     ! minus sign not on the first postion but allow 1e-5
   else if (index(string,"-").gt.1 &
     .and..not.index(string,"e").eq.index(string,"-")-1) then
-    is_numeric=.false. 
-  else 
+    is_numeric=.false.
+  else
     read(string, *, iostat=e) x
     is_numeric = e == 0
   endif
 
-end function 
+end function
 
 ! =============================================================================
 !> Check if file exists.
@@ -333,7 +333,7 @@ function file_exists(string, double_check, verbose)
       endif
     endif
   endif
-end function 
+end function
 
 
 ! =============================================================================
@@ -357,7 +357,7 @@ end function
 !! \date 2013-03-04
 ! =============================================================================
 function r2d ( radian )
-  real(dp) :: r2d 
+  real(dp) :: r2d
   real(dp), intent (in) :: radian
   r2d= 180. / pi * radian
 end function
@@ -389,7 +389,7 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
   endif
 
   open (newunit = file_unit,  file=file_name, status = "old", action ="read")
-  do 
+  do
     call skip_header (file_unit, comment_char_)
     read (file_unit, '(a)', iostat=io_stat) line
     if (io_stat == iostat_end) exit
@@ -407,7 +407,7 @@ end subroutine
 !! i.e. * * * *  -->  * . . * . . * . . * (3 times denser)
 ! ==============================================================================
 function size_ntimes_denser (size_original, ndenser)
-  integer :: size_ntimes_denser 
+  integer :: size_ntimes_denser
   integer, intent(in) :: size_original, ndenser
 
   size_ntimes_denser= (size_original - 1) * (ndenser) + 1
@@ -427,7 +427,7 @@ integer function count_separator (dummy, separator)
   sep = ","
   if (present(separator)) sep = separator
   count_separator=0
-  do 
+  do
     i = index (dummy2, sep)
     if (i.eq.0) exit
     dummy2 = dummy2(i+1:)
@@ -451,7 +451,7 @@ function datanameunit (dataname, datanames, count)
 end function
 
 ! ==============================================================================
-!  p = rho h g 
+!  p = rho h g
 ! converts mm of EWT to Pascal
 ! inverted: converts Pascal to mm EWT
 ! ==============================================================================
@@ -463,7 +463,7 @@ function mmwater2pascal(mmwater, inverted)
 
 
   if (present(inverted).and.inverted) then
-    mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water) 
+    mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water)
   else
     mmwater2pascal=density%water * mmwater /1000 * earth%gravity%mean
   endif
@@ -499,15 +499,15 @@ function logspace(xmin, xmax, n)
 end function
 
 ! ==============================================================================
-! This subroutine open new file with optional prefix name (default = tmp), and 
-! consecutive number with optional digits (default=3), start is optional 
+! This subroutine open new file with optional prefix name (default = tmp), and
+! consecutive number with optional digits (default=3), start is optional
 ! start number
 ! ==============================================================================
 subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
   character(*), intent(in), optional :: prefix, suffix
   character(*), intent(out), optional :: filename
   integer, intent (in), optional :: digits, start
-  integer :: counter, digit  
+  integer :: counter, digit
   integer, intent(out) :: unit
   character(200) :: name=" "
 
@@ -523,7 +523,7 @@ subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
     digit = 3
   endif
 
-  do while (file_exists(name) .or. name =="") 
+  do while (file_exists(name) .or. name =="")
     write (name, '("tmp",i<digit>.<digit>,a)')  counter
     if (present(prefix)) name = prefix//name(4:)
     if (present(suffix)) name = trim(name)//suffix
@@ -568,7 +568,7 @@ function countsubstring(s1, s2) result(c)
   c = 0
   if(len(s2) == 0) return
   p = 1
-  do 
+  do
     posn = index(s1(p:), s2)
     if(posn == 0) return
     c = c + 1

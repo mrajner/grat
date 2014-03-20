@@ -3,7 +3,7 @@ module mod_spherical
 
 contains
 ! =============================================================================
-!> Calculate area of spherical segment 
+!> Calculate area of spherical segment
 !!
 !! Computes spherical area on unit (default if optional argument \c radius is
 !! not given) sphere given by:
@@ -11,22 +11,22 @@ contains
 !!    - distance from station, segment size in spher distance and angle
 !!   - method 2 (\c alternative_method .true.)
 !!    - distance from station start, distance from station end
-!! 
+!!
 !! The ilustration explain optional \c method argument
 !! \latexonly
 !! \begin{center}
-!!  \tikzsetfigurename{spher_area} 
+!!  \tikzsetfigurename{spher_area}
 !!  \input{/home/mrajner/src/grat/doc/figures/spher_area}
 !! \end{center}
 !! \endlatexonly
 !! \image html /home/mrajner/src/grat/doc/figures/spher_area.svg
 !!
-!! \warning All input angles in radians, output area on unit sphere or 
+!! \warning All input angles in radians, output area on unit sphere or
 !! in square units of given (optionally) \c radius.
 ! =============================================================================
 function spher_area (distance, ddistance, azstp, radius, alternative_method )
   real(dp) :: spher_area
-  real(dp), intent(in)  :: distance, ddistance 
+  real(dp), intent(in)  :: distance, ddistance
   real(dp), intent(in)  :: azstp
   logical,  intent(in), optional :: alternative_method
   real(dp), intent(in), optional :: radius
@@ -41,7 +41,7 @@ function spher_area (distance, ddistance, azstp, radius, alternative_method )
 end function
 
 ! =============================================================================
-!> This soubroutine gives the latitude and longitude of the point at the 
+!> This soubroutine gives the latitude and longitude of the point at the
 !! specified distance and azimuth from site latitude and longitude.
 !!
 !! all parameters in decimal degree
@@ -52,9 +52,9 @@ end function
 !! \warning all values in radians
 ! =============================================================================
 subroutine spher_trig (latin, lonin, distance, azimuth, latout, lonout, domain)
-  real(dp), intent(in)  :: distance 
+  real(dp), intent(in)  :: distance
   real(dp), intent(in)  :: latin, lonin, azimuth
-  real(dp), intent(out) :: latout, lonout 
+  real(dp), intent(out) :: latout, lonout
   real(dp) :: saz, caz, st, ct, cd, sd, cb, sb
   logical, intent(in), optional :: domain
 
@@ -103,7 +103,7 @@ subroutine spher_trig_inverse (lat1, lon1, lat2, lon2, distance, azimuth, havers
     ! http://www.usenet-replayer.com/faq/comp.infosystems.gis.html
     a = (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2
     distance = 2 * atan2( sqrt(a), sqrt(1-a) )
-  else 
+  else
     distance = acos ( sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
   endif
 
@@ -111,4 +111,4 @@ subroutine spher_trig_inverse (lat1, lon1, lat2, lon2, distance, azimuth, havers
   if (azimuth.lt.0) azimuth = azimuth + 2 * pi
 end subroutine
 
-end module 
+end module

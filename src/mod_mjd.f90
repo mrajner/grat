@@ -9,7 +9,7 @@ contains
 ! ==============================================================================
 !> Compute date from given Julian Day
 !!
-!! This subroutine computes date (as an six elements integer array) from 
+!! This subroutine computes date (as an six elements integer array) from
 !! Modified Julian Day
 !! \date 2013-03-04
 ! ==============================================================================
@@ -37,7 +37,7 @@ subroutine invmjd (mjd, date)
 
   dayfrac = mjd - int(mjd) + 1./ (60*60*1000)
   date(4) = int (dayfrac * 24. )
-  date(5) = ( dayfrac - date (4) / 24. ) * 60 * 24  
+  date(5) = ( dayfrac - date (4) / 24. ) * 60 * 24
   date(6) = ( dayfrac - date (4) / 24. - date(5)/(24.*60.)  ) * 60 * 24 *60
   if (date (6) .eq. 60 ) then
     date (6)=0
@@ -46,7 +46,7 @@ subroutine invmjd (mjd, date)
 end subroutine
 ! ==============================================================================
 !> Compute Julian date for given date.
-!! 
+!!
 !! Compute Julian Day (not MJD!). Seconds as integer!
 !! \author  http://aa.usno.navy.mil/faq/docs/jd_formula.php
 !! \todo mjd!
@@ -56,7 +56,7 @@ function jd (year,month,day, hh,mm,ss)
   integer, intent(in) ::  year,month,day
   integer, intent(in) :: hh,mm, ss
   integer :: i, j, k
-  real(dp) :: jd 
+  real(dp) :: jd
 
   i= year
   j= month
@@ -68,8 +68,8 @@ end function
 
 ! ==============================================================================
 !> MJD from date.
-!! 
-!! Compute Modified Julian date for given date. Iput is six element array of 
+!!
+!! Compute Modified Julian date for given date. Iput is six element array of
 !! !integers. Seconds also as integers!
 !! \date 2013-03-04
 ! ==============================================================================
@@ -87,7 +87,7 @@ function mjd (date)
   i = aux(1)/100
   k = 2 - i + int(i/4);
   mjd = int(365.25 * aux(1) ) - 679006
-  dayfrac =  aux (4) / 24. + date(5)/(24. * 60. ) + date (6)/(24. * 3600. ) 
+  dayfrac =  aux (4) / 24. + date(5)/(24. * 60. ) + date (6)/(24. * 3600. )
   mjd = mjd + int(30.6001*( aux(2) + 1)) + date(3) + k + dayfrac
 end function
 

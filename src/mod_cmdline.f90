@@ -1,7 +1,7 @@
 !> \file
 !! \brief This module gather cmd line arguments
 !!
-!! it allows to specify commands with or without spaces therefore it is 
+!! it allows to specify commands with or without spaces therefore it is
 !! convienient to use with auto completion of names
 ! =============================================================================
 module mod_cmdline
@@ -32,7 +32,7 @@ module mod_cmdline
 
     type(cmd_line_arg), allocatable, dimension(:) :: cmd_line
 
-    private :: check_if_switch_or_minus 
+    private :: check_if_switch_or_minus
 
     type moreverbose_info
       character(60) :: name
@@ -103,7 +103,7 @@ module mod_cmdline
       integer(2) :: p, g, t, a, d, l, n, r, s, o, b, j, v
     end type
     type green_index
-      integer(2) :: & 
+      integer(2) :: &
           gn          = 0,  & ! green newtonian   - with SP  in Pa
           ge          = 0,  & ! green elastic     - with SP  in Pa
           gegdt       = 0,  & ! green elastic     - first derivative of gravity part respect to temp (see Guo et al., 2004)
@@ -138,7 +138,7 @@ module mod_cmdline
     ! point mass - method3d(1)=.true.
     ! potential  - method3d(2)=.true.
     ! cylinder   - method3d(3)=.true.
-    logical :: method3d(3) 
+    logical :: method3d(3)
     logical :: method3d_compute_reference  = .false.
     real    :: method3d_refinment_distance = 0.1
     logical :: dryrun
@@ -154,7 +154,7 @@ contains
   ! =============================================================================
   subroutine collect_args (dummy)
       use mod_utilities, only: ntokens, count_separator
-      character(*) :: dummy 
+      character(*) :: dummy
       character(455) :: dummy_aux, dummy_aux2
       integer :: i, j, n
       integer :: indeks_space, indeks_comma, indeks_at, indeks_colon
@@ -189,9 +189,9 @@ contains
             indeks_at=index(cmd_line(i)%field(j)%subfield(n)%name,"@")
             if (indeks_at.gt.0) then
               cmd_line(i)%field(j)%subfield(n)%dataname = &
-                  cmd_line(i)%field(j)%subfield(n)%name(indeks_at+1:) 
+                  cmd_line(i)%field(j)%subfield(n)%name(indeks_at+1:)
               cmd_line(i)%field(j)%subfield(n)%name = &
-                  cmd_line(i)%field(j)%subfield(n)%name(1:indeks_at-1) 
+                  cmd_line(i)%field(j)%subfield(n)%name(1:indeks_at-1)
             else
               cmd_line(i)%field(j)%subfield(n)%dataname = " "
             endif
@@ -215,7 +215,7 @@ contains
       character(*), intent(out) :: dummy
       character(355) :: a, b, arg
       integer :: i
-      dummy=" " 
+      dummy=" "
       do i = 1, iargc()
         call get_command_argument(i,a)
         call get_command_argument(i+1,b)

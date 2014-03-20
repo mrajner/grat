@@ -12,11 +12,11 @@ contains
 ! ==============================================================================
 function standard_density (height, temperature, fels_type, method)
   use mod_constants, only: dp, R_air
-  real(dp), intent(in) :: height 
-  real(dp), intent(in), optional :: temperature 
+  real(dp), intent(in) :: height
+  real(dp), intent(in), optional :: temperature
   character(len=22), optional :: fels_type
   character(len=*), optional :: method
-  real(dp) :: standard_density 
+  real(dp) :: standard_density
   real(dp) :: t
 
   if (present(temperature)) then
@@ -31,8 +31,8 @@ end function
 ! =============================================================================
 !> \brief Compute gravity acceleration of the Earth
 !! for the specific height using formula
-!! 
-!! see \cite US1976 
+!!
+!! see \cite US1976
 !! height in meters
 ! =============================================================================
 function standard_gravity (height)
@@ -51,14 +51,14 @@ end function
 !!
 !! \warning pressure in Pa, height in meters
 ! =============================================================================
-function standard_pressure (  & 
-        height,                   & 
-        p_zero,                   & 
-        temperature,              & 
-        h_zero,                   & 
-        method,                   & 
-        dz,                       & 
-        fels_type,                & 
+function standard_pressure (  &
+        height,                   &
+        p_zero,                   &
+        temperature,              &
+        h_zero,                   &
+        method,                   &
+        dz,                       &
+        fels_type,                &
         use_standard_temperature, &
         nan_as_zero)
 
@@ -104,14 +104,14 @@ function standard_pressure (  &
 
       case ("simple")
         standard_pressure = sfc_pressure &
-          *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air) 
+          *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air)
 
       case ("full")
         if (.not.present(use_standard_temperature)) then
-          call print_warning(                    & 
-            "error: you have to specify        & 
-            use_standard_temperature with      & 
-            full method in standard_pressure", & 
+          call print_warning(                    &
+            "error: you have to specify        &
+            use_standard_temperature with      &
+            full method in standard_pressure", &
             error=.true.)
         endif
         standard_pressure=0.
@@ -161,10 +161,10 @@ function standard_pressure (  &
   !! if t_zero is specified use this as surface temperature
   !! otherwise use T0.
   !! A set of predifined temperature profiles ca be set using
-  !! optional argument \argument fels_type 
+  !! optional argument \argument fels_type
   !! \cite Fels86
   !! \li US standard atmosphere (default)
-  !! \li tropical 
+  !! \li tropical
   !! \li subtropical_summer
   !! \li subtropical_winter
   !! \li subarctic_summer
@@ -175,14 +175,14 @@ function standard_pressure (  &
 
     real(dp), intent(in)  :: height
     real(dp)  :: standard_temperature
-    character (len=*), intent(in), optional  :: fels_type 
-    real(dp), intent(in), optional :: t_zero 
+    character (len=*), intent(in), optional  :: fels_type
+    real(dp), intent(in), optional :: t_zero
     real(dp) :: aux, cn, t
     integer :: i,indeks
     real(dp), dimension (10) :: z,c,d
 
     ! Read into memory the parameters of temparature height profiles
-    ! for standard atmosphere 
+    ! for standard atmosphere
     z = (/11.0 , 20.1 , 32.1 , 47.4  , 51.4 , 71.7  , 85.7  , 100.0 , 200.0 , 300.0 /)
     c = (/-6.5 ,  0.0 ,  1.0 ,  2.75 ,  0.0 , -2.75 , -1.97 ,   0.0 ,   0.0 ,   0.0 /)
     d = (/ 0.3 ,  1.0 ,  1.0 ,  1.0  ,  1.0 ,  1.0  ,  1.0  ,   1.0 ,   1.0 ,   1.0 /)
@@ -234,7 +234,7 @@ function standard_pressure (  &
       else
         cn = c(i+1)
       endif
-      aux = aux + d(i) * (cn - c(i))  * log (cosh ((height/1000. - z(i)) / d(i)) / cosh (z(i)/d(i))) 
+      aux = aux + d(i) * (cn - c(i))  * log (cosh ((height/1000. - z(i)) / d(i)) / cosh (z(i)/d(i)))
     enddo
     standard_temperature = t + c(1) * (height/1000.)/2. + aux/2.
     if(present(t_zero)) then
@@ -261,7 +261,7 @@ function standard_pressure (  &
       !conversion from  geopotential to geometric height
       geop2geom = geopotential_height &
         * (earth%radius + geopotential_height) &
-        /(earth%radius) 
+        /(earth%radius)
     endif
   end function
 

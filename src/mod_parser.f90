@@ -1,5 +1,5 @@
 module mod_parser
-  use mod_constants, only: dp
+  use mod_constants,   only: dp
   use iso_fortran_env, only: iostat_end
   use mod_printing
 
@@ -33,7 +33,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   select case (cmd_line_entry%switch)
 
   case ('-V')
-    if (.not.log%sparse) write(log%unit, form%i2) 'verbose mode' 
+    if (.not.log%sparse) write(log%unit, form%i2) 'verbose mode'
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
     endif
@@ -96,7 +96,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
 
   case ('-!')
     all_huge=.true.
-    write(log%unit, form%i2), 'all model as huge' 
+    write(log%unit, form%i2), 'all model as huge'
     if (size(model).ge.1) call print_warning("put -! before -F")
 
   case ("-G")
@@ -119,26 +119,33 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       case ("3D", "3")
         method(3) =.true.
 
-        select case (cmd_line_entry%field(i)%subfield(2)%name) 
+        select case (cmd_line_entry%field(i)%subfield(2)%name)
         case ("point")
           method3d(1)=.true.
+
         case ("potential")
           method3d(2)=.true.
+
         case ("cylinder")
           method3d(3)=.true.
+
         case default
-          call print_warning ("no explicit method3d given &
-            - falling into point mass (for backward compability, not &
-            recomended, use -M3 : potential|cylinder)")
+          call print_warning (                                         &
+            "no explicit method3d given"//                             &
+            " - falling into point mass (for backward compability, not &
+            recomended, use -M3 : potential|cylinder)"                 &
+            )
           method3d(1)=.true.
         endselect
 
-        select case (cmd_line_entry%field(i)%subfield(3)%name) 
+        select case (cmd_line_entry%field(i)%subfield(3)%name)
         case ("reference", "ref")
           method3d_compute_reference=.true.
         case default
-          call print_warning ("no explicit ref for 3d given &
-            - using @GN[...] if any or put -M3 : : ref")
+          call print_warning (                            &
+            "no explicit ref for 3d given" //             &
+            " - using @GN[...] if any or put -M3 : : ref" &
+            )
           method3d(1)=.true.
         endselect
 
@@ -152,7 +159,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     enddo
 
     if (.not.log%sparse) then
-      write(log%unit, form_62, advance="no"), 'method was set:' 
+      write(log%unit, form_62, advance="no"), 'method was set:'
 
       do i=1,size(method)
         if (method(i)) write(log%unit, '(i1,"D ",$)') i
@@ -164,7 +171,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       write(log%unit, form_62, advance="no"), "method refinment for near area using 3D"
       if (method3d(2)) write(log%unit,'(a$)') "cuboid"
       if (method3d(3)) write(log%unit,'(a$)') "cylinder"
-      write(log%unit,*) method3d_refinment_distance 
+      write(log%unit,*) method3d_refinment_distance
     endif
 
     if (.not.any(method).and..not.dryrun) then
@@ -175,7 +182,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
     if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
-      output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) & 
+      output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) &
         // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
@@ -262,7 +269,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case default
     if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
   endselect
-end subroutine 
+end subroutine
 
 ! =============================================================================
 !> This subroutine counts the command line arguments
@@ -277,8 +284,8 @@ end subroutine
 !!
 !! \date 2012-12-20
 !! \author M. Rajner
-!! \date 2013-03-19 parsing negative numbers after space fixed 
-!!    (-S -11... was previously treated as two cmmand line entries, now only -? 
+!! \date 2013-03-19 parsing negative numbers after space fixed
+!!    (-S -11... was previously treated as two cmmand line entries, now only -?
 !!    non-numeric terminates input argument)
 ! =============================================================================
 subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
@@ -290,7 +297,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   character(*), intent (in), optional :: version
   integer :: i
   character(len=355) :: dummy
-  integer,dimension(8):: execution_date 
+  integer,dimension(8):: execution_date
 
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
     call print_warning("args", program_calling=program_calling, error=.true.)
@@ -399,8 +406,8 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
 
   call date_and_time (values = execution_date)
 
-  write(log%unit, & 
-    '("Program started:", & 
+  write(log%unit, &
+    '("Program started:", &
     1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
     execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form%separator)
@@ -507,7 +514,7 @@ end subroutine
 !! is not
 ! =============================================================================
 logical function if_accepted_switch (switch, accepted_switches)
-  character(len= *), intent (in) :: switch 
+  character(len= *), intent (in) :: switch
   character(len= *), intent (in), optional :: accepted_switches
   integer :: i
 
@@ -529,7 +536,7 @@ logical function if_accepted_switch (switch, accepted_switches)
 end function
 
 ! =============================================================================
-!> This subroutine parse -L option. 
+!> This subroutine parse -L option.
 !!
 !! \author M. Rajner
 !! \date 2013.05.24
@@ -552,7 +559,7 @@ subroutine parse_moreverbose (cmd_line_entry)
     moreverbose(i)%name     = trim(cmd_line_entry%field(i)%subfield(1)%name)
     moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
 
-    if (dataname(moreverbose(i)%dataname).ne."unknown") then 
+    if (dataname(moreverbose(i)%dataname).ne."unknown") then
       if (moreverbose(i)%name.ne."") then
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
@@ -560,10 +567,10 @@ subroutine parse_moreverbose (cmd_line_entry)
             call print_warning ("nc", more=trim(moreverbose(i)%name), error=.true.)
           endif
         endif
-        open(                            & 
-          newunit = moreverbose(i)%unit, & 
-          file    = moreverbose(i)%name, & 
-          action  = 'write'              & 
+        open(                            &
+          newunit = moreverbose(i)%unit, &
+          file    = moreverbose(i)%name, &
+          action  = 'write'              &
           )
       else
         moreverbose(i)%unit = output_unit
@@ -582,7 +589,7 @@ end subroutine
 
 
 ! =============================================================================
-!> This subroutine parse -I option. 
+!> This subroutine parse -I option.
 !!
 !! \author M. Rajner
 !! \date 2013-05-17
@@ -611,14 +618,14 @@ subroutine parse_info (cmd_line_entry)
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%start
             if (info(i)%distance%start.lt.0) then
               call print_warning("changing -I@DB to 0")
-              info(i)%distance%start = 0 
+              info(i)%distance%start = 0
             endif
 
           case ("DE")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop
             if (info(i)%distance%stop.gt.180) then
               call print_warning("changing -I@DE to 180")
-              info(i)%distance%stop = 180 
+              info(i)%distance%stop = 180
             endif
 
           case ("DS")
@@ -658,7 +665,7 @@ subroutine parse_info (cmd_line_entry)
           case ("3D")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop_3d
           endselect
-        else 
+        else
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
           case ("I")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%interpolation
@@ -748,7 +755,7 @@ subroutine print_help (program_calling, accepted_switches)
 
   write (log%unit, "(a)", advance="no" ) program_calling
   ! first loop - print only syntax with squre brackets if parameter is optional
-  do 
+  do
     read (help_unit, '(a)', iostat=io_stat) line
     if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
       if (if_optional) write(log%unit, '(a)', advance="no") " ["
@@ -756,7 +763,7 @@ subroutine print_help (program_calling, accepted_switches)
       if (if_optional) write(log%unit, '(a)', advance="no") "]"
     endif
     if (io_stat==iostat_end) then
-      write(log%unit, *) " " 
+      write(log%unit, *) " "
       if_print_line = .false.
       exit
     endif
@@ -781,7 +788,7 @@ subroutine print_help (program_calling, accepted_switches)
 
   write(log%unit, form_60), 'Summary of available options for program '//program_calling
   ! second loop - print informations
-  do 
+  do
     read (help_unit, '(a)', iostat=io_stat) line
     if (io_stat==iostat_end) exit
 
@@ -822,23 +829,23 @@ function dataname(abbreviation)
     dataname = "bilinear"
   case("g")
     dataname = "green function used"
-  case("p")  
+  case("p")
     dataname = "points"
-  case("r")  
+  case("r")
     dataname = "results"
-  case("a")  
+  case("a")
     dataname = "auxiliary"
-  case("d")  
+  case("d")
     dataname = "dates"
-  case("s")  
+  case("s")
     dataname = "summary"
-  case("o")  
+  case("o")
     dataname = "ocean conserve mass"
-  case("t")  
+  case("t")
     dataname = "total mass"
-  case("b")  
+  case("b")
     dataname = "progress bar"
-  case("j")  
+  case("j")
     dataname = "level"
   case default
     dataname="unknown"

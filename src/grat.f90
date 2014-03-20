@@ -109,6 +109,7 @@ program grat
     endif
 
     if (method(2).or.method(3)) then
+
       if (result_component) then
         do i = 1, size(green)
           if (green(i)%dataname.eq."GE") then
@@ -121,6 +122,7 @@ program grat
             write (output%unit,'(a13$)'), trim(green(i)%dataname)
           endif
         enddo
+
         if (inverted_barometer.and.non_inverted_barometer) then
           write (output%unit,'(a13$)'), "GE_NIB"
         endif

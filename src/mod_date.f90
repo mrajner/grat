@@ -11,7 +11,7 @@ module mod_date
     real(dp) :: mjd
     integer, dimension(6) :: date
   end type
-  real(dp) :: cpu_start, cpu_finish  
+  real(dp) :: cpu_start, cpu_finish
   type(dateandmjd), allocatable, dimension (:) :: date
 
   ! private
@@ -35,17 +35,17 @@ end subroutine
 
 ! =============================================================================
 !> Parse date given as 20110503020103  to yy mm dd hh mm ss and mjd
-!! 
+!!
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine parse_date(cmd_line_entry) 
+subroutine parse_date(cmd_line_entry)
   use mod_cmdline
   use mod_mjd, only: mjd, invmjd
   use mod_utilities, only: is_numeric
   use mod_data, only: model
 
-  integer, dimension(6) :: start, stop, swap 
-  real (dp) :: step 
+  integer, dimension(6) :: start, stop, swap
+  real (dp) :: step
   integer :: i_, i, start_index, i_aux
   character(1) :: interval_unit
   type(cmd_line_arg) :: cmd_line_entry
@@ -259,7 +259,7 @@ subroutine more_dates (number, start_index)
     allocate(date(size(tmpdate)+number))
     date=tmpdate
     deallocate(tmpdate)
-  else 
+  else
     allocate(date(number))
     start_index=1
   endif
@@ -267,7 +267,7 @@ end subroutine
 
 ! =============================================================================
 !> Convert dates given as string to integer (6 elements)
-!! 
+!!
 !! 20110612060302 --> [2011, 6, 12, 6, 3, 2 ]
 !! you can omit
 !! \warning decimal seconds are not allowed
@@ -276,7 +276,7 @@ subroutine string2date (string, date, success)
   use mod_utilities, only: is_numeric
 
   character (*), intent(in) :: string
-  integer, dimension(6), intent(out):: date 
+  integer, dimension(6), intent(out):: date
   integer :: start_char, end_char, j
   logical, optional :: success
 
@@ -286,7 +286,7 @@ subroutine string2date (string, date, success)
   date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
-  do j = 1, 6 
+  do j = 1, 6
     if (j.eq.1) then
       end_char=min(len(string), start_char+3)
     else
@@ -301,7 +301,7 @@ subroutine string2date (string, date, success)
     endif
     start_char=end_char+1
     if (end_char.eq.len(trim(string))) exit
-  enddo 
+  enddo
 end subroutine
 
 end module mod_date

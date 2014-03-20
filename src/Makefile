@@ -31,6 +31,23 @@ all: FLAGS += -O2
 endif
 
 
+eep:grat 
+	time grat \
+		-F                              \
+		NCEP @SP,                       \
+		VIENNA@RSP,                     \
+		NCEP1@T,                        \
+		NCEP@HP,                        \
+		ETOPO@H!,                       \
+		VIENNA@HRSP,                    \
+		NCEP@GP!,                       \
+		NCEP@VT!,                       \
+		-G@GN,@GE \
+		-M1,2,3 \
+		-Sj  -D2011 -H \
+		-I -3@DD : 10@AS:0.2@3D -V:s 
+
+
 fsdfds: grat
 	for ref in "" ref ; do            \
 	time grat                         \

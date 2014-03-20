@@ -4,7 +4,7 @@
 !!
 !! \author M.Rajner
 !! \date 2012-12-20
-!! \date 2013-03-19 
+!! \date 2013-03-19
 !!    added overriding of poly use by command line like in \cite spotl
 ! ==============================================================================
 module mod_polygon
@@ -113,9 +113,9 @@ subroutine read_polygon (polygon)
         ! lon lat , checks while reading
         read (polygon%unit, * ) polygon%polygon(i)%coords(j,1:2)
         if ( polygon%polygon(i)%coords(j,1).lt.-180. &
-          .or.polygon%polygon(i)%coords(j,1).gt.360.  & 
-          .or.polygon%polygon(i)%coords(j,2).lt.-90.  & 
-          .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then 
+          .or.polygon%polygon(i)%coords(j,1).gt.360.  &
+          .or.polygon%polygon(i)%coords(j,2).lt.-90.  &
+          .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then
           write (error_unit , form_63) "Somethings wrong with coords in polygon file"
           polygon%if=.false.
           return
@@ -132,9 +132,9 @@ subroutine read_polygon (polygon)
       if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_63) &
         "Usage overwritten with command line option", polygon%pm
       write (log%unit, form_63) "use [true/false]:" , &
-        polygon%polygon(i)%use 
+        polygon%polygon(i)%use
       write (log%unit, form_63) "number of coords:" , &
-        size (polygon%polygon(i)%coords(:,1)) 
+        size (polygon%polygon(i)%coords(:,1))
     enddo
   endif
 
@@ -156,7 +156,7 @@ end subroutine
 !! \author D.C. Agnew \cite Agnew96
 !! \author adopted by Marcin Rajner
 !! \date 2013-03-04
-!! 
+!!
 !! The ilustration explain exclusion idea\n
 !! \image latex /home/mrajner/src/grat/doc/figures/polygon_ilustration.pdf "capt" width=\textwidth
 !! \image html /home/mrajner/src/grat/doc/figures/polygon_ilustration.png
@@ -215,11 +215,11 @@ end subroutine
 !! adopted and slightly modified M. Rajner
 !! cords is x, y (lon, lat) 2 dimensional array
 ! ==============================================================================
-integer function if_inpoly(x,y,coords) 
+integer function if_inpoly(x,y,coords)
   use mod_constants, only: dp, dp
-  real(dp) ,allocatable , dimension (:,:) , intent (in) :: coords  
+  real(dp) ,allocatable , dimension (:,:) , intent (in) :: coords
   real(dp) , intent (in) :: x , y
-  integer :: i , isc  
+  integer :: i , isc
   ! Returns 1 if point at (x,y) is inside polygon whose nv vertices
   ! Returns 0 if point is outside
   ! Returns 2 if point is on edge or vertex
@@ -242,7 +242,7 @@ integer function if_inpoly(x,y,coords)
   isc = ncross( &
     coords (size(coords(:,1)) , 1 ) - x , &
     coords (size(coords(:,2)) , 2 ) - y , &
-    coords (1 , 1 ) - x , & 
+    coords (1 , 1 ) - x , &
     coords (1 , 2 ) - y )
   if(isc.eq.4) then
     if_inpoly = 2
@@ -253,7 +253,7 @@ integer function if_inpoly(x,y,coords)
   ! convert to all positive (a departure from the original)
   if_inpoly = iabs(if_inpoly)
   return
-end function 
+end function
 
 ! ==============================================================================
 !> \brief finds whether the segment from point 1 to point 2 crosses
@@ -274,7 +274,7 @@ end function
 !! slightly modified
 ! ==============================================================================
 integer function ncross(x1,y1,x2,y2)
-  real(dp) , intent(in) :: x1 , y1, x2 , y2 
+  real(dp) , intent(in) :: x1 , y1, x2 , y2
   real(dp) :: c12 , c21
 
   ! all above (or below) axis
@@ -295,7 +295,7 @@ integer function ncross(x1,y1,x2,y2)
   ! touches +x axis; crosses +x axis; lies entirely on -x axis
   if(   (y1.eq.0.and.x1.gt.0)    &
     .or.(y2.eq.0.and.x2.gt.0) &
-    .or.((y1.lt.0).and.(c12.gt.c21)) & 
+    .or.((y1.lt.0).and.(c12.gt.c21)) &
     .or.((y1.gt.0).and.(c12.lt.c21)) &
     .or.(y1.eq.0.and.y2.eq.0.and.x1.lt.0.and.x2.lt.0)) &
     then
@@ -328,7 +328,7 @@ end module
 !  This examples show how the exclusion of~selected polygons works
 !  \begin{figure}[htb]
 !    \includegraphics[width=0.5\textwidth]{../mapa1}
-!    \caption{If only excluded polygons (red area) are given 
+!    \caption{If only excluded polygons (red area) are given
 !    all points falling in~it will be excluded (red points) all other
 !    will be included}
 !  \end{figure}

@@ -5,28 +5,28 @@ module mod_printing
   !----------------------------------------------------
   ! For preety printing
   !----------------------------------------------------
-  character(len=255), parameter ::                                 & 
-    form_header     = '(72("#"))',                                 & 
-    form_separator  = '("#",71("-"))',                             & 
-    form_inheader   = '(("#"),1x,a68,1x,("#"))',                   & 
-    form_inheader_n = '(("#"),1x,a55,1x,i2.2,"(",i8,")",x,("#"))', & 
-    form_60         = "(a,100(1x,g0))",                            & 
-    form_61         = "(2x,a,100(1x,g0))",                         & 
-    form_62         = "(4x,a,100(1x,g0))",                         & 
-    form_63         = "(6x,100(x,g0))",                            & 
+  character(len=255), parameter ::                                 &
+    form_header     = '(72("#"))',                                 &
+    form_separator  = '("#",71("-"))',                             &
+    form_inheader   = '(("#"),1x,a68,1x,("#"))',                   &
+    form_inheader_n = '(("#"),1x,a55,1x,i2.2,"(",i8,")",x,("#"))', &
+    form_60         = "(a,100(1x,g0))",                            &
+    form_61         = "(2x,a,100(1x,g0))",                         &
+    form_62         = "(4x,a,100(1x,g0))",                         &
+    form_63         = "(6x,100(x,g0))",                            &
     form_64         = "(8x,100(x,g0))"
 
   type printing_info
-    character(60) :: a,                 & 
-      i0        = "(a,100(1x,g0))",     & 
-      i1        = "(2x,a,100(1x,g0))",  & 
-      i2        = "(4x,a,100(1x,g0))",  & 
-      i3        = "(6x,a,100(1x,g0))",  & 
-      i4        = "(8x,a,100(1x,g0))",  & 
-      i5        = "(10x,a,100(1x,g0))", & 
-      t1        = "2x",                 & 
-      t2        = "4x",                 & 
-      t3        = "6x",                 & 
+    character(60) :: a,                 &
+      i0        = "(a,100(1x,g0))",     &
+      i1        = "(2x,a,100(1x,g0))",  &
+      i2        = "(4x,a,100(1x,g0))",  &
+      i3        = "(6x,a,100(1x,g0))",  &
+      i4        = "(8x,a,100(1x,g0))",  &
+      i5        = "(10x,a,100(1x,g0))", &
+      t1        = "2x",                 &
+      t2        = "4x",                 &
+      t3        = "6x",                 &
       separator = '("#",71("-"))'
   end type
   type(printing_info) :: form
@@ -35,9 +35,9 @@ module mod_printing
   type output_info
     integer :: unit = output_unit
     character (255) :: name
-    logical :: if, header, tee, & 
-      noclobber = .false.,      & 
-      full      = .false.,      & 
+    logical :: if, header, tee, &
+      noclobber = .false.,      &
+      full      = .false.,      &
       sparse    = .false.,      &
       height    = .false.,      &
       level     = .false.,      &
@@ -47,7 +47,7 @@ module mod_printing
       nan       = .false.
     character(10) :: form="en13.3"
   end type
-  type(output_info) :: log, output 
+  type(output_info) :: log, output
 
 contains
 ! =============================================================================
@@ -55,7 +55,7 @@ contains
 subroutine print_warning (warn, unit, more, error, program_calling)
   use, intrinsic:: iso_fortran_env
   use :: mod_cmdline, only: warnings, method, quiet
-  integer, dimension(8):: execution_date  
+  integer, dimension(8):: execution_date
   character (len=*)  :: warn
   character (len=*), optional :: more, program_calling
   integer, optional :: unit
@@ -91,14 +91,14 @@ subroutine print_warning (warn, unit, more, error, program_calling)
 
       case("site")
         write(def_unit, form%i0, advance="no") "something wrong with -S|-R specification. IGNORED"
-        
-      case ("repeated") 
+
+      case ("repeated")
         write(def_unit, form%i0, advance="no") "reapeted specification"
 
-      case ("date") 
+      case ("date")
         write(def_unit, form%i0, advance="no") "something wrong with date format -D. IGNORED"
 
-      case ("model") 
+      case ("model")
         write(def_unit, form%i0, advance="no") "something wrong with -F."
 
       case("alias_without_date")
@@ -108,12 +108,12 @@ subroutine print_warning (warn, unit, more, error, program_calling)
         write(def_unit, form%i0, advance="no") "-G is required"
 
       case("method")
-        write(def_unit, form%i0, advance="no") "-M no method was set" 
+        write(def_unit, form%i0, advance="no") "-M no method was set"
 
       case("nc")
         write(def_unit, form%i0, advance="no") "I will not overwrite with : nc (noclobber)"
 
-      case default 
+      case default
         write(def_unit, form%i0, advance="no") warn
       end select
 
@@ -123,7 +123,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
   if (present(error).and.error.or.warnings%strict) then
     if ((.not.warn.eq."args").and. warnings%time) then
       call date_and_time (values=execution_date)
-      write(def_unit, & 
+      write(def_unit, &
         '("[",i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)","]")'),&
         execution_date (1:3), execution_date(5:7), execution_date(4)/60
     elseif (.not.quiet) then
@@ -159,7 +159,7 @@ subroutine progress(j, time, cpu, every)
   endif
 
   step = step + 1
-  
+
   if (                       &
     modulo(step,every_).ne.0 &
     .and.j.ne.every_         &
@@ -218,12 +218,12 @@ end function
 
 ! =============================================================================
 !> Print version of program depending on program calling
-!! 
+!!
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
 subroutine print_version (program_calling, version)
-  character(*) :: program_calling 
+  character(*) :: program_calling
   character(*), optional :: version
 
   write(log%unit, form_header )

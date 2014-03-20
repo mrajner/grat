@@ -11,7 +11,7 @@ program polygon_check
 
   implicit none
   integer(2) :: i , j
-  integer(2) , allocatable , dimension (:) :: iok 
+  integer(2) , allocatable , dimension (:) :: iok
 
   call intro  ( &
       program_calling   = "polygon_check" , &
@@ -31,7 +31,7 @@ program polygon_check
       endif
     endif
     do i=1 , size (site)
-      write (output%unit , '(a8,1x,2f10.5)' , advance="no" ) site(i)%name, site(i)%lon, site(i)%lat   
+      write (output%unit , '(a8,1x,2f10.5)' , advance="no" ) site(i)%name, site(i)%lon, site(i)%lat
       if (allocated(polygon)) then
         do j = 1 , size(polygon)
           call chkgon (site(i)%lon, site(i)%lat, polygon(j), iok(j) )

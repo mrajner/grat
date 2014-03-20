@@ -21,15 +21,15 @@ contains
 !! \date 2013-03-19
 !! \warning psi in radians
 ! ==============================================================================
-function aggfd ( & 
-    psi,         & 
-    delta,       & 
-    dz,          & 
-    method,      & 
-    aggfdh,      & 
-    aggfdz,      & 
-    aggfdt,      & 
-    predefined,  & 
+function aggfd ( &
+    psi,         &
+    delta,       &
+    dz,          &
+    method,      &
+    aggfdh,      &
+    aggfdz,      &
+    aggfdt,      &
+    predefined,  &
     fels_type,   &
     rough)
 
@@ -40,62 +40,62 @@ function aggfd ( &
   real(dp), intent (in), optional :: dz
   logical, intent (in), optional :: aggfdh, aggfdz, aggfdt, predefined, rough
   real(dp) :: aggfd
-  real(dp) :: delta_ 
+  real(dp) :: delta_
   character (len=*), intent(in), optional  :: method, fels_type
 
   delta_ = 10. ! Default value
   if (present(delta))  delta_ = delta
 
   if(present(aggfdh).and.aggfdh) then
-    aggfd = (                & 
-      + aggf (psi,           & 
-      h=+delta_,             & 
-      dz=dz,                 & 
-      method=method,         & 
-      predefined=predefined, & 
+    aggfd = (                &
+      + aggf (psi,           &
+      h=+delta_,             &
+      dz=dz,                 &
+      method=method,         &
+      predefined=predefined, &
       fels_type=fels_type,   &
-      rough=rough)           & 
-      - aggf (psi,           & 
-      h=-delta_,             & 
-      dz=dz,                 & 
-      method=method,         & 
-      predefined=predefined, & 
+      rough=rough)           &
+      - aggf (psi,           &
+      h=-delta_,             &
+      dz=dz,                 &
+      method=method,         &
+      predefined=predefined, &
       fels_type=fels_type,   &
-      rough=rough))          & 
+      rough=rough))          &
       / ( 2. * delta_)
   else if(present(aggfdz).and.aggfdz) then
-    aggfd = (                & 
-      + aggf (psi,           & 
-      zmin = +delta_,        & 
-      dz=dz,                 & 
-      method = method,       & 
-      predefined=predefined, & 
+    aggfd = (                &
+      + aggf (psi,           &
+      zmin = +delta_,        &
+      dz=dz,                 &
+      method = method,       &
+      predefined=predefined, &
       fels_type=fels_type,   &
-      rough=rough)           & 
-      - aggf (psi,           & 
-      zmin = -delta_,        & 
-      dz=dz,                 & 
-      method = method,       & 
-      predefined=predefined, & 
+      rough=rough)           &
+      - aggf (psi,           &
+      zmin = -delta_,        &
+      dz=dz,                 &
+      method = method,       &
+      predefined=predefined, &
       fels_type=fels_type,   &
-      rough=rough))          & 
+      rough=rough))          &
       / ( 2. * delta_)
   else if(present(aggfdt).and.aggfdt) then
-    aggfd = (                & 
-      + aggf (psi,           & 
-      t_zero = +delta_,      & 
-      dz=dz,                 & 
-      method = method,       & 
-      predefined=predefined, & 
+    aggfd = (                &
+      + aggf (psi,           &
+      t_zero = +delta_,      &
+      dz=dz,                 &
+      method = method,       &
+      predefined=predefined, &
       fels_type=fels_type,   &
-      rough=rough)           & 
-      - aggf (psi,           & 
-      t_zero = -delta_,      & 
-      dz=dz,                 & 
-      method = method,       & 
-      predefined=predefined, & 
+      rough=rough)           &
+      - aggf (psi,           &
+      t_zero = -delta_,      &
+      dz=dz,                 &
+      method = method,       &
+      predefined=predefined, &
       fels_type=fels_type,   &
-      rough=rough))          & 
+      rough=rough))          &
       / ( 2. * delta_)
   endif
 end function
@@ -108,27 +108,27 @@ end function
 !! \warning psi in radians h in meter
 !! t_zero is actually delta_t so if t_zero=10 (t_zero=288.15+10)
 ! ==============================================================================
-function aggf (         & 
-    psi,                & 
+function aggf (         &
+    psi,                &
     zmin, &
     zmax, &
-    dz,     & 
-    t_zero,             & 
-    h,                  & 
-    first_derivative_h, & 
+    dz,     &
+    t_zero,             &
+    h,                  &
+    first_derivative_h, &
     first_derivative_z, &
-    fels_type,          & 
-    method,             & 
+    fels_type,          &
+    method,             &
     predefined,         &
     rough)
 
   use mod_constants, only: dp, pi, earth, gravity, atmosphere, R_air
   use mod_utilities, only: d2r
-  use mod_atmosphere 
+  use mod_atmosphere
   use mod_normalization, only : green_normalization
 
   real(dp), intent(in)          :: psi ! spherical distance from site [rad]
-  real(dp), intent(in),optional :: & 
+  real(dp), intent(in),optional :: &
     zmin,                          &   ! minimum height, starting point [m]     (default = 0)
     zmax,                          &   ! maximum height, ending point   [m]     (default = 60000)
     dz,                            &   ! integration step               [m]     (default = 0.1 -> 10 cm)
@@ -185,35 +185,35 @@ function aggf (         &
     if (present(rough).and.rough) then
       ! do not use rough! it is only for testing
       do i = 1, size(heights)
-        pressures(i) = standard_pressure ( & 
-          heights(i),                      & 
-          method=method,                   & 
-          dz=dz,                           & 
+        pressures(i) = standard_pressure ( &
+          heights(i),                      &
+          method=method,                   &
+          dz=dz,                           &
           use_standard_temperature=.true.  &
           )
       enddo
     else
-      pressures(1) = standard_pressure(     & 
-        heights(1),                         & 
-        method = method,                    & 
-        h_zero = zmin_,                     & 
-        dz = dz,                            & 
-        fels_type=fels_type,                & 
-        use_standard_temperature=.true.,    & 
-        temperature = standard_temperature( & 
-        zmin_, fels_type=fels_type)+deltat  & 
+      pressures(1) = standard_pressure(     &
+        heights(1),                         &
+        method = method,                    &
+        h_zero = zmin_,                     &
+        dz = dz,                            &
+        fels_type=fels_type,                &
+        use_standard_temperature=.true.,    &
+        temperature = standard_temperature( &
+        zmin_, fels_type=fels_type)+deltat  &
         )
       do i = 2, size(heights)
-        pressures(i) = standard_pressure(                  & 
-          heights(i),                                      & 
-          p_zero = pressures(i-1),                         & 
-          h_zero = heights(i-1),                           & 
-          method = method,                                 & 
-          dz = dz,                                         & 
-          fels_type=fels_type,                             & 
-          use_standard_temperature=.true.,                 & 
-          temperature = standard_temperature(heights(i-1), & 
-          fels_type=fels_type)+deltat                      & 
+        pressures(i) = standard_pressure(                  &
+          heights(i),                                      &
+          p_zero = pressures(i-1),                         &
+          h_zero = heights(i-1),                           &
+          method = method,                                 &
+          dz = dz,                                         &
+          fels_type=fels_type,                             &
+          use_standard_temperature=.true.,                 &
+          temperature = standard_temperature(heights(i-1), &
+          fels_type=fels_type)+deltat                      &
           )
       enddo
     endif
@@ -221,7 +221,7 @@ function aggf (         &
   old_method=method
 
   do i = 1, size(heights)
-    l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 & 
+    l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 &
       - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
     rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
     if (present(first_derivative_h) .and. first_derivative_h) then
@@ -237,14 +237,14 @@ function aggf (         &
       ! according to equation 26 in \cite Huang05
       ! micro Gal / hPa / m
       if (i.gt.1) exit
-      aggf = rho *( ((earth%radius + heights(i))*cos(psi)-(earth%radius + h_)) / (l**3)) 
+      aggf = rho *( ((earth%radius + heights(i))*cos(psi)-(earth%radius + h_)) / (l**3))
     else
       ! GN microGal/hPa
       aggf = aggf &
-        -rho*((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_ 
+        -rho*((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_
     endif
   enddo
-  aggf = aggf/atmosphere%pressure%standard*gravity%constant*green_normalization("m", psi=psi) 
+  aggf = aggf/atmosphere%pressure%standard*gravity%constant*green_normalization("m", psi=psi)
 end function
 
 ! ==============================================================================
@@ -256,7 +256,7 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-19
 !! \warning psi in radian
-!! \todo explanaition ?? 
+!! \todo explanaition ??
 ! ==============================================================================
 function GN_thin_layer (psi)
   use mod_constants, only: dp
@@ -274,7 +274,7 @@ end function
 real(dp) function bouger (h, R )
   use mod_constants, only: dp, gravity, pi
   real(dp), intent(in), optional :: R !< height of point above the cylinder
-  real(dp), intent(in) ::  h 
+  real(dp), intent(in) ::  h
 
   if (present( R ) ) then
     bouger = h + R - sqrt(R**2+H**2)
@@ -290,14 +290,14 @@ end function
 !!
 !! see eq. page 288 \cite Warburton77
 !! \date 2013-03-18
-!! \author M. Rajner 
+!! \author M. Rajner
 ! ==============================================================================
 function simple_def (R)
   use mod_constants, only: dp, earth
   real(dp) :: R, delta
   real(dp) :: simple_def
 
-  delta = 0.22e-11 * R 
+  delta = 0.22e-11 * R
   simple_def = earth%gravity%mean / earth%radius *1000 * &
     delta * ( 2. - 3./2. * earth%density%crust / earth%density%mean &
     -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) &
