@@ -79,14 +79,14 @@ subroutine mass_vs_height (filename)
   do i =0,50000,1000
     percent=0
     do j = 1, size(height)
-      if (height(j).le.dble(i)) percent=percent+mass(j)
+      if (height(j).le.real(i,dp)) percent=percent+mass(j)
     enddo
     percent = percent / sum(mass)  * 100.
     write(file_unit, '(i6,2f19.9,es10.3)' ), i, percent, &
       100-(earth%radius+dble(1))**2 &
-      * standard_pressure(dble(i),method="standard", use_standard_temperature=.true.) &
-      / standard_gravity(dble(i))&
-      /earth%radius**2/standard_pressure(dble(0),method="standard") * standard_gravity(dble(0))*100
+      * standard_pressure(real(i,dp),method="standard", use_standard_temperature=.true.) &
+      / standard_gravity(real(i,dp))&
+      /earth%radius**2/standard_pressure(real(0,dp),method="standard") * standard_gravity(real(0,dp))*100
   enddo
 end subroutine
 

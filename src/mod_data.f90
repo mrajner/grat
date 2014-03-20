@@ -179,7 +179,11 @@ subroutine parse_model (cmd_line_entry)
       call model_aliases(model(i), dryrun=.true.)
 
       if (.not.model(i)%if) then
-        call print_warning ("model", more=trim(model(i)%name)//" : file do not exist", error=.false.)
+        call print_warning (                                                &
+          "model",                                                          &
+          more  = trim(model(i)%name)//" : file do not exist (or trail ,)", &
+          error = .false.                                                   &
+          )
       endif
 
     endif

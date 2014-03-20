@@ -58,6 +58,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_moreverbose(cmd_line_entry)
 
   case ("-B")
+
     inverted_barometer=.false.
     do i = 1, size(cmd_line_entry%field)
       select case(cmd_line_entry%field(i)%subfield(1)%name)
@@ -67,6 +68,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         inverted_barometer=.true.
       end select
     enddo
+
     if (.not.log%sparse) then
       write(log%unit, form%i3) "    inverted barometer assumption [T/F]:", &
         inverted_barometer
@@ -472,16 +474,17 @@ subroutine check_arguments (program_calling)
     endif
 
 
-    if (((method(2).or.method(3)) &
-      .and. inverted_barometer) &
-      .and. (ind%model%ls.eq.0 &
-      .or.(.not.model(ind%model%ls)%if &
+    if (((method(2).or.method(3))                      &
+      .and. inverted_barometer)                        &
+      .and. (ind%model%ls.eq.0                         &
+      .or.(.not.model(ind%model%ls)%if                 &
       .and..not.model(ind%model%ls)%if_constant_value) &
-      ) &
+      )                                                &
       .and. ind%green%ge.ne.0) then
-      call print_warning( &
+      call print_warning(                          &
         "inverted barometer, but no landsea mask", &
-        error=any(cmd_line%switch.eq."-B"))
+        error=.true.                               &
+        )
     endif
 
   endif

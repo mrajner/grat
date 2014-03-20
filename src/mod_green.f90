@@ -985,15 +985,15 @@ subroutine convolve(site, date)
                             ! h2=level%height(i+1)
                             ! v2=1.e2*dble(level%level(i+1))
 
-                            pressures(iheight) =                                    &
-                              standard_pressure(                                    &
-                              height                   = heights(iheight),          &
-                              p_zero                   = 1.e2*dble(level%level(i)), &
-                              h_zero                   = level%height(i),           &
-                              method                   = "standard",                &
-                              use_standard_temperature = .true.,                    &
-                              temperature              = temperatures(iheight),     &
-                              nan_as_zero              = .true.                     &
+                            pressures(iheight) =                                   &
+                              standard_pressure(                                   &
+                              height                   = heights(iheight),         &
+                              p_zero                   = 1.e2_dp*(level%level(i)), &
+                              h_zero                   = level%height(i),          &
+                              method                   = "standard",               &
+                              use_standard_temperature = .true.,                   &
+                              temperature              = temperatures(iheight),    &
+                              nan_as_zero              = .true.                    &
                               )
 
                           else
@@ -1085,7 +1085,7 @@ subroutine convolve(site, date)
                       t_zero=val(ind%model%t),                           &
                       h=site%height,                                     &
                       dz= gnc_looseness*10.                              &
-                      *merge(10._dp,                                     &
+                      * merge(10._dp,                                    &
                       merge(0.1_dp,1._dp,                                &
                       green_common(igreen)%distance(idist).le.1e-5_dp ), &
                       green_common(igreen)%distance(idist).ge.1e-2_dp ), &
@@ -1098,9 +1098,9 @@ subroutine convolve(site, date)
                       call progress(                                               &
                         100*igreen*idist                                           &
                         /(size(green_common(igreen)%distance)*size(green_common)), &
-                        time = 0., &
-                        cpu = 0., &
-                        every=1                                                    &
+                        time  = 0.,                                                &
+                        cpu   = 0.,                                                &
+                        every = 1                                                  &
                         )
                     endif
                   endif

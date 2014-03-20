@@ -30,24 +30,24 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-
-eep:grat 
-	for hsp in "100@HSP" "10@HSP" "1000@HSP" "100@HS" "1000@HS" "10@HS"; do \
-		time grat                                                             \
-		-F                                                                    \
-		NCEP @SP,                                                             \
-		VIENNA@RSP,                                                           \
-		NCEP1@T,                                                              \
-		NCEP@HP,                                                              \
-		ETOPO@H!,                                                             \
-		VIENNA@HRSP,                                                          \
-		NCEP@GP!,                                                             \
-		NCEP@VT!,                                                             \
-		-M1,2,3                                                               \
-		-G@GN,@GE                                                             \
-		-Sr  -D2010:3@D -H                                                    \
-		-I  $${hsp}@HSP -o tmp$$hsp   ;                                       \
-		done
+rep:grat 
+	for hsp in "5000@HSP"  "5@HS"; do                  \
+		for site in l r ; do                             \
+		time grat                                        \
+		-F                                               \
+		NCEP @SP,                                        \
+		VIENNA@RSP,                                      \
+		NCEP1@T,                                         \
+		NCEP@HP,                                         \
+		ETOPO@H!,                                        \
+		VIENNA@HRSP,                                     \
+		NCEP@GP!,                                        \
+		NCEP@VT!,                                        \
+		-M1,2,3                                          \
+		-G@GN                                            \
+		-S$$site @H  -D2010:13@D -H                         \
+		-I $${hsp} -q -o tmp$$hsp$$site:nc ; exec bash ; \
+		done ;done
 
 
 fsdfds: grat
@@ -134,7 +134,7 @@ mod_atmosphere.o:    mod_printing.o
 mod_aggf.o:          mod_atmosphere.o mod_normalization.o
 mod_site.o:          mod_printing.o  mod_utilities.o  mod_constants.o     mod_data.o      mod_cmdline.o  mod_date.o
 mod_parser.o:        mod_cmdline.o   mod_data.o       mod_polygon.o       mod_green.o     mod_admit.o    mod_date.o
-mod_green.o:         mod_data.o      mod_polygon.o    mod_date.o          mod_spherical.o mod_site.o     mod_normalization.o mod_aggf.o mod_3d.o mod_data.o
+mod_green.o:         mod_data.o mod_constants.o      mod_polygon.o    mod_date.o          mod_spherical.o mod_site.o     mod_normalization.o mod_aggf.o mod_3d.o mod_data.o
 mod_data.o:          mod_mjd.o       mod_atmosphere.o mod_polygon.o       mod_utilities.o mod_printing.o
 mod_date.o:          mod_data.o
 endif
@@ -242,7 +242,7 @@ rmlib:
 
 
 clean:
-	rm -f *.o *.mod *.a fort?????? tmp*
+	rm -f *.o *.mod *.a fort?????? 
 
 CLEAN: clean
 	-sudo rm \

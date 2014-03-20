@@ -323,5 +323,5 @@ program grat
     '("Execution time:",1x,f10.4," seconds (proc time:",1x,f6.2,1x,"s | %", f6.2,")")') &
     real(execution_time(2)-execution_time(1))/(execution_time(3)),          &
     cpu(2)-cpu(1),                                                          &
-   100.*(cpu(2)-cpu(1))/ (real(execution_time(2)-execution_time(1))/(execution_time(3)) )
+    100.*(cpu(2)-cpu(1))/ (real(execution_time(2)-execution_time(1))/(execution_time(3)) )
 end program
