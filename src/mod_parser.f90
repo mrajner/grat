@@ -14,7 +14,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   use mod_date,    only: parse_date
   use mod_polygon, only: parse_polygon
   use mod_data,    only: parse_model, parse_level, all_huge, model
-  use mod_green,   only: parse_green
+  use mod_green,   only: parse_green, green
   use mod_cmdline
   use mod_utilities, only: file_exists, is_numeric
   use mod_admit, only : parse_admit
@@ -118,6 +118,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         method(2) =.true.
       case ("3D", "3")
         method(3) =.true.
+        if (allocated(green)) then
+          call print_warning("with 3D selection -G* should be AFTER -M*3*",error=.true.)
+        endif
 
         select case (cmd_line_entry%field(i)%subfield(2)%name)
         case ("point")

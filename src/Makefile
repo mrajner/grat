@@ -32,20 +32,22 @@ endif
 
 
 eep:grat 
-	time grat \
-		-F                              \
-		NCEP @SP,                       \
-		VIENNA@RSP,                     \
-		NCEP1@T,                        \
-		NCEP@HP,                        \
-		ETOPO@H!,                       \
-		VIENNA@HRSP,                    \
-		NCEP@GP!,                       \
-		NCEP@VT!,                       \
-		-G@GN,@GE \
-		-M1,2,3 \
-		-Sj  -D2011 -H \
-		-I -3@DD : 10@AS:0.2@3D -V:s 
+	for hsp in "100@HSP" "10@HSP" "1000@HSP" "100@HS" "1000@HS" "10@HS"; do \
+		time grat                                                             \
+		-F                                                                    \
+		NCEP @SP,                                                             \
+		VIENNA@RSP,                                                           \
+		NCEP1@T,                                                              \
+		NCEP@HP,                                                              \
+		ETOPO@H!,                                                             \
+		VIENNA@HRSP,                                                          \
+		NCEP@GP!,                                                             \
+		NCEP@VT!,                                                             \
+		-M1,2,3                                                               \
+		-G@GN,@GE                                                             \
+		-Sr  -D2010:3@D -H                                                    \
+		-I  $${hsp}@HSP -o tmp$$hsp   ;                                       \
+		done
 
 
 fsdfds: grat

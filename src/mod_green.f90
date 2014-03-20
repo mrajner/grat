@@ -43,7 +43,8 @@ subroutine parse_green (cmd_line_entry)
   use mod_utilities, only: file_exists, is_numeric
   use mod_cmdline
   use mod_printing
-  type (cmd_line_arg), optional  :: cmd_line_entry
+
+  type (cmd_line_arg), optional :: cmd_line_entry
   integer :: i, ii
 
   if (allocated(green)) then
@@ -55,12 +56,13 @@ subroutine parse_green (cmd_line_entry)
     if (present(cmd_line_entry)) then
       allocate (green (size(cmd_line_entry%field)+1))
     else
-      allocate (green (1))
+      allocate (green(1))
     endif
-    ind%green%g3d=ubound(green,1)
-    green(ind%green%g3d)%name="merriam"
-    green(ind%green%g3d)%column=[1, 2]
-    green(ind%green%g3d)%dataname="G3D"
+
+    ind%green%g3d = ubound(green,1)
+    green(ind%green%g3d)%name     = "merriam"
+    green(ind%green%g3d)%column   = [1,2]
+    green(ind%green%g3d)%dataname = "G3D"
     call read_green(green(ind%green%g3d))
   else
     allocate (green (size(cmd_line_entry%field)))
@@ -69,8 +71,9 @@ subroutine parse_green (cmd_line_entry)
   if (present(cmd_line_entry)) then
     do i = 1, size(cmd_line_entry%field)
 
-      if (.not.log%sparse) &
-        write(log%unit, form%i2) trim(basename(trim(cmd_line_entry%field(i)%full)))
+      if (.not.log%sparse)                                 &
+        write(log%unit, form%i2)                           &
+        trim(basename(trim(cmd_line_entry%field(i)%full)))
 
       green(i)%name = cmd_line_entry%field(i)%subfield(1)%name
 
@@ -107,15 +110,6 @@ subroutine parse_green (cmd_line_entry)
 
     enddo
   endif
-
-  ! check completness
-  ! if ( &
-  ! ! any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
-  ! ! .and. green%dataname.eq."GNdz" ) &
-  ! ! .neqv. &
-  ! any(green%name.eq."/home/mrajner/src/grat/dat/merriam_green.dat" &
-  ! .and. green%dataname.eq."GNdz2" ) &
-  ! ) call print_warning("-G: merriam@GNdz should go with merriam @GNdz2")
 end subroutine
 
 ! =============================================================================
@@ -148,7 +142,6 @@ subroutine read_green (green, print)
   case ("merriam", "compute", "/home/mrajner/src/grat/dat/merriam_green.dat")
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
 
-    print *, green%dataname,green%name
     select case (green%dataname)
     case("GN")
       green%column=[1,2]
@@ -254,7 +247,7 @@ subroutine read_green (green, print)
       "columns:", green%column, &
       "lines:", size(green%distance)
 
-      if (green%dataname.eq."GNc") then
+    if (green%dataname.eq."GNc") then
       write(log%unit, form%i3) "gnc loosenes" , gnc_looseness
     endif
   endif
@@ -566,7 +559,7 @@ subroutine convolve(site, date)
         (green_normalization("m", psi = d2r(green_common(igreen)%distance(idist))))
 
       allocate(azimuths(nazimuth))
-      azimuths = [(info(igreen)%azimuth%start + (i-1) * dazimuth, i= 1, nazimuth)]
+      azimuths = [(info(igreen)%azimuth%start + (i-1) * dazimuth, i=1, nazimuth)]
 
       do iazimuth  = 1, nazimuth
         azimuth = azimuths(iazimuth)
@@ -581,7 +574,7 @@ subroutine convolve(site, date)
 
         ! read polygons
         if (ind%polygon%e.ne.0 .or. ind%polygon%n.ne.0) then
-          do i =1, size(polygon)
+          do i=1, size(polygon)
             if (polygon(i)%if) then
               call chkgon (r2d(lon), r2d(lat), polygon(i), iok(i))
             endif
@@ -816,6 +809,7 @@ subroutine convolve(site, date)
                       if (ind%model%rsp.eq.0) then
                         call print_warning("3D but no RSP", error=.true.)
                       endif
+
                       if (ind%model%hrsp.eq.0) then
                         call print_warning("3D but no HRSP", error=.true.)
                       endif
@@ -831,7 +825,7 @@ subroutine convolve(site, date)
                       endif
 
                       if (info(igreen)%height_progressive) then
-                        nheight = info(igreen)%height%step
+                        if (nheight.eq.0) nheight = info(igreen)%height%step
                       else
                         nheight=                                            &
                           ceiling((info(igreen)%height%stop                 &
@@ -839,16 +833,47 @@ subroutine convolve(site, date)
                           /info(igreen)%height%step)
                       endif
 
-                      allocate(heights(nheight))
-                      allocate(pressures(nheight))
+                      allocate(heights     (nheight))
+                      allocate(pressures   (nheight))
                       allocate(temperatures(nheight))
 
                       if (info(igreen)%height_progressive) then
-                        heights=logspace(                                        &
-                          max(info(igreen)%height%start, val(ind%model%h))+0.05, &
-                          info(igreen)%height%stop,                              &
-                          nheight                                                &
-                          )
+                        if(site%height-max(info(igreen)%height%start, val(ind%model%h)).gt.0) then
+                          i=ceiling(                                                                      &
+                            nheight                                                                       &
+                            * (site%height-max(info(igreen)%height%start, val(ind%model%h)))              &
+                            / (info(igreen)%height%stop-max(info(igreen)%height%start, val(ind%model%h))) &
+                            )
+
+                          if (i==1)  then
+                            heights(i)=site%height
+                          else
+                            heights(i:1:-1)=-logspace(   &
+                              site%height,               &
+                              2*site%height-             &
+                              max(                       &
+                              info(igreen)%height%start, &
+                              val(ind%model%h)           &
+                              ),                         &
+                              i                          &
+                              )                          &
+                              +2*site%height 
+                          endif
+
+                          heights(i+1:)=logspace(     &
+                            site%height ,             &
+                            info(igreen)%height%stop, &
+                            nheight-i                 &
+                            ) 
+
+                        else
+                          heights=logspace(                                        &
+                            max(info(igreen)%height%start, val(ind%model%h)), &
+                            info(igreen)%height%stop,                              &
+                            nheight                                                &
+                            ) 
+                        endif
+
                       else
                         do iheight=1, nheight
                           heights(iheight)=max(info(igreen)%height%start, val(ind%model%h)) &
@@ -868,7 +893,7 @@ subroutine convolve(site, date)
                           level%height(i),                     &
                           level  = level%level(i),             &
                           method = info(igreen)%interpolation, &
-                          date   = date%date &
+                          date   = date%date                   &
                           )
 
                         if (ind%model%vt.ne.0) then
@@ -906,6 +931,7 @@ subroutine convolve(site, date)
                       do iheight=1, nheight
 
                         if (iheight.eq.1) then
+
                           if (info(igreen)%height_progressive) then
                             info(igreen)%height%step=(heights(iheight+1)-heights(iheight))
                           endif

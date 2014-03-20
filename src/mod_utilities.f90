@@ -490,11 +490,13 @@ function logspace(xmin, xmax, n)
   real(dp), intent(in) :: xmin, xmax
   real(dp), dimension(:), allocatable :: logspace
   integer, intent(in), optional :: n
+
   if (present(n)) then
     allocate(logspace(n))
   else
     allocate(logspace(10))
   endif
+
   logspace = 10._dp** linspace(log10(xmin), log10(xmax), n = n)
 end function
 
