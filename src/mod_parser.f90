@@ -10,14 +10,14 @@ contains
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
 subroutine parse_option (cmd_line_entry, accepted_switches)
-  use mod_site,    only: parse_site
-  use mod_date,    only: parse_date
-  use mod_polygon, only: parse_polygon
-  use mod_data,    only: parse_model, parse_level, all_huge, model
-  use mod_green,   only: parse_green, green
   use mod_cmdline
+  use mod_site,      only: parse_site
+  use mod_date,      only: parse_date
+  use mod_polygon,   only: parse_polygon
+  use mod_data,      only: parse_model, parse_level, all_huge, model
+  use mod_green,     only: parse_green, green
   use mod_utilities, only: file_exists, is_numeric
-  use mod_admit, only : parse_admit
+  use mod_admit,     only: parse_admit
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
@@ -138,12 +138,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
         select case (cmd_line_entry%field(i)%subfield(3)%name)
         case ("reference", "ref")
           method3d_compute_reference=.true.
+
         case default
           call print_warning (                            &
             "no explicit ref for 3d given" //             &
             " - using @GN[...] if any or put -M3 : : ref" &
             )
-          method3d(1)=.true.
         endselect
 
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%dataname)) then
@@ -671,35 +671,36 @@ subroutine parse_info (cmd_line_entry)
       enddo
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
-      write(log%unit,                 &
-        "("//form%t3//"               &
-        'DB:' , f7.2,                 &
-        '|DE:', f8.3,                 &
-        '|I:' , a   ,                 &
-        '|DD:', i2  ,                 &
-        '|DS:', f7.2,                 &
-        '|HB:', f8.1,                 &
-        '|HE:', f8.1,                 &
-        '|HS:', f7.2,                 &
-        '|HSP:', l,                   &
-        '|3D:', f7.2,                 &
-        '|3:', a,                     &
-        '|3:@DE', f7.2,               &
-        '|3::ref', l,               &
-        )"),                          &
-        info(i)%distance%start,       &
-        info(i)%distance%stop,        &
-        info(i)%interpolation,        &
-        info(i)%distance%denser,      &
-        info(i)%distance%step,        &
-        info(i)%height%start,         &
-        info(i)%height%stop,          &
-        info(i)%height%step,          &
-        info(i)%height_progressive,   &
-        info(i)%distance%stop_3d,     &
-        pack(method3dnames,method3d), &
-        method3d_refinment_distance,  &
-        method3d_refinment_distance
+      write(log%unit,                  &
+        "("//form%t3//"                &
+        'DB:',     f7.2,               &
+        '|DE:',    f8.3,               &
+        '|I:',     a,                  &
+        '|DD:',    i2,                 &
+        '|DS:',    f7.2,               &
+        '|HB:',    f8.1,               &
+        '|HE:',    f8.1,               &
+        '|HS:',    f7.2,               &
+        '|HSP:',   l,                  &
+        '|3D:',    f7.2,               &
+        '|3D:',    a,                  &
+        '|3:@DE',  f7.2,               &
+        '|3::ref', l,                  &
+        '|'                            &
+        )"),                           &
+        info(i)%distance%start,        &
+        info(i)%distance%stop,         &
+        info(i)%interpolation,         &
+        info(i)%distance%denser,       &
+        info(i)%distance%step,         &
+        info(i)%height%start,          &
+        info(i)%height%stop,           &
+        info(i)%height%step,           &
+        info(i)%height_progressive,    &
+        info(i)%distance%stop_3d,      &
+        pack(method3dnames,method3d) , &
+        method3d_refinment_distance,   &
+        method3d_compute_reference
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then
         call print_warning( &
