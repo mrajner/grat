@@ -31,7 +31,7 @@ all: FLAGS += -O2
 endif
 
 rep:grat 
-	for hsp in "5000@HSP"  "5@HS"; do                  \
+	for hsp in "5000@HSP"; do                          \
 		for site in l r ; do                             \
 		time grat                                        \
 		-F                                               \
@@ -45,8 +45,8 @@ rep:grat
 		NCEP@VT!,                                        \
 		-M1,2,3                                          \
 		-G@GN                                            \
-		-S$$site @H  -D2010:13@D -H                         \
-		-I $${hsp} -q -o tmp$$hsp$$site:nc ; exec bash ; \
+		-S$$site @H  -D2010:13@D -H                      \
+		-I $${hsp} -q -o tmp$$hsp$$site ; exec bash ; \
 		done ;done
 
 

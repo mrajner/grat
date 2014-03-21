@@ -784,10 +784,11 @@ subroutine convolve(site, date)
                   ! GE NIB if both IB and NIB wanted
                   if (inverted_barometer.and.non_inverted_barometer) then
                     if (ind%green%ge.ne.0) then
-                      result(ubound(result)) = result(ubound(result)) +        &
-                        val(ind%model%sp) *                              &
-                        green_common(igreen)%data(idist, ind%green%ge) * &
-                        area * normalize
+                      result(ubound(result)) =                           &
+                        result(ubound(result))                           &
+                        + val(ind%model%sp)                              &
+                        * green_common(igreen)%data(idist, ind%green%ge) &
+                        * area * normalize
                     endif
                   endif
                 endif
