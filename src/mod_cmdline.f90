@@ -135,9 +135,8 @@ module mod_cmdline
 
     logical :: method(3)
 
-    ! point mass - method3d(1)=.true.
-    ! potential  - method3d(2)=.true.
-    ! cylinder   - method3d(3)=.true.
+    character(9), dimension(3), parameter :: &
+      method3dnames=["point", "potential", "cylinder"]
     logical :: method3d(3)
     logical :: method3d_compute_reference  = .false.
     real    :: method3d_refinment_distance = 0.1

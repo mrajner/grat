@@ -124,24 +124,16 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           call print_warning("with 3D selection -G* should be AFTER -M*3*",error=.true.)
         endif
 
-        select case (cmd_line_entry%field(i)%subfield(2)%name)
-        case ("point")
-          method3d(1)=.true.
+         method3d=cmd_line_entry%field(i)%subfield(2)%name==method3dnames
 
-        case ("potential")
-          method3d(2)=.true.
-
-        case ("cylinder")
-          method3d(3)=.true.
-
-        case default
+        if (.not.any(method3d)) then
           call print_warning (                                         &
             "no explicit method3d given"//                             &
             " - falling into point mass (for backward compability, not &
             recomended, use -M3 : potential|cylinder)"                 &
             )
           method3d(1)=.true.
-        endselect
+        endif
 
         select case (cmd_line_entry%field(i)%subfield(3)%name)
         case ("reference", "ref")
@@ -172,10 +164,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       write(log%unit, *)
     endif
 
-    if (method(3).and.(method3d(2).or.method3d(3))) then
+    if (method(3)) then
       write(log%unit, form_62, advance="no"), "method refinment for near area using 3D"
-      if (method3d(2)) write(log%unit,'(a$)') "cuboid"
-      if (method3d(3)) write(log%unit,'(a$)') "cylinder"
+      write(log%unit,'(a$)') pack(method3dnames,method3d)
       write(log%unit,*) method3d_refinment_distance
     endif
 
@@ -680,29 +671,35 @@ subroutine parse_info (cmd_line_entry)
       enddo
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
-      write(log%unit,               &
-        "("//form%t3//"             &
-        'DB:' , f7.2,               &
-        '|DE:', f8.3,               &
-        '|I:' , a   ,               &
-        '|DD:', i2  ,               &
-        '|DS:', f7.2,               &
-        '|HB:', f8.1,               &
-        '|HE:', f8.1,               &
-        '|HS:', f7.2,               &
-        '|HSP:', l,                 &
-        '|3D:', f7.2,               &
-        )"),                        &
-        info(i)%distance%start,     &
-        info(i)%distance%stop,      &
-        info(i)%interpolation,      &
-        info(i)%distance%denser,    &
-        info(i)%distance%step,      &
-        info(i)%height%start,       &
-        info(i)%height%stop,        &
-        info(i)%height%step,        &
-        info(i)%height_progressive, &
-        info(i)%distance%stop_3d
+      write(log%unit,                 &
+        "("//form%t3//"               &
+        'DB:' , f7.2,                 &
+        '|DE:', f8.3,                 &
+        '|I:' , a   ,                 &
+        '|DD:', i2  ,                 &
+        '|DS:', f7.2,                 &
+        '|HB:', f8.1,                 &
+        '|HE:', f8.1,                 &
+        '|HS:', f7.2,                 &
+        '|HSP:', l,                   &
+        '|3D:', f7.2,                 &
+        '|3:', a,                     &
+        '|3:@DE', f7.2,               &
+        '|3::ref', l,               &
+        )"),                          &
+        info(i)%distance%start,       &
+        info(i)%distance%stop,        &
+        info(i)%interpolation,        &
+        info(i)%distance%denser,      &
+        info(i)%distance%step,        &
+        info(i)%height%start,         &
+        info(i)%height%stop,          &
+        info(i)%height%step,          &
+        info(i)%height_progressive,   &
+        info(i)%distance%stop_3d,     &
+        pack(method3dnames,method3d), &
+        method3d_refinment_distance,  &
+        method3d_refinment_distance
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then
         call print_warning( &
