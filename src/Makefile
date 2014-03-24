@@ -30,8 +30,6 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-fdsfdf : grat
-	grat -V -M3:potential@3 -I
 rep:grat 
 	for hsp in "5000@HSP"; do                          \
 		for site in l r ; do                             \
