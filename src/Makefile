@@ -250,6 +250,7 @@ CLEAN: clean
 		/usr/local/lib/libgrat.a
 	-rm $(LINKS)
 	-sudo rm $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
+	-rm $(EXAMPLES)
 
 HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 HELPS=$(addprefix ../dat/, $(HELP_NAMES))

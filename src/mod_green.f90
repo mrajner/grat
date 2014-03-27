@@ -289,7 +289,7 @@ subroutine green_unification ()
 
     if (info(iinfo)%distance%step.eq.0) then
       do i=1, size(green)
-        tmp(i) = count(                                          &
+        tmp(i) = count(                                        &
           green(i)%distance.le.info(iinfo)%distance%stop       &
           .and.green(i)%distance.ge.info(iinfo)%distance%start &
           )
@@ -308,7 +308,7 @@ subroutine green_unification ()
       endif
 
       if (info(iinfo)%distance%denser.ge.0) then
-        allocate(tmpgreen%distance(                                   &
+        allocate(tmpgreen%distance(                                    &
           size_ntimes_denser(imax-imin+1, info(iinfo)%distance%denser) &
           ))
 
@@ -345,11 +345,14 @@ subroutine green_unification ()
       allocate(green_common(iinfo)%distance(imax-imin+1))
       green_common(iinfo)%distance =       &
         tmpgreen%distance(imin:imax)
-      green_common(iinfo)%distance(1) =    &
-        (3/4.*info(iinfo)%distance%start+  &
+
+      green_common(iinfo)%distance(1) =                                  &
+        (3/4.*info(iinfo)%distance%start+                                &
         green_common(iinfo)%distance(2)/4)
-      green_common(iinfo)%distance(size(green_common(iinfo)%distance)) =      &
-        (3/4.*info(iinfo)%distance%stop+                                      &
+
+      green_common(iinfo)%distance(size(green_common(iinfo)%distance)) = &
+        (3/4.*info(iinfo)%distance%stop+                                 &
+
         green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
 
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
@@ -359,11 +362,11 @@ subroutine green_unification ()
 
       do i =1, size(green_common(iinfo)%distance)
 
-        green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) + &
-          green_common(iinfo)%distance(i-1) ) / 2.
+        green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) &
+         + green_common(iinfo)%distance(i-1) ) / 2.
 
-        green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) + &
-          green_common(iinfo)%distance(i+1) ) / 2.
+        green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) &
+          + green_common(iinfo)%distance(i+1) ) / 2.
 
       enddo
 
