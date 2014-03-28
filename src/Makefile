@@ -30,27 +30,13 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-ffs:grat 
-	grat --version
-rep:grat 
-	for hsp in "5000@HSP"; do                          \
-		for site in l r ; do                             \
-		time grat                                        \
-		-F                                               \
-		NCEP @SP,                                        \
-		VIENNA@RSP,                                      \
-		NCEP1@T,                                         \
-		NCEP@HP,                                         \
-		ETOPO@H!,                                        \
-		VIENNA@HRSP,                                     \
-		NCEP@GP!,                                        \
-		NCEP@VT!,                                        \
-		-M1,2,3                                          \
-		-G@GN                                            \
-		-S$$site @H  -D2010:13@D -H                      \
-		-I $${hsp} -q -o tmp$$hsp$$site ; exec bash ; \
-		done ;done
 
+fsdfs:test
+	./test -F ERA@SP -Sj --version -v
+
+
+check3d: grat
+	/home/mrajner/dr/rysunki/3d_vs_DE.sh -w 3d_ERA_1000_60000_2____potentialHSP -v -f -o
 
 fsdfds: grat
 	for ref in "" ref ; do            \
@@ -271,3 +257,11 @@ settings_for_gnc: grat
 
 .PHONY:.FORCE
 .FORCE:
+
+version:grat 
+	grat --version
+	grat -v
+
+# development and testing version of grat
+test: libgrat.a
+	$(FC) grat.f90 $(NETCDFLIB) libgrat.a -o $@
