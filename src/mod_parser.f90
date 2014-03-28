@@ -974,6 +974,7 @@ subroutine parse_long_option(cmd_line_entry)
 
   if (trim(cmd_line_entry%full)=="--version") then
     print '(a)', "0"
+    call exit(0)
   endif
 end subroutine
 end module
