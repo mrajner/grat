@@ -262,6 +262,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ("-J")
     call parse_level(cmd_line_entry)
 
+  case ("--")
+    call parse_long_option(cmd_line_entry)
+
   case default
     if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
   endselect
@@ -960,5 +963,17 @@ subroutine get_index()
       ind%polygon%n = i
     endselect
   enddo
+end subroutine
+
+! =============================================================================
+! only for debugging during developement
+! =============================================================================
+subroutine parse_long_option(cmd_line_entry)
+  use mod_cmdline
+  type(cmd_line_arg) :: cmd_line_entry
+
+  if (trim(cmd_line_entry%full)=="--version") then
+    print '(a)', "0"
+  endif
 end subroutine
 end module

@@ -444,8 +444,8 @@ function variable_modifier (val, modifier, verbose, list_only)
     endif
 
     if (present(verbose).and.verbose) then
-      write(log%unit, "("//form%t3//"a,a6,a7$)" ) &
-        "var modifier: ", trim(key), trim(keyval)
+      write(log%unit, "("//form%t3//"3(a,x)$)" ) &
+        "var modifier:", trim(key), trim(keyval)
     endif
 
     select case (key)

@@ -80,7 +80,7 @@ program grat
   call intro (                                         &
     program_calling   = "grat",                        &
     version           = "pre-alpha",                   &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n", &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-", &
     cmdlineargs       = .true.                         &
     )
 
