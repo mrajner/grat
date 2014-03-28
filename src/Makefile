@@ -30,6 +30,8 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
+ffs:grat 
+	grat -v
 rep:grat 
 	for hsp in "5000@HSP"; do                          \
 		for site in l r ; do                             \

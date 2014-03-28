@@ -225,13 +225,15 @@ end function
 subroutine print_version (program_calling, version)
   character(*) :: program_calling
   character(*), optional :: version
+  character(10) :: host
+  call hostnm(host)
 
   write(log%unit, form_header )
   write(log%unit, form_inheader ), trim(program_calling)
   write(log%unit, form_inheader ), version
   write(log%unit, form_inheader_n ), &
     "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
-  write(log%unit, form_inheader ), "compiled on "//__C_DATE__
+  write(log%unit, form_inheader ), "compiled on "//trim(host)//" "//__C_DATE__
   write(log%unit, form_inheader ), 'FFLAGS = '//__FFLAGS__
   write(log%unit, form_header )
   write(log%unit, form_inheader ), 'Copyright 2013, 2014 by Marcin Rajner'
