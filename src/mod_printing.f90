@@ -160,12 +160,19 @@ subroutine progress(j, time, cpu, every)
 
   step = step + 1
 
-  if (                       &
+  if (every_.eq.0.and.j.ne.100) then
+    return
+  elseif (every_.eq.0.and.j.eq.100) then
+  elseif (                       &
     modulo(step,every_).ne.0 &
     .and.j.ne.every_         &
     .and.j.ne.100            &
     .and.step.ne.1           &
-    ) return
+    ) then 
+    return
+  endif
+
+
 
   write(unit=bar(1:3),fmt="(i3)") j
   do k=1, j/5
