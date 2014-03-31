@@ -1195,10 +1195,11 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   use mod_mjd
   type (file) :: model, landseamask
   logical, intent(in):: inverted_landsea_mask
-  real(dp) ::  val, valls, total_area, ocean_area, valoceanarea
+  real(dp) ::  val, total_area, ocean_area, valoceanarea, valls
   integer :: ilat, ilon
   integer(2) :: iok
   integer, intent(in), optional :: date(6)
+  integer(1) :: ivalls
 
   total_area = 0
   ocean_area = 0
@@ -1207,20 +1208,28 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   do ilat = 1, size(model%lat)
     do ilon = 1, size(model%lon)
       total_area = total_area + cos(d2r(model%lat(ilat)))
+
       call get_value(landseamask, model%lat(ilat), model%lon(ilon), valls)
+      ivalls=valls
+
       if (ind%polygon%e.ne.0) then
-        call chkgon ( model%lon(ilon), model%lat(ilat), polygon(ind%polygon%e), iok)
+        call chkgon (model%lon(ilon), model%lat(ilat), polygon(ind%polygon%e), iok)
         if (iok.eq.0) cycle
       endif
-      if ((valls.eq.0.and..not.inverted_landsea_mask) &
-        .or.(valls.eq.1 .and. inverted_landsea_mask)) then
+
+      if ((ivalls.eq.0.and..not.inverted_landsea_mask) &
+        .or.(ivalls.eq.1 .and. inverted_landsea_mask)) then
+
         call get_value(model, model%lat(ilat), model%lon(ilon), val)
-        ocean_area = ocean_area + cos(d2r(model%lat(ilat)))
-        valoceanarea    = valoceanarea + val * cos(d2r(model%lat(ilat)))
+
+        ocean_area   = ocean_area + cos(d2r(model%lat(ilat)))
+        valoceanarea = valoceanarea + val * cos(d2r(model%lat(ilat)))
         model%data(ilon,ilat,1) = -9999
+
       endif
     enddo
   enddo
+
   where (model%data.eq.-9999)
     model%data=valoceanarea/ ocean_area
   end where
@@ -1232,9 +1241,11 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
       endif
       write (moreverbose(ind%moreverbose%o)%unit,'(2a12)'), "ocean[%]", "mean_val"
     endif
+
     if (present(date)) then
       write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no'), mjd(date), date
     endif
+
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), &
       ocean_area/total_area*100.,                                &
       valoceanarea/ocean_area

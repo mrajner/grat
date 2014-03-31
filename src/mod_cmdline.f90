@@ -91,17 +91,21 @@ module mod_cmdline
           strict=.false., &
           time=.false.
     end type
+
     type(warnings_info) warnings
 
     type model_index
       integer(2) :: sp, t, rsp, ewt, h, ls, hp, hrsp, gp, vt, vsh
     end type
+
     type poly_index
       integer(2) :: e, n
     end type
+
     type moreverbose_index
       integer(2) :: p, g, t, a, d, l, n, r, s, o, b, j, v
     end type
+
     type green_index
       integer(2) :: &
           gn          = 0,  & ! green newtonian   - with SP  in Pa
@@ -112,19 +116,21 @@ module mod_cmdline
           ghe         = 0,  & ! green horizontal  - with EWT in mm
           gg          = 0,  & ! green gravimetric - with SP  in Pa
           ! (like elastic but uses green not normalized according to Merriam)
-      gndt        = 0,  & ! first derivative respect to temperature
+          gndt        = 0,  & ! first derivative respect to temperature
           gndh        = 0,  & ! first derivative respect to station height
           gndz        = 0,  & ! first derivative respect to column height
           gndz2       = 0,  & ! second derivative respect to column height
           gnc         = 0,  & ! compute aggf every time
           g3d
     end type
+
     type index_info
       type (model_index)       :: model
       type (moreverbose_index) :: moreverbose
       type (green_index) :: green
       type (poly_index) :: polygon
     end type
+
     type(index_info) :: ind
 
     type admitance_info
@@ -186,10 +192,13 @@ contains
             endif
             dummy_aux2=dummy_aux2(indeks_colon+1:)
             indeks_at=index(cmd_line(i)%field(j)%subfield(n)%name,"@")
+
             if (indeks_at.gt.0) then
-              cmd_line(i)%field(j)%subfield(n)%dataname = &
+
+              cmd_line(i)%field(j)%subfield(n)%dataname =              &
                   cmd_line(i)%field(j)%subfield(n)%name(indeks_at+1:)
-              cmd_line(i)%field(j)%subfield(n)%name = &
+
+              cmd_line(i)%field(j)%subfield(n)%name =                  &
                   cmd_line(i)%field(j)%subfield(n)%name(1:indeks_at-1)
             else
               cmd_line(i)%field(j)%subfield(n)%dataname = " "

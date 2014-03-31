@@ -560,6 +560,7 @@ subroutine parse_moreverbose (cmd_line_entry)
     moreverbose(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
 
     if (dataname(moreverbose(i)%dataname).ne."unknown") then
+
       if (moreverbose(i)%name.ne."") then
         if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."nc")) then
           moreverbose(i)%noclobber=.true.
@@ -567,6 +568,7 @@ subroutine parse_moreverbose (cmd_line_entry)
             call print_warning ("nc", more=trim(moreverbose(i)%name), error=.true.)
           endif
         endif
+
         open(                            &
           newunit = moreverbose(i)%unit, &
           file    = moreverbose(i)%name, &
