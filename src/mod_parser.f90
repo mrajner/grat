@@ -237,7 +237,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       quiet_step=0
     endif
 
-    write(log%unit,form%i2) &
+    write(log%unit,form%i3) &
       "quiet step", quiet_step
 
   case ('-U')
