@@ -69,7 +69,7 @@ program grat
   implicit none
   real    :: cpu(2)
   integer :: execution_time(3)
-  integer :: isite, i, idate, start, iprogress = 0
+  integer :: isite, i, idate, start, iprogress = 0, j
   logical :: first_waning = .true.
 
   ! program starts here with time stamp
@@ -277,11 +277,12 @@ program grat
         site(isite)%height
 
       if (method(1)) then
-        do i=1,size(admitance%value(:))
+        do j=1, size(admitance%value(:))
           write (output%unit, "("// output%form // '$)'), &
             admit(                                        &
             site(isite),                                  &
-            date=date(idate)%date                         &
+            date   = date(idate)%date,                    &
+            number = j                                    &
             )
         enddo
       endif

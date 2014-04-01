@@ -979,7 +979,7 @@ subroutine parse_long_option(cmd_line_entry)
   type(cmd_line_arg) :: cmd_line_entry
 
   if (trim(cmd_line_entry%full)=="--version") then
-    print '(a)', "0"
+    print '(a)', "1"
     call exit(0)
   endif
 end subroutine

@@ -31,7 +31,7 @@ all: FLAGS += -O2
 endif
 
 dfdfd: grat
-	grat -q -FNCEP@SP, NCEP@LS -D2010 -G@GE ,@GN -M1,2 -B,I,N -H -Sj -A,2,3,1,10 -V:s
+	grat -q -FNCEP@SP, NCEP@LS -D2010 -G@GE ,@GN -M1,2 -B,I,N -H -Sj -A1,,4 -V  -o:free
 
 fsdfs:test
 	./test -F ERA@SP -Sj --version -v

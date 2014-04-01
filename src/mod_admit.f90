@@ -7,7 +7,7 @@ module mod_admit
 contains
 ! =============================================================================
 ! =============================================================================
-real(dp) function admit(site_, date)
+real(dp) function admit(site_, date, number)
   use mod_cmdline, only: ind, info, admitance
   use mod_data, only: get_value, model
   use mod_utilities, only: r2d
@@ -19,6 +19,7 @@ real(dp) function admit(site_, date)
   type(site_info) :: site_
   integer, optional :: date(6)
   integer :: i
+  integer :: number
   logical, save :: first_warning=.true.
 
 
@@ -127,7 +128,7 @@ real(dp) function admit(site_, date)
   endif
 
   if (ind%model%rsp.ne.0) val = val-rsp
-  admit = admitance%value(1)*1.e-2 * val
+  admit = admitance%value(number)*1.e-2 * val
 
   if (first_warning) first_warning=.false.
 end function
