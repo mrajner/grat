@@ -127,7 +127,7 @@ real(dp) function admit(site_, date)
   endif
 
   if (ind%model%rsp.ne.0) val = val-rsp
-  admit = admitance%value*1.e-2 * val
+  admit = admitance%value(1)*1.e-2 * val
 
   if (first_warning) first_warning=.false.
 end function
@@ -137,14 +137,28 @@ end function
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine parse_admit(cmd_line_entry)
-  use mod_cmdline
-  use mod_printing
+  use mod_cmdline,  only: cmd_line_arg, admitance
+  use mod_printing, only: log, form
+
   type (cmd_line_arg) :: cmd_line_entry
-  if (cmd_line_entry%field(1)%subfield(1)%name.ne."") then
-    read(cmd_line_entry%field(1)%subfield(1)%name, *) admitance%value
+  integer(2) :: i
+
+  allocate(admitance%value(size(cmd_line_entry%field)))
+  do i=1,size(cmd_line_entry%field)
+    if (cmd_line_entry%field(i)%subfield(1)%name.ne."") then
+      read(cmd_line_entry%field(i)%subfield(1)%name, *) admitance%value(i)
+    else
+      admitance%value(i)=-0.3
+    endif
+  enddo
+
+  if (.not.log%sparse) then
+    write(log%unit, '('//form%t2//',a,x$)') "admitance:"
+    do i=1,size(admitance%value)
+      write(log%unit, '(f6.2$)')  admitance%value(i)
+    enddo
+    write(log%unit, '(x,a)') , "uGal/hPa"
   endif
-  if (.not.log%sparse) &
-    write(log%unit, '('//form%t2//',a,x,f6.2,x,a)') "admitance:", admitance%value, "uGal/hPa"
 
   ! not sure what trying to achive
   ! if (size(cmd_line_entry%field(1)%subfield).gt.1 &

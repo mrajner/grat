@@ -67,59 +67,58 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     def_unit = error_unit
     if (present (unit) ) def_unit=unit
 
-    if(.not.quiet) then
-      if ((present(error).and.error)) then
-        write(def_unit,'(a)', advance='no') "error: "
-      else
-        write(def_unit,'(a)', advance='no') "warning: "
-        if (warnings%strict) write(def_unit,'(a$)') "[strict set]: "
-      endif
-
-      select case(warn)
-
-      case("args")
-        write(def_unit, form%i0, advance="no") "no cmd line args! try: "// program_calling // " -h"
-
-      case("site_file_format")
-        write(def_unit, form%i0, advance="no") "Some records were rejected"
-        write(def_unit, form%i0, advance="no") "you should specify for each &
-          line at least 3[4] parameters in free format:"
-        write(def_unit, form%i0, advance="no") "name lat lon [height] (rest will be skipped)"
-
-      case("boundaries")
-        write(def_unit, form%i0, advance="no") "something wrong with boundaries. IGNORED"
-
-      case("site")
-        write(def_unit, form%i0, advance="no") "something wrong with -S|-R specification. IGNORED"
-
-      case ("repeated")
-        write(def_unit, form%i0, advance="no") "reapeted specification"
-
-      case ("date")
-        write(def_unit, form%i0, advance="no") "something wrong with date format -D. IGNORED"
-
-      case ("model")
-        write(def_unit, form%i0, advance="no") "something wrong with -F."
-
-      case("alias_without_date")
-        write(def_unit, form%i0, advance="no") "-D is required with aliased data"
-
-      case("green_missing")
-        write(def_unit, form%i0, advance="no") "-G is required"
-
-      case("method")
-        write(def_unit, form%i0, advance="no") "-M no method was set"
-
-      case("nc")
-        write(def_unit, form%i0, advance="no") "I will not overwrite with : nc (noclobber)"
-
-      case default
-        write(def_unit, form%i0, advance="no") warn
-      end select
-
-      if (present(more)) write(def_unit, form%i0, advance="no") more
+    if ((present(error).and.error)) then
+      write(def_unit,'(a)', advance='no') "error: "
+    else
+      write(def_unit,'(a)', advance='no') "warning: "
+      if (warnings%strict) write(def_unit,'(a$)') "[strict set]: "
     endif
+
+    select case(warn)
+
+    case("args")
+      write(def_unit, form%i0, advance="no") "no cmd line args! try: "// program_calling // " -h"
+
+    case("site_file_format")
+      write(def_unit, form%i0, advance="no") "Some records were rejected"
+      write(def_unit, form%i0, advance="no") "you should specify for each &
+        line at least 3[4] parameters in free format:"
+      write(def_unit, form%i0, advance="no") "name lat lon [height] (rest will be skipped)"
+
+    case("boundaries")
+      write(def_unit, form%i0, advance="no") "something wrong with boundaries. IGNORED"
+
+    case("site")
+      write(def_unit, form%i0, advance="no") "something wrong with -S|-R specification. IGNORED"
+
+    case ("repeated")
+      write(def_unit, form%i0, advance="no") "reapeted specification"
+
+    case ("date")
+      write(def_unit, form%i0, advance="no") "something wrong with date format -D. IGNORED"
+
+    case ("model")
+      write(def_unit, form%i0, advance="no") "something wrong with -F."
+
+    case("alias_without_date")
+      write(def_unit, form%i0, advance="no") "-D is required with aliased data"
+
+    case("green_missing")
+      write(def_unit, form%i0, advance="no") "-G is required"
+
+    case("method")
+      write(def_unit, form%i0, advance="no") "-M no method was set"
+
+    case("nc")
+      write(def_unit, form%i0, advance="no") "I will not overwrite with : nc (noclobber)"
+
+    case default
+      write(def_unit, form%i0, advance="no") warn
+    end select
+
+    if (present(more)) write(def_unit, form%i0, advance="no") more
   endif
+
   if (present(error).and.error.or.warnings%strict) then
     if ((.not.warn.eq."args").and. warnings%time) then
       call date_and_time (values=execution_date)
@@ -129,6 +128,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     elseif (.not.quiet) then
       write(def_unit,*)
     endif
+
     call exit(1)
   endif
 
@@ -164,89 +164,89 @@ subroutine progress(j, time, cpu, every)
     return
   elseif (every_.eq.0.and.j.eq.100) then
   elseif (                       &
-    modulo(step,every_).ne.0 &
-    .and.j.ne.every_         &
-    .and.j.ne.100            &
-    .and.step.ne.1           &
-    ) then 
+      modulo(step,every_).ne.0 &
+      .and.j.ne.every_         &
+      .and.j.ne.100            &
+      .and.step.ne.1           &
+      ) then 
+      return
+    endif
+
+
+
+    write(unit=bar(1:3),fmt="(i3)") j
+    do k=1, j/5
+      bar(6+k:6+k)="*"
+    enddo
+
+    if (time.gt.60000) then
+      time = time/3600
+      cpu  = cpu/3600
+      timeunit = "h"
+    else if (time.gt.1000) then
+      time = time/60
+      cpu  = cpu/60
+      timeunit = "m"
+    else
+      timeunit="s"
+    endif
+
+    write(                                                &
+      unit=output_unit,                                   &
+      fmt="(a1,a1,a27,                                    &
+      f5.1,a1,1x,a,f5.1,a,1x,                             &
+      a,f5.1,x,                                           &
+      a,f5.1,a1,                                          &
+      x,a,<size(moreverbose)+1>(x,a)$)"                   &
+      )                                                   &
+      '+',char(13), bar,                                  &
+      time, timeunit, "[eta", 100.*time/j,"]",            &
+      "(proc:",cpu,                                       &
+      "| %:",cpu/time*100,")",                            &
+      trim(output%name),                                  &
+      (                                                   &
+      trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
+      )
     return
-  endif
+  end subroutine progress
 
+  ! =============================================================================
+  ! =============================================================================
+  function basename (file)
+    character(200) :: basename
+    character(*) :: file
 
+    if (log%full) then
+      basename=file
+    else
+      basename=file(index(file,'/', back=.true.)+1:)
+    endif
+  end function
 
-  write(unit=bar(1:3),fmt="(i3)") j
-  do k=1, j/5
-    bar(6+k:6+k)="*"
-  enddo
+  ! =============================================================================
+  !> Print version of program depending on program calling
+  !!
+  !! \author M. Rajner
+  !! \date 2013-03-06
+  ! =============================================================================
+  subroutine print_version (program_calling, version)
+    character(*) :: program_calling
+    character(*), optional :: version
+    character(10) :: host
+    call hostnm(host)
 
-  if (time.gt.60000) then
-    time = time/3600
-    cpu  = cpu/3600
-    timeunit = "h"
-  else if (time.gt.1000) then
-    time = time/60
-    cpu  = cpu/60
-    timeunit = "m"
-  else
-    timeunit="s"
-  endif
-
-  write(                                                &
-    unit=output_unit,                                   &
-    fmt="(a1,a1,a27,                                    &
-    f5.1,a1,1x,a,f5.1,a,1x,                             &
-    a,f5.1,x,                                           &
-    a,f5.1,a1,                                          &
-    x,a,<size(moreverbose)+1>(x,a)$)"                   &
-    )                                                   &
-    '+',char(13), bar,                                  &
-    time, timeunit, "[eta", 100.*time/j,"]",            &
-    "(proc:",cpu,                                       &
-    "| %:",cpu/time*100,")",                            &
-    trim(output%name),                                  &
-    (                                                   &
-    trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
-    )
-  return
-end subroutine progress
-
-! =============================================================================
-! =============================================================================
-function basename (file)
-  character(200) :: basename
-  character(*) :: file
-
-  if (log%full) then
-    basename=file
-  else
-    basename=file(index(file,'/', back=.true.)+1:)
-  endif
-end function
-
-! =============================================================================
-!> Print version of program depending on program calling
-!!
-!! \author M. Rajner
-!! \date 2013-03-06
-! =============================================================================
-subroutine print_version (program_calling, version)
-  character(*) :: program_calling
-  character(*), optional :: version
-  character(10) :: host
-  call hostnm(host)
-
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), trim(program_calling)
-  write(log%unit, form_inheader ), version
-  write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
-  write(log%unit, form_inheader ), "compiled on "//trim(host)//" "//__C_DATE__
-  write(log%unit, form_inheader ), 'FFLAGS = '//__FFLAGS__
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), 'Copyright 2013, 2014 by Marcin Rajner'
-  write(log%unit, form_inheader ), 'Warsaw University of Technology'
-  write(log%unit, form_inheader ), 'License: GPL v3 or later'
-  write(log%unit, form_header )
-end subroutine
+    write(log%unit, form_header )
+    write(log%unit, form_inheader ), trim(program_calling)
+    write(log%unit, form_inheader ), version
+    write(log%unit, form_inheader_n ), &
+      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+    write(log%unit, form_inheader ), "compiled on "//trim(host)//" "//__C_DATE__
+    write(log%unit, form_inheader ), 'FFLAGS = '//__FFLAGS__
+    write(log%unit, form_header )
+    write(log%unit, form_inheader ), 'Copyright 2013, 2014 by Marcin Rajner'
+    write(log%unit, form_inheader ), 'Warsaw University of Technology'
+    write(log%unit, form_inheader ), 'License: GPL v3 or later'
+    write(log%unit, form_header )
+  end subroutine
 
 end module mod_printing

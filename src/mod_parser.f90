@@ -507,6 +507,10 @@ subroutine check_arguments (program_calling)
       call print_warning ("@GP is missing", error=.true.)
     endif
   endif
+
+    if (.not.any(cmd_line%switch.eq.'-S')) then
+      call print_warning("-S not given")
+    endif
 end subroutine
 
 ! =============================================================================
@@ -707,7 +711,7 @@ subroutine parse_info (cmd_line_entry)
         method3d_refinment_distance,   &
         method3d_compute_reference
 
-      if (info(i)%distance%stop_3d.lt.info(i)%distance%stop) then
+      if (info(i)%distance%stop_3d.lt.info(i)%distance%stop.and.method(3)) then
         call print_warning( &
           "stop_3d distance is less " // &
           "then stop distance - distant area filled with 2D result GN[d..] if any")

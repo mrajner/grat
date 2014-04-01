@@ -31,20 +31,7 @@ all: FLAGS += -O2
 endif
 
 dfdfd: grat
-	time (grat                                                                     \
-		-F /home/mrajner/dat/erainterim/msl.2010.nc @SP : msl, ERA @LS , VIENNA@RSP \
-    -S j                                                                        \
-    -G merriam @GE                                                              \
-		-Dm                                                                         \
-    -L @o                                                                       \
-    -B N                                                                        \
-    -O C                                                                        \
-		-H                                                                          \
-    -o)
-	@echo
-	@head -1 /home/mrajner/dr/rysunki/pressure_over_ocean2010_lo_era_mslp.dat
-	@head -1 /home/mrajner/dr/rysunki/pressure_over_ocean2010_lt_era_mslp.dat
-	@head -1 /home/mrajner/dr/rysunki/pressure_over_ocean2010_era_mslp.dat
+	grat -q -FNCEP@SP, NCEP@LS -D2010 -G@GE ,@GN -M1,2 -B,I,N -H -Sj -A,2,3,1,10 -V:s
 
 fsdfs:test
 	./test -F ERA@SP -Sj --version -v
