@@ -136,10 +136,26 @@ program grat
 
       if (result_total) then
         if (method(2)) then
-          write (output%unit,'(a13)',advance='no'), "G2D_t"
+          if ( &
+            all([inverted_barometer, non_inverted_barometer]) &
+            .and. result_total_all &
+            ) then
+            write (output%unit,'(a13)',advance='no'), "G2D_t_IB"
+            write (output%unit,'(a13)',advance='no'), "G2D_t_NIB"
+          else
+            write (output%unit,'(a13)',advance='no'), "G2D_t"
+          endif
         endif
         if (method(3)) then
-          write (output%unit,'(a13)',advance='no'), "G3D_t"
+          if ( &
+            all([inverted_barometer, non_inverted_barometer]) &
+            .and. result_total_all &
+            ) then
+            write (output%unit,'(a13)',advance='no'), "G3D_t_IB"
+            write (output%unit,'(a13)',advance='no'), "G3D_t_NIB"
+          else
+            write (output%unit,'(a13)',advance='no'), "G3D_t"
+          endif
         endif
       endif
     endif

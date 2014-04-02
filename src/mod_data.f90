@@ -195,6 +195,8 @@ end subroutine
 subroutine model_aliases(model, dryrun, year, month)
   use mod_printing
   use mod_utilities, only: file_exists
+  use mod_cmdline,   only: warnings
+
   type(file) :: model
   logical, intent(in), optional :: dryrun
   integer, intent(in), optional :: year, month
@@ -399,7 +401,10 @@ subroutine model_aliases(model, dryrun, year, month)
   if(present(dryrun).and.dryrun) return
 
   if (.not.file_exists(model%name)) then
-    call print_warning ("model", more=trim(model%name)//" : file do not exist", error=.false.)
+    call print_warning (                                      &
+      "model", more=trim(model%name)//" : file do not exist", &
+      error=warnings%file_exist                               &
+      )
     model%exist=.false.
     return
   else

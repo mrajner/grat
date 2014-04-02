@@ -86,10 +86,10 @@ module mod_cmdline
   type(transfer_sp_info) transfer_sp
 
   type warnings_info
-    logical :: &
-      if = .true., &
-      strict=.false., &
-      time=.false.
+    logical ::              &
+      if         = .true.,  &
+      strict     = .false., &
+      file_exist = .false.
   end type
 
   type(warnings_info) warnings
@@ -148,7 +148,10 @@ module mod_cmdline
   real    :: method3d_refinment_distance = 0.1
   logical :: dryrun
 
-  logical :: result_total=.false., result_component=.true.
+  logical ::  &
+    result_total     = .false.,  &
+    result_total_all = .false.,  &
+    result_component = .true.
 contains
 ! =============================================================================
 !> This routine collect command line arguments to one matrix depending on

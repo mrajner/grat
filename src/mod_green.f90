@@ -1344,21 +1344,21 @@ subroutine convolve(site, date)
             endif
 
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
-              write(moreverbose(ind%moreverbose%p)%unit,                       &
-                '(<size(model)>a12)', advance='no' )                         &
+              write(moreverbose(ind%moreverbose%p)%unit,         &
+                '(<size(model)>a12)', advance='no' )             &
                 (trim(model(i)%dataname), i=lbound(model, 1), ubound(model, 1))
             endif
 
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(<size(iok)>(a3, i1))'),               &
+                '(<size(iok)>(a3, i1))'),                &
                 ("ok", i, i =1, ubound(iok, 1))
             else
               write(moreverbose(ind%moreverbose%p)%unit, *)
             endif
             header_p=.false.
           endif
-          if (                                              &
+          if (                                            &
             .not.moreverbose(ind%moreverbose%p)%sparse    &
             .or.                                          &
             (moreverbose(ind%moreverbose%p)%sparse        &
@@ -1369,13 +1369,13 @@ subroutine convolve(site, date)
             if(size(green_common).gt.1) &
               write(moreverbose(ind%moreverbose%p)%unit, "(i2, x$)") igreen
 
-            write(moreverbose(ind%moreverbose%p)%unit,         &
-              '(a8, 6' // output%form //',2 en13.3, $)'),       &
+            write(moreverbose(ind%moreverbose%p)%unit,       &
+              '(a8, 6' // output%form //',2 en13.3, $)'),    &
               site%name, site%lat, site%lon,                 &
               green_common(igreen)%distance(idist), azimuth, &
               r2d(lat), r2d(lon), area, tot_area
 
-            if (result_component)                          &
+            if (result_component)                        &
               write(moreverbose(ind%moreverbose%p)%unit, &
               '(' // output%form //'$)'),                &
               (result(i), i =1, size(result))
@@ -1383,24 +1383,35 @@ subroutine convolve(site, date)
             if (result_total) then
               if (method(2)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(' // output%form //'$)'), &
-                  sum(result, &
-                  mask=( &
-                  green%dataname.eq."GN" &
-                  .or.green%dataname.eq."GE" &
-                  .or.green%dataname.eq."GNdt" &
-                  .or.green%dataname.eq."GNdz" &
-                  .or.green%dataname.eq."GNdz2" &
-                  .or.green%dataname.eq."GNdh" &
+                  '(' // output%form //'$)'),              &
+                  sum(result,                              &
+                  mask=(                                   &
+                  green%dataname.eq."GN"                   &
+                  .or.green%dataname.eq."GE"               &
+                  .or.green%dataname.eq."GNdt"             &
+                  .or.green%dataname.eq."GNdz"             &
+                  .or.green%dataname.eq."GNdz2"            &
+                  .or.green%dataname.eq."GNdh"             &
+                  ))
+                write(moreverbose(ind%moreverbose%p)%unit, &
+                  '(' // output%form //'$)'),              &
+                  sum(result,                              &
+                  mask=(                                   &
+                  green%dataname.eq."GN"                   &
+                  .or.green%dataname.eq."GE"               &
+                  .or.green%dataname.eq."GNdt"             &
+                  .or.green%dataname.eq."GNdz"             &
+                  .or.green%dataname.eq."GNdz2"            &
+                  .or.green%dataname.eq."GNdh"             &
                   ))
               endif
               if (method(3)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(' // output%form //'$)'), &
-                  sum(result, &
-                  mask=( &
-                  green%dataname.eq."G3D" &
-                  .or.green%dataname.eq."GE" &
+                  '(' // output%form //'$)'),              &
+                  sum(result,                              &
+                  mask=(                                   &
+                  green%dataname.eq."G3D"                  &
+                  .or.green%dataname.eq."GE"               &
                   ))
               endif
 
@@ -1456,6 +1467,20 @@ subroutine convolve(site, date)
         .or.green%dataname.eq."GNdz2" &
         .or.green%dataname.eq."GNdh" &
         ))
+
+      if (result_total_all) then
+        write(output%unit, &
+          '(' // output%form //'$)'), &
+          sum(result, &
+          mask=( &
+          green%dataname.eq."GN" &
+          .or.green%dataname.eq."GNdt" &
+          .or.green%dataname.eq."GNdz" &
+          .or.green%dataname.eq."GNdz2" &
+          .or.green%dataname.eq."GNdh" &
+          )) + result(size(green)+1)
+      endif
+
     endif
     if (method(3)) then
       write(output%unit, &
@@ -1465,6 +1490,14 @@ subroutine convolve(site, date)
         green%dataname.eq."G3D" &
         .or.green%dataname.eq."GE" &
         ))
+      if (result_total_all) then
+        write(output%unit, &
+          '(' // output%form //'$)'), &
+          sum(result, &
+          mask=( &
+          green%dataname.eq."G3D" &
+          )) + result(size(green)+1)
+      endif
     endif
   endif
 

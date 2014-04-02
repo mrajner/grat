@@ -41,6 +41,10 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-r')
     do i=1, size(cmd_line_entry%field)
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t" )) result_total     = .true.
+      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then 
+        result_total_all = .true.
+        result_total     = .true.
+      endif
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."nc")) result_component = .false.
     enddo
 
@@ -344,9 +348,9 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
         endif
 
         if ( &
-          any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
+          any(cmd_line(i)%field(1)%subfield(1:)%name.eq."f") &
           ) then
-          warnings%time=.true.
+          warnings%file_exist = .true.
         endif
       endif
     enddo
