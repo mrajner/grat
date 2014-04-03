@@ -338,6 +338,12 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
           warnings%if=.false.
         endif
 
+        if ( &
+          any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
+          ) then
+          warnings%time=.true.
+        endif
+
         ! -ws -- strict warning
         if ( &
           any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &

@@ -89,6 +89,7 @@ module mod_cmdline
     logical ::              &
       if         = .true.,  &
       strict     = .false., &
+      time       = .false., &
       file_exist = .false.
   end type
 

@@ -31,7 +31,7 @@ all: FLAGS += -O2
 endif
 
 dfdfd: grat
-	grat -V -I  -M3:potental
+	grat -V -I  -M3:potental -wt
 
 fsdfs:test
 	./test -F ERA@SP -Sj --version -v

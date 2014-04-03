@@ -119,20 +119,16 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     if (present(more)) write(def_unit, form%i0, advance="no") more
   endif
 
-  if (present(error).and.error.or.warnings%strict) then
-    if ((.not.warn.eq."args").and. warnings%time) then
-      call date_and_time (values=execution_date)
-      write(def_unit, &
-        '("[",i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)","]")'),&
-        execution_date (1:3), execution_date(5:7), execution_date(4)/60
-    elseif (.not.quiet) then
-      write(def_unit,*)
-    endif
-
-    call exit(1)
+  if (warnings%time) then
+    call date_and_time (values=execution_date)
+    write(def_unit, &
+      '("[",i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)","]")'),&
+      execution_date (1:3), execution_date(5:7), execution_date(4)/60
   endif
 
-  if(.not.quiet.and.warnings%if) write(def_unit,*)
+  if ((present(error).and.error).or.warnings%strict) then
+    call exit(1)
+  endif
 end subroutine
 
 ! =============================================================================
