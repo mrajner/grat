@@ -105,7 +105,7 @@ program grat
   if(output%header) then
 
     if (method(1)) then
-      do i=1,size(admitance%value)
+      do i=1, max(1,size(admitance%value))
         if (i.gt.1) then
           write (output%unit,'(a11,"_",i1)', advance='no'), "G1D", i
         else
@@ -293,7 +293,7 @@ program grat
         site(isite)%height
 
       if (method(1)) then
-        do j=1, size(admitance%value(:))
+        do j=1, max(1,size(admitance%value(:)))
           write (output%unit, "("// output%form // '$)'), &
             admit(                                        &
             site(isite),                                  &

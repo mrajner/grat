@@ -126,9 +126,11 @@ subroutine print_warning (warn, unit, more, error, program_calling)
       execution_date (1:3), execution_date(5:7), execution_date(4)/60
   endif
 
+  if(.not.warnings%time.and.warnings%if) write(def_unit,*)
   if ((present(error).and.error).or.warnings%strict) then
     call exit(1)
   endif
+
 end subroutine
 
 ! =============================================================================

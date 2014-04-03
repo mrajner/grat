@@ -1,8 +1,9 @@
 !> \file
 module mod_admit
   use mod_constants, only: dp
-
+  
   implicit none
+  real(dp) :: default_admitance_value=-0.3
 
 contains
 ! =============================================================================
@@ -128,7 +129,12 @@ real(dp) function admit(site_, date, number)
   endif
 
   if (ind%model%rsp.ne.0) val = val-rsp
-  admit = admitance%value(number)*1.e-2 * val
+
+  if (allocated(admitance%value)) then
+    admit = admitance%value(number)*1.e-2 * val
+  else
+    admit = default_admitance_value*1.e-2 * val
+  endif
 
   if (first_warning) first_warning=.false.
 end function
@@ -149,7 +155,7 @@ subroutine parse_admit(cmd_line_entry)
     if (cmd_line_entry%field(i)%subfield(1)%name.ne."") then
       read(cmd_line_entry%field(i)%subfield(1)%name, *) admitance%value(i)
     else
-      admitance%value(i)=-0.3
+      admitance%value(i)=default_admitance_value
     endif
   enddo
 
