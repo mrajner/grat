@@ -137,7 +137,7 @@ end subroutine
 ! =============================================================================
 subroutine progress(j, time, cpu, every)
   use mod_constants,   only: dp
-  use mod_cmdline,     only: moreverbose, quiet_step
+  use mod_cmdline,     only: moreverbose, quiet, quiet_step
   use iso_fortran_env, only: output_unit
 
   implicit none
@@ -150,6 +150,8 @@ subroutine progress(j, time, cpu, every)
   integer,save :: step=0
   character(len=1) :: timeunit
 
+  if(output%unit.eq.output_unit) return
+
   if (present(every)) then
     every_=every
   else
@@ -158,7 +160,7 @@ subroutine progress(j, time, cpu, every)
 
   step = step + 1
 
-  if (every_.eq.0.and.j.ne.100) then
+  if ((every_.eq.0).and.j.ne.100) then
     return
   elseif (every_.eq.0.and.j.eq.100) then
   elseif (                       &
@@ -169,8 +171,6 @@ subroutine progress(j, time, cpu, every)
       ) then 
       return
     endif
-
-
 
     write(unit=bar(1:3),fmt="(i3)") j
     do k=1, j/5
@@ -189,6 +189,17 @@ subroutine progress(j, time, cpu, every)
       timeunit="s"
     endif
 
+    if (j.eq.100) then
+      write(log%unit,                                 &
+        '("Execution time:",1x,f5.1,a,                &
+        &" (proc time:",1x,f5.1,1x,"s|%", f5.1,")")') &
+        time, timeunit,                               &
+        cpu,                                          &
+        cpu/time*100                                                                      
+    endif
+
+    if (quiet) return
+
     write(                                                &
       unit=output_unit,                                   &
       fmt="(a1,a1,a27,                                    &
@@ -205,6 +216,7 @@ subroutine progress(j, time, cpu, every)
       (                                                   &
       trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
       )
+
     return
   end subroutine progress
 

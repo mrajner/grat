@@ -30,14 +30,6 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-dfdfd: grat
-	grat  -I -FNCEP@SP -D2010 -S j -H
-	grat  -I -FNCEP@SP -D2010 -S j -H -A1,2,3,
-
-fsdfs:test
-	./test -F ERA@SP -Sj --version -v
-
-
 check3d: grat
 	/home/mrajner/dr/rysunki/3d_vs_DE.sh -w 3d_ERA_1000_60000_2____potentialHSP -v -f -o
 

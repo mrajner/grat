@@ -310,8 +310,11 @@ program grat
 
       write(output%unit,*)
 
-      if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then
-        open(unit=output_unit, carriagecontrol='fortran')
+      if (.not.(quiet.and.quiet_step.eq.0)) then
+        if (output%unit.ne.output_unit) then
+          open(unit=output_unit, carriagecontrol='fortran')
+        endif
+
         call cpu_time(cpu(2))
         call system_clock(execution_time(2),execution_time(3))
 
@@ -328,25 +331,5 @@ program grat
     enddo
   enddo
 
-  ! execution time-stamp
-  call cpu_time(cpu(2))
-  call system_clock(execution_time(2),execution_time(3))
-
-  if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then
-    call progress(                                      &
-      100*iprogress/(max(size(date),1)                  &
-      *max(size(site),1)),                              &
-      time  = real(execution_time(2)-execution_time(1)) &
-      /execution_time(3),                               &
-      cpu   = cpu(2)-cpu(1),                            &
-      every = quiet_step                                &
-      )
-    close(output_unit)
-  endif
-
-  write(log%unit,                                                           &
-    '("Execution time:",1x,f9.3," seconds (proc time:",1x,f7.2,1x,"s|%", f5.2,")")') &
-    real(execution_time(2)-execution_time(1))/(execution_time(3)),          &
-    cpu(2)-cpu(1),                                                          &
-    100.*(cpu(2)-cpu(1))/ (real(execution_time(2)-execution_time(1))/(execution_time(3)) )
+  close(output_unit)
 end program
