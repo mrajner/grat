@@ -207,7 +207,7 @@ program grat
             model(i)%autoload                                    &
             .and.                                                &
             .not.(                                               &
-            model(i)%autoloadname.eq."ERA"                       &
+            model(i)%autoloadname(1:3).eq."ERA"                  &
             .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])))) &
             then
 

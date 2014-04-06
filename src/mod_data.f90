@@ -215,7 +215,9 @@ subroutine model_aliases(model, dryrun, year, month)
 
   if(.not. model%autoload) model%autoloadname=model%name
   model%if=.true.
+
   select case (model%autoloadname)
+
   case ("NCEP", "NCEP2", "NCEP1")
     if (.not.model%autoload) model%autoload=.true.
     if (model%autoloadname.eq."NCEP1") then
@@ -296,7 +298,7 @@ subroutine model_aliases(model, dryrun, year, month)
       return
     endselect
 
-  case ("ERA")
+  case ("ERA", "ERAq")
     if (.not.model%autoload) model%autoload=.true.
     prefix="/home/mrajner/dat/erainterim/"
 
@@ -341,6 +343,10 @@ subroutine model_aliases(model, dryrun, year, month)
       model%autoload=.false.
       model%if=.false.
     endselect
+    
+    if (model%autoloadname=="ERAq") then
+     model%name(index(model%name,".nc"):)="_j.nc"
+    endif
 
   case ("VIENNA")
     prefix="/home/mrajner/dat/refpres/"
@@ -514,13 +520,17 @@ subroutine read_netCDF (model, print, force)
     call print_warning("file not exist " // trim (model%name), &
     error=.true.)
 
+  if (model%ncid.ne.0) then
+    call check (nf90_close (model%ncid))
+    write (log%unit, form%i4) &
+      "closing file:", trim(basename(trim(model%name)))
+  endif
+
   if (.not. (present(print).and. .not. print)) then
     write (log%unit, form%i3) &
       "Opening file:", trim(basename(trim(model%name))), &
       ", huge [T/F]:", model%huge
   endif
-
-  if (model%ncid.ne.0) call check (nf90_close (model%ncid))
 
   call check (nf90_open (model%name, nf90_nowrite, model%ncid))
 

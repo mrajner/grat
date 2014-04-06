@@ -30,8 +30,8 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-check3d: grat
-	/home/mrajner/dr/rysunki/3d_vs_DE.sh -w 3d_ERA_1000_60000_2____potentialHSP -v -f -o
+chck3d: value_check
+	value_check -! -F  ERAq@GP,ERA@GP -D201201:1@D -Sj -J1000,100,10 
 
 fsdfds: grat
 	for ref in "" ref ; do            \

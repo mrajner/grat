@@ -149,6 +149,7 @@ subroutine progress(j, time, cpu, every)
   integer :: every_
   integer,save :: step=0
   character(len=1) :: timeunit
+  logical :: logprinted
 
   if(output%unit.eq.output_unit) return
 
@@ -162,101 +163,102 @@ subroutine progress(j, time, cpu, every)
 
   if ((every_.eq.0).and.j.ne.100) then
     return
-  elseif (every_.eq.0.and.j.eq.100) then
-  elseif (                       &
-      modulo(step,every_).ne.0 &
-      .and.j.ne.every_         &
-      .and.j.ne.100            &
-      .and.step.ne.1           &
-      ) then 
-      return
-    endif
-
-    write(unit=bar(1:3),fmt="(i3)") j
-    do k=1, j/5
-      bar(6+k:6+k)="*"
-    enddo
-
-    if (time.gt.60000) then
-      time = time/3600
-      cpu  = cpu/3600
-      timeunit = "h"
-    else if (time.gt.1000) then
-      time = time/60
-      cpu  = cpu/60
-      timeunit = "m"
-    else
-      timeunit="s"
-    endif
-
-    if (j.eq.100) then
-      write(log%unit,                                 &
-        '("Execution time:",1x,f5.1,a,                &
-        &" (proc time:",1x,f5.1,1x,"s|%", f5.1,")")') &
-        time, timeunit,                               &
-        cpu,                                          &
-        cpu/time*100                                                                      
-    endif
-
-    if (quiet) return
-
-    write(                                                &
-      unit=output_unit,                                   &
-      fmt="(a1,a1,a27,                                    &
-      f5.1,a1,1x,a,f5.1,a,1x,                             &
-      a,f5.1,x,                                           &
-      a,f5.1,a1,                                          &
-      x,a,<size(moreverbose)+1>(x,a)$)"                   &
-      )                                                   &
-      '+',char(13), bar,                                  &
-      time, timeunit, "[eta", 100.*time/j,"]",            &
-      "(proc:",cpu,                                       &
-      "| %:",cpu/time*100,")",                            &
-      trim(output%name),                                  &
-      (                                                   &
-      trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
-      )
-
+  else if (every_.eq.0.and.j.eq.100) then
+  else if (                     &
+    modulo(step,every_).ne.0 &
+    .and.j.ne.every_         &
+    .and.j.ne.100            &
+    .and.step.ne.1           &
+    ) then 
     return
-  end subroutine progress
+  endif
 
-  ! =============================================================================
-  ! =============================================================================
-  function basename (file)
-    character(200) :: basename
-    character(*) :: file
+  write(unit=bar(1:3),fmt="(i3)") j
+  do k=1, j/5
+    bar(6+k:6+k)="*"
+  enddo
 
-    if (log%full) then
-      basename=file
-    else
-      basename=file(index(file,'/', back=.true.)+1:)
-    endif
-  end function
+  if (time.gt.60000) then
+    time = time/3600
+    cpu  = cpu/3600
+    timeunit = "h"
+  else if (time.gt.1000) then
+    time = time/60
+    cpu  = cpu/60
+    timeunit = "m"
+  else
+    timeunit="s"
+  endif
 
-  ! =============================================================================
-  !> Print version of program depending on program calling
-  !!
-  !! \author M. Rajner
-  !! \date 2013-03-06
-  ! =============================================================================
-  subroutine print_version (program_calling, version)
-    character(*) :: program_calling
-    character(*), optional :: version
-    character(10) :: host
-    call hostnm(host)
+  if (j.eq.100.and..not.logprinted) then
+    write(log%unit,                                 &
+      '("Execution time:",1x,f5.1,a,                &
+      &" (proc time:",1x,f5.1,1x,"s|%", f5.1,")")') &
+      time, timeunit,                               &
+      cpu,                                          &
+      cpu/time*100                                                                      
+    logprinted=.true.
+  endif
 
-    write(log%unit, form_header )
-    write(log%unit, form_inheader ), trim(program_calling)
-    write(log%unit, form_inheader ), version
-    write(log%unit, form_inheader_n ), &
-      "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
-    write(log%unit, form_inheader ), "compiled on "//trim(host)//" "//__C_DATE__
-    write(log%unit, form_inheader ), 'FFLAGS = '//__FFLAGS__
-    write(log%unit, form_header )
-    write(log%unit, form_inheader ), 'Copyright 2013, 2014 by Marcin Rajner'
-    write(log%unit, form_inheader ), 'Warsaw University of Technology'
-    write(log%unit, form_inheader ), 'License: GPL v3 or later'
-    write(log%unit, form_header )
-  end subroutine
+  if (quiet) return
+
+  write(                                                &
+    unit=output_unit,                                   &
+    fmt="(a1,a1,a27,                                    &
+    f5.1,a1,1x,a,f5.1,a,1x,                             &
+    a,f5.1,x,                                           &
+    a,f5.1,a1,                                          &
+    x,a,<size(moreverbose)+1>(x,a)$)"                   &
+    )                                                   &
+    '+',char(13), bar,                                  &
+    time, timeunit, "[eta", 100.*time/j,"]",            &
+    "(proc:",cpu,                                       &
+    "| %:",cpu/time*100,")",                            &
+    trim(output%name),                                  &
+    (                                                   &
+    trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
+    )
+
+  return
+end subroutine progress
+
+! =============================================================================
+! =============================================================================
+function basename (file)
+  character(200) :: basename
+  character(*) :: file
+
+  if (log%full) then
+    basename=file
+  else
+    basename=file(index(file,'/', back=.true.)+1:)
+  endif
+end function
+
+! =============================================================================
+!> Print version of program depending on program calling
+!!
+!! \author M. Rajner
+!! \date 2013-03-06
+! =============================================================================
+subroutine print_version (program_calling, version)
+  character(*) :: program_calling
+  character(*), optional :: version
+  character(10) :: host
+  call hostnm(host)
+
+  write(log%unit, form_header )
+  write(log%unit, form_inheader ), trim(program_calling)
+  write(log%unit, form_inheader ), version
+  write(log%unit, form_inheader_n ), &
+    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
+  write(log%unit, form_inheader ), "compiled on "//trim(host)//" "//__C_DATE__
+  write(log%unit, form_inheader ), 'FFLAGS = '//__FFLAGS__
+  write(log%unit, form_header )
+  write(log%unit, form_inheader ), 'Copyright 2013, 2014 by Marcin Rajner'
+  write(log%unit, form_inheader ), 'Warsaw University of Technology'
+  write(log%unit, form_inheader ), 'License: GPL v3 or later'
+  write(log%unit, form_header )
+end subroutine
 
 end module mod_printing
