@@ -151,7 +151,6 @@ subroutine progress(j, time, cpu, every)
   character(len=1) :: timeunit
   logical :: logprinted
 
-  if(output%unit.eq.output_unit) return
 
   if (present(every)) then
     every_=every
@@ -190,7 +189,29 @@ subroutine progress(j, time, cpu, every)
     timeunit="s"
   endif
 
+
+  if (.not.(quiet.or.output%unit.eq.output_unit)) then
+    open (unit=output_unit, carriagecontrol='fortran')
+    write(                                                &
+      unit=output_unit,                                   &
+      fmt="(a1,a1,a27,                                    &
+      f5.1,a1,1x,a,f5.1,a,1x,                             &
+      a,f5.1,x,                                           &
+      a,f5.1,a1,                                          &
+      x,a,<size(moreverbose)+1>(x,a)$)"                   &
+      )                                                   &
+      '+',char(13), bar,                                  &
+      time, timeunit, "[eta", 100.*time/j,"]",            &
+      "(proc:",cpu,                                       &
+      "| %:",cpu/time*100,")",                            &
+      trim(output%name),                                  &
+      (                                                   &
+      trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
+      )
+  endif
+
   if (j.eq.100.and..not.logprinted) then
+    close(output_unit)
     write(log%unit,                                 &
       '("Execution time:",1x,f5.1,a,                &
       &" (proc time:",1x,f5.1,1x,"s|%", f5.1,")")') &
@@ -199,26 +220,6 @@ subroutine progress(j, time, cpu, every)
       cpu/time*100                                                                      
     logprinted=.true.
   endif
-
-  if (quiet) return
-
-  write(                                                &
-    unit=output_unit,                                   &
-    fmt="(a1,a1,a27,                                    &
-    f5.1,a1,1x,a,f5.1,a,1x,                             &
-    a,f5.1,x,                                           &
-    a,f5.1,a1,                                          &
-    x,a,<size(moreverbose)+1>(x,a)$)"                   &
-    )                                                   &
-    '+',char(13), bar,                                  &
-    time, timeunit, "[eta", 100.*time/j,"]",            &
-    "(proc:",cpu,                                       &
-    "| %:",cpu/time*100,")",                            &
-    trim(output%name),                                  &
-    (                                                   &
-    trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
-    )
-
   return
 end subroutine progress
 

@@ -19,7 +19,7 @@ program value_check
   real :: cpu(2)
   real(dp)  :: sh
   integer :: execution_time(3)
-  integer    :: i, ii, j ,start, imodel, iprogress = 0
+  integer    :: i, ii, j ,start, imodel, iprogress = 0, lprogress
   integer(2) :: iok
   integer(2) :: ilevel, start_level
 
@@ -140,7 +140,7 @@ program value_check
     else
       start_level=1
     endif
-
+    lprogress =max(size(date),1)*max(size(site),1)*max(size(level%level),1)
     do ilevel=start_level, size(level%level)
       do i = 1 , size(site)
         iprogress = iprogress + 1
@@ -211,19 +211,21 @@ program value_check
 
         write (output%unit , "("//output%form//'$)') val
 
-        if (output%unit.ne.output_unit.and..not.quiet) then
+        
+          
+        if (.not.quiet.or.iprogress==lprogress) then
           call cpu_time(cpu(2))
           call system_clock(execution_time(2),execution_time(3))
 
           call progress(                                      &
-            100*iprogress/(max(size(date),1)                  &
-            *max(size(site),1)*max(size(level%level),1)),     &
+            100*iprogress/lprogress,                          &
             time  = real(execution_time(2)-execution_time(1)) &
             /execution_time(3),                               &
             cpu   = cpu(2)-cpu(1),                            &
             every = quiet_step                                &
             )
         endif
+
         if (size(val).gt.0) write (output%unit , *)
       enddo
     enddo
@@ -246,27 +248,6 @@ program value_check
       enddo
     enddo
   endif
-
-  call cpu_time(cpu(2))
-  call system_clock(execution_time(2),execution_time(3))
-
-  if (.not.quiet) then
-    call progress(                                      &
-      100*iprogress/(max(size(date),1)                  &
-      *max(size(site),1)*max(size(level%level),1)),     &
-      time  = real(execution_time(2)-execution_time(1)) &
-      /execution_time(3),                               &
-      cpu   = cpu(2)-cpu(1),                            &
-      every = quiet_step                                &
-      )
-    close(output_unit)
-  endif
-
-  ! write(log%unit, form_separator)
-
-  ! write(log%unit, '("Execution time:",1x,f10.4," seconds (proc time:",1x,f10.4,1x,"s)")') &
-    ! real(execution_time(2)-execution_time(1))/(execution_time(3)), &
-    ! cpu(2)-cpu(1)
 
   write(log%unit, form_separator)
 end program

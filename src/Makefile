@@ -30,8 +30,9 @@ FLAGS += -O0
 all: FLAGS += -O2
 endif
 
-chck3d: value_check
-	value_check -! -F  ERAq@GP,ERA@GP -D201201:1@D -Sj -J1000,100,10 
+chck3d: grat
+	grat  -F  ERAq@SP -D201101:12@D -Sj -I5@DD:2@DE -G@GN  -otmp -q -V 
+ 
 
 fsdfds: grat
 	for ref in "" ref ; do            \

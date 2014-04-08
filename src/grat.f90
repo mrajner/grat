@@ -69,7 +69,7 @@ program grat
   implicit none
   real    :: cpu(2)
   integer :: execution_time(3)
-  integer :: isite, i, idate, start, iprogress = 0, j
+  integer :: isite, i, idate, start, iprogress = 0, lprogress, j
   logical :: first_waning = .true.
 
   ! program starts here with time stamp
@@ -278,6 +278,7 @@ program grat
       endif
     endif
 
+    lprogress = max(size(date),1)*max(size(site),1)
     do isite = 1, size(site)
       iprogress = iprogress + 1
 
@@ -310,17 +311,12 @@ program grat
 
       write(output%unit,*)
 
-      if (.not.(quiet.and.quiet_step.eq.0)) then
-        if (output%unit.ne.output_unit) then
-          open(unit=output_unit, carriagecontrol='fortran')
-        endif
-
+      if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))
         call system_clock(execution_time(2),execution_time(3))
 
         call progress(                                      &
-          100*iprogress/(max(size(date),1)                  &
-          *max(size(site),1)),                              &
+          100*iprogress/lprogress ,                         &
           time  = real(execution_time(2)-execution_time(1)) &
           /execution_time(3),                               &
           cpu   = cpu(2)-cpu(1),                            &
