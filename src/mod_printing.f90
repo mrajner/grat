@@ -214,7 +214,7 @@ subroutine progress(j, time, cpu, every)
     close(output_unit)
     write(log%unit,                                 &
       '("Execution time:",1x,f5.1,a,                &
-      &" (proc time:",1x,f5.1,1x,"s|%", f5.1,")")') &
+      &" (proc time:",1x,f5.1,1x,"|%", f5.1,")")') &
       time, timeunit,                               &
       cpu,                                          &
       cpu/time*100                                                                      
