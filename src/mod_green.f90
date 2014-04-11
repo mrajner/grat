@@ -920,7 +920,7 @@ subroutine convolve(site, date)
                             )
 
                           if (.not.isnan(level%humidity(i))) then
-                            level%temperature(i)= &
+                            level%temperature(i)=                                         &
                               virtual_temperature(level%temperature(i),level%humidity(i))
                           endif
 
@@ -1030,7 +1030,7 @@ subroutine convolve(site, date)
                             )                                                &
                             * pressures(iheight)/(temperatures(iheight))     &
                             * area * info(igreen)%height%step                &
-                            *(-gravity%constant)*1e8/R_air
+                            * (-gravity%constant)*1e8/R_air
 
                         else if (method3d(2)) then
                           result(ind%green%g3d) =                                   &
@@ -1044,7 +1044,7 @@ subroutine convolve(site, date)
                             z2       = heights(iheight)+info(igreen)%height%step/2  &
                             )                                                       &
                             * pressures(iheight)/(temperatures(iheight))            &
-                            *(-gravity%constant)*1e8/R_air
+                            * (-gravity%constant)*1e8/R_air
 
                           if (isnan(result(ind%green%g3d)))  then
                             ! small distances can cause numerical problems
