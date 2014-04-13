@@ -71,24 +71,52 @@ end function
 !> all values in radians
 !! second improved version of cylinder, includes curvature of the earth
 ! =============================================================================
+! real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
+  ! use mod_constants, only: earth
+  ! real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
+  ! real(dp) :: psi, hh, zz1, zz2
+  ! real(dp) :: r1, r2
+
+  ! r1 = (earth%radius+z1)*sin(psi1)
+  ! r2 = (earth%radius+z2)*sin(psi2)
+
+  ! psi = psi1/2.+psi2/2.
+  ! zz1 = (earth%radius+z1)*cos(psi)
+  ! zz2 = (earth%radius+z2)*cos(psi)
+  ! hh  = (earth%radius+h)
+
+  ! cylinder =                    &
+    ! - (sqrt((zz1-hh)**2+r1**2)  &
+    ! -  sqrt((zz1-hh)**2+r2**2)) &
+    ! + (sqrt((zz2-hh)**2+r1**2)  &
+    ! -  sqrt((zz2-hh)**2+r2**2))
+
+  ! cylinder = dazimuth * cylinder
+! end function
+
+! =============================================================================
+!> all values in radians
+!! third improved version of cylinder, includes curvature of the earth
+! =============================================================================
 real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
-  use mod_constants, only: earth, pi
+  use mod_constants, only: earth
   real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
   real(dp) :: psi, hh, zz1, zz2
   real(dp) :: r1, r2
 
-  r1=(earth%radius+z1)*sin(psi1)
-  r2=(earth%radius+z2)*sin(psi2)
+  r1 = (earth%radius+z1)*sin(psi1)
+  r2 = (earth%radius+z2)*sin(psi2)
 
-  psi=psi1/2.+psi2/2.
-  zz1=(earth%radius+z1)*cos(psi)
-  zz2=(earth%radius+z2)*cos(psi)
-  hh=(earth%radius+h)
+  psi = psi1/2.+psi2/2.
+  zz1 = z1-h
+  zz2 = z2-h
 
-  cylinder = -(sqrt((zz1-hh)**2+r1**2) &
-    -sqrt((zz1-hh)**2+r2**2)) &
-    +(sqrt((zz2-hh)**2+r1**2) &
-    -sqrt((zz2-hh)**2+r2**2))
+  cylinder =                    &
+    - (sqrt(zz1**2+r1**2)  &
+    -  sqrt(zz1**2+r2**2)) &
+    + (sqrt(zz2**2+r1**2)  &
+    -  sqrt(zz2**2+r2**2))
+
   cylinder = dazimuth * cylinder
 end function
 
@@ -104,15 +132,18 @@ real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, heig
   real (dp) :: theta, lambda, height       ! atmosphere cell
   real(dp) :: r_s, r, aux
 
-  aux=sin(pi/2.-theta_s)*sin(pi/2.-theta) &
-    * (cos(pi/2.-lambda_s)*cos(pi/2.-lambda) + sin(pi/2.-lambda_s)*sin(pi/2.-lambda)) &
+  aux=sin(pi/2.-theta_s)*sin(pi/2.-theta)   &
+    * (                                     &
+    cos(pi/2.-lambda_s)*cos(pi/2.-lambda)   &
+    + sin(pi/2.-lambda_s)*sin(pi/2.-lambda) &
+    )                                       &
     + cos(pi/2.-theta_s)*cos(pi/2.-theta)
 
-  r_s=earth%radius+height_s
-  r=earth%radius+height
+  r_s = earth%radius+height_s
+  r   = earth%radius+height
 
-  point_mass_a= &
-    (r_s - r*aux) &
+  point_mass_a =                              &
+    (r_s - r*aux)                             &
     / (r_s**2 + r**2 -2*(r_s)*r*aux)**(3./2.)
 
 end function
