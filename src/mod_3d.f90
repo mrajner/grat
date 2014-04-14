@@ -111,7 +111,7 @@ real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
   zz1 = z1-h
   zz2 = z2-h
 
-  cylinder =                    &
+  cylinder =               &
     - (sqrt(zz1**2+r1**2)  &
     -  sqrt(zz1**2+r2**2)) &
     + (sqrt(zz2**2+r1**2)  &
