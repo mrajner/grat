@@ -96,7 +96,7 @@ end function
 
 ! =============================================================================
 !> all values in radians
-!! third improved version of cylinder, includes curvature of the earth
+!! third simplified version of cylinder
 ! =============================================================================
 ! real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
   ! use mod_constants, only: earth
