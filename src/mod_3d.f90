@@ -75,7 +75,7 @@ real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
   use mod_constants, only: earth
   real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
   real(dp) :: psi, zz1, zz2
-  real(dp) :: r1, r2
+  real(dp) :: r1, r2, hh
 
   r1 = (earth%radius+z1)*sin(psi1)
   r2 = (earth%radius+z2)*sin(psi2)
