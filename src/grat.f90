@@ -57,13 +57,13 @@
 ! ==============================================================================
 program grat
   ! use omp_lib parallel computation not yet enabled
-  use mod_parser, only: intro
+  use mod_parser,    only: intro
   use mod_data
   use mod_date
-  use mod_green, only: convolve, green
-  use mod_site, only: print_site_summary, site
+  use mod_green,     only: convolve, green
+  use mod_site,      only: print_site_summary, site
   use mod_cmdline
-  use mod_admit, only: admit
+  use mod_admit,     only: admit
   use mod_utilities, only: Bubble_Sort
 
   implicit none
