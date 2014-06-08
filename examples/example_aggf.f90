@@ -11,9 +11,12 @@ program example_aggf
   use mod_printing, only: log
   implicit none
   real(dp) :: cpu(2)
+  integer :: execution_time(3)
 
 
   call cpu_time(cpu(1))
+  call system_clock(execution_time(1))
+
   call standard1976 ('/home/mrajner/src/grat/examples/standard1976.dat')
   call compare_fels_profiles ('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
   call simple_atmospheric_model ("/home/mrajner/dr/rysunki/simple_approach.dat")
@@ -33,7 +36,12 @@ program example_aggf
   call aggf_resp_h ('/home/mrajner/src/grat/examples/aggf_resp_h.dat')
 
   call cpu_time(cpu(2))
-  print '("Total time: ",f8.3,x,"[s]")', cpu(2)-cpu(1)
+  call system_clock(execution_time(2),execution_time(3))
+  write(*,                                                                              &
+    '("Execution time:",1x,f10.4," seconds (proc time:",1x,f6.2,1x,"s | %", f6.2,")")') &
+    real(execution_time(2)-execution_time(1))/(execution_time(3)),                      &
+    cpu(2)-cpu(1),                                                                      &
+    100.*(cpu(2)-cpu(1))/ (real(execution_time(2)-execution_time(1))/(execution_time(3)) )
 
 contains 
 ! =============================================================================
@@ -79,14 +87,14 @@ subroutine mass_vs_height (filename)
   do i =0,50000,1000
     percent=0
     do j = 1, size(height)
-      if (height(j).le.dble(i)) percent=percent+mass(j)
+      if (height(j).le.real(i,dp)) percent=percent+mass(j)
     enddo
     percent = percent / sum(mass)  * 100.
     write(file_unit, '(i6,2f19.9,es10.3)' ), i, percent, &
       100-(earth%radius+dble(1))**2 &
-      * standard_pressure(dble(i),method="standard", use_standard_temperature=.true.) &
-      / standard_gravity(dble(i))&
-      /earth%radius**2/standard_pressure(dble(0),method="standard") * standard_gravity(dble(0))*100
+      * standard_pressure(real(i,dp),method="standard", use_standard_temperature=.true.) &
+      / standard_gravity(real(i,dp))&
+      /earth%radius**2/standard_pressure(real(0,dp),method="standard") * standard_gravity(real(0,dp))*100
   enddo
 end subroutine
 
@@ -372,13 +380,15 @@ end subroutine
 !> \brief This computes AGGF for different height integration step 
 ! ============================================================================
 subroutine aggf_resp_dz (filename)
-  use mod_green
+  use mod_green, only: green
   use mod_aggf, only: aggf
+  use mod_utilities, only: logspace
   real(dp), dimension(:,:), allocatable :: results
   real(dp), dimension(:), allocatable :: dzs
 
   integer :: file_unit, i, j
-  character(*), intent (in), optional:: filename
+  integer, parameter :: n=10
+  character(*), intent (in), optional :: filename
 
   if (present (filename)) then
     if (file_exists(filename)) return
@@ -390,26 +400,32 @@ subroutine aggf_resp_dz (filename)
   endif
 
   call get_green_distances()
+  ! green(1)%distance(1:n)=logspace(green(1)%distance(1), green(1)%distance(10),n) 
 
   allocate(dzs(5))
   dzs=(/ 0.01, 0.1, 1., 10., 100./)
 
-  allocate (results(size(green(1)%distance(1:29)),size(dzs)))
+  allocate (results(size(green(1)%distance(1:n)),size(dzs)))
   results = 0.
 
   do i = 1, size (results (:,1))
     do j=1,size(dzs)
-      results(i,j)=i+j
-      results(i,j)=aggf(d2r(green(1)%distance(i)), &
-        method="standard", &
-        dz=dzs(j))
+      results(i,j) = i+j
+      results(i,j) =               &
+        aggf(                      &
+        d2r(green(1)%distance(i)), &
+        method = "standard",       &
+        dz     = 1._dp* dzs(j)            &
+        )
+
+      print *, results(i,j)
     enddo
     ! compute relative errors from column 2 for all dz with respect to column 1
     results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
   enddo
 
-  write(file_unit, '(a14,<size(dzs)>f14.4)') "psi_dz", dzs
-  write(file_unit, '(f14.5,<size(dzs)>e14.4)') &
+  write(file_unit, '(a16,<size(dzs)>f16.5)') "psi_dz", dzs
+  write(file_unit, '(f16.7,<size(dzs)>e16.5)') &
     (green(1)%distance(i), results(i,:), i=1,size(results(:,1)))
   close(file_unit)
 end subroutine
@@ -446,12 +462,12 @@ subroutine standard1976(filename)
     'height', 'T', 'g', 'p', 'rho'
   do height=0.,68000., 1000
     ! print results to file
-    write( file_unit,'(5f15.5, e12.3)'), & 
-      height/1000.,                        & 
-      standard_temperature(height),        & 
-      standard_gravity(height),            & 
-      standard_pressure(height, method="standard")/100.,      &  ! --> hPa
-      standard_pressure(height, method="standard") &
+    write( file_unit,'(5f15.5, e12.3)'),                                     & 
+      height/1000.,                                                          & 
+      standard_temperature(height),                                          & 
+      standard_gravity(height),                                              & 
+      standard_pressure(height, method="standard", nan_as_zero=.true.)/100., & 
+      standard_pressure(height, method="standard", nan_as_zero=.true.)       & 
       /(R_air*standard_temperature(height))
   enddo
   close( file_unit )
@@ -481,9 +497,9 @@ subroutine aggf_resp_hmax (filename)
   endif
 
   print *, "standard atmosphere ---> ", filename
-  psi=(/0.0001, 10 /)
+  psi=(/0.0001,10/)
 
-  n=90
+  n = 90
   allocate(heights(n))
 
   heights= logspace(real(1e-1,dp), real(60000,dp),n) 
@@ -492,12 +508,13 @@ subroutine aggf_resp_hmax (filename)
   results=0
 
   do j=1, size(heights)
-    do i = 1, size(psi)
-      results(j,i) =aggf(d2r(psi(i)),method="standard", zmax=heights(j))
+    do i=1, size(psi)
+       results(j,i) =aggf(d2r(psi(i)),method="standard", zmax=heights(j))
     enddo
   enddo
-  do i = 1, size(psi)
-    results(:,i)=results(:,i)/results(size(heights),i) * 100. ! in %
+
+  do i=1, size(psi)
+     results(:,i) = - ((results(:,i)-results(size(heights),i))/results(size(heights),i)) * 100. ! in %
   enddo
 
   write(file_unit, '(a14,SP,100f14.5)' ),"#heght\psi", (psi(j), j= 1,size(psi))

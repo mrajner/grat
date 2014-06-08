@@ -12,8 +12,8 @@
 !! \warning This program is written in Fortran90 standard but uses some featerus
 !! of 2003 specification (e.g., \c 'newunit='). It was also written
 !! for <tt>Intel Fortran Compiler</tt> hence some commands can be unavailable
-!! for other compilers (e.g., \c <integer_parameter> for \c IO statements. This should be
-!! easily modifiable according to your output needs.
+!! for other compilers (e.g., \c <integer_parameter> for \c IO statements).
+!! This should be easily modifiable according to your output needs.
 !! Also you need to have \c iso_fortran_env module available to guess the number
 !! of output_unit for your compiler.
 !! When you don't want a \c log_file and you don't switch \c verbose all
@@ -57,28 +57,30 @@
 ! ==============================================================================
 program grat
   ! use omp_lib parallel computation not yet enabled
-  use mod_parser, only: intro
+  use mod_parser,    only: intro
   use mod_data
   use mod_date
-  use mod_green, only: convolve, green
-  use mod_site, only: print_site_summary, site
+  use mod_green,     only: convolve, green
+  use mod_site,      only: print_site_summary, site
   use mod_cmdline
-  use mod_admit, only: admit
+  use mod_admit,     only: admit
   use mod_utilities, only: Bubble_Sort
 
   implicit none
-  real(dp) :: cpu(2)
-  integer  :: isite, i, idate, start, iprogress = 0
-  logical  :: first_waning = .true.
+  real    :: cpu(2)
+  integer :: execution_time(3)
+  integer :: isite, i, idate, start, iprogress = 0, lprogress, j
+  logical :: first_waning = .true.
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
+  call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                         & 
+  call intro (                                         &
     program_calling   = "grat",                        &
     version           = "pre-alpha",                   &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n", &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-", &
     cmdlineargs       = .true.                         &
     )
 
@@ -97,17 +99,23 @@ program grat
   endif
 
   if(output%header) then
-    write (output%unit, '(a8,3(x,a9$))') &
-      "name", "lat", "lon", "h"
+    write (output%unit, '(a8,3(x,a9$))') "name", "lat", "lon", "h"
   endif
 
   if(output%header) then
 
     if (method(1)) then
-      write (output%unit,'(a13)', advance='no'), "G1D"
+      do i=1, max(1,size(admitance%value))
+        if (i.gt.1) then
+          write (output%unit,'(a11,"_",i1)', advance='no'), "G1D", i
+        else
+          write (output%unit,'(a13)', advance='no'), "G1D"
+        endif
+      enddo
     endif
 
     if (method(2).or.method(3)) then
+
       if (result_component) then
         do i = 1, size(green)
           if (green(i)%dataname.eq."GE") then
@@ -120,6 +128,7 @@ program grat
             write (output%unit,'(a13$)'), trim(green(i)%dataname)
           endif
         enddo
+
         if (inverted_barometer.and.non_inverted_barometer) then
           write (output%unit,'(a13$)'), "GE_NIB"
         endif
@@ -127,10 +136,26 @@ program grat
 
       if (result_total) then
         if (method(2)) then
-          write (output%unit,'(a13)',advance='no'), "G2D_t"
+          if ( &
+            all([inverted_barometer, non_inverted_barometer]) &
+            .and. result_total_all &
+            ) then
+            write (output%unit,'(a13)',advance='no'), "G2D_t_IB"
+            write (output%unit,'(a13)',advance='no'), "G2D_t_NIB"
+          else
+            write (output%unit,'(a13)',advance='no'), "G2D_t"
+          endif
         endif
         if (method(3)) then
-          write (output%unit,'(a13)',advance='no'), "G3D_t"
+          if ( &
+            all([inverted_barometer, non_inverted_barometer]) &
+            .and. result_total_all &
+            ) then
+            write (output%unit,'(a13)',advance='no'), "G3D_t_IB"
+            write (output%unit,'(a13)',advance='no'), "G3D_t_NIB"
+          else
+            write (output%unit,'(a13)',advance='no'), "G3D_t"
+          endif
         endif
       endif
     endif
@@ -144,9 +169,11 @@ program grat
   if (ind%model%ls.ne.0) then
     call get_variable (model(ind%model%ls))
   endif
+
   if (ind%model%rsp.ne.0) then
     call get_variable (model(ind%model%rsp))
   endif
+
   if (ind%model%hrsp.ne.0) then
     call get_variable (model(ind%model%hrsp))
   endif
@@ -155,12 +182,17 @@ program grat
     model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
   endif
 
-
   do idate=start, size (date)
     if (idate.ge.1) then
       if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
-        if (first_waning) call print_warning  &
-          ("hours not matching model dates (0,6,12,18) are rejecting and not shown in output")
+
+        if (first_waning) then
+          call print_warning (                           &
+            "hours not matching model dates (0,6,12,18)" &
+            //"are rejecting and not shown in output"    &
+            )
+        endif
+
         first_waning=.false.
         cycle
       endif
@@ -171,15 +203,16 @@ program grat
 
         select case (model(i)%dataname)
         case ("SP", "T", "GP", "VT", "VSH")
-          if (model(i)%autoload                                  &
-            .and.                                              &
-            .not.(                                             &
-            model(i)%autoloadname.eq."ERA"                     &
+          if (                                                   &
+            model(i)%autoload                                    &
+            .and.                                                &
+            .not.(                                               &
+            model(i)%autoloadname(1:3).eq."ERA"                  &
             .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])))) &
             then
 
-            if ( &
-              (idate.eq.1 &
+            if (                                                      &
+              (idate.eq.1                                             &
               .or. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
               )) then
 
@@ -187,7 +220,7 @@ program grat
             endif
 
           else if (model(i)%autoload) then
-            if (                                                   &
+            if (                                                 &
               (idate.eq.1                                        &
               .or. .not.(                                        &
               date(idate)%date(1).eq.date(idate-1)%date(1)       &
@@ -199,11 +232,14 @@ program grat
                 model(i), year=date(idate)%date(1), month=date(idate)%date(2))
             endif
           endif
+
           if (size(date).eq.0.and.model(i)%exist) then
+            stop "temporary"
             call get_variable (model(i))
           elseif (model(i)%exist) then
             call get_variable (model(i), date = date(idate)%date)
           endif
+
         end select
       endif
     enddo
@@ -220,6 +256,7 @@ program grat
 
     ! if ocean mass should be conserved (-O C)
     if (ocean_conserve_mass) then
+
       if (ind%model%sp.ne.0 .and. ind%model%ls.ne.0) then
         if(size(date).eq.0) then
           call conserve_mass(model(ind%model%sp), model(ind%model%ls), &
@@ -241,27 +278,30 @@ program grat
       endif
     endif
 
-
+    lprogress = max(size(date),1)*max(size(site),1)
     do isite = 1, size(site)
       iprogress = iprogress + 1
 
       if (idate.gt.0) then
-        write(output%unit, '(f12.3,x,i4.4,5(i2.2),x)', advance="no") &
+        write(output%unit, '(f12.3,x,i4.4,5(i2.2),x$)', advance="no") &
           date(idate)%mjd, date(idate)%date
       endif
 
-      write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)' ), &
-        site(isite)%name,                            &
-        site(isite)%lat,                             &
-        site(isite)%lon,                             &
+      write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)'), &
+        site(isite)%name,                             &
+        site(isite)%lat,                              &
+        site(isite)%lon,                              &
         site(isite)%height
 
       if (method(1)) then
-        write (output%unit, "("// output%form // '$)'), &
-          admit(                                      &
-          site(isite),                              &
-          date=date(idate)%date                     &
-          )
+        do j=1, max(1,size(admitance%value(:)))
+          write (output%unit, "("// output%form // '$)'), &
+            admit(                                        &
+            site(isite),                                  &
+            date   = date(idate)%date,                    &
+            number = j                                    &
+            )
+        enddo
       endif
 
       if (method(2).or.method(3)) then
@@ -271,26 +311,21 @@ program grat
 
       write(output%unit,*)
 
-      if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then
-        open(unit=output_unit, carriagecontrol='fortran')
+      if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))
-        call progress(                       &
-          100*iprogress/(max(size(date),1) &
-          *max(size(site),1)),             &
-          cpu(2)-cpu(1),                   &
-          every=quiet_step                 &
+        call system_clock(execution_time(2),execution_time(3))
+
+        call progress(                                      &
+          100*iprogress/lprogress ,                         &
+          time  = real(execution_time(2)-execution_time(1)) &
+          /execution_time(3),                               &
+          cpu   = cpu(2)-cpu(1),                            &
+          every = quiet_step                                &
           )
       endif
+
     enddo
   enddo
 
-  ! execution time-stamp
-  call cpu_time(cpu(2))
-  if (output%unit.ne.output_unit.and..not.(quiet.and.quiet_step.eq.0)) then
-    call progress(100*iprogress/(max(size(date),1)*max(size(site),1)), cpu(2)-cpu(1), every=1)
-    close(output_unit)
-  endif
-  write(log%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
-  if (output%time) write(output%unit, '("Execution time:",1x,f10.4," seconds")') cpu(2)-cpu(1)
-  write(log%unit, form_separator)
+  close(output_unit)
 end program

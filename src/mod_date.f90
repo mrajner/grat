@@ -11,23 +11,41 @@ module mod_date
     real(dp) :: mjd
     integer, dimension(6) :: date
   end type
-  real(dp) :: cpu_start, cpu_finish  
+  real(dp) :: cpu_start, cpu_finish
   type(dateandmjd), allocatable, dimension (:) :: date
 
+  ! private
+
 contains
+
+! =============================================================================
+! convert date 2010-01-02 into grat format 20100102
+! =============================================================================
+subroutine strip_hyphen_date_iso(string)
+  use mod_utilities, only: count_separator
+  character(*), intent(inout) :: string
+  integer :: i
+
+  do i=1, count_separator(string,'-')
+    string=string(1:index(string,'-')-1)//'0'//string(index(string,'-')+1:)
+  enddo
+
+  call print_warning('iso_date not supported for parser yet', error=.true.)
+end subroutine
+
 ! =============================================================================
 !> Parse date given as 20110503020103  to yy mm dd hh mm ss and mjd
-!! 
+!!
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine parse_date(cmd_line_entry) 
+subroutine parse_date(cmd_line_entry)
   use mod_cmdline
   use mod_mjd, only: mjd, invmjd
   use mod_utilities, only: is_numeric
   use mod_data, only: model
 
-  integer, dimension(6) :: start, stop, swap 
-  real (dp) :: step 
+  integer, dimension(6) :: start, stop, swap
+  real (dp) :: step
   integer :: i_, i, start_index, i_aux
   character(1) :: interval_unit
   type(cmd_line_arg) :: cmd_line_entry
@@ -37,30 +55,42 @@ subroutine parse_date(cmd_line_entry)
     call print_warning ("repeated")
     return
   endif
+
   do i_ = 1, size(cmd_line_entry%field)
-    if (trim(cmd_line_entry%field(i_)%full).eq."" &
-      ) then
+
+    if (trim(cmd_line_entry%field(i_)%full).eq."") then
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
 
+    do i_aux=1, min(size(cmd_line_entry%field(i_)%subfield),2)
+      if(index(cmd_line_entry%field(i_)%subfield(i_aux)%name,'-').gt.1) then
+        call strip_hyphen_date_iso(cmd_line_entry%field(i_)%subfield(i_aux)%name)
+      endif
+    enddo
+
     if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"  &
       .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
-      call print_warning("date not numeric "// trim(cmd_line_entry%field(i_)%full))
+      call print_warning( &
+        "date not numeric "// trim(cmd_line_entry%field(i_)%full), &
+        error=.true. &
+        )
       cycle
     endif
 
     if (any( [( &
-    is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name) &
-    .and.index(cmd_line_entry%field(i_)%subfield(i_aux)%name,".").ne.0 , &
-    i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
+      is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name) &
+      .and.index(cmd_line_entry%field(i_)%subfield(i_aux)%name,".").ne.0 , &
+      i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
       call print_warning("decimal date not supported "// trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
 
     interval_unit = "h"
-    write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
+
+    if (.not.log%sparse) &
+      write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
       if (size(model(1)%date).eq.0) then
@@ -87,8 +117,8 @@ subroutine parse_date(cmd_line_entry)
     endif
 
     if (size(cmd_line_entry%field(i_)%subfield).ge.2  &
-        .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
-        ) then
+      .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
+      ) then
       if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
         stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
       else if (cmd_line_entry%field(i_)%subfield(2)%dataname.ne."") then
@@ -137,10 +167,13 @@ subroutine parse_date(cmd_line_entry)
       step=6
     endif
 
-    write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))')  "start date:", start
-    if (mjd(start).ne.mjd(stop)) then
-      write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))') "stop  date:", stop
-      write (log%unit, "(" // form%t3// "a, f5.1, a)") "interval:", step, interval_unit
+    if (.not.log%sparse) then
+      write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))')  "start date:", start
+
+      if (mjd(start).ne.mjd(stop)) then
+        write (log%unit, '('//form%t3//', a, x, i4, 5(1x, i2.2))') "stop  date:", stop
+        write (log%unit, "(" // form%t3// "a, f5.1, a)") "interval:", step, interval_unit
+      endif
     endif
 
     ! allow that stop is previous than start and list in reverse order
@@ -160,7 +193,7 @@ subroutine parse_date(cmd_line_entry)
       endif
       if (interval_unit.eq."M") then
         call more_dates &
-            (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
+          (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
         date(start_index)%date=start
         date(start_index)%mjd=mjd(date(start_index)%date)
         do i= start_index+1, size(date)
@@ -179,12 +212,12 @@ subroutine parse_date(cmd_line_entry)
       endif
     else
       if (cmd_line_entry%field(i_)%subfield(1)%name=="m" &
-          .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
-          .and. ( &
-          size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
-          cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
-          ) &
-          ) then
+        .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
+        .and. ( &
+        size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
+        cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
+        ) &
+        ) then
         if (size(cmd_line_entry%field(i_)%subfield).lt.3) step=1
         if (step.gt.size(model(1)%time)) step=size(model(1)%time)
         call more_dates (ceiling(size(model(1)%time)/step), start_index)
@@ -207,9 +240,10 @@ subroutine parse_date(cmd_line_entry)
       endif
     endif
   enddo
-  write (log%unit, form%i3) "dates total:", size(date)
+  if (.not.log%sparse) &
+    write (log%unit, form%i3) "dates total:", size(date)
 
- end subroutine
+end subroutine
 
 ! =============================================================================
 ! =============================================================================
@@ -225,7 +259,7 @@ subroutine more_dates (number, start_index)
     allocate(date(size(tmpdate)+number))
     date=tmpdate
     deallocate(tmpdate)
-  else 
+  else
     allocate(date(number))
     start_index=1
   endif
@@ -233,7 +267,7 @@ end subroutine
 
 ! =============================================================================
 !> Convert dates given as string to integer (6 elements)
-!! 
+!!
 !! 20110612060302 --> [2011, 6, 12, 6, 3, 2 ]
 !! you can omit
 !! \warning decimal seconds are not allowed
@@ -242,7 +276,7 @@ subroutine string2date (string, date, success)
   use mod_utilities, only: is_numeric
 
   character (*), intent(in) :: string
-  integer, dimension(6), intent(out):: date 
+  integer, dimension(6), intent(out):: date
   integer :: start_char, end_char, j
   logical, optional :: success
 
@@ -252,7 +286,7 @@ subroutine string2date (string, date, success)
   date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
-   do j = 1, 6 
+  do j = 1, 6
     if (j.eq.1) then
       end_char=min(len(string), start_char+3)
     else
@@ -267,7 +301,7 @@ subroutine string2date (string, date, success)
     endif
     start_char=end_char+1
     if (end_char.eq.len(trim(string))) exit
-  enddo 
+  enddo
 end subroutine
 
 end module mod_date
