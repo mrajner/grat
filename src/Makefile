@@ -6,14 +6,15 @@ HOST   := $(shell hostname)
 C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
 
 
-FFLAGS =           \
-				 -O2       \
-				 -xHost    \
-				 -fpp      \
-				 -warn all \
+FLAGS =         \
+				 -O2    \
+				 -xHost \
+				 -fpp   \
+				 -warn all
 
 mod_printing.o:             \
-	FFLAGS+=                  \
+	FFLAGS =                  \
+	$(FLAGS)                  \
 	-D__FFLAGS__='"$(FLAGS)"' \
 	-D__C_DATE__='"$(C_DATE)"'
 
