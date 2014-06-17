@@ -52,8 +52,8 @@ program createdata
     call nc_error ( nf90_put_var(ncid, levelvarid, levels ))
 
     call nc_error ( nf90_put_var(ncid, gpvarid, gp))
-!  call check( nf90_put_var(ncid, lonvarid, model%lon ))
-!  call check( nf90_put_var(ncid, varid, model%data(:,:,1)) )
+    !  call check( nf90_put_var(ncid, lonvarid, model%lon ))
+    !  call check( nf90_put_var(ncid, varid, model%data(:,:,1)) )
 !
     call nc_error (nf90_close(ncid =ncid))
 
