@@ -521,7 +521,7 @@ subroutine read_netCDF (model, print, force)
     error=.true.)
 
   if (model%ncid.ne.0) then
-    call check (nf90_close (model%ncid))
+    call nc_error  (nf90_close (model%ncid))
     write (log%unit, form%i4) &
       "closing file:", trim(basename(trim(model%name)))
   endif
@@ -532,7 +532,7 @@ subroutine read_netCDF (model, print, force)
       ", huge [T/F]:", model%huge
   endif
 
-  call check (nf90_open (model%name, nf90_nowrite, model%ncid))
+  call nc_error  (nf90_open (model%name, nf90_nowrite, model%ncid))
 
   do i = 2,5
     call get_dimension (model, i, print=.not.log%sparse)
@@ -601,15 +601,15 @@ subroutine get_dimension (model, i, print)
       write (log%unit, '(a6,1x,a)') "ok"
     endif
 
-    call check(nf90_inquire_dimension(model%ncid, dimid, len=length))
+    call nc_error (nf90_inquire_dimension(model%ncid, dimid, len=length))
 
-    call check(nf90_inq_varid(model%ncid, model%names(i), varid))
+    call nc_error (nf90_inq_varid(model%ncid, model%names(i), varid))
 
   endif
 
   if (i.eq.3 ) then
     allocate(model%lat(length))
-    call check(nf90_get_var (model%ncid, varid, model%lat))
+    call nc_error (nf90_get_var (model%ncid, varid, model%lat))
 
     status = nf90_get_att(model%ncid, varid, &
       "actual_range", model%latrange)
@@ -620,7 +620,7 @@ subroutine get_dimension (model, i, print)
 
   else if (i.eq.2 ) then
     allocate(model%lon(length))
-    call check(nf90_get_var (model%ncid,  varid, model%lon))
+    call nc_error (nf90_get_var (model%ncid,  varid, model%lon))
 
     status = nf90_get_att ( model%ncid, varid, &
       "actual_range", model%lonrange)
@@ -669,7 +669,7 @@ subroutine nctime2date (model, print)
   status = nf90_inq_varid (model%ncid, model%names(5), varid)
   if (status /=nf90_noerr) return
 
-  call check (nf90_get_att (model%ncid, varid, "units", dummy))
+  call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
 
@@ -789,14 +789,14 @@ subroutine nc_info(model)
   integer, allocatable, dimension(:) :: varids
   character(20), allocatable, dimension(:) :: name
 
-  call check (nf90_inquire(model%ncid, ndims, nvars))
+  call nc_error  (nf90_inquire(model%ncid, ndims, nvars))
   allocate(varids(nvars))
   allocate(name(nvars))
 
-  call check (nf90_inq_varids(model%ncid, nvars, varids))
+  call nc_error  (nf90_inq_varids(model%ncid, nvars, varids))
 
   do i=1, nvars
-    call check(nf90_inquire_variable(model%ncid, varids(i), name(i)))
+    call nc_error (nf90_inquire_variable(model%ncid, varids(i), name(i)))
   enddo
 
   write(log%unit, form%i5 ) (trim(name(i))//",", i =1,nvars)
@@ -881,7 +881,7 @@ subroutine get_variable(model, date, print, level)
     start = [1,1,index_time,1]
   endif
 
-  call check (nf90_get_var ( &
+  call nc_error  (nf90_get_var ( &
     ncid   = model%ncid,     &
     varid  = varid,          &
     values = model%data,     &
@@ -917,7 +917,7 @@ subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
   integer, intent(out) :: status
   real(dp), intent(out) :: scale_factor, add_offset
 
-  call check(nf90_inq_varid(ncid, varname, varid))
+  call nc_error (nf90_inq_varid(ncid, varname, varid))
   status = nf90_get_att (ncid, varid, "scale_factor", scale_factor)
   if (status /=nf90_noerr) scale_factor=1
 
@@ -926,12 +926,12 @@ subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
 end subroutine
 
 ! =============================================================================
-!> Check the return code from netCDF manipulation
+!> nc_error check the return code from netCDF manipulation
 !!
 !! \author From netcdf website \cite netcdf
 !! \date 2013-03-04
 ! =============================================================================
-subroutine check(status, success)
+subroutine nc_error (status, success)
   use netcdf
   use mod_printing
   use iso_fortran_env
@@ -952,7 +952,7 @@ subroutine check(status, success)
     endif
     return
   end if
-end subroutine check
+end subroutine 
 
 ! =============================================================================
 !> \brief Returns the value from model file
@@ -1024,10 +1024,10 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   if (model%huge) then
     status=nf90_inq_varid (model%ncid, model%names(4), varid)
 
-    call check (nf90_inq_varid (model%ncid, model%names(1), varid))
+    call nc_error (nf90_inq_varid (model%ncid, model%names(1), varid))
 
     if (status.eq.nf90_noerr) then
-      call check (                                &
+      call nc_error (                                &
         nf90_get_var(                             &
         model%ncid,                               &
         varid,                                    &
@@ -1042,7 +1042,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
       if(.not.success2) val =sqrt(-1.)
 
     else
-      call check (nf90_get_var(         &
+      call nc_error (nf90_get_var(         &
         model%ncid,                     &
         varid,                          &
         val,                            &
@@ -1161,41 +1161,6 @@ function dataname(abbreviation)
   end select
 end function
 
-!! =============================================================================
-!!> Put netCDF COARDS compliant
-!!!
-!!! for GMT drawing
-!! =============================================================================
-!subroutine put_grd (model, time, level, filename_opt )
-!  use netcdf
-!  use mod_cmdline, only : file, form_separator, log
-!  type (file) :: model
-!  integer  :: time, level, ncid
-!  integer :: londimid, latdimid, dimids(2), varid, latvarid,lonvarid
-!  character (*), intent (in), optional :: filename_opt
-!  character(60) :: filename = "tmp_.grd"
-!
-!  if (present(filename_opt)) filename = filename_opt
-!  write(log%unit, form_separator)
-!  call check ( nf90_create ( filename, 0, ncid ))
-!
-!  ! Define the dimensions. NetCDF will hand back an ID for each.
-!  call check( nf90_def_dim(ncid, "lon", size(model%lon), londimid) )
-!  call check( nf90_def_dim(ncid, "lat", size(model%lat), latdimid) )
-!
-!  dimids =  (/ londimid, latdimid /)
-!
-!  call check( nf90_def_var(ncid, "lat", NF90_float, latdimid, latvarid) )
-!  call check( nf90_def_var(ncid, "lon", NF90_float, londimid, lonvarid) )
-!  call check( nf90_def_var(ncid, "data", NF90_float, dimids, varid) )
-!  call check( nf90_enddef(ncid) )
-!
-!  call check( nf90_put_var(ncid, latvarid, model%lat ))
-!  call check( nf90_put_var(ncid, lonvarid, model%lon ))
-!  call check( nf90_put_var(ncid, varid, model%data(:,:,1)) )
-!  call check( nf90_close(ncid) )
-!end subroutine
-!
 
 ! =============================================================================
 !> If inverted barometer is set then averaga all pressure above the oceans

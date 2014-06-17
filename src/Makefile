@@ -6,16 +6,17 @@ HOST   := $(shell hostname)
 C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
 
 
-FLAGS =         \
+COMMON_FFLAGS = \
 				 -O2    \
 				 -xHost \
-				 -fpp   \
 				 -warn all
 
-mod_printing.o:             \
-	FFLAGS =                  \
-	$(FLAGS)                  \
-	-D__FFLAGS__='"$(FLAGS)"' \
+FFLAGS=$(COMMON_FFLAGS)
+
+mod_printing.o:                     \
+	FFLAGS +=                         \
+	-fpp                              \
+	-D__FFLAGS__='"$(COMMON_FFLAGS)"' \
 	-D__C_DATE__='"$(C_DATE)"'
 
 ifeq ($(FC),gfortran)
@@ -35,21 +36,21 @@ NETCDFLIB = -I/usr/local/include \
 
 SRCS  = mod_constants.f90     \
 				mod_utilities.f90     \
-				mod_printing.f90      \
 				mod_cmdline.f90       \
-				mod_site.f90          \
+				mod_printing.f90      \
 				mod_spherical.f90     \
 				mod_mjd.f90           \
+				mod_normalization.f90 \
 				mod_atmosphere.f90    \
 				mod_aggf.f90          \
-				mod_green.f90         \
 				mod_polygon.f90       \
 				mod_data.f90          \
 				mod_date.f90          \
-				mod_parser.f90        \
-				mod_admit.f90         \
-				mod_normalization.f90 \
+				mod_site.f90          \
 				mod_3d.f90            \
+				mod_green.f90         \
+				mod_admit.f90         \
+				mod_parser.f90        
 
 PROGSSRCS =  grat.f90          \
 						 value_check.f90   \
@@ -59,22 +60,7 @@ EXAMPLESSRC = example_aggf.f90
 
 OBJS = $(SRCS:.f90=.o)
 
-all: grat
-
-# module dependencies
-mod_utilities.o:     mod_constants.o
-mod_mjd.o:           mod_constants.o
-mod_cmdline.o:       mod_utilities.o
-mod_normalization.o: mod_utilities.o
-mod_printing.o:      mod_cmdline.o
-mod_polygon.o:       mod_printing.o
-mod_atmosphere.o:    mod_printing.o
-mod_aggf.o:          mod_atmosphere.o mod_normalization.o
-mod_site.o:          mod_printing.o  mod_utilities.o  mod_constants.o     mod_data.o      mod_cmdline.o  mod_date.o
-mod_parser.o:        mod_cmdline.o   mod_data.o       mod_polygon.o       mod_green.o     mod_admit.o    mod_date.o
-mod_green.o:         mod_data.o mod_constants.o      mod_polygon.o    mod_date.o          mod_spherical.o mod_site.o     mod_normalization.o mod_aggf.o mod_3d.o mod_data.o
-mod_data.o:          mod_mjd.o       mod_atmosphere.o mod_polygon.o       mod_utilities.o mod_printing.o
-mod_date.o:          mod_data.o
+all: $(PROGS)
 
 PROGS_DIR       = ../bin
 PROGS           = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
@@ -98,18 +84,8 @@ $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/,$@)
 
 
-# prevent owervriting with new version on the server grat
 $(PROGS_DIR)/%:%.f90 $(OBJS)
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS)
-# add timestamp to executable (archive for testing purposes)
-ifdef UNIQ
-	cp $@ $@$(DATE) -ni
-endif
-
-
-# paralelization
-#../bin/value_check: value_check.f90 $(OBJS)
-#  $(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS)
 
 # rules for example files
 $(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
@@ -147,12 +123,10 @@ dochtml: doc
 docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
 
-install:                   \
-	clean                    \
-	all                      \
-	$(PROGS)                 \
-	/usr/local/lib/libgrat.a \
-	$(LINKS_DIR_ALL)/grat    \
+install:                       \
+	$(PROGS)                     \
+	/usr/local/lib/libgrat.a     \
+	$(LINKS_DIR_ALL)/grat        \
 	$(LINKS_DIR_ALL)/value_check
 
 # Change this path according to your system settings
@@ -179,7 +153,9 @@ CLEAN: clean
 		/usr/local/include/mod_* \
 		/usr/local/lib/libgrat.a
 	-rm $(LINKS)
-	-sudo rm $(LINKS_DIR_ALL)/grat $(LINKS_DIR_ALL)/value_check
+	-sudo rm                       \
+		$(LINKS_DIR_ALL)/grat        \
+		$(LINKS_DIR_ALL)/value_check
 	-rm $(EXAMPLES)
 
 HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
@@ -189,5 +165,7 @@ $(HELPS): $(PROGS)
 %.hlp:
 	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
-.PHONY:.FORCE
 .FORCE:
+
+check:
+	make -C check

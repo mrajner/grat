@@ -74,7 +74,7 @@ program grat
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
-  call system_clock(execution_time(1))
+  call system_clock(execution_time(2))
 
   ! gather cmd line option decide where to put output
   call intro (                                         &

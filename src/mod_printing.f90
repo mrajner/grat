@@ -55,13 +55,13 @@ contains
 subroutine print_warning (warn, unit, more, error, program_calling)
   use, intrinsic:: iso_fortran_env
   use :: mod_cmdline, only: warnings, method, quiet
+
   integer, dimension(8):: execution_date
   character (len=*)  :: warn
   character (len=*), optional :: more, program_calling
   integer, optional :: unit
   integer :: def_unit
   logical, intent(in), optional :: error
-
 
   if (present(error).and.error.or.warnings%if) then
     def_unit = error_unit
