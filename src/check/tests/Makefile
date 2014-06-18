@@ -1,39 +1,23 @@
-RESULTS = $(wildcard result*dat)
-TESTS   = $(subst result,test,$(RESULTS))
+TESTS   = $(wildcard t*.sh)
+RESULTS = $(subst .sh,.dat,$(TESTS))
 
-all: $(TESTS)
+all: stat
 
-test1.dat: .FORCE
-	@value_check                         \
-		-F data/air.2012.nc : air         \
-		-S jozefoslaw : 52.0 : 21.0 : 110 \
-		-D 20120606 : 30@H                \
-		-J100 -w n                        \
-		-o $@
-	$(call check) 
+stat: $(RESULTS)
+	@$(foreach res,$(RESULTS),$(call check,t1.dat,r2.dat))
 
-test2.dat: .FORCE
-	@value_check                         \
-		-!                                \
-		-F data/air.2012.nc : air         \
-		-S jozefoslaw : 52.0 : 21.0 : 110 \
-		-D 20120606 : 30@H                \
-		-J100 -w n > test2.dat
-	$(call check) 
+%.dat:%.sh
+	bash $<
+	
 
-test3.dat: .FORCE
-	@value_check                         \
-		-!                                \
-		-F data/air.2012.nc : air         \
-		-S jozefoslaw : 52.0 : 21.0 : 110 \
-		-D 20120606 : 30@H                \
-		-J100 -w n -V $@ -o /dev/null
-	$(call check) 
+
+clean:
+	rm t*.dat
 
 define check
-	@diff $@ $@ \
-		&& { tput setaf 2 ;  echo "$@ -- passed" ; tput sgr0 ; } \
-		|| { tput setaf 1 ;  echo "$@ -- failed" ; tput sgr0 ; } 
+@printf "%s\n" "diff $(1) $(2)"
 endef
 
-.FORCE:
+#  .FORCE:
+	#  && { tput setaf 2 ;  echo "$@ -- passed" ; tput sgr0 ; } \
+	#  || { tput setaf 1 ;  echo "$@ -- failed" ; tput sgr0 ; } 
