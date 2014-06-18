@@ -24,7 +24,7 @@ program createdata
 
     real:: gp (nlat,nlon,nlevel) =   3 
 
-    call nc_error (nf90_create(path = "test_data.nc", cmode = nf90_clobber, ncid = ncid))
+    call nc_error (nf90_create(path = "data/test_data.nc", cmode = nf90_clobber, ncid = ncid))
 
     call nc_error (nf90_def_dim(ncid = ncid , name = "lon"   , len = nlon           , dimid = londimid))
     call nc_error (nf90_def_dim(ncid = ncid , name = "lat"   , len = nlat           , dimid = latdimid))
@@ -58,6 +58,6 @@ program createdata
     call nc_error (nf90_close(ncid =ncid))
 
 
-    call system("ncdump test_data.nc ")
+    call system("ncdump data/test_data.nc ")
 
     end program

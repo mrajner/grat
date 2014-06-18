@@ -4,20 +4,16 @@ RESULTS = $(subst .sh,.dat,$(TESTS))
 all: stat
 
 stat: $(RESULTS)
-	@$(foreach res,$(RESULTS),$(call check,t1.dat,r2.dat))
-
-%.dat:%.sh
-	bash $<
+	@bash stat.sh
 	
 
+%.dat:%.sh
+	@bash $<
 
 clean:
 	rm t*.dat
 
-define check
-@printf "%s\n" "diff $(1) $(2)"
-endef
 
-#  .FORCE:
-	#  && { tput setaf 2 ;  echo "$@ -- passed" ; tput sgr0 ; } \
-	#  || { tput setaf 1 ;  echo "$@ -- failed" ; tput sgr0 ; } 
+copy_dat_to_benchmark:
+	for i in t*.dat; do mv $$i $${i/t/r} ; done
+
