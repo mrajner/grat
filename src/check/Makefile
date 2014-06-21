@@ -10,6 +10,9 @@ GRATLIB   = -I/usr/local/include \
 						-lgrat
 all: run
 
+check: 
+	make -C tests/
+
 create_data: create_data.f90
 	$(FC) $< -o $@ $(NETCDFLIB) $(GRATLIB)
 
