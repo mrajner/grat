@@ -506,7 +506,7 @@ end function
 ! start number
 ! ==============================================================================
 subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
-  character(*), intent(in), optional :: prefix, suffix
+  character(*), intent(in),  optional :: prefix, suffix
   character(*), intent(out), optional :: filename
   integer, intent (in), optional :: digits, start
   integer :: counter, digit
