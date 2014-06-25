@@ -6,13 +6,11 @@ all: stat
 stat: $(RESULTS)
 	@bash stat.sh
 	
-
 %.dat:%.sh
-	@bash $<
+	@bash $< 
 
 clean:
 	rm t*.dat
-
 
 copy_dat_to_benchmark:
 	for i in t*.dat; do mv $$i $${i/t/r} ; done
