@@ -23,7 +23,6 @@ program value_check
   integer(2) :: iok
   integer(2) :: ilevel, start_level
 
-
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
 
