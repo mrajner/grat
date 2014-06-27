@@ -22,22 +22,23 @@ done
 
 for test in t*.sh ; do
   
-  is=${test/.sh/.dat}
-  should_be=${is/t/r}
+  for is in ${test/.sh/.dat}* ; do
 
-  diff $is $should_be >/dev/null && 
-  { 
-    tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
-  } || 
-  {
-    tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
-    [[ ${show_failed_diffs:-} == "true" ]] && 
+    should_be=${is/t/r}
+
+    diff $is $should_be >/dev/null && 
+    { 
+      tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
+    } || 
     {
-      vimdiff  $is $should_be
-    }
-  } 
-
-  let counter++
+      tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
+      [[ ${show_failed_diffs:-} == "true" ]] && 
+      {
+        diff -y  $is $should_be
+      }
+    } 
+    let counter++
+  done
 done
 echo tests: $good/$counter
 [[ $bad -gt 0 ]] && echo failed: $bad || :

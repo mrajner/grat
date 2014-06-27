@@ -1,0 +1,51 @@
+########################################################################
+#                                                                 grat #
+#                                                            pre-alpha #
+#                                                   ifort 14(20140120) #
+#                               compiled on lenovo 2014-06-25 22:20:58 #
+#                                        FFLAGS = -O2 -xHost -warn all #
+########################################################################
+#                                Copyright 2013, 2014 by Marcin Rajner #
+#                                      Warsaw University of Technology #
+#                                             License: GPL v3 or later #
+########################################################################
+Program started: 2014-06-27 09:53:45 (+02h UTC)
+#-----------------------------------------------------------------------
+Command invoked:
+grat -F ../data/pres.sfc.2012.nc @SP:pres -M1,2 -G rajner @GN -S joze:52
+                          :21:100 -D2012:50@H : 2@H -o t6.dat -V t6.dat1
+#-----------------------------------------------------------------------
+Command parsing:
+  -F { pres.sfc.2012.nc@SP:pres }
+    ../data/pres.sfc.2012.nc@SP:pres
+      Surface pressure (SP) pres lon lat level time 
+      Opening file: pres.sfc.2012.nc , huge [T/F]: F
+        Getting dim: lon ..     ok
+        Getting dim: lat ..     ok
+        Getting dim: level ..  level not found, allocating (1)...
+          lat, lon, time, pres,
+        Getting dim: time ..     ok
+        Converting time:  hours since 1800-1-1 00:00:0.0
+  -M { -M1,2 }
+    method was set: 1D 2D  
+  -G { -Grajner@GN }
+    rajner@GN
+      rajner_green.dat GN columns: 1 2 lines: 85
+  -S { -Sjoze:52:21:100 }
+    joze:52:21:100
+  -D { -D2012:50@H:2@H }
+    2012:50@H:2@H
+      start date: 2012 01 01 00 00 00
+      stop  date: 2012 01 03 02 00 00
+      interval:  2.0H
+      dates total: 26
+  -o { -ot6.dat }
+    output file was set: t6.dat
+  -V { -Vt6.dat1 }
+    verbose mode
+    the log file was set t6.dat1
+#-----------------------------------------------------------------------
+    Processing: 1 site(s)
+      Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
+      joze   52.0000   21.0000  100.0000        --        --        -- 
+#-----------------------------------------------------------------------
