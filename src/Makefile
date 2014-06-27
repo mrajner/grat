@@ -23,6 +23,11 @@ ifeq ($(FC),gfortran)
 FFLAGS=
 endif
 
+va: value_check check
+	value_check -F check/data/test_data.nc:gp -V -Sj,r,o -Dm:m  -o:level
+
+fd:
+
 #  local:
 	#  file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
 	#  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
@@ -167,5 +172,6 @@ $(HELPS): $(PROGS)
 
 .FORCE:
 
-check:
+.PHONY: check
+check: 
 	make -C check

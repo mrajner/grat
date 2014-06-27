@@ -209,14 +209,13 @@ program value_check
         endif
 
         write (output%unit , "("//output%form//'$)') val
+        write(output%unit,*)  
 
         if (.not.quiet.or.iprogress==lprogress) then
 
           call cpu_time(cpu(2))
           call system_clock(execution_time(2),execution_time(3))
 
-          print *,"d"
-          
           call progress(                                      &
             100*iprogress/lprogress,                          &
             time  = real(execution_time(2)-execution_time(1)) &
@@ -226,7 +225,6 @@ program value_check
             )
         endif
 
-        if (size(val).gt.0) write (output%unit , *)
       enddo
     enddo
   enddo
