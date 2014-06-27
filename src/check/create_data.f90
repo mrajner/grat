@@ -3,79 +3,70 @@ program createdata
   ! use mod_mjd, only: mjd
   use mod_data, only: nc_error
 
-  ! implicit none
+  implicit none
   integer(2) :: i
-  integer :: ncid, status, londimid, latdimid, timedimid,leveldimid, &
-    latvarid, gpvarid, gpdimid
+  integer :: ncid, status, &
+  londimid, latdimid, timedimid,leveldimid, &
+  lonvarid, latvarid, timevarid,levelvarid, &
+     gpvarid
   integer :: dimids(3)
 
-  real, parameter :: resolution = 25
+  real, parameter :: resolution = 50
 
   integer, parameter ::       &
-    nlon   = 360. / resolution, &
-    nlat   = 180. / resolution, &
-    nlevel = 5
+    nlon   = ceiling(360. / resolution), &
+    nlat   = ceiling(180. / resolution), &
+    nlevel = 5 , &
+    ntime = 10
 
   real, parameter :: &
     lats   ( nlat   )  = [ ( -89.75 + ( i-1 ) *resolution , i = 1 , nlat   ) ] , &
     lons   ( nlon   )  = [ ( 0.25 +   ( i-1 ) *resolution , i = 1 , nlon   ) ] , &
-    levels ( nlevel )  = [ ( 1000-    ( i-1 ) *50         , i = 1 , nlevel ) ]
+    levels ( nlevel )  = [ ( 1000-    ( i-1 ) *50         , i = 1 , nlevel ) ] , &
+  times(ntime)= [ (i*6 , i=1, ntime) ]
 
-  real:: gp (nlat,nlon,nlevel) 
+  real:: gp (nlon, nlat, nlevel, ntime) 
+
+
 
   call nc_error (nf90_create(path = "data/test_data.nc", cmode = nf90_clobber, ncid = ncid))
 
   call nc_error (nf90_def_dim(ncid = ncid , name = "lon"   , len = nlon           , dimid = londimid))
   call nc_error (nf90_def_dim(ncid = ncid , name = "lat"   , len = nlat           , dimid = latdimid))
-  call nc_error (nf90_def_dim(ncid = ncid , name = "levels", len = nlevel         , dimid = leveldimid))
+  call nc_error (nf90_def_dim(ncid = ncid , name = "level", len = nlevel         , dimid = leveldimid))
   call nc_error (nf90_def_dim(ncid = ncid , name = "time"  , len = nf90_unlimited , dimid = timedimid))
 
-  call nc_error( nf90_def_var(ncid , "latitude"  , NF90_REAL , latdimid   , latvarid) )
-  call nc_error( nf90_def_var(ncid , "longitude" , NF90_REAL , londimid   , lonvarid) )
-  call nc_error( nf90_def_var(ncid , "level"     , NF90_REAL , leveldimid , levelvarid) )
-  ! call nc_error( nf90_def_var(ncid , "gp"        , NF90_REAL , gpdimid    , gpvarid) )
-
-  call nc_error( nf90_put_att(ncid, latvarid, "units", "degree") )
-  call nc_error( nf90_put_att(ncid, lonvarid, "units", "degree") )
-
-  call nc_error( nf90_enddef(ncid) )
-
-
-  call nc_error ( nf90_put_var(ncid, latvarid, lats ))
-  call nc_error ( nf90_put_var(ncid, lonvarid, lons ))
-  call nc_error ( nf90_put_var(ncid, levelvarid, levels ))
+  call nc_error( nf90_def_var(ncid , "lat"  , NF90_REAL , latdimid   , latvarid) )
+  call nc_error( nf90_def_var(ncid , "lon" , NF90_REAL , londimid   , lonvarid) )
+  call nc_error( nf90_def_var(ncid , "level", nf90_real , leveldimid , levelvarid) )
+  call nc_error( nf90_def_var(ncid , "time", nf90_real , timedimid , timevarid) )
 
   dimids =  (/ londimid, latdimid, leveldimid /)
 
-  ! call nc_error(nf90_def_var(ncid, "gp", NF90_REAL, dimids, gpvarid))
+  call nc_error(nf90_def_var(ncid , "gp", NF90_int , dimids, gpvarid) )
 
-  ! call check( nf90_def_var(ncid, LON_NAME, NF90_REAL, lon_dimid, lon_varid) )
+  call nc_error(nf90_put_att(ncid, latvarid, "units", "degree") )
+  call nc_error(nf90_put_att(ncid, lonvarid, "units", "degree") )
 
+  call nc_error(nf90_put_att(ncid, timevarid, "units", "hours since 2000-1-1 00:00:0.0") )
 
+  call nc_error(nf90_enddef(ncid) )
+
+  call nc_error (nf90_put_var(ncid, latvarid, lats ))
+  call nc_error (nf90_put_var(ncid, lonvarid, lons ))
+  call nc_error (nf90_put_var(ncid, levelvarid, levels ))
+  call nc_error (nf90_put_var(ncid, timevarid, times ))
+
+  do i = 1 , nlevel
+  gp (:,:,i,:) =levels(i)
+  enddo
   ! print *, gp
-  ! call nc_error ( nf90_put_var(ncid, gpvarid, gp))
+  call nc_error (nf90_put_var(ncid, gpvarid, gp))
 
-  ! call check( nf90_put_var(ncid, lonvarid, model%lon ))
-  !  call check( nf90_put_var(ncid, varid, model%data(:,:,1)) )
-  !
-
-  call nc_error (nf90_close(ncid =ncid))
+  call nc_error (nf90_close(ncid=ncid))
   call system("ncdump data/test_data.nc ")
 
 end program
-
-! integer, parameter :: NDIMS = 4, NRECS = 2
-! integer, parameter :: NLVLS = 2, NLATS = 6, NLONS = 12
-! character (len = *), parameter :: LVL_NAME = "level"
-! character (len = *), parameter :: LAT_NAME = "latitude"
-! character (len = *), parameter :: LON_NAME = "longitude"
-! character (len = *), parameter :: REC_NAME = "time"
-! integer :: lvl_dimid, lon_dimid, lat_dimid, rec_dimid
-
-! ! The start and count arrays will tell the netCDF library where to
-! ! write our data.
-! integer :: start(NDIMS), count(NDIMS)
-
 ! ! These program variables hold the latitudes and longitudes.
 ! real :: lats(NLATS), lons(NLONS)
 ! integer :: lon_varid, lat_varid
@@ -190,20 +181,3 @@ end program
 ! call check( nf90_put_var(ncid, temp_varid, temp_out, start = start, &
 ! count = count) )
 ! end do
-! 
-! ! Close the file. This causes netCDF to flush all buffers and make
-! ! sure your data are really written to disk.
-! call check( nf90_close(ncid) )
-! 
-! print *,"*** SUCCESS writing example file ", FILE_NAME, "!"
-
-! contains
-! subroutine check(status)
-! integer, intent ( in) :: status
-! 
-! if(status /= nf90_noerr) then 
-! print *, trim(nf90_strerror(status))
-! stop "Stopped"
-! end if
-! end subroutine check  
-! end program pres_temp_4D_wr
