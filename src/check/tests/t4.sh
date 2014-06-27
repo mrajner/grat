@@ -1,12 +1,14 @@
 #!/bin/bash - 
 #===============================================================================
-#          FILE: t3.sh
+#          FILE: t4.sh
 #        AUTHOR: mrajner (mrajner@gik.pw.edu.pl)
-#       CREATED: 18.06.2014 08:53
+#       CREATED: 18.06.2014 09:03
 #===============================================================================
 
 set -o nounset                              # Treat unset variables as an error
 
-value_check \
-  -F ../data/test_data.nc@GP:gp -J1000,900,100,200  -V -Sj -o 2> ${0/.sh/.dat}
+grat \
+  -F ../data/pres.sfc.2012.nc @SP : pres \
+  -G merriam @GN \
+  -S pl -M2 -Dm -o t4.dat
 

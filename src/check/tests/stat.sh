@@ -12,11 +12,30 @@ counter=0
 good=0
 bad=0
 
+while getopts "b" flag ; do
+  case $flag in 
+    b)
+      show_failed_diffs=true
+      ;;
+  esac
+done
+
 for test in t*.sh ; do
-  i=${test/.sh/.dat}
-  diff $i ${i/t/r} >/dev/null \
-   && { tput setaf 2 ;  echo "$i -- passed" ; tput sgr0 ; let good++; : ; } \
-   || { tput setaf 1 ;  echo "$i -- failed" ; tput sgr0 ; let bad++ ; : ; } 
+  
+  is=${test/.sh/.dat}
+  should_be=${is/t/r}
+
+  diff $is $should_be >/dev/null && 
+  { 
+    tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
+  } || 
+  {
+    tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
+    [[ ${show_failed_diffs:-} == "true" ]] && 
+    {
+      vimdiff  $is $should_be
+    }
+  } 
 
   let counter++
 done

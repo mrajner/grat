@@ -24,7 +24,7 @@ FFLAGS=
 endif
 
 va: value_check check
-	value_check -F check/data/test_data.nc:gp -V -Sj,r,o -Dm:m  -o:level
+	value_check -F check/data/test_data.nc:gp -V -Sj,r,o -Dm:m -J1000,950  -o:level
 
 fd:
 
@@ -172,6 +172,6 @@ $(HELPS): $(PROGS)
 
 .FORCE:
 
-.PHONY: check
-check: 
+.PHONY: check 
+check: install
 	make -C check

@@ -50,4 +50,5 @@ ncep: data
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/surface/land.nc               \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/pressure/shum.$(year).nc 
 
-
+clean:
+	rm create_data
