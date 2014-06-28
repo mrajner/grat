@@ -2,14 +2,14 @@
 #                                                                 grat #
 #                                                            pre-alpha #
 #                                                   ifort 14(20131008) #
-#                                compiled on lidka 2014-06-10 23:38:39 #
-#                                   FFLAGS = -O2 -xHost -fpp -warn all #
+#                                compiled on lidka 2014-06-28 22:13:17 #
+#                                        FFLAGS = -O2 -xHost -warn all #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-06-28 22:15:59 (+02h UTC)
+Program started: 2014-06-28 22:46:55 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F ../data/pres.sfc.2012.nc @SP:pres -M1,2 -G rajner @GN -S joze:52
@@ -18,6 +18,14 @@ grat -F ../data/pres.sfc.2012.nc @SP:pres -M1,2 -G rajner @GN -S joze:52
 Command parsing:
   -F { pres.sfc.2012.nc@SP:pres }
     ../data/pres.sfc.2012.nc@SP:pres
+      Surface pressure (SP) pres lon lat level time 
+      Opening file: pres.sfc.2012.nc , huge [T/F]: F
+        Getting dim: lon ..     ok
+        Getting dim: lat ..     ok
+        Getting dim: level ..  level not found, allocating (1)...
+          lat, lon, time, pres,
+        Getting dim: time ..     ok
+        Converting time:  hours since 1800-1-1 00:00:0.0
   -M { -M1,2 }
     method was set: 1D 2D  
   -G { -Grajner@GN }
