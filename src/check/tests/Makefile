@@ -7,7 +7,7 @@ stat: $(RESULTS)
 	@bash stat.sh
 	
 %.dat:%.sh
-	@bash $< 
+	-@bash $< 
 
 clean:
 	rm -v t*.dat*
