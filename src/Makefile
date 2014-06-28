@@ -23,7 +23,7 @@ ifeq ($(FC),gfortran)
 FFLAGS=
 endif
 
-va: value_check check
+va: value_check
 	value_check -F check/data/test_data.nc:gp -V -Sj,r,o -Dm:m -J1000,950  -o:level
 
 fd:
