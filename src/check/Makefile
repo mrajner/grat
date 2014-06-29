@@ -45,7 +45,7 @@ data:
 	mkdir -p $@
 
 ncep: data
-	@wget --quiet  -nH -nc -nd -P data/                                             \
+	@wget  -nH -nc -nd -P data/                                             \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/hgt.$(year).nc      \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/air.$(year).nc      \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/surface/hgt.sfc.nc           \
