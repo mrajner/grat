@@ -20,6 +20,10 @@ while getopts "b" flag ; do
   esac
 done
 
+ok(){
+  tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
+}
+
 for test in t*.sh ; do
   
   for is in ${test/.sh/.dat}* ; do
@@ -28,21 +32,34 @@ for test in t*.sh ; do
 
     diff $is $should_be >/dev/null && 
     { 
-      tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
+      ok 
     } || 
     {
-      
-      diff <(egrep -v (compiled|started) $is) <(egrep -v (compiled|started) $should_be)
 
-      tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
-      [[ ${show_failed_diffs:-} == "true" ]] && 
+      do_not_compare_list='compiled|Program|100%|ifort\s|Execution'
+
+      diff                                       \
+        <(egrep -v ${do_not_compare_list:-} $is) \
+        <(egrep -v ${do_not_compare_list:-} $should_be) -q >/dev/null  && 
+      { 
+        ok
+      } || 
       {
-        diff $is $should_be
+
+        tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
+
+        [[ ${show_failed_diffs:-} == "true" ]] && 
+        {
+        diff                                       \
+          <(egrep -v ${do_not_compare_list:-} $is) \
+          <(egrep -v ${do_not_compare_list:-} $should_be) 
+        }
       }
     } 
     let counter++
   done
 done
-echo tests: $good/$counter
+
+echo -e "\ntests: $good/$counter"
 [[ $bad -gt 0 ]] && echo failed: $bad || :
 
