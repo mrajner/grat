@@ -9,7 +9,11 @@ GRATLIB   = -I/usr/local/include \
 						-L/usr/local/lib     \
 						-lgrat
 
-all: ask run
+all: ask run runtests
+
+.PHONY:runtests
+runtests:
+	make -C tests
 
 ask:
 	@tput setaf 1 ; \

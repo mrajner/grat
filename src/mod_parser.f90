@@ -66,7 +66,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     inverted_barometer=.false.
     do i = 1, size(cmd_line_entry%field)
       select case(cmd_line_entry%field(i)%subfield(1)%name)
-      case ("N","n","nib")
+      case ("N","n","nib","NIB")
         non_inverted_barometer = .true.
       case default
         inverted_barometer=.true.

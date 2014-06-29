@@ -31,10 +31,13 @@ for test in t*.sh ; do
       tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
     } || 
     {
+      
+      diff <(egrep -v (compiled|started) $is) <(egrep -v (compiled|started) $should_be)
+
       tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
       [[ ${show_failed_diffs:-} == "true" ]] && 
       {
-        diff -y  $is $should_be
+        diff $is $should_be
       }
     } 
     let counter++

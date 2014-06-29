@@ -20,5 +20,6 @@ copy_dat_to_benchmark: stat
 		;; \
 		esac ;
 
-failed:
+failed: all
+	@bash stat.sh -b
 
