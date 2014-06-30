@@ -7,9 +7,10 @@ C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
 
 
 COMMON_FFLAGS = \
-				 -O2    \
-				 -xHost \
-				 -warn all
+								-fpic  \
+								-O2    \
+								-xHost \
+								-warn all
 
 FFLAGS=$(COMMON_FFLAGS)
 
@@ -33,33 +34,35 @@ fd:
 	#  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 	#  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
-# libraries
-NETCDFLIB = -I/usr/local/include \
+NETCDFLIB = \
+						-I/usr/local/include \
 						-L/usr/local/lib     \
 						-lnetcdff            \
 						-lnetcdf
 
-SRCS  = mod_constants.f90     \
-				mod_utilities.f90     \
-				mod_cmdline.f90       \
-				mod_printing.f90      \
-				mod_spherical.f90     \
-				mod_mjd.f90           \
-				mod_normalization.f90 \
-				mod_atmosphere.f90    \
-				mod_aggf.f90          \
-				mod_polygon.f90       \
-				mod_data.f90          \
-				mod_date.f90          \
-				mod_site.f90          \
-				mod_3d.f90            \
-				mod_green.f90         \
-				mod_admit.f90         \
-				mod_parser.f90        
+SRCS      = \
+						mod_constants.f90     \
+						mod_utilities.f90     \
+						mod_cmdline.f90       \
+						mod_printing.f90      \
+						mod_spherical.f90     \
+						mod_mjd.f90           \
+						mod_normalization.f90 \
+						mod_atmosphere.f90    \
+						mod_aggf.f90          \
+						mod_polygon.f90       \
+						mod_data.f90          \
+						mod_date.f90          \
+						mod_site.f90          \
+						mod_3d.f90            \
+						mod_green.f90         \
+						mod_admit.f90         \
+						mod_parser.f90        
 
-PROGSSRCS =  grat.f90          \
-						 value_check.f90   \
-						 polygon_check.f90
+PROGSSRCS = \
+						grat.f90          \
+						value_check.f90   \
+						polygon_check.f90
 
 EXAMPLESSRC = example_aggf.f90
 
@@ -104,6 +107,7 @@ all:          \
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
+	ranlib $@
 
 PACKAGE = grat-src
 VER     = pre-alpha
@@ -116,7 +120,7 @@ package:
 
 doc:
 	make -C ../doc/figures/
-	cd ../doc  &&  (doxygen Doxyfile > /dev/null 2>/dev/null)
+	cd ../doc  &&  doxygen Doxyfile
 
 docpdf: doc
 	cd ../doc/latex/  &&  pdflatex -shell-escape refman
@@ -128,11 +132,14 @@ dochtml: doc
 docman: doc
 	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
 
-install:                       \
-	$(PROGS)                     \
-	/usr/local/lib/libgrat.a     \
-	$(LINKS_DIR_ALL)/grat        \
+install:                   \
+	$(PROGS)                 \
+	/usr/local/lib/libgrat.a \
+	$(LINKS_DIR_ALL)/grat    \
 	$(LINKS_DIR_ALL)/value_check
+
+install-doc: doc
+	cp -vu ../doc/man/man3 ~/.local/share/man/ -r
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH
@@ -146,8 +153,8 @@ $(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
 # Change this path according to your system settings
 # This could require root privilages
 /usr/local/lib/libgrat.a: libgrat.a
-	@sudo cp -uv libgrat.a /usr/local/lib
-	@sudo cp -uv *.mod /usr/local/include
+	sudo cp -uv libgrat.a /usr/local/lib
+	sudo cp -uv *.mod /usr/local/include
 	@echo "library grat sucessfully installed"
 
 clean:
@@ -175,3 +182,11 @@ $(HELPS): $(PROGS)
 .PHONY: check 
 check: install
 	make -C check
+
+shared_libraries: $(OBJS)
+	$(FC) -shared $(OBJS) -o libgrat.so
+	$(FC) -c grat.f90
+	$(FC) grat.o $(NETCDFLIB) libgrat.so 
+	sudo cp -uv libgrat.so /usr/local/lib
+clean_shared_libraries:
+	sudo rm /usr/local/lib/libgrat.so 

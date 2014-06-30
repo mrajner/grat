@@ -71,7 +71,7 @@ end function
 !> all values in radians
 !! second improved version of cylinder, includes curvature of the earth
 ! =============================================================================
-real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
+real(dp) function cylinder (psi1, psi2, dazimuth, h, z1, z2)
   use mod_constants, only: earth
   real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
   real(dp) :: psi, zz1, zz2
@@ -93,32 +93,6 @@ real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
 
   cylinder = dazimuth * cylinder
 end function
-
-! =============================================================================
-!> all values in radians
-!! third simplified version of cylinder
-! =============================================================================
-! real(dp) function cylinder (psi1,psi2, dazimuth, h, z1, z2)
-  ! use mod_constants, only: earth
-  ! real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
-  ! real(dp) :: psi, hh, zz1, zz2
-  ! real(dp) :: r1, r2
-
-  ! r1 = (earth%radius+z1)*sin(psi1)
-  ! r2 = (earth%radius+z2)*sin(psi2)
-
-  ! psi = psi1/2.+psi2/2.
-  ! zz1 = z1-h
-  ! zz2 = z2-h
-
-  ! cylinder =               &
-    ! - (sqrt(zz1**2+r1**2)  &
-    ! -  sqrt(zz1**2+r2**2)) &
-    ! + (sqrt(zz2**2+r1**2)  &
-    ! -  sqrt(zz2**2+r2**2))
-
-  ! cylinder = dazimuth * cylinder
-! end function
 
 ! =============================================================================
 !> all values in radians

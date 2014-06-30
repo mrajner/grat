@@ -4,9 +4,11 @@
 !! This program was created to make computation of atmospheric gravity
 !! correction easier. Still developing. Consider visiting later...
 !!
+!! \version alpha
+!! \date 2014-06-30
 !! \version pre-alpha
 !! \date 2013-01-12
-!! \author Marcin Rajner\n
+!! \author Marcin Rajner\n 
 !! Politechnika Warszawska | Warsaw University of Technology
 !!
 !! \warning This program is written in Fortran90 standard but uses some featerus
@@ -77,11 +79,11 @@ program grat
   call system_clock(execution_time(2))
 
   ! gather cmd line option decide where to put output
-  call intro (                                         &
-    program_calling   = "grat",                        &
-    version           = "pre-alpha",                   &
+  call intro (                                          &
+    program_calling   = "grat",                         &
+    version           = "pre-alpha",                    &
     accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-", &
-    cmdlineargs       = .true.                         &
+    cmdlineargs       = .true.                          &
     )
 
   start = 0

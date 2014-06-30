@@ -412,9 +412,9 @@ subroutine green_unification ()
         size(green_common(iinfo)%distance) &
         )
 
-      where( &
+      where(                                                                         &
           green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
-          .or.green_common(iinfo)%distance.lt.green(i)%distance(1) &
+          .or.green_common(iinfo)%distance.lt.green(i)%distance(1)                   &
           )
         green_common(iinfo)%data(:, i)=0
       end where
@@ -438,9 +438,7 @@ subroutine green_unification ()
 
     enddo
   enddo
-
 end subroutine
-
 
 ! =============================================================================
 !> Perform convolution
@@ -449,8 +447,8 @@ end subroutine
 !! \author M. Rajner
 ! =============================================================================
 subroutine convolve(site, date)
+  use, intrinsic :: iso_fortran_env 
   use mod_constants
-  use iso_fortran_env
   use mod_site, &
     only : site_info, local_pressure_distance
   use mod_cmdline
@@ -458,23 +456,26 @@ subroutine convolve(site, date)
     only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace
   use mod_spherical
   use mod_data
-  use mod_date, only : dateandmjd
+  use mod_date, &
+    only : dateandmjd
   use mod_polygon
   use mod_printing
-  use mod_normalization, only: green_normalization
-  use mod_aggf, only: aggf
-  use mod_atmosphere, only: &
-    standard_pressure, standard_temperature, virtual_temperature
+  use mod_normalization, &
+    only: green_normalization
+  use mod_aggf, &
+    only: aggf
+  use mod_atmosphere, &
+    only: standard_pressure, standard_temperature, virtual_temperature
   use mod_3d
 
   type(site_info),  intent(in) :: site
   type(dateandmjd), intent(in), optional :: date
 
-  integer  :: igreen, idist, iazimuth, nazimuth
-  real(dp) :: azimuth, dazimuth
-  real(dp) :: lat, lon, area, tot_area, tot_area_used
-  real(dp) :: val(size(model)), old_val_sp, old_val_rsp
-  integer  :: i, j, npoints, iheight, nheight
+  integer    :: igreen, idist, iazimuth, nazimuth
+  real(dp)   :: azimuth, dazimuth
+  real(dp)   :: lat, lon, area, tot_area, tot_area_used
+  real(dp)   :: val(size(model)), old_val_sp, old_val_rsp
+  integer    :: i, j, npoints, iheight, nheight
   integer(2) :: iok(size(polygon))
 
   real(dp) :: normalize, aux
@@ -482,13 +483,13 @@ subroutine convolve(site, date)
     heights, pressures, temperatures
   logical :: header_p = .true.
 
-  ! real(dp) :: h1,h2, v1,v2, p_int !temporary
+  ! real(dp) :: h1, h2, v1, v2, p_int !temporary
   real(dp) :: rsp
   real(dp), dimension(:), allocatable :: result_partial
 
   logical :: first_reduction
-  first_reduction=.true.
 
+  first_reduction=.true.
 
   if (transfer_sp%if) then
     if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)

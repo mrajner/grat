@@ -1,4 +1,4 @@
-<map id="G" name="G">
-<area shape="rect" id="node2" href="$structmod__green_1_1green__common__info.html" title="mod_green::green_common_info" alt="" coords="4,5,213,32"/>
-<area shape="rect" id="node4" href="$structmod__green_1_1green__functions.html" title="mod_green::green_functions" alt="" coords="239,5,425,32"/>
+<map id="mod_green" name="mod_green">
+<area shape="rect" id="node2" href="$structmod__green_1_1green__common__info.html" title="mod_green::green_common_info" alt="" coords="5,5,216,32"/>
+<area shape="rect" id="node3" href="$structmod__green_1_1green__functions.html" title="mod_green::green_functions" alt="" coords="240,5,427,32"/>
 </map>

@@ -25,8 +25,14 @@ function standard_density (height, temperature, fels_type, method)
     t = standard_temperature (height, fels_type=fels_type)
   endif
 
-  standard_density = standard_pressure(                                  &
-    height, temperature=t, method=method, fels_type=fels_type)/(R_air*t)
+  standard_density =    &
+    standard_pressure(  &
+    height,             &
+    temperature=t,      &
+    method=method,      &
+    fels_type=fels_type &
+    )                   &
+    /(R_air*t)
   stop "TODO routine standard density should not be used anymore"
 end function
 ! =============================================================================
@@ -109,10 +115,10 @@ function standard_pressure (  &
 
     case ("full")
       if (.not.present(use_standard_temperature)) then
-        call print_warning(                    &
-          "error: you have to specify        &
-          use_standard_temperature with      &
-          full method in standard_pressure", &
+        call print_warning(                     &
+          "error: you have to specify "         &
+          //"use_standard_temperature with "    &
+          //"full method in standard_pressure", &
           error=.true.)
       endif
       standard_pressure=0.

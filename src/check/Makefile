@@ -20,7 +20,7 @@ ask:
 	echo "do you want download ncep data (could take some time) or run test only for synthetic data?" ; \
 	echo "[Y|y - download and run test on real data]" ; \
 	tput sgr0 ; \
-	read answer <<<Y;  \
+	read answer <<<r;  \
 	case $$answer in \
 	Y|y) \
 	make ncep ; \
@@ -45,7 +45,7 @@ data:
 	mkdir -p $@
 
 ncep: data
-	@wget  -nH -nc -nd -P data/                                             \
+	@wget  -nH -m -nd -P data/                                             \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/hgt.$(year).nc      \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/air.$(year).nc      \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/surface/hgt.sfc.nc           \

@@ -1,4 +1,4 @@
-<map id="G" name="G">
+<map id="mod_constants::earth_data" name="mod_constants::earth_data">
 <area shape="rect" id="node2" href="$structmod__constants_1_1earth__gravity.html" title="mod_constants::earth\l_gravity" alt="" coords="5,6,152,47"/>
-<area shape="rect" id="node4" href="$structmod__constants_1_1earth__density.html" title="mod_constants::earth\l_density" alt="" coords="177,6,324,47"/>
+<area shape="rect" id="node3" href="$structmod__constants_1_1earth__density.html" title="mod_constants::earth\l_density" alt="" coords="177,6,324,47"/>
 </map>

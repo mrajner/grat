@@ -275,6 +275,7 @@ function is_numeric(string)
   character(len=*), intent(in) :: string
   real :: x
   integer :: e
+
   if (string(1:1).eq."/") then
     is_numeric=.false.
     ! minus sign not on the first postion but allow 1e-5
@@ -285,7 +286,6 @@ function is_numeric(string)
     read(string, *, iostat=e) x
     is_numeric = e == 0
   endif
-
 end function
 
 ! =============================================================================

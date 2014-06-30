@@ -36,7 +36,7 @@ for test in t*.sh ; do
     } || 
     {
 
-      do_not_compare_list='compiled|Program|100%|ifort\s|Execution'
+      do_not_compare_list='compiled|Program|100%|ifort\s|Execution|FFLAGS'
 
       diff                                       \
         <(egrep -v ${do_not_compare_list:-} $is) \
