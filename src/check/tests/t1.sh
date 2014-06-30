@@ -11,9 +11,10 @@ outfile(){
 echo  ${0%%.*}.dat
 }
 
+source definitions.sh
 
 value_check                         \
-  -F ../data/air.2012.nc : air         \
+  -F ../data/air.2012.nc : air      \
   -S jozefoslaw : 52.0 : 21.0 : 110 \
   -D 20120606 : 30@H                \
   -J100 -w n                        \
