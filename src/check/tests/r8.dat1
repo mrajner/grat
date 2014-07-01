@@ -2,14 +2,14 @@
 #                                                          value_check #
 #                                                                 beta #
 #                                                   ifort 14(20131008) #
-#                                compiled on lidka 2014-06-28 22:13:17 #
+#                                   compiled on pw 2014-06-30 11:41:24 #
 #                                        FFLAGS = -O2 -xHost -warn all #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-06-28 22:46:55 (+02h UTC)
+Program started: 2014-07-01 14:50:04 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F 10 , 20:@gh2h , 30:@ scale=10 @ invscale=1000 , 40@name ,
@@ -74,5 +74,5 @@ Command parsing:
       auto  -90.0000  300.0000    0.0000        --   30.0000        -- 
       auto   10.0000  300.0000    0.0000        --   30.0000        -- 
 #-----------------------------------------------------------------------
-Execution time:   0.0s (proc time:   0.0 |%100.0)
+Execution time:   0.0s (proc time:   0.0 |% 83.3)
 #-----------------------------------------------------------------------

@@ -9,6 +9,7 @@ set -o nounset                              # Treat unset variables as an error
 
 . definitions.sh
 
+counter=0
 for exclamation in "" "-!" ; do
   grat                                                                           \
     ${exclamation} \
@@ -18,6 +19,7 @@ for exclamation in "" "-!" ; do
     -U                                                                           \
     -D m:m:210@D                                                                  \
     -Sj -BI  -H -I500@HS                                                         \
-    -o ${0/.sh/.tmp} :n  \
-    -V
+    -o : ${0/.sh/.dat${counter/0}} :n  \
+    # -V
+  let counter+2
 done
