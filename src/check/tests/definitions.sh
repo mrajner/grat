@@ -7,11 +7,12 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-VT="../data/air.2012.nc      @VT : air "
-GP="../data/hgt.2012.nc      @GP : hgt"
-SP="../data/pres.sfc.2012.nc @SP : pres"
-LS="../data/land.nc          @LS : land"
-HP="../data/hgt.sfc.nc       @HP : hgt"
- H="../data/hgt.sfc.nc       @H  : hgt"
- T="1000 @T"
+ VT="../data/air.2012.nc      @VT : air "
+ GP="../data/hgt.2012.nc      @GP : hgt"
+ SP="../data/pres.sfc.2012.nc @SP : pres"
+ LS="../data/land.nc          @LS : land"
+ HP="../data/hgt.sfc.nc       @HP : hgt"
+  H="../data/hgt.sfc.nc       @H  : hgt"
+VSH="../data/shum.2012.nc     @VSH: shum"
+  T="1000 @T"
 
