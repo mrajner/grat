@@ -26,9 +26,9 @@ endif
 
 VERSION = $(shell git describe)
 
-
-va: value_check
-	value_check -F check/data/test_data.nc:gp -V -Sj,r,o -Dm:m -J1000,950  -o:level
+kkk: $(LINKS)
+va: grat 
+	grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn -Sj,r,o:g -Dm:m -J1000,950  -otmp:level
 
 fd:
 
