@@ -4,7 +4,7 @@
 !! This program was created to make computation of atmospheric gravity
 !! correction easier. Still developing. Consider visiting later...
 !!
-!! \version pre-alpha
+!! \version beta
 !! \date 2013-01-12
 !! \author Marcin Rajner\n
 !! Politechnika Warszawska | Warsaw University of Technology
