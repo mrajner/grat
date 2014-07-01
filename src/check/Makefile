@@ -9,7 +9,9 @@ GRATLIB   = -I/usr/local/include \
 						-L/usr/local/lib     \
 						-lgrat
 
-all: ask run runtests
+all: run
+	
+	# ask run runtests
 
 .PHONY:runtests
 runtests:

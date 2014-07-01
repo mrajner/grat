@@ -178,8 +178,9 @@ subroutine parse_site(cmd_line_entry)
   enddo
 
   do i = 1, size(cmd_line_entry%field)
-    if (any(cmd_line_entry%field(i)%subfield%dataname.eq."H")) &
+    if (any(cmd_line_entry%field(i)%subfield%dataname.eq."H")) then
       site_height_from_model=.true.
+    endif
   enddo
 
 end subroutine

@@ -209,7 +209,8 @@ program value_check
         endif
 
         write (output%unit , "("//output%form//'$)') val
-        write(output%unit,*)  
+
+        if (size(val).gt.0) write(output%unit,*)
 
         if (.not.quiet.or.iprogress==lprogress) then
 

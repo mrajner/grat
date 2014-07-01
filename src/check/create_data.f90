@@ -3,7 +3,8 @@ program createdata
   use mod_data, only: nc_error
 
   implicit none
-  integer(2) :: i
+
+  integer(2) :: i, ilevel, itime, ilat, ilon
   integer :: ncid, status, &
   londimid, latdimid, timedimid,leveldimid, &
   lonvarid, latvarid, timevarid,levelvarid, &
@@ -24,7 +25,7 @@ program createdata
     levels ( nlevel )  = [ ( 1000-    ( i-1 ) *50         , i = 1 , nlevel ) ] , &
     times(ntime)= [ (i*6 , i=1, ntime) ]
 
-  real:: gp (nlon, nlat, nlevel, ntime) 
+  real :: gp (nlon, nlat, nlevel, ntime) 
 
   call nc_error (nf90_create(path = "data/test_data.nc", cmode = nf90_clobber, ncid = ncid))
 
@@ -54,8 +55,10 @@ program createdata
   call nc_error (nf90_put_var(ncid, levelvarid, levels ))
   call nc_error (nf90_put_var(ncid, timevarid, times ))
 
-  do i = 1 , nlevel
-  gp (:,:,i,:) =levels(i)
+  do itime = 1 , ntime
+  do ilevel = 1 , nlevel
+    gp(:,:,ilevel,itime) = levels(ilevel) + 0 *times(itime)
+  enddo
   enddo
 
   call nc_error (nf90_put_var(ncid, gpvarid, gp))
