@@ -4,7 +4,7 @@
 !! This program was created to make computation of atmospheric gravity
 !! correction easier. Still developing. Consider visiting later...
 !!
-!! \version alpha
+!! \version beta
 !! \date 2014-06-30
 !! \version pre-alpha
 !! \date 2013-01-12

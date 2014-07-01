@@ -24,6 +24,11 @@ ifeq ($(FC),gfortran)
 FFLAGS=
 endif
 
+VERSION = $(shell git describe)
+
+fdf:
+	echo $(VERSION)
+
 va: value_check
 	value_check -F check/data/test_data.nc:gp -V -Sj,r,o -Dm:m -J1000,950  -o:level
 
@@ -110,10 +115,9 @@ libgrat.a: $(OBJS)
 	ranlib $@
 
 PACKAGE = grat-src
-VER     = pre-alpha
 DATE    = `date +%Y%m%d`
 package:
-	tar jcf $(PACKAGE)_$(VER)_$(DATE).tar.bz2 \
+	tar jcf $(PACKAGE)_$(VERSION)_$(DATE).tar.bz2 \
 		../../grat/src/{*.f90,Makefile}         \
 		../../grat/dat/*.dat                    \
 		../../grat/bin/.README
