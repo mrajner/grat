@@ -129,9 +129,6 @@ docpdf: doc
 dochtml: doc
 	firefox ../doc/html/index.html &
 
-docman: doc
-	man /home/mrajner/src/grat/doc/man/man3/mod_utilities.3
-
 install:                   \
 	$(PROGS)                 \
 	/usr/local/lib/libgrat.a \
