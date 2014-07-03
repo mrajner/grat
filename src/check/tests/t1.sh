@@ -27,11 +27,11 @@ for exclamation in "" "-!" ; do
   let counter=counter+3
 
 # Testing simple value_check, and parser
-  value_check      \
-    ${exclamation} \
-    -F $SP, $T     \
-    -S g:50       \
-    -D 20120101    \
+  # value_check      \
+    # ${exclamation} \
+    # -F $SP, $T     \
+    # -S g:50       \
+    # -D 20120101    \
 
     # -o ${0/.sh/.dat}$((counter+0))${suffix} \
     # -V ${0/.sh/.dat}$((counter+1))${suffix} \
