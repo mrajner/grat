@@ -15,11 +15,11 @@ stat: $(RESULTS)
 	-@bash $< 
 
 %.dat.s:%.sh
-	-@bash $< s
+	-bash $< s
 %.dat.r:%.sh
-	-@bash $< r
+	-bash $< r
 %.dat.c:%.sh
-	-@bash $< c
+	-bash $< c
 
 clean:
 	rm -v t*.dat*

@@ -1,7 +1,6 @@
 var searchData=
 [
   ['celestial_5fobject_5fdata',['celestial_object_data',['../structmod__constants_1_1celestial__object__data.html',1,'mod_constants']]],
-  ['check',['check',['../classmod__data.html#a2cf897d079bd3c5dc4dbffef06d4d4a6',1,'mod_data']]],
   ['chkgon',['chkgon',['../classmod__polygon.html#a1862f932e1777d8e65630f97eb91450f',1,'mod_polygon']]],
   ['cmd_5fline_5farg',['cmd_line_arg',['../structmod__cmdline_1_1cmd__line__arg.html',1,'mod_cmdline']]],
   ['collect_5fargs',['collect_args',['../classmod__cmdline.html#a04c83a0ac5ec48fdd32f8eb4f69645eb',1,'mod_cmdline']]],

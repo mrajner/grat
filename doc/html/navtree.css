@@ -43,7 +43,6 @@
 #nav-tree .label {
   margin:0px;
   padding:0px;
-  font: 12px 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
 }
 
 #nav-tree .label a {
@@ -86,7 +85,7 @@
   display:block;
   position: absolute;
   left: 0px;
-  width: 250px;
+  width: 300px;
 }
 
 .ui-resizable .ui-resizable-handle {
@@ -116,23 +115,8 @@
 #nav-tree {
   background-image:url('nav_h.png');
   background-repeat:repeat-x;
-  background-color: #FBF9FC;
+  background-color: #FDFCFD;
   -webkit-overflow-scrolling : touch; /* iOS 5+ */
-}
-
-#nav-sync {
-  position:absolute;
-  top:5px;
-  right:24px;
-  z-index:0;
-}
-
-#nav-sync img {
-  opacity:0.3;
-}
-
-#nav-sync img:hover {
-  opacity:0.9;
 }
 
 @media print
