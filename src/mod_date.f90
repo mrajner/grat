@@ -83,8 +83,10 @@ subroutine parse_date(cmd_line_entry)
       is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name) &
       .and.index(cmd_line_entry%field(i_)%subfield(i_aux)%name,".").ne.0 , &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
+
       call print_warning("decimal date not supported "// trim(cmd_line_entry%field(i_)%full))
       cycle
+
     endif
 
     interval_unit = "h"
@@ -94,7 +96,7 @@ subroutine parse_date(cmd_line_entry)
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
       if (size(model(1)%date).eq.0) then
-        call print_warning("NO dates in first model. -Dm is forbidden (or -D before -F)", error=.true.)
+        call print_warning("no dates in first model: -Dm is forbidden (or -D before -F)", error=.true.)
       else
         start = model(1)%date(lbound(model(1)%date, 1), 1:6)
       endif
@@ -119,8 +121,13 @@ subroutine parse_date(cmd_line_entry)
     if (size(cmd_line_entry%field(i_)%subfield).ge.2  &
       .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
       ) then
+
       if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
-        stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
+        if (size(model(1)%date).eq.0) then
+          call print_warning("no dates in first model: -Dm is forbidden (or -D before -F)", error=.true.)
+        else
+          stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
+        endif
       else if (cmd_line_entry%field(i_)%subfield(2)%dataname.ne."") then
         read (cmd_line_entry%field(i_)%subfield(2)%name,*) stop(1)
         select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
@@ -240,6 +247,7 @@ subroutine parse_date(cmd_line_entry)
       endif
     endif
   enddo
+
   if (.not.log%sparse) &
     write (log%unit, form%i3) "dates total:", size(date)
 

@@ -1,13 +1,25 @@
-TESTS   = $(wildcard t*.sh)
-RESULTS = $(subst .sh,.dat,$(TESTS))
+TESTS   = $(wildcard t1*.sh)
 
-all: stat
+REAL      = $(subst .sh,.dat.r,$(TESTS))
+SYNTHETIC = $(subst .sh,.dat.s,$(TESTS))
+CONSTANT  = $(subst .sh,.dat.c,$(TESTS))
+
+RESULTS = $(REAL) $(SYNTHETIC) $(CONSTANT)
+
+all: $(RESULTS)
 
 stat: $(RESULTS)
 	@bash stat.sh
 	
 %.dat:%.sh
 	-@bash $< 
+
+%.dat.s:%.sh
+	-@bash $< s
+%.dat.r:%.sh
+	-@bash $< r
+%.dat.c:%.sh
+	-@bash $< c
 
 clean:
 	rm -v t*.dat*

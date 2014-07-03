@@ -9,8 +9,9 @@ GRATLIB   = -I/usr/local/include \
 						-L/usr/local/lib     \
 						-lgrat
 
-all: run
+all: run data
 	
+df:
 	# ask run runtests
 
 .PHONY:runtests
@@ -37,7 +38,10 @@ create_data: create_data.f90
 	$(FC) $< -o $@ $(NETCDFLIB) $(GRATLIB)
 
 run: create_data
-	./$<
+	./$< 
+	@make --no-print-directory -C $$GS value_check install
+	value_check  -F data/test_data.nc:sp:lon:lat , @T : t -S j , :2: 340 -D201201 : 32@H
+	value_check   -F data/test_data.nc:sp:lon:lat, @T! : t -S j , :2: 340 -D201201 : 32@H
 
 
 
@@ -58,3 +62,4 @@ ncep: data
 
 clean:
 	rm create_data
+

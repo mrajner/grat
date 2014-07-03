@@ -601,4 +601,34 @@ SUBROUTINE Bubble_Sort(a)
     if (.not. swapped) exit
   end do
 END SUBROUTINE Bubble_Sort
+
+
+! =============================================================================
+!> Performs bilinear interpolation
+!! \author Marcin Rajner
+!! \date 2013-05-07
+! =============================================================================
+function bilinear (x, y, aux )
+  use mod_constants, only: dp
+  real(dp) :: bilinear
+  real(dp) :: x, y, aux(4,3)
+  real(dp) :: a, b, c
+  a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
+  b = a * (aux(3,3) - aux(1,3)) + aux(1,3)
+  c = a * (aux(4,3) - aux(2,3)) + aux(2,3)
+  bilinear = (y-aux(1,2))/(aux(4,2)-aux(1,2)) * (c-b) + b
+end function
+
+function celcius_to_kelvin (celcius, inverted)
+  real(dp) :: celcius_to_kelvin
+  real(dp), intent(in) :: celcius
+  logical, intent(in), optional :: inverted
+
+  if (present(inverted).and.inverted) then
+    celcius_to_kelvin = celcius - 273.15
+  else
+    celcius_to_kelvin = celcius + 273.15
+  end if
+
+end function
 end module

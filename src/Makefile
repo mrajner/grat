@@ -10,7 +10,7 @@ COMMON_FFLAGS = \
 								-fpic  \
 								-O2    \
 								-xHost \
-								-warn all
+								-warn all 
 
 FFLAGS=$(COMMON_FFLAGS)
 
@@ -26,9 +26,17 @@ endif
 
 VERSION = $(shell git describe)
 
-kkk: $(LINKS)
-va: grat 
-	grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn -Sj,r,o:g -Dm:m -J1000,950  -otmp:level
+
+tm:
+	make -C check
+
+d: value_check
+	value_check -F10 -D2010:m -H
+	#  value_check -F  check/data/air.2012.nc@SP : air  -M1  -Sj,r,o:g -Dm -J1000,950  
+
+
+va: grat  value_check
+	grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -Dm:m -J1000,950  -otmp:level #-G@GN
 
 fd:
 
@@ -160,9 +168,10 @@ clean:
 	rm -f *.o *.mod *.a fort?????? 
 
 CLEAN: clean
-	-sudo rm \
+	-sudo rm                   \
 		/usr/local/include/mod_* \
-		/usr/local/lib/libgrat.a
+		/usr/local/lib/libgrat.a \
+		/usr/local/lib/libgrat.so
 	-rm $(LINKS)
 	-sudo rm                       \
 		$(LINKS_DIR_ALL)/grat        \

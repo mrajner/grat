@@ -19,7 +19,7 @@ for exclamation in "" "-!" ; do
     -U                                                                           \
     -D m:m:210@D                                                                  \
     -Sj -BI  -H -I500@HS                                                         \
-    -o : ${0/.sh/.dat${counter/0}} :n  \
-    # -V
-  let counter+2
+    -o ${0/.sh/.dat${counter/0}} :nc  \
+    -V ${0/.sh/.dat$((counter+1))} : sparse
+  let counter=counter+2
 done
