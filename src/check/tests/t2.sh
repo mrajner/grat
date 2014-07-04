@@ -7,31 +7,52 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-outfile(){
-echo  ${0%%.*}.dat
+
+# testing 4 dimensional variables with value_check
+
+. definitions.sh r
+
+counter=0
+
+value_check  \
+  -F no_file \
+  -S j       \
+  -D 2012    \
+  -J100 &>${0/.sh/.dat}$counter$suffix
+
+let counter++
+
+[[ ${suffix} != ".c" ]] && 
+{
+  value_check                            \
+    -F $file : wrong_var_name            \
+    -S j                                 \
+    -D 2012                              \
+    -J100 &>${0/.sh/.dat}$counter$suffix
+
+  let counter++
+
+  value_check                 \
+    -F                        \
+    $SP : lon : lat,          \
+    $VT : lon : lat : level , \
+    $VT : lon : lat : leel    \
+    -S j                      \
+    -D 20120103               \
+    -o : level                \
+    -H                        \
+    &>${0/.sh/.dat}$counter$suffix
+  let counter++
 }
 
+let counter++
 
-value_check                         \
-  -F ../data/air.2012.nc : air         \
-  -S jozefoslaw : 52.0 : 21.0 : 110 \
-  -D 20120603 : 30@H                \
-  -J100 -w n                        \
-  -o $(outfile)
+value_check \
+  -!        \
+  -F $GP    \
+  -S j      \
+  -D 2012   \
+  -J1000,100 , 11    \
+  -o : level #&>${0/.sh/.dat}$counter$suffix
 
-
-# test2.dat: .FORCE
-# 	@value_check                         \
-  # 		-!                                \
-  # 		-F data/air.2012.nc : air         \
-  # 		-S jozefoslaw : 52.0 : 21.0 : 110 \
-  # 		-D 20120606 : 30@H                \
-  # 		-J100 -w n > test2.dat
-# 	@value_check                         \
-  # 		-!                                \
-  # 		-F data/air.2012.nc : air         \
-  # 		-S jozefoslaw : 52.0 : 21.0 : 110 \
-  # 		-D 20120606 : 30@H                \
-  # 		-J100 -w n -V $@ -o /dev/null
-# 	@value_check -F ../data/test_data.nc 
-# 	$(call check) 
+touch ${0/.sh/.dat}${suffix} 

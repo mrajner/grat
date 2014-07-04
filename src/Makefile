@@ -26,14 +26,8 @@ endif
 
 VERSION = $(shell git describe)
 
-
-tm:
+tm: value_check
 	make -C check
-
-d: value_check
-	value_check -F10 -D2010:m -H
-	#  value_check -F  check/data/air.2012.nc@SP : air  -M1  -Sj,r,o:g -Dm -J1000,950  
-
 
 va: grat  value_check
 	grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -Dm:m -J1000,950  -otmp:level #-G@GN

@@ -1,12 +1,14 @@
-TESTS   = $(wildcard t1*.sh)
+TESTS   = $(wildcard t2*.sh)
 
 REAL      = $(subst .sh,.dat.r,$(TESTS))
 SYNTHETIC = $(subst .sh,.dat.s,$(TESTS))
 CONSTANT  = $(subst .sh,.dat.c,$(TESTS))
 
+
 RESULTS = $(REAL) $(SYNTHETIC) $(CONSTANT)
 
 all: $(RESULTS)
+all_s: $(SYNTHETIC) $(CONSTANT)
 
 stat: $(RESULTS)
 	@bash stat.sh

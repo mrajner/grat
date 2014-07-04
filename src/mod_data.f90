@@ -439,6 +439,7 @@ function variable_modifier (val, modifier, verbose, list_only)
   integer :: i
   logical, optional, intent(in) :: verbose, list_only
 
+  print *, val
 
   variable_modifier = val
   modifier_=modifier
@@ -770,12 +771,6 @@ function get_level_index(model, level, sucess)
 
   if (.not.if_variable_use_dimension(model,ivarname=1, idimname=4)) then
     sucess = .true.
-    return
-  else
-    call print_warning ( &
-      "variable "//trim(model%names(1))//": problem with get_level_index" &
-      )
-    sucess = .false.
     return
   endif
 

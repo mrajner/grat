@@ -23,9 +23,9 @@ program createdata
     ntime  = 10
 
   real, parameter ::                                                             &
-    lats   ( nlat   )  = [ ( -89.75 + ( i-1 ) *resolution , i = 1 , nlat   ) ] , &
-    lons   ( nlon   )  = [ ( 0.25 +   ( i-1 ) *resolution , i = 1 , nlon   ) ] , &
-    levels ( nlevel )  = [ ( 1000-    ( i-1 ) *50         , i = 1 , nlevel ) ] , &
+    lats   (nlat   )  = [ ( -89.75 + ( i-1 ) *resolution , i = 1 , nlat   ) ] , &
+    lons   (nlon   )  = [ ( 0.25 +   ( i-1 ) *resolution , i = 1 , nlon   ) ] , &
+    levels (nlevel )  = [ ( 1000-    ( i-1 ) *50         , i = 1 , nlevel ) ] , &
     times(ntime)= [ ((i-1)*6 , i=1, ntime) ]
 
   real , dimension(nlon, nlat, nlevel, ntime) :: gp 
@@ -51,7 +51,7 @@ program createdata
   call nc_error(nf90_def_var(ncid , "sp", NF90_short , dimids_surface,  spvarid) )
   call nc_error(nf90_def_var(ncid , "t" , NF90_real , dimids_surface,  tvarid) )
 
-  ! call nc_error(nf90_def_var(ncid , "gp", NF90_int , dimids_vertical, gpvarid) )
+  call nc_error(nf90_def_var(ncid , "gp", NF90_int , dimids_vertical, gpvarid) )
 
 
   call nc_error(nf90_put_att(ncid, latvarid, "units", "degree") )
@@ -82,17 +82,20 @@ program createdata
   do itime = 1 , ntime
 
     sp(ilon,ilat,itime) = &
-      101325 + 5000*cos(d2r(real(lats(ilat),dp)))*cos(d2r(real(lons(ilat),dp))) * sin(real(itime))
+      101325 &
+      + 5000*cos(d2r(real(lats(ilat),dp)))*cos(d2r(real(lons(ilat),dp))) &
+      * sin(real(itime))
 
-    t(ilon,ilat,itime) =  itime
-    ! t(ilon,ilat,itime) =  &
-      ! celcius_to_kelvin(15.0_dp) + 30 * cos(d2r(real(lats(ilat),dp)))*cos(d2r(real(lons(ilat),dp))) &
-      ! * sin(real(itime))
+    t(ilon,ilat,itime) =  &
+      celcius_to_kelvin(15.0_dp) &
+      + 30 * cos(d2r(real(lats(ilat),dp)))*cos(d2r(real(lons(ilat),dp))) &
+      * sin(real(itime))
 
     ! print *, itime
-  ! do ilevel = 1 , nlevel
-    ! gp(ilon,ilat,ilevel,itime) = lons(ilon) + 0* lats(ilat) + 0 *levels(ilevel) + 0 *times(itime)
-  ! enddo
+  do ilevel = 1 , nlevel
+     gp(ilon,ilat,ilevel,itime) = &
+     lons(ilon) + 0* lats(ilat) + 0 *levels(ilevel) + 0 *times(itime)
+  enddo
   enddo
   enddo
   enddo
@@ -102,9 +105,9 @@ program createdata
 
   call nc_error (nf90_put_var(ncid, spvarid, sp))
   call nc_error (nf90_put_var(ncid, tvarid, t))
-  ! call nc_error (nf90_put_var(ncid, gpvarid, gp))
+  call nc_error (nf90_put_var(ncid, gpvarid, gp))
 
   call nc_error (nf90_close(ncid=ncid))
-  ! call system("ncdump data/test_data.nc ")
+  call system("ncdump data/test_data.nc ")
 
 end program

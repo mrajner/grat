@@ -7,6 +7,20 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-value_check \
-  -F ../data/test_data.nc@GP:gp -J1000,900,100,200  -V -Sj -o 2> ${0/.sh/.dat}
+. definitions.sh c
+
+# test variable modifiers 
+
+counter=0
+value_check                \
+  -F                       \
+  $SP @scale=100 ,         \
+  $T  @invscale=1e8,         \
+  $GP @invscale=1e8         \
+                           \
+  -S 10/30/40/90 : 12 : 26 \
+  -H -o : level
+
+
+touch ${0/.sh/.dat}
 
