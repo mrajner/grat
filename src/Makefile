@@ -26,6 +26,8 @@ endif
 
 VERSION = $(shell git describe)
 
+make: install
+
 tm: value_check
 	make -C check
 

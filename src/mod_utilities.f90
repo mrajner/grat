@@ -206,7 +206,7 @@ end function ispline
 function ntokens(line, separator)
   character,intent(in) :: line*(*)
   character(1), intent(in), optional :: separator
-  integer:: i, n, toks
+  integer:: i, n
   character(1) :: separator_
   integer  :: ntokens
 
@@ -218,15 +218,13 @@ function ntokens(line, separator)
 
   i = 1
   n = len_trim(line)
-  toks = 0
   ntokens = 0
   do while(i <= n)
     do while(line(i:i) == separator_)
       i = i + 1
       if (n < i) return
     enddo
-    toks = toks + 1
-    ntokens = toks
+    ntokens = ntokens + 1
     do
       i = i + 1
       if (n < i) return
@@ -415,23 +413,41 @@ end function
 
 ! =============================================================================
 !> Counts occurence of character (separator, default comma) in string
+!!
+!! added Marcin Rajner 2014.07.14
 ! =============================================================================
-integer function count_separator (dummy, separator)
-  character(*), intent(in) ::dummy
-  character(1), intent(in), optional  :: separator
-  character(1)  :: sep
+integer function count_separator (dummy, separator, consecutive_as_one)
+  character(*), intent(in) :: dummy
+  character(1), intent(in), optional :: separator
+  logical, intent(in), optional :: consecutive_as_one
+  character(1) :: sep
   character(:), allocatable :: dummy2
   integer :: i
 
-  dummy2=dummy
-  sep = ","
-  if (present(separator)) sep = separator
-  count_separator=0
+  dummy2 = dummy
+
+  if (present(separator)) then
+    sep = separator
+  else
+    sep = ","
+  endif
+
+  count_separator = 0
+
   do
     i = index (dummy2, sep)
     if (i.eq.0) exit
     dummy2 = dummy2(i+1:)
-    count_separator=count_separator+1
+    count_separator = count_separator + 1
+
+    if (present(consecutive_as_one).and.consecutive_as_one) then
+      ! print *, index(dummy, dummy2)
+      stop "TODO"
+      ! if (dummy(i-1:i-1) == sep) then
+        ! count_separator = count_separator -1
+      ! endif
+    endif
+
   enddo
 end function
 
@@ -619,6 +635,12 @@ function bilinear (x, y, aux )
   bilinear = (y-aux(1,2))/(aux(4,2)-aux(1,2)) * (c-b) + b
 end function
 
+! =============================================================================
+!> Convert celcius degree to kelvin 
+!! and kelvin to celcius (if optional inverted parameter is set to true)
+!! \author Marcin Rajner
+!! \date 2014-06-07
+! =============================================================================
 function celcius_to_kelvin (celcius, inverted)
   real(dp) :: celcius_to_kelvin
   real(dp), intent(in) :: celcius
@@ -631,4 +653,5 @@ function celcius_to_kelvin (celcius, inverted)
   end if
 
 end function
+
 end module
