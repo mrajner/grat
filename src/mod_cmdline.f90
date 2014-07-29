@@ -89,6 +89,7 @@ module mod_cmdline
       if         = .true.,  &
       strict     = .false., &
       time       = .false., &
+      all        = .false., &
       file_exist = .false.
   end type
 

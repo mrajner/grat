@@ -144,10 +144,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           method3d_compute_reference=.true.
 
         case default
-          call print_warning (                            &
-            "no explicit ref for 3d given" //             &
-            " - using @GN[...] if any or put -M3 : : ref" &
-            )
+          if (warnings%all) then
+            call print_warning (                            &
+              "no explicit ref for 3d given" //             &
+              " - using @GN[...] if any or put -M3 : : ref" &
+              )
+          endif
         endselect
 
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%dataname)) then
@@ -342,6 +344,12 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
           any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
           ) then
           warnings%time=.true.
+        endif
+
+        if ( &
+          any(cmd_line(i)%field(1)%subfield(1:)%name.eq."a") &
+          ) then
+          warnings%all=.true.
         endif
 
         ! -ws -- strict warning

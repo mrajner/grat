@@ -439,8 +439,6 @@ function variable_modifier (val, modifier, verbose, list_only)
   integer :: i
   logical, optional, intent(in) :: verbose, list_only
 
-  print *, val
-
   variable_modifier = val
   modifier_=modifier
   do i = 1, ntokens(modifier_,"@")
