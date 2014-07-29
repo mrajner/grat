@@ -71,7 +71,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
       write(def_unit,'(a)', advance='no') "error: "
     else
       write(def_unit,'(a)', advance='no') "warning: "
-      if (warnings%strict) write(def_unit,'(a$)') "[strict set]: "
+      if (warnings%strict) write(def_unit,'(a$)') "[strict set] "
     endif
 
     select case(warn)
