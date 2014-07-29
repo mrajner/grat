@@ -26,7 +26,9 @@ endif
 
 VERSION = $(shell git describe)
 
-tm: install value_check
+make: install
+
+tm: value_check
 	make -C check
 
 va: grat  value_check
@@ -39,7 +41,7 @@ fd:
 	#  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 	#  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
-NETCDFLIB =                      \
+NETCDFLIB = \
 						-I/usr/local/include \
 						-L/usr/local/lib64   \
 						-lnetcdff            \
