@@ -26,7 +26,7 @@ endif
 
 VERSION = $(shell git describe)
 
-tm: value_check
+tm: install value_check
 	make -C check
 
 va: grat  value_check
