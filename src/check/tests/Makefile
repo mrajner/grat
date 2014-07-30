@@ -1,4 +1,4 @@
-TESTS   = $(wildcard t*.sh)
+TESTS   = $(wildcard t1*.sh)
 
 REAL      = $(subst .sh,.dat.r,$(TESTS))
 SYNTHETIC = $(subst .sh,.dat.s,$(TESTS))
