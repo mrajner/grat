@@ -544,10 +544,10 @@ subroutine convolve(site, date)
           max(int(360*sin(d2r(green_common(igreen)%distance(idist)))), 100) * &
           info(igreen)%azimuth%denser
         if (nazimuth.eq.0) nazimuth=1
-        dazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
+        dazimuth = (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
       else
         dazimuth = info(igreen)%azimuth%step
-        nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
+        nazimuth = (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
       endif
 
       ! calculate area using spherical formulae
@@ -619,21 +619,30 @@ subroutine convolve(site, date)
             if (.not.(site%lp%if                        &
               .and.green_common(igreen)%distance(idist) &
               .lt.local_pressure_distance)) then
-              call get_value (                                              &
-                model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), &
-                level=1,                                                    &
-                method = info(igreen)%interpolation,                        &
-                date=date%date)
+              call get_value (                       &
+                model(ind%model%sp),                 &
+                r2d(lat),                            &
+                r2d(lon),                            &
+                val(ind%model%sp),                   &
+                level  = 1,                          &
+                method = info(igreen)%interpolation, &
+                date   = date%date)
             endif
+
             old_val_sp=val(ind%model%sp)
 
             if (.not.isnan(val(ind%model%sp))) then
 
               ! get RSP if given
               if (ind%model%rsp.ne.0) then
-                call get_value (                                                &
-                  model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), &
-                  level=1, method = info(igreen)%interpolation)
+                call get_value (                      &
+                  model(ind%model%rsp),               &
+                  r2d(lat),                           &
+                  r2d(lon),                           &
+                  val(ind%model%rsp),                 &
+                  level=1,                            &
+                  method = info(igreen)%interpolation &
+                  )
               endif
               old_val_rsp=val(ind%model%rsp)
 
