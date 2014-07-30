@@ -142,7 +142,7 @@ install:                   \
 	$(LINKS_DIR_ALL)/value_check
 
 install-doc: doc
-	cp -vu ../doc/man/man3 ~/.local/share/man/ -r
+	cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 
 # Change this path according to your system settings
 # Make sure that target path is in your system serch $PATH

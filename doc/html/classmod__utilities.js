@@ -4,7 +4,7 @@ var classmod__utilities =
     [ "bubble_sort", "classmod__utilities.html#a0a0a4a8df91ef512c782638b940ff7e3", null ],
     [ "celcius_to_kelvin", "classmod__utilities.html#a75b5fbf6ae0e871f84c565c1cc9bdb44", null ],
     [ "count_records_to_read", "classmod__utilities.html#a0571602b20762c115bdcfdf03f8d85f8", null ],
-    [ "count_separator", "classmod__utilities.html#a9c7e8850ccacf73b4791c14effd2ece2", null ],
+    [ "count_separator", "classmod__utilities.html#a5643a960cd898ad8d214d34657627b7f", null ],
     [ "countsubstring", "classmod__utilities.html#a46818bb08175d2db67810d2b1ea6eea2", null ],
     [ "d2r", "classmod__utilities.html#a6a2fbcd5a1b9f51becdf9ce54f5f7b3b", null ],
     [ "datanameunit", "classmod__utilities.html#a0269aca09001515b2d1cabffa30e76c9", null ],
