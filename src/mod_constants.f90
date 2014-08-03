@@ -1,7 +1,5 @@
 ! ==============================================================================
-!> Define constant values.
-!!
-!! This module define some constant values oftenly used.
+!> This module define some constant values oftenly used.
 !! \author M. Rajner
 !! \date 2013-03-04
 ! ==============================================================================
@@ -14,7 +12,7 @@ module mod_constants
   real(dp), parameter ::        &
     R_air  = 287.05,            & ! dry air constant  [J/kg/K]
     pi     = 4.*atan(dble(1.)), &
-    T_zero = -273.15
+    t_zero = -273.15              
 
   !---------------------------------------
   ! gravity
