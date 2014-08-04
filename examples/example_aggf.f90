@@ -50,7 +50,7 @@ contains
 subroutine mass_vs_height (filename)
   use, intrinsic:: iso_fortran_env
   use mod_utilities, only: file_exists
-  use mod_constants, only : dp, pi, earth, R_air
+  use mod_constants, only: dp, pi, earth, R_air
   use mod_atmosphere
   character(*), intent (in), optional:: filename
   real(dp) :: max_height,dh, percent
@@ -254,7 +254,7 @@ subroutine compare_fels_profiles (filename)
   use iso_fortran_env
   use mod_utilities, only: file_exists
   use mod_constants, only: dp
-  use mod_atmosphere, only : standard_temperature
+  use mod_atmosphere, only: standard_temperature
   character (len=255), dimension (6) :: fels_types
   real (dp) :: height
   integer :: i, file_unit, i_height
@@ -342,8 +342,8 @@ end subroutine
 ! ============================================================================
 subroutine aggf_resp_t (filename)
   use mod_green, only: green
-  ! use mod_constants, only : dp, atmosphere
-  use mod_aggf, only : aggf
+  ! use mod_constants, only: dp, atmosphere
+  use mod_aggf, only: aggf
   real(dp), dimension(:,:), allocatable :: results
   integer :: i, j
   character(*), intent(in), optional :: filename
@@ -439,13 +439,13 @@ end subroutine
 subroutine standard1976(filename)
   use, intrinsic :: iso_fortran_env
   use mod_utilities, only: file_exists
-  use mod_constants, only : dp, R_air
+  use mod_constants, only: dp, R_air
   use mod_atmosphere, only: &
-    standard_temperature, standard_pressure, &
-    standard_gravity,     standard_density
-  integer :: file_unit
-  character(*), intent (in), optional:: filename
+    standard_temperature, standard_pressure, standard_gravity
+
+  integer  :: file_unit
   real(dp) :: height
+  character(*), intent (in), optional :: filename
 
   if (present (filename)) then
     if (file_exists(filename)) return
@@ -479,8 +479,7 @@ end subroutine
 ! ============================================================================
 subroutine aggf_resp_hmax (filename)
   use mod_utilities, only: file_exists, logspace, d2r
-  ! use mod_constants, only : dp
-  use mod_aggf, only : aggf
+  use mod_aggf, only: aggf
   real (dp), dimension (2) :: psi
   real (dp), dimension (:), allocatable :: heights 
   real (dp), dimension (:,:), allocatable :: results

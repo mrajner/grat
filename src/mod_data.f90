@@ -1276,7 +1276,7 @@ subroutine total_mass (model, date)
     do ilon =1,size(model%lon)
       totalarea = totalarea + cos(d2r(model%lat(ilat)))
       call get_value(model, model%lat(ilat), model%lon(ilon), val)
-      valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+      valarea   = valarea + val * cos(d2r(model%lat(ilat)))
     enddo
   enddo
 
