@@ -11,6 +11,7 @@ module mod_polygon
   use mod_constants, only : dp
 
   implicit none
+
   !----------------------------------------------------
   ! polygons
   !----------------------------------------------------
@@ -25,9 +26,11 @@ module mod_polygon
     character(len=25) :: dataname
     type(polygon_data), dimension (:), allocatable :: polygon
     logical :: if
+
     ! global setting (+|-) which override this in polygon file
     character(1):: pm
   end type
+
   type(polygon_info) , allocatable, dimension (:) :: polygon
 
 contains
@@ -51,24 +54,24 @@ subroutine parse_polygon (cmd_line_entry)
 
   allocate(polygon(size(cmd_line_entry%field)))
   do i=1, size(cmd_line_entry%field)
-  polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
-  if(i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
-    polygon(i)%name= polygon(i-1)%name
-  endif
-  polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
-  write(log%unit, form%i2), 'polygon file:' , polygon(i)%name
-  if (file_exists((polygon(i)%name))) then
-    polygon(i)%if=.true.
-    if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
-      .or.cmd_line_entry%field(i)%subfield(2)%name.eq."-" ) then
-      polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
-      write(log%unit, form%i3) , "global override:", polygon(i)%pm
+    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+    if(i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
+      polygon(i)%name= polygon(i-1)%name
     endif
-    call read_polygon (polygon(i))
-  else
-    stop 'file do not exist. Polygon file PROBLEM'
-  endif
-enddo
+    polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
+    write(log%unit, form%i2), 'polygon file:' , polygon(i)%name
+    if (file_exists((polygon(i)%name))) then
+      polygon(i)%if=.true.
+      if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
+        .or.cmd_line_entry%field(i)%subfield(2)%name.eq."-" ) then
+        polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
+        write(log%unit, form%i3) , "global override:", polygon(i)%pm
+      endif
+      call read_polygon (polygon(i))
+    else
+      stop 'file do not exist. Polygon file PROBLEM'
+    endif
+  enddo
 
 end subroutine
 ! ==============================================================================
@@ -119,7 +122,7 @@ subroutine read_polygon (polygon)
           write (error_unit , form_63) "Somethings wrong with coords in polygon file"
           polygon%if=.false.
           return
-          elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
+        elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
           polygon%polygon(i)%coords(j,1) = polygon%polygon(i)%coords(j,1) + 360.
         endif
       enddo
