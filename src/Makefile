@@ -8,7 +8,7 @@ C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
 
 COMMON_FFLAGS = \
 								-fpic  \
-								-O3    \
+								-O2    \
 								-xHost \
 								-warn all 
 
