@@ -8,11 +8,12 @@ C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
 
 COMMON_FFLAGS = \
 								-fpic  \
-								-O2    \
+								-O3    \
 								-xHost \
 								-warn all 
 
 FFLAGS=$(COMMON_FFLAGS)
+all:va
 
 mod_printing.o:                     \
 	FFLAGS +=                         \
@@ -29,10 +30,12 @@ VERSION = $(shell git describe)
 make: install
 
 tm: value_check
-	make -C check
+	time \
+		{ value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
 va: grat  value_check
-	grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -Dm:m -J1000,950  -otmp:level #-G@GN
+	time \
+		{ grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
 fd:
 
@@ -71,8 +74,6 @@ PROGSSRCS = \
 						value_check.f90   \
 						polygon_check.f90
 
-EXAMPLESSRC = example_aggf.f90
-
 OBJS = $(SRCS:.f90=.o)
 
 all: $(PROGS)
@@ -85,9 +86,6 @@ PROGS_SHORTCUTS = $(PROGSSRCS:.f90=)
 LINKS_DIR     = /home/mrajner/.local/bin
 LINKS_DIR_ALL = /usr/local/bin
 LINKS         = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-
-EXAMPLES_DIR = ../examples
-EXAMPLES     = $(addprefix $(EXAMPLES_DIR)/,$(EXAMPLESSRC:.f90=))
 
 # implicit rules for object files
 %.o: %.f90
@@ -102,15 +100,10 @@ $(PROGS_SHORTCUTS):
 $(PROGS_DIR)/%:%.f90 $(OBJS)
 	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS)
 
-# rules for example files
-$(EXAMPLES_DIR)/example%: $(EXAMPLES_DIR)/example%.f90 $(OBJS)
-	$(FC) $(FFLAGS) $< -o $@ $(OBJS) $(NETCDFLIB)
-
-all:          \
-	$(OBJS)     \
-	$(PROGS)    \
-	$(LINKS)    \
-	$(EXAMPLES)
+all:       \
+	$(OBJS)  \
+	$(PROGS) \
+	$(LINKS)
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
@@ -172,7 +165,6 @@ CLEAN: clean
 	-sudo rm                       \
 		$(LINKS_DIR_ALL)/grat        \
 		$(LINKS_DIR_ALL)/value_check
-	-rm $(EXAMPLES)
 
 HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 HELPS=$(addprefix ../dat/, $(HELP_NAMES))
@@ -189,8 +181,7 @@ check: install
 
 shared_libraries: $(OBJS)
 	$(FC) -shared $(OBJS) -o libgrat.so
-	$(FC) -c grat.f90
-	$(FC) grat.o $(NETCDFLIB) libgrat.so 
-	sudo cp -uv libgrat.so /usr/local/lib
+	@sudo cp -uv libgrat.so /usr/local/lib
+
 clean_shared_libraries:
 	sudo rm /usr/local/lib/libgrat.so 

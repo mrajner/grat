@@ -23,8 +23,11 @@ program value_check
   integer(2) :: iok
   integer(2) :: ilevel, start_level
 
+
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
+
+  quiet_step=50000
 
   call intro (                                &
     program_calling   = "value_check",        &
