@@ -369,7 +369,7 @@ subroutine model_aliases(model, dryrun, year, month)
 
     case ("LS")
       model%names(1)= "z"
-      write(model%name,'(a,a)') trim(prefix),"ETOPO_LANDSEA.grd"
+      write(model%name,'(a,a)') trim(prefix),"ETOPO_ls.grd"
 
     case ("H")
       model%names(1)="z"
