@@ -290,9 +290,9 @@ subroutine model_aliases(model, dryrun, year, month)
       endif
 
     case ("LS")
-      model%names(1:3)=["z", "x", "y"]
-      model%name="/home/mrajner/dat/landsea/ncep_closed_seas_caspian.nc"
-      model%autoload=.false.
+      model%names(1) = "land"
+      model%name     = "/home/mrajner/dat/landsea/ncep_ls.nc"
+      model%autoload = .false.
 
     case default
       model%autoload=.false.
@@ -338,8 +338,8 @@ subroutine model_aliases(model, dryrun, year, month)
         endif
       endif
     case ("LS")
-      model%names(1:3)=["z", "x", "y"]
-      model%name="/home/mrajner/dat/landsea/era_closed_seas_caspian.nc"
+      model%names(1)="lsm"
+      model%name="/home/mrajner/dat/landsea/era_ls.nc"
       model%autoload=.false.
     case default
       model%autoload=.false.
@@ -394,7 +394,7 @@ subroutine model_aliases(model, dryrun, year, month)
   endselect
 
   ! listing in log
-  model%constant_value=          &
+  model%constant_value =         &
     variable_modifier(           &
     model%constant_value,        &
     model%datanames(1),          &
@@ -409,9 +409,10 @@ subroutine model_aliases(model, dryrun, year, month)
   if(present(dryrun).and.dryrun) return
 
   if (.not.file_exists(model%name)) then
-    call print_warning (                                      &
-      "model", more=trim(model%name)//" : file do not exist", &
-      error=warnings%file_exist                               &
+    call print_warning (                                &
+      "model",                                          &
+      more  = trim(model%name)//" : file do not exist", &
+      error = warnings%file_exist                       &
       )
     model%exist=.false.
     return
