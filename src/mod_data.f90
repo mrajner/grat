@@ -369,7 +369,7 @@ subroutine model_aliases(model, dryrun, year, month)
 
     case ("LS")
       model%names(1)= "z"
-      write(model%name,'(a,a)') trim(prefix),"ETOPO_ls.grd"
+      write(model%name,'(a,a)') trim(prefix),"ETOPO_ls.nc"
 
     case ("H")
       model%names(1)="z"
@@ -1002,7 +1002,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   character(1), optional, intent(in) :: method
   integer, optional, intent(in) :: level
   integer :: j, ilevel = 1
-  integer  :: ilon, ilat, ilon2, ilat2, varid, status
+  integer :: ilon, ilat, ilon2, ilat2, varid, status
   real(dp), dimension(4,3) :: array_aux
   real(dp) :: scale_factor, add_offset
   integer, intent(in), optional::date(6)
