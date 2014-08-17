@@ -98,6 +98,7 @@ subroutine parse_site(cmd_line_entry)
       endif
 
       continue
+
     else
 
       select case(cmd_line_entry%field(i)%subfield(1)%name)

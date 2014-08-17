@@ -1,4 +1,8 @@
+#  ffgfdg: create_data
+	#  ./$<
+
 FC = ifort
+
 FTPDIR = ftp\://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2
 
 NETCDFLIB = -I/usr/local/include \
@@ -39,7 +43,6 @@ create_data: create_data.f90
 
 run: create_data
 	./$< 
-	@make --no-print-directory -C $$GS value_check install
 	value_check \
 		-F data/test_data.nc@SP:sp:lon:lat , @T : t , @GP : gp : lon:lat:level \
 		-S j -D201201 : 32@H \

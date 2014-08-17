@@ -362,35 +362,26 @@ subroutine model_aliases(model, dryrun, year, month)
     case default
       model%if=.false.
     endselect
+
   case ("ETOPO")
     prefix="/home/mrajner/dat/etopo/"
     select case (model%dataname)
+
     case ("LS")
-      model%names(1:3)=["z", "x", "y"]
+      model%names(1)= "z"
       write(model%name,'(a,a)') trim(prefix),"ETOPO_LANDSEA.grd"
+
     case ("H")
       model%names(1)="z"
       write(model%name,'(a,a)') trim(prefix),"ETOPO_zero_ocean.grd"
+
     case default
       model%if=.false.
     endselect
-  case ("LANDSEA")
-    call print_warning(                              &
-      "use ERA or NCEP @LS"//                        &
-      "or ETOPO@LS (not corrected for closed seas)", &
-      error=.true.                                   &
-      )
-    prefix="/home/mrajner/dat/landsea/"
-    select case (model%dataname)
-    case ("LS")
-      model%names(1:3)=["z", "x", "y"]
-      write(model%name,'(a,a)') trim(prefix), "LANDSEA_closed_seas.grd"
-    case default
-      model%if=.false.
-    endselect
+
   case default
-    model%if=.false.
-    model%autoload=.false.
+    model%if       = .false.
+    model%autoload = .false.
   endselect
 
   ! listing in log

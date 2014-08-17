@@ -17,8 +17,8 @@ program createdata
   real, parameter :: sp_scale=1., sp_offset=95000
 
   integer, parameter ::                  &
-    nlon   = ceiling(340. / resolution), &
-    nlat   = ceiling(180. / resolution), &
+    nlon   = ceiling(9340. / resolution), &
+    nlat   = ceiling(9180. / resolution), &
     nlevel = 5,                          &
     ntime  = 10
 
@@ -33,7 +33,7 @@ program createdata
 
   real :: random
 
-  call nc_error (nf90_create(path = "data/test_data.nc", cmode = nf90_clobber, ncid = ncid))
+  call nc_error (nf90_create(path = "data/test_data.nc", cmode = nf90_hdf5, ncid = ncid))
 
   call nc_error (nf90_def_dim(ncid = ncid , name = "lon"   , len = nlon           , dimid = londimid))
   call nc_error (nf90_def_dim(ncid = ncid , name = "lat"   , len = nlat           , dimid = latdimid))
@@ -69,6 +69,10 @@ program createdata
 
   call nc_error(nf90_put_att(ncid, timevarid, "units", "hours since 2012-1-1 00:00:0.0") )
 
+  ! call nc_error( nf90_def_var_deflate(ncid, spvarid, 1, 1, 9))
+  ! call nc_error( nf90_def_var_deflate(ncid, tvarid, 1, 1, 9))
+  ! call nc_error( nf90_def_var_deflate(ncid, gpvarid, 1, 1, 9))
+
   call nc_error(nf90_enddef(ncid) )
 
   call nc_error (nf90_put_var(ncid, latvarid, lats ))
@@ -91,10 +95,9 @@ program createdata
       + 30 * cos(d2r(real(lats(ilat),dp)))*cos(d2r(real(lons(ilat),dp))) &
       * sin(real(itime))
 
-    ! print *, itime
   do ilevel = 1 , nlevel
      gp(ilon,ilat,ilevel,itime) = &
-     lons(ilon) + 0* lats(ilat) + 0 *levels(ilevel) + 0 *times(itime)
+     lons(ilon) + 1* lats(ilat) + 0 *levels(ilevel) + 0 *times(itime)
   enddo
   enddo
   enddo
@@ -108,6 +111,7 @@ program createdata
   call nc_error (nf90_put_var(ncid, gpvarid, gp))
 
   call nc_error (nf90_close(ncid=ncid))
-  call system("ncdump data/test_data.nc ")
+  ! call system("ncdump data/test_data.nc ")
+  call system("ls -lh data/test_data.nc ")
 
 end program
