@@ -1064,11 +1064,11 @@ subroutine get_value(model, lat, lon, val, level, method, date)
         get_level_index(model, ilevel, success2), &
         get_time_index(model,date=date)           &
         ]),                                       &
-        success=success)
+        success = success)
       if(.not.success2) val =sqrt(-1.)
 
     else
-      call nc_error (nf90_get_var(         &
+      call nc_error (nf90_get_var(      &
         model%ncid,                     &
         varid,                          &
         val,                            &
@@ -1077,7 +1077,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
         ilat,                           &
         get_time_index(model,date=date) &
         ]),                             &
-        success=success)
+        success = success)
     endif
 
     if(.not. success) then

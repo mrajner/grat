@@ -944,6 +944,8 @@ subroutine get_index()
       ind%moreverbose%b = i
     case ("n")
       ind%moreverbose%n = i
+    case ("l")
+      ind%moreverbose%l = i
     case ("j")
       ind%moreverbose%j = i
     case ("v")
