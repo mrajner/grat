@@ -9,6 +9,7 @@ contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
+
 subroutine parse_option (cmd_line_entry, accepted_switches)
   use mod_cmdline
   use mod_site,      only: parse_site
