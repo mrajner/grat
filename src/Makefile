@@ -14,7 +14,7 @@ COMMON_FFLAGS = \
 
 FFLAGS=$(COMMON_FFLAGS)
 
-all:va
+all:buggy
 
 mod_printing.o:                     \
 	FFLAGS +=                         \
@@ -34,7 +34,7 @@ tm: value_check
 	time \
 		{ value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
-va: grat  value_check
+buggy: grat  value_check
 		grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN 
 
 ra: grat  value_check
