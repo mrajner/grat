@@ -42,7 +42,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-r')
     do i=1, size(cmd_line_entry%field)
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t" )) result_total     = .true.
-      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then 
+      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then
         result_total_all = .true.
         result_total     = .true.
       endif
@@ -326,6 +326,13 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     then
     call print_version &
       (program_calling=program_calling, version=version)
+    call exit
+  endif
+
+  if (any(cmd_line%switch.eq.'-.') &
+    .and.if_accepted_switch("-.",accepted_switches)) &
+    then
+    call system("pwd")
     call exit
   endif
 
