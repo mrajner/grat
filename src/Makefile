@@ -111,7 +111,6 @@ all:       \
 
 libgrat.a: $(OBJS)
 	ar rs $@ $(OBJS)
-	ranlib $@
 
 PACKAGE = grat-src
 DATE    = `date +%Y%m%d`
