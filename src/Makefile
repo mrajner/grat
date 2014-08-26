@@ -93,6 +93,10 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 LINKS_DIR     = ~/.local/bin
 
 
+dsfsfsdf:
+	rm -f mod_constants.o mod_parser.o mod_parser.mod
+	@make --no-print-directory mod_parser.o 
+	
 dfdf:install
 all: libgrat.a $(PROGS)
 
@@ -104,8 +108,8 @@ install: \
 	all \
 	$(LIBDIR)/libgrat$(VERSION_MAJOR).a \
 	$(LIBDIR)/libgrat.a \
-	$(INCDIR)/$(MOD)
-
+	$(addprefix $(INCDIR)/,$(MOD))
+	
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat$(VERSION_MAJOR).a
 	sudo cp -uv $< $@
 
@@ -113,10 +117,7 @@ $(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
 	sudo ln -sf $< $@
 
 $(INCDIR)/%.mod: %.mod
-	echo sudo cp -uv $< $@
-
-df:
-	#  sudo cp -uv *.mod $(INCLUDE_DIR)
+	sudo cp -uv $< $@
 
 # implicit rules for object files
 %.o: %.f90
@@ -135,9 +136,6 @@ $(PROGS_DIR)/grat:                  \
 
 $(PROGS_DIR)/%:%.f90 libgrat.a
 	$(FC) $(FFLAGS) $< -o $@ -L. -lgrat -lnetcdff
-
-#  $(LIBGRAT): libgrat$(VERSION_MAJOR).a
-	#  sudo cp -uv $< $@
 
 libgrat.a: libgrat$(VERSION_MAJOR).a
 	ln -sf $(realpath $<) $@
@@ -176,13 +174,13 @@ clean:
 
 uninstall: 
 	-sudo rm                   \
-		/usr/local/include/mod_* \
+	$(addprefix $(INCDIR)/,$(MOD)) \
 		/usr/local/lib/libgrat.a \
 		/usr/local/lib/libgrat.so
-	-rm $(LINKS)
-	-sudo rm                       \
-		$(LINKS_DIR)/grat        \
-		$(LINKS_DIR)/value_check
+	#  -rm $(LINKS)
+	#  -sudo rm                       \
+		#  $(LINKS_DIR)/grat        \
+		#  $(LINKS_DIR)/value_check
 
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 #  HELPS=$(addprefix ../dat/, $(HELP_NAMES))
@@ -198,9 +196,11 @@ ccc:
 #  test: install
 	#  make -C test
 
-#  shared_libraries: $(OBJS)
-	#  $(FC) -shared $(OBJS) -o libgrat.so
-	#  @sudo cp -uv libgrat.so /usr/local/lib
+shared_libraries: $(OBJS)
+	$(FC) -shared $(OBJS) -o libgrat.so
+	@sudo cp -uv libgrat.so /usr/local/lib
 
 #  clean_shared_libraries:
 	#  sudo rm /usr/local/lib/libgrat.so 
+	#
+mod_parser.o: mod_constants.o

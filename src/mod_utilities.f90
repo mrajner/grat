@@ -473,10 +473,10 @@ end function
 ! ==============================================================================
 function mmwater2pascal(mmwater, inverted)
   use mod_constants, only: density, earth
+
   real(dp) :: mmwater2pascal
   real(dp), intent(in) :: mmwater
   logical, optional, intent(in) :: inverted
-
 
   if (present(inverted).and.inverted) then
     mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water)
@@ -625,7 +625,6 @@ END SUBROUTINE Bubble_Sort
 !! \date 2013-05-07
 ! =============================================================================
 function bilinear (x, y, aux )
-  use mod_constants, only: dp
   real(dp) :: bilinear
   real(dp) :: x, y, aux(4,3)
   real(dp) :: a, b, c
@@ -652,6 +651,21 @@ function celcius_to_kelvin (celcius, inverted)
     celcius_to_kelvin = celcius + 273.15
   end if
 
+end function
+
+! =============================================================================
+! parse
+
+! =============================================================================
+function version_split(version, which) 
+  character(40) :: version_split
+  character(*), intent(in) :: version
+  character(*), intent(in), optional :: which
+
+  ! which=version
+
+  print *, pi
+  version_split="d"
 end function
 
 end module
