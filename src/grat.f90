@@ -1,4 +1,3 @@
-!> \file
 !! \mainpage grat overview
 !! \section Purpose
 !! This program was created to make computation of atmospheric gravity
@@ -8,7 +7,7 @@
 !! \date 2014-06-30
 !! \version pre-alpha
 !! \date 2013-01-12
-!! \author Marcin Rajner\n 
+!! \author Marcin Rajner\n
 !! Politechnika Warszawska | Warsaw University of Technology
 !!
 !! \warning This program is written in Fortran90 standard but uses some featerus
@@ -58,7 +57,6 @@
 !! \example grat_usage.sh
 ! ==============================================================================
 program grat
-  ! use omp_lib parallel computation not yet enabled
   use mod_parser,    only: intro
   use mod_data
   use mod_date
@@ -79,11 +77,11 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                          &
-    program_calling   = "grat",                         &
-    version           = "pre-alpha",                    &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-", &
-    cmdlineargs       = .true.                          &
+  call intro (                                           &
+    program_calling   = "grat",                          &
+    ! version           = __VERSION__,                   &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-.", &
+    cmdlineargs       = .true.                           &
     )
 
   start = 0

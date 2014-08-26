@@ -447,7 +447,7 @@ end subroutine
 !! \author M. Rajner
 ! =============================================================================
 subroutine convolve(site, date)
-  use, intrinsic :: iso_fortran_env 
+  use, intrinsic :: iso_fortran_env
   use mod_constants
   use mod_site, &
     only : site_info, local_pressure_distance
@@ -871,21 +871,21 @@ subroutine convolve(site, date)
                               ),                         &
                               i                          &
                               )                          &
-                              +2*site%height 
+                              +2*site%height
                           endif
 
                           heights(i+1:)=logspace(     &
                             site%height ,             &
                             info(igreen)%height%stop, &
                             nheight-i                 &
-                            ) 
+                            )
 
                         else
-                          heights=logspace(                                        &
+                          heights=logspace(                                   &
                             max(info(igreen)%height%start, val(ind%model%h)), &
-                            info(igreen)%height%stop,                              &
-                            nheight                                                &
-                            ) 
+                            info(igreen)%height%stop,                         &
+                            nheight                                           &
+                            )
                         endif
 
                       else

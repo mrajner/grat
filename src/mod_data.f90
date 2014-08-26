@@ -181,10 +181,10 @@ subroutine parse_model (cmd_line_entry)
       call model_aliases(model(i), dryrun=.true.)
 
       if (.not.model(i)%if) then
-        call print_warning (                                                &
-          "model",                                                          &
-          more  = trim(model(i)%name)//" : file do not exist (or trail ,)", &
-          error = .false.                                                   &
+        call print_warning (                                   &
+          "model",                                             &
+          more  = trim(model(i)%name)//" : file do not exist", &
+          error = .false.                                      &
           )
       endif
 
@@ -973,7 +973,7 @@ subroutine nc_error (status, success)
     endif
     return
   end if
-end subroutine 
+end subroutine
 
 ! =============================================================================
 !> \brief Returns the value from model file
@@ -1091,7 +1091,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     if (status==nf90_noerr) val = val * scale_factor + add_offset
 
     if (trim(model%datanames(1)).ne."") then
-      val = variable_modifier (val, model%datanames(1)) 
+      val = variable_modifier (val, model%datanames(1))
     endif
 
     return

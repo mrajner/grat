@@ -636,7 +636,7 @@ function bilinear (x, y, aux )
 end function
 
 ! =============================================================================
-!> Convert celcius degree to kelvin 
+!> Convert celcius degree to kelvin
 !! and kelvin to celcius (if optional inverted parameter is set to true)
 !! \author Marcin Rajner
 !! \date 2014-06-07

@@ -29,11 +29,11 @@ program value_check
 
   quiet_step=50000
 
-  call intro (                                &
-    program_calling   = "value_check",        &
-    accepted_switches = "VFoShvIDLPRqwHMJ&!", &
-    version           = "beta",               &
-    cmdlineargs       = .true.                &
+  call intro (                                 &
+    program_calling   = "value_check",         &
+    accepted_switches = "VFoShvIDLPRqwHMJ&!.", &
+    ! version           = __VERSION__,           &
+    cmdlineargs       = .true.                 &
     )
 
   ! for progress bar

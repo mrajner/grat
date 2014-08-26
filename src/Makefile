@@ -1,60 +1,65 @@
+# user definitions
+LIBDIR := /usr/local/lib
+INCDIR := /usr/local/include
+
 # compiler:  currently only ifort is supported
-FC     := ifort
-#  FC   := gfortran
+FC      := ifort
 
-HOST   := $(shell hostname)
-C_DATE := $(shell date "+%Y-%m-%d %H:%M:%S")
+HOST    := $(shell hostname)
+C_DATE  := $(shell date "+%Y-%m-%d %H:%M:%S")
 
+VERSION := $(shell git describe --abbrev=0 --match "v*")
+VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
+VERSION_MINOR := $(shell awk '{gsub(/(v.*\.)/,"");print}' <<< $(VERSION))
 
-COMMON_FFLAGS = \
-								-fpic  \
-								-O2    \
-								-xHost \
-								-warn all 
+LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
+
+COMMON_FFLAGS =           \
+								-fpic     \
+								-O2       \
+								-xHost    \
+								-warn all
 
 FFLAGS=$(COMMON_FFLAGS)
 
-all:buggy
+#  tmp:tmp.f90 .FORCE
+	#  ifort $< -o $@  -L. -lgrat
+	#  ./tmp
 
-mod_printing.o:                     \
-	FFLAGS +=                         \
-	-fpp                              \
-	-D__FFLAGS__='"$(COMMON_FFLAGS)"' \
-	-D__C_DATE__='"$(C_DATE)"'
+#  dfd:
+#  fds:
+	#  echo $(VERSION) $(VERSION_MAJOR) $(VERSION_MINOR)
 
-ifeq ($(FC),gfortran)
-FFLAGS=
-endif
+#  dfsf:all
+#  dfs: grat
+	#  grat -v
+#  ddfff:buggy
 
-VERSION = $(shell git describe)
 
-make: install
+#  ifeq ($(FC),gfortran)
+#  FFLAGS=
+#  endif
 
-tm: value_check
-	time \
-		{ value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
-buggy: grat  value_check
-		grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN 
+#  tm: value_check
+	#  time \
+		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
-ra: grat  value_check
-	time \
-		{ grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+#  buggy: grat  value_check
+		#  grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN 
 
-fd:
+#  ra: grat  value_check
+	#  time \
+		#  { grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+
+#  fd:
 
 #  local:
 	#  file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
 	#  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
 	#  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
-NETCDFLIB = \
-						-I/usr/local/include \
-						-L/usr/local/lib64   \
-						-lnetcdff            \
-						-lnetcdf
-
-SRCS      = \
+SRCS      := \
 						mod_constants.f90     \
 						mod_utilities.f90     \
 						mod_cmdline.f90       \
@@ -73,44 +78,72 @@ SRCS      = \
 						mod_admit.f90         \
 						mod_parser.f90        
 
-PROGSSRCS = \
+PROGSSRCS :=                  \
 						grat.f90          \
 						value_check.f90   \
 						polygon_check.f90
 
-OBJS = $(SRCS:.f90=.o)
-
-all: $(PROGS)
-
-PROGS_DIR       = ../bin
-PROGS           = $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
-PROGS_SHORTCUTS = $(PROGSSRCS:.f90=)
+OBJS            := $(SRCS:.f90=.o)
+MOD             := $(SRCS:.f90=.mod)
+PROGS_DIR       := ../bin
+PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
+PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 
 # change to your path directory
-LINKS_DIR     = /home/mrajner/.local/bin
-LINKS_DIR_ALL = /usr/local/bin
-LINKS         = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
+LINKS_DIR     = ~/.local/bin
+
+
+dfdf:install
+all: libgrat.a $(PROGS)
+
+# local installation of executables
+LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
+link: $(LINKS)
+	
+install: \
+	all \
+	$(LIBDIR)/libgrat$(VERSION_MAJOR).a \
+	$(LIBDIR)/libgrat.a \
+	$(INCDIR)/$(MOD)
+
+$(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat$(VERSION_MAJOR).a
+	sudo cp -uv $< $@
+
+$(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
+	sudo ln -sf $< $@
+
+$(INCDIR)/%.mod: %.mod
+	echo sudo cp -uv $< $@
+
+df:
+	#  sudo cp -uv *.mod $(INCLUDE_DIR)
 
 # implicit rules for object files
 %.o: %.f90
 	$(FC) $(FFLAGS) $< -c
 
 .PHONY: $(PROGS_SHORTCUTS)
-
 $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/,$@)
 
+$(PROGS_DIR)/grat:                  \
+	FFLAGS +=                         \
+	-fpp                              \
+	-D__FFLAGS__='"$(COMMON_FFLAGS)"' \
+	-D__C_DATE__='"$(C_DATE)"'        \
+	-D__VERSION__='"$(VERSION)"'
 
-$(PROGS_DIR)/%:%.f90 $(OBJS)
-	$(FC) $(FFLAGS) $(NETCDFLIB) $< -o $@ $(OBJS)
+$(PROGS_DIR)/%:%.f90 libgrat.a
+	$(FC) $(FFLAGS) $< -o $@ -L. -lgrat -lnetcdff
 
-all:       \
-	$(OBJS)  \
-	$(PROGS) \
-	$(LINKS)
+#  $(LIBGRAT): libgrat$(VERSION_MAJOR).a
+	#  sudo cp -uv $< $@
 
-libgrat.a: $(OBJS)
-	ar rs $@ $(OBJS)
+libgrat.a: libgrat$(VERSION_MAJOR).a
+	ln -sf $(realpath $<) $@
+
+libgrat$(VERSION_MAJOR).a: $(OBJS)
+	ar rusv $@ $(OBJS)
 
 PACKAGE = grat-src
 DATE    = `date +%Y%m%d`
@@ -131,60 +164,43 @@ docpdf: doc
 dochtml: doc
 	firefox ../doc/html/index.html &
 
-install:                   \
-	$(PROGS)                 \
-	/usr/local/lib/libgrat.a \
-	$(LINKS_DIR_ALL)/grat    \
-	$(LINKS_DIR_ALL)/value_check
 
 install-doc: doc
 	cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 
-# Change this path according to your system settings
-# Make sure that target path is in your system serch $PATH
 $(LINKS_DIR)/%: $(PROGS_DIR)/%
 	ln -sf $(realpath $<) $@
 
-$(LINKS_DIR_ALL)/%: $(PROGS_DIR)/%
-	sudo cp -uv $(realpath $<) $@
-
-
-# Change this path according to your system settings
-# This could require root privilages
-/usr/local/lib/libgrat.a: libgrat.a
-	sudo cp -uv libgrat.a /usr/local/lib
-	sudo cp -uv *.mod /usr/local/include
-	@echo "library grat sucessfully installed"
-
 clean:
-	rm -f *.o *.mod *.a fort?????? 
+	rm -f *.o *.mod *.a fort?????? $(PROGS_DIR)/* lib*.{a,so}
 
-CLEAN: clean
+uninstall: 
 	-sudo rm                   \
 		/usr/local/include/mod_* \
 		/usr/local/lib/libgrat.a \
 		/usr/local/lib/libgrat.so
 	-rm $(LINKS)
 	-sudo rm                       \
-		$(LINKS_DIR_ALL)/grat        \
-		$(LINKS_DIR_ALL)/value_check
+		$(LINKS_DIR)/grat        \
+		$(LINKS_DIR)/value_check
 
-HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
-HELPS=$(addprefix ../dat/, $(HELP_NAMES))
-helps: $(HELPS)
-$(HELPS): $(PROGS)
-%.hlp:
-	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+#  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
+#  HELPS=$(addprefix ../dat/, $(HELP_NAMES))
+#  helps: $(HELPS)
+#  $(HELPS): $(PROGS)
+#  %.hlp:
+	#  $(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
 .FORCE:
 
-.PHONY: check 
-test: install
-	make -C test
+ccc:
+#  .PHONY: check 
+#  test: install
+	#  make -C test
 
-shared_libraries: $(OBJS)
-	$(FC) -shared $(OBJS) -o libgrat.so
-	@sudo cp -uv libgrat.so /usr/local/lib
+#  shared_libraries: $(OBJS)
+	#  $(FC) -shared $(OBJS) -o libgrat.so
+	#  @sudo cp -uv libgrat.so /usr/local/lib
 
-clean_shared_libraries:
-	sudo rm /usr/local/lib/libgrat.so 
+#  clean_shared_libraries:
+	#  sudo rm /usr/local/lib/libgrat.so 
