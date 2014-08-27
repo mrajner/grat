@@ -5,6 +5,8 @@
 module mod_mjd
   use mod_constants, only: dp
 
+  implicit none
+
 contains
 ! ==============================================================================
 !> Compute date from given Julian Day

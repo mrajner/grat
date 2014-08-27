@@ -1,6 +1,7 @@
 module mod_spherical
   use mod_constants, only: dp, pi
 
+  implicit none
 contains
 ! =============================================================================
 !> Calculate area of spherical segment
@@ -59,14 +60,13 @@ subroutine spher_trig (latin, lonin, distance, azimuth, latout, lonout, domain)
   real(dp) :: saz, caz, st, ct, cd, sd, cb, sb
   logical, intent(in), optional :: domain
 
-  ct  = cos (pi/2.-latin)
-  st  = sin (pi/2.-latin)
-  cd  = cos (distance)
-  sd  = sin (distance)
-  saz = sin (azimuth)
-  caz = cos (azimuth)
-  cb = cd*ct + sd*st*caz
-  !if(abs(cb).gt.1) cb = cb/abs(cb)
+  ct     = cos (pi/2.-latin)
+  st     = sin (pi/2.-latin)
+  cd     = cos (distance)
+  sd     = sin (distance)
+  saz    = sin (azimuth)
+  caz    = cos (azimuth)
+  cb     = cd*ct + sd*st*caz
   sb     = sqrt(1.-cb**2)
   latout = pi/2. - acos(cb)
   lonout = lonin + atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb)
