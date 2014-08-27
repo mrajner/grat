@@ -658,13 +658,15 @@ end function
 
 ! =============================================================================
 function version_split(version, which) 
+  use mod_constants, only:dmr
+
   character(40) :: version_split
   character(*), intent(in) :: version
   character(*), intent(in), optional :: which
 
   ! which=version
 
-  print *, pi
+  print *, "dummy version_split", dmr
   version_split="d"
 end function
 

@@ -93,10 +93,6 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 LINKS_DIR     = ~/.local/bin
 
 
-dsfsfsdf:
-	rm -f mod_constants.o mod_parser.o mod_parser.mod
-	@make --no-print-directory mod_parser.o 
-	
 dfdf:install
 all: libgrat.a $(PROGS)
 

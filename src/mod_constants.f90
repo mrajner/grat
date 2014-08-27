@@ -12,8 +12,8 @@ module mod_constants
   real(dp), parameter ::        &
     R_air  = 287.05,            & ! dry air constant  [J/kg/K]
     pi     = 4.*atan(dble(1.)), &
-    t_zero = -273.15 , &
-    dummy = 10 
+    t_zero = -273.15 ,          &
+    dmr = 20 
 
   !---------------------------------------
   ! gravity
