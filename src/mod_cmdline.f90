@@ -153,7 +153,9 @@ module mod_cmdline
     result_total     = .false.,  &
     result_total_all = .false.,  &
     result_component = .true.
+
 contains
+
 ! =============================================================================
 !> This routine collect command line arguments to one matrix depending on
 !! given switches and separators

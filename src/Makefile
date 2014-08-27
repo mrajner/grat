@@ -93,7 +93,6 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 LINKS_DIR     = ~/.local/bin
 
 
-dfdf:install
 all: libgrat.a $(PROGS)
 
 # local installation of executables
@@ -199,4 +198,10 @@ shared_libraries: $(OBJS)
 #  clean_shared_libraries:
 	#  sudo rm /usr/local/lib/libgrat.so 
 	#
-mod_parser.o: mod_constants.o
+	#
+
+
+# module dependencies
+include mod_dep.makefile
+mod_dep.makefile: mod_dep.awk
+	awk -f $< > $@
