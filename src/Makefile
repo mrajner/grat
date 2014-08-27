@@ -169,10 +169,10 @@ clean:
 	rm -f *.o *.mod *.a fort?????? $(PROGS_DIR)/* lib*.{a,so}
 
 uninstall: 
-	-sudo rm                   \
+	-sudo rm                       \
 	$(addprefix $(INCDIR)/,$(MOD)) \
-		/usr/local/lib/libgrat.a \
-		/usr/local/lib/libgrat.so
+		/usr/local/lib/libgrat*      \
+		#
 	#  -rm $(LINKS)
 	#  -sudo rm                       \
 		#  $(LINKS_DIR)/grat        \

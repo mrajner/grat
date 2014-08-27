@@ -27,13 +27,14 @@ module mod_polygon
     type(polygon_data), dimension (:), allocatable :: polygon
     logical :: if
 
-    ! global setting (+|-) which override this in polygon file
+    ! global setting (+|-) which override the one specified in polygon file
     character(1):: pm
   end type
 
   type(polygon_info) , allocatable, dimension (:) :: polygon
 
 contains
+
 ! =============================================================================
 !> This subroutine parse polygon information from command line entry
 !!
