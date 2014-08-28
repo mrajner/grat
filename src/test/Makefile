@@ -35,7 +35,7 @@ ask:
 	esac 
 
 
-check: 
+test: 
 	make -C tests/
 
 create_data: create_data.f90
@@ -44,9 +44,16 @@ create_data: create_data.f90
 run: create_data
 	./$< 
 	value_check \
-		-F data/test_data.nc@SP:sp:lon:lat , @T : t , @GP : gp : lon:lat:level \
-		-S j -D201201 : 32@H \
-		-o :level -J1000 -H
+		-F data/test_data.nc@SP:sp:lon:lat , @T : t , @GP : gp : lon:lat:level, \
+		 @LS:ls \
+		-S j -D201201 : m \
+		-o :level -J1000,10 -H
+
+bug:
+	value_check \
+		-F data/test_data.nc:sp, :t,@LS:ls,:gp,@LS:ls,@SP:sp\
+		-S j -D201201 : m \
+		-o :level -J1000,10 -H
 
 
 

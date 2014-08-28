@@ -34,6 +34,7 @@ end subroutine
 !> Compute coefficients for spline interpolation.
 !!
 !! From web sources \todo find url
+!!
 !! Original description below:
 !! ==============================================================================
 !!  Calculate the coefficients b(i), c(i), and d(i), i=1,2,...,n
@@ -267,6 +268,7 @@ end subroutine
 !! \date 2013-03-19
 !!
 !! \date 2013.07.16 added exception e.g /home/...
+!! \date 2014.08.27 added exception e.g comma ,
 ! =============================================================================
 function is_numeric(string)
   logical :: is_numeric
@@ -276,10 +278,16 @@ function is_numeric(string)
 
   if (string(1:1).eq."/") then
     is_numeric=.false.
-    ! minus sign not on the first postion but allow 1e-5
-  else if (index(string,"-").gt.1 &
-    .and..not.index(string,"e").eq.index(string,"-")-1) then
+  else if (index(string,",").gt.0) then
     is_numeric=.false.
+
+    ! minus sign not on the first postion but allow 1e-5
+  else if (                                              &
+    index(string,"-").gt.1                               &
+    .and.(.not.index(string,"e").eq.index(string,"-")-1) &
+    ) then
+    is_numeric=.false.
+
   else
     read(string, *, iostat=e) x
     is_numeric = e == 0
@@ -654,20 +662,59 @@ function celcius_to_kelvin (celcius, inverted)
 end function
 
 ! =============================================================================
-! parse
-
+! parse version number
+! version  major minor  default
+! v1.2-abc     1     2 v1.2-abc 
+!
 ! =============================================================================
 function version_split(version, which) 
-  use mod_constants, only:dmr
-
-  character(40) :: version_split
+  character(10) :: version_split
   character(*), intent(in) :: version
   character(*), intent(in), optional :: which
+  integer :: i, j
 
-  ! which=version
+  select case (which)
 
-  print *, "dummy version_split", dmr
-  version_split="d"
+  case("major","MAJOR")
+    outer: do i = 1, len(version)
+
+      if(version(i:i)==".") then
+        version_split=version(1:i-1)
+        return
+      endif
+
+      if (is_numeric(version(i:i))) then
+        do j = i+1, len(version)
+          if (.not.is_numeric(version(j:j))) exit outer
+        enddo
+        exit outer
+      endif
+
+    enddo outer
+
+    if(i.gt.len(version)) then
+      version_split=version
+      return
+    endif
+
+    version_split = version(i:j-1)
+    return
+
+  case("minor","MINOR")
+
+    i=index(version,".")
+
+    if (i.gt.0) then
+      do j=i+1, len(version)
+        if (.not.is_numeric(version(j:j))) exit 
+      enddo
+      version_split = version (i+1:j-1)
+      return
+    endif
+
+  case default
+      version_split = version
+  end select
 end function
 
 end module

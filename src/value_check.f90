@@ -32,7 +32,7 @@ program value_check
   call intro (                                 &
     program_calling   = "value_check",         &
     accepted_switches = "VFoShvIDLPRqwHMJ&!.", &
-    ! version           = __VERSION__,           &
+    version           = __VERSION__,           &
     cmdlineargs       = .true.                 &
     )
 
@@ -175,7 +175,12 @@ program value_check
               endif
             else
             endif
-            if (model(ii)%dataname.eq."LS") val(ii)=int(val(ii))
+
+            ! stop "BUG"
+            ! if (model(ii)%dataname.eq."LS".and..not.(isnan(val(ii)))) then
+            if (model(ii)%dataname.eq."LS") then
+              val(ii)=int(val(ii))
+            endif
 
           else if (model(ii)%dataname.eq."custom") then
             if(ilevel.eq.1) sh=val(ind%model%vsh)

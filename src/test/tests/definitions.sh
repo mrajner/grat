@@ -15,14 +15,14 @@ set -o nounset                              # Treat unset variables as an error
 case ${1:-synthetic_data} in
   real_data|r)
     file="../data/land.nc"
-    SP="../data/pres.sfc.2012.nc @SP : pres"
-    T="../data/air.sig995.2012.nc @T: air"
-    VT="../data/air.2012.nc      @VT : air "
-    GP="../data/hgt.2012.nc      @GP : hgt"
-    LS="../data/land.nc          @LS : land"
-    HP="../data/hgt.sfc.nc       @HP : hgt"
-    H="../data/hgt.sfc.nc       @H  : hgt"
-    VSH="../data/shum.2012.nc     @VSH: shum"
+    SP="../data/pres.sfc.2012.nc  @SP  :pres"
+    T="../data/air.sig995.2012.nc @T   :air"
+    VT="../data/air.2012.nc       @VT  :air "
+    GP="../data/hgt.2012.nc       @GP  :hgt"
+    LS="../data/land.nc           @LS  :land"
+    HP="../data/hgt.sfc.nc        @HP  :hgt"
+    H="../data/hgt.sfc.nc         @H   :hgt"
+    VSH="../data/shum.2012.nc     @VSH :shum"
     suffix=".r"
     ;;
 

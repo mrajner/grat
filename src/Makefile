@@ -1,36 +1,40 @@
 # user definitions
-LIBDIR := /usr/local/lib
-INCDIR := /usr/local/include
+LIBDIR    := /usr/local/lib
+INCDIR    := /usr/local/include
+BINDIR    := /usr/local/bin
+LINKS_DIR := ~/.local/bin
 
 # compiler:  currently only ifort is supported
 FC      := ifort
 
+FC_INFO := $(shell $(FC) --version | sed -n 1p)
 HOST    := $(shell hostname)
-C_DATE  := $(shell date "+%Y-%m-%d %H:%M:%S")
+DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
 
-VERSION := $(shell git describe --abbrev=0 --match "v*")
+VERSION := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
-VERSION_MINOR := $(shell awk '{gsub(/(v.*\.)/,"");print}' <<< $(VERSION))
 
 LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
-COMMON_FFLAGS =           \
-								-fpic     \
-								-O2       \
-								-xHost    \
-								-warn all
-
-FFLAGS=$(COMMON_FFLAGS)
+ifeq ($(FC),ifort)
+FFLAGS :=       \
+				 -fpic  \
+				 -O2    \
+				 -xHost \
+				 -warn all
+FPP := \
+	-fpp                          \
+	-D__FFLAGS__='"$(FFLAGS)"'    \
+	-D__CDATE__='"$(DATE)"'       \
+	-D__VERSION__='"$(VERSION)"'  \
+	-D__COMPILER__='"$(FC_INFO)"' 
+endif
 
 #  tmp:tmp.f90 .FORCE
 	#  ifort $< -o $@  -L. -lgrat
 	#  ./tmp
 
-#  dfd:
-#  fds:
-	#  echo $(VERSION) $(VERSION_MAJOR) $(VERSION_MINOR)
 
-#  dfsf:all
 #  dfs: grat
 	#  grat -v
 #  ddfff:buggy
@@ -52,7 +56,6 @@ FFLAGS=$(COMMON_FFLAGS)
 	#  time \
 		#  { grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
-#  fd:
 
 #  local:
 	#  file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
@@ -89,32 +92,42 @@ PROGS_DIR       := ../bin
 PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 
-# change to your path directory
-LINKS_DIR     = ~/.local/bin
+	
 
 
 all: libgrat.a $(PROGS)
-
+clean:
+	rm -f *.o *.mod *.a fort?????? $(PROGS_DIR)/* lib*.{a,so}
+	
 # local installation of executables
 LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
+$(LINKS_DIR)/%: $(PROGS_DIR)/%
+	ln -sf $(realpath $<) $@
 link: $(LINKS)
-	
-install: \
-	all \
-	$(LIBDIR)/libgrat$(VERSION_MAJOR).a \
-	$(LIBDIR)/libgrat.a \
+unlink: 
+	-rm -f $(LINKS)
+
+install:                                     \
+	$(LIBDIR)/libgrat$(VERSION_MAJOR).a        \
+	$(LIBDIR)/libgrat.a                        \
+	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
 	$(addprefix $(INCDIR)/,$(MOD))
 	
+uninstall: 
+	-rm -f                                       \
+		$(addprefix $(INCDIR)/,$(MOD))             \
+		$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
+		/usr/local/lib/libgrat*      
+
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat$(VERSION_MAJOR).a
-	sudo cp -uv $< $@
-
+	cp -uv $< $@
 $(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
-	sudo ln -sf $< $@
-
+	ln -sf $< $@
 $(INCDIR)/%.mod: %.mod
-	sudo cp -uv $< $@
+	cp -uv $< $@
+$(BINDIR)/%: $(PROGS_DIR)/%
+	cp -uv $< $@
 
-# implicit rules for object files
 %.o: %.f90
 	$(FC) $(FFLAGS) $< -c
 
@@ -122,15 +135,9 @@ $(INCDIR)/%.mod: %.mod
 $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/,$@)
 
-$(PROGS_DIR)/grat:                  \
-	FFLAGS +=                         \
-	-fpp                              \
-	-D__FFLAGS__='"$(COMMON_FFLAGS)"' \
-	-D__C_DATE__='"$(C_DATE)"'        \
-	-D__VERSION__='"$(VERSION)"'
-
 $(PROGS_DIR)/%:%.f90 libgrat.a
-	$(FC) $(FFLAGS) $< -o $@ -L. -lgrat -lnetcdff
+	$(FC) $(FFLAGS) $(FPP)          \
+	$< -o $@ -L. -lgrat -lnetcdff
 
 libgrat.a: libgrat$(VERSION_MAJOR).a
 	ln -sf $(realpath $<) $@
@@ -138,70 +145,42 @@ libgrat.a: libgrat$(VERSION_MAJOR).a
 libgrat$(VERSION_MAJOR).a: $(OBJS)
 	ar rusv $@ $(OBJS)
 
-PACKAGE = grat-src
-DATE    = `date +%Y%m%d`
-package:
-	tar jcf $(PACKAGE)_$(VERSION)_$(DATE).tar.bz2 \
-		../../grat/src/{*.f90,Makefile}         \
-		../../grat/dat/*.dat                    \
-		../../grat/bin/.README
-
-doc:
-	make -C ../doc/figures/
-	cd ../doc  &&  doxygen Doxyfile
-
-docpdf: doc
-	cd ../doc/latex/  &&  pdflatex -shell-escape refman
-	evince ../doc/latex/refman.pdf &
-
-dochtml: doc
-	firefox ../doc/html/index.html &
-
-
-install-doc: doc
-	cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
-
-$(LINKS_DIR)/%: $(PROGS_DIR)/%
-	ln -sf $(realpath $<) $@
-
-clean:
-	rm -f *.o *.mod *.a fort?????? $(PROGS_DIR)/* lib*.{a,so}
-
-uninstall: 
-	-sudo rm                       \
-	$(addprefix $(INCDIR)/,$(MOD)) \
-		/usr/local/lib/libgrat*      \
-		#
-	#  -rm $(LINKS)
-	#  -sudo rm                       \
-		#  $(LINKS_DIR)/grat        \
-		#  $(LINKS_DIR)/value_check
-
-#  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
-#  HELPS=$(addprefix ../dat/, $(HELP_NAMES))
-#  helps: $(HELPS)
-#  $(HELPS): $(PROGS)
-#  %.hlp:
-	#  $(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
-
-.FORCE:
-
-ccc:
-#  .PHONY: check 
-#  test: install
-	#  make -C test
+.PHONY: install 
+test: all
+	make -C test
 
 shared_libraries: $(OBJS)
-	$(FC) -shared $(OBJS) -o libgrat.so
-	@sudo cp -uv libgrat.so /usr/local/lib
-
-#  clean_shared_libraries:
-	#  sudo rm /usr/local/lib/libgrat.so 
-	#
-	#
-
+	$(FC) -shared $(OBJS) -o libgrat$(VERSION_MAJOR).so
+install_shared)library:
+	cp -uv libgrat.so /usr/local/lib
 
 # module dependencies
 include mod_dep.makefile
 mod_dep.makefile: mod_dep.awk
 	awk -f $< > $@
+
+
+# help files
+HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
+HELPS=$(addprefix ../dat/, $(HELP_NAMES))
+helps: $(HELPS)
+$(HELPS): $(PROGS)
+%.hlp:
+	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+
+.FORCE:
+
+
+# documentation
+dochtml: doc
+	firefox ../doc/html/index.html &
+doc:
+	make -C ../doc/figures/
+	cd ../doc  &&  doxygen Doxyfile
+docpdf: doc
+	cd ../doc/latex/  &&  pdflatex -shell-escape refman
+	evince ../doc/latex/refman.pdf &
+install-doc: doc
+	cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
+
+

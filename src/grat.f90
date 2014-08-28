@@ -77,11 +77,14 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                           &
-    program_calling   = "grat",                          &
-    ! version           = __VERSION__,                   &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-.", &
-    cmdlineargs       = .true.                           &
+  call intro (                                          &
+    program_calling   = "grat",                         &
+    version           = __VERSION__,                    &
+    cdate             = __CDATE__,                      &
+    fflags            = __FFLAGS__,                     &
+    compiler          = __COMPILER__,                   &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-", &
+    cmdlineargs       = .true.                          &
     )
 
   start = 0
@@ -179,6 +182,8 @@ program grat
   endif
 
   if (inverted_landsea_mask.and.ind%model%ls.ne.0) then
+    stop "CHECK HERE"
+    ! czy tu rzeczywiście .and.ind%model%ls.ne.0 ma sens
     model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
   endif
 

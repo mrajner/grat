@@ -10,7 +10,7 @@ contains
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
 
-subroutine parse_option (cmd_line_entry, accepted_switches)
+subroutine parse_option (cmd_line_entry, accepted_switches, version)
   use mod_cmdline
   use mod_site,      only: parse_site
   use mod_date,      only: parse_date
@@ -22,6 +22,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
+  character(len=*), optional :: version
   integer(2) :: i
 
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
@@ -270,7 +271,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     call parse_level(cmd_line_entry)
 
   case ("--")
-    call parse_long_option(cmd_line_entry)
+    call parse_long_option(cmd_line_entry, version)
 
   case default
     if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
@@ -294,13 +295,16 @@ end subroutine
 !!    (-S -11... was previously treated as two cmmand line entries, now only -?
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
+subroutine intro ( &
+    program_calling, accepted_switches, cmdlineargs, &
+    version, cdate, fflags, compiler &
+    )
   use mod_cmdline
   use mod_utilities, only: file_exists
   character(len=*), intent(in) :: program_calling
   character(len=*), intent (in), optional :: accepted_switches
   logical, intent (in), optional :: cmdlineargs
-  character(*), intent (in), optional :: version
+  character(*), intent (in), optional :: version, cdate, fflags, compiler
   integer :: i
   character(len=355) :: dummy
   integer,dimension(8):: execution_date
@@ -321,18 +325,16 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     call exit
   endif
 
-  if (any(cmd_line%switch.eq.'-v') &
+  if (any(cmd_line%switch.eq.'-v')                   &
     .and.if_accepted_switch("-v",accepted_switches)) &
     then
-    call print_version &
-      (program_calling=program_calling, version=version)
-    call exit
-  endif
-
-  if (any(cmd_line%switch.eq.'-.') &
-    .and.if_accepted_switch("-.",accepted_switches)) &
-    then
-    call system("pwd")
+    call print_version (                 &
+      program_calling = program_calling, &
+      version         = version,         &
+      cdate           = cdate,           &
+      fflags          = fflags ,         &
+      compiler        = compiler         &
+      )
     call exit
   endif
 
@@ -438,6 +440,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
+
   do i = 1, int(len(trim(dummy))/72)+1
     write (log%unit, '(a72)') trim(dummy(72*(i-1)+1:))
   enddo
@@ -445,8 +448,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   write (log%unit, form%i0) "Command parsing:"
 
   do i=1, size(cmd_line)
-    call parse_option(cmd_line(i), accepted_switches)
-
+    call parse_option(cmd_line(i), accepted_switches, version=version)
   enddo
 
   call get_index()
@@ -1002,12 +1004,15 @@ end subroutine
 ! =============================================================================
 ! only for debugging during developement
 ! =============================================================================
-subroutine parse_long_option(cmd_line_entry)
+subroutine parse_long_option(cmd_line_entry, version)
   use mod_cmdline
+  use mod_utilities, only: version_split
+
   type(cmd_line_arg) :: cmd_line_entry
+  character(len=*), optional :: version
 
   if (trim(cmd_line_entry%full)=="--version") then
-    print '(a)', "1"
+    print '(a)', version_split(version,"major")
     call exit(0)
   endif
 end subroutine

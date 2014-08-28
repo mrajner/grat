@@ -64,4 +64,3 @@ for exclamation in "" "-!" ; do
 done
 
 touch ${0/.sh/.dat}${suffix} 
-

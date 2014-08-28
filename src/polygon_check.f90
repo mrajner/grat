@@ -15,7 +15,7 @@ program polygon_check
   call intro  (                          &
     program_calling   = "polygon_check", &
     accepted_switches = "VfABLPoShvIiR", &
-    version           = "beta",          &
+    version           = __VERSION__,     &
     cmdlineargs       = .true.           &
     )
 
