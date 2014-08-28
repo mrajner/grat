@@ -35,9 +35,8 @@ endif
 	#  ./tmp
 
 
-#  dfs: grat
-	#  grat -v
-#  ddfff:buggy
+bug1:
+	grat -F 10 @SP -Sj -M1 -wn
 
 
 #  ifeq ($(FC),gfortran)

@@ -37,13 +37,15 @@ real(dp) function admit(site_, date, number)
       endif
 
     enddo
+
   else
+
     ! get SP
-    if (ind%model%sp.ne.0                           &
+    if (ind%model%sp.ne.0                         &
       .and.(model(ind%model%sp)%if                &
       .or. model(ind%model%sp)%if_constant_value) &
       ) then
-      call get_value (                    &
+      call get_value (                  &
         model=model(ind%model%sp),      &
         lat=site_%lat,                  &
         lon=site_%lon,                  &
@@ -52,9 +54,11 @@ real(dp) function admit(site_, date, number)
         method = info(1)%interpolation, &
         date=date                       &
         )
+
     else
       call print_warning("@SP is required with -M1D", error=.true.)
     endif
+
   endif
 
 
