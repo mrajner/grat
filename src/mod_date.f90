@@ -108,7 +108,7 @@ subroutine parse_date(cmd_line_entry)
     stop = start
 
     ! tilde
-    if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~") then
+    if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~" .and.(size(model(1)%date).gt.0)) then
       swap = model(1)%date(1, :)
       do i=2, size(model(1)%date(:, :), 1)
         if (abs(mjd(model(1)%date(i, :))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
