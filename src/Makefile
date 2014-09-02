@@ -1,3 +1,6 @@
+mod_printing.o:
+
+
 # user definitions
 LIBDIR    := /usr/local/lib
 INCDIR    := /usr/local/include
@@ -6,6 +9,7 @@ LINKS_DIR := ~/.local/bin
 
 # compiler:  currently only ifort is supported
 FC      := ifort
+#  FC      := gfortran
 
 FC_INFO := $(shell $(FC) --version | sed -n 1p)
 HOST    := $(shell hostname)
@@ -18,10 +22,11 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
 ifeq ($(FC),ifort)
 FFLAGS :=       \
+	-stand f08 \
 				 -fpic  \
 				 -O2    \
 				 -xHost \
-				 -warn all
+				 -warn all 
 FPP := \
 	-fpp                          \
 	-D__FFLAGS__='"$(FFLAGS)"'    \
@@ -155,9 +160,11 @@ install_shared)library:
 	cp -uv libgrat.so /usr/local/lib
 
 # module dependencies
+ifndef NODEP
 include mod_dep.makefile
 mod_dep.makefile: mod_dep.awk
 	awk -f $< > $@
+endif
 
 
 # help files

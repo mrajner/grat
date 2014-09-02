@@ -10,7 +10,7 @@ set -o nounset                              # Treat unset variables as an error
 
 # testing 4 dimensional variables with value_check
 
-. definitions.sh r
+. definitions.sh
 
 counter=0
 
@@ -53,6 +53,6 @@ value_check \
   -S j      \
   -D 2012   \
   -J1000,100 , 11    \
-  -o : level #&>${0/.sh/.dat}$counter$suffix
+  -o : level &>${0/.sh/.dat}$counter$suffix
 
 touch ${0/.sh/.dat}${suffix} 

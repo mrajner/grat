@@ -25,6 +25,7 @@ real(dp) function admit(site_, date, number)
 
 
   if (site_%lp%if) then
+
     val=0
     do i=1,size(site_%lp%date)
       if(all(site_%lp%date(i,1:6).eq.date(1:6))) then
@@ -37,13 +38,14 @@ real(dp) function admit(site_, date, number)
       endif
 
     enddo
+
   else
     ! get SP
-    if (ind%model%sp.ne.0                           &
+    if (ind%model%sp.ne.0                         &
       .and.(model(ind%model%sp)%if                &
       .or. model(ind%model%sp)%if_constant_value) &
       ) then
-      call get_value (                    &
+      call get_value (                  &
         model=model(ind%model%sp),      &
         lat=site_%lat,                  &
         lon=site_%lon,                  &

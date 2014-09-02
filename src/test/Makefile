@@ -49,11 +49,6 @@ run: create_data
 		-S j -D201201 : m \
 		-o :level -J1000,10 -H
 
-bug:
-	value_check \
-		-F data/test_data.nc:sp, :t,@LS:ls,:gp,@LS:ls,@SP:sp\
-		-S j -D201201 : m \
-		-o :level -J1000,10 -H
 
 
 

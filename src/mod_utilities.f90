@@ -320,17 +320,22 @@ function file_exists(string, double_check, verbose)
   if (present(double_check)) double_check_ = double_check
   if (verbose_) then
     if (file_exists) then
-      print '(a,a)', trim(string), " exists"
+      write (*, '(a,a)') trim(string), " exists"
     else
       print '(a,a)', trim(string), " not exists"
     endif
   endif
+
   if (double_check_.and..not.file_exists) then
     call random_number(randomnumber)
-    if (verbose_) print '(a,a,i3,"s...")', &
-      trim(string), " not exists, slepping", int(randomnumber*5+1)
+    if (verbose_) then
+      print '(a,a,i3,"s...")', &
+        trim(string), " not exists, slepping", int(randomnumber*5+1)
+    endif
+
     call sleep(int(randomnumber*5+1))
     inquire(file=string, exist=file_exists)
+
     if (verbose_) then
       if (file_exists) then
         print '(a,a)', trim(string), " exists (indeed)"
@@ -452,7 +457,7 @@ integer function count_separator (dummy, separator, consecutive_as_one)
       ! print *, index(dummy, dummy2)
       stop "TODO"
       ! if (dummy(i-1:i-1) == sep) then
-        ! count_separator = count_separator -1
+      ! count_separator = count_separator -1
       ! endif
     endif
 
@@ -529,13 +534,17 @@ end function
 ! consecutive number with optional digits (default=3), start is optional
 ! start number
 ! ==============================================================================
-subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
+subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename, ifcreate)
   character(*), intent(in),  optional :: prefix, suffix
   character(*), intent(out), optional :: filename
   integer, intent (in), optional :: digits, start
-  integer :: counter, digit
+  logical, intent (in), optional :: ifcreate 
+  integer :: counter
   integer, intent(out) :: unit
-  character(200) :: name=" "
+  character(200) :: name
+  character(6) :: output_format
+  
+  name=""
 
   if (present(start)) then
     counter = start
@@ -544,19 +553,22 @@ subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
   endif
 
   if (present(digits)) then
-    digit = digits
+    write(output_format,'("i",i0,".",i0)') digits, digits
   else
-    digit = 3
+    output_format="i3.3"
   endif
 
-  do while (file_exists(name) .or. name =="")
-    write (name, '("tmp",i<digit>.<digit>,a)')  counter
+  do while (file_exists(name) .or. name == "" )
+    write (name, '("tmp",'//output_format//',a)')  counter
     if (present(prefix)) name = prefix//name(4:)
     if (present(suffix)) name = trim(name)//suffix
     counter = counter + 1
   enddo
 
-  open (newunit = unit, file=name, action="write")
+  if(.not.present(ifcreate).or.ifcreate) then
+    open (newunit = unit, file=name, action="write")
+  endif
+
   if (present(filename)) filename = name
 end subroutine
 
@@ -713,7 +725,7 @@ function version_split(version, which)
     endif
 
   case default
-      version_split = version
+    version_split = version
   end select
 end function
 

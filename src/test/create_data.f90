@@ -13,15 +13,14 @@ program createdata
      gpvarid, spvarid, tvarid, lsvarid
    integer :: dimids_constants(2), dimids_surface(3), dimids_vertical(4)
 
-  real, parameter :: resolution = 190
+  real, parameter :: resolution = 10
   real, parameter :: sp_scale=1., sp_offset=95000
 
   integer, parameter ::                  &
     nlon   = ceiling(360. / resolution), &
     nlat   = ceiling(180. / resolution), &
     nlevel = 5,                          &
-    ! ntime  = 10
-    ntime  = 2
+    ntime  = 10
 
   real, parameter ::                                                             &
     lats   (nlat   )  = [ ( -89.75 + ( i-1 ) *resolution , i = 1 , nlat   ) ] , &

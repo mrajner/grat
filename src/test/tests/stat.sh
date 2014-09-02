@@ -30,6 +30,15 @@ for test in t*.sh ; do
 
     should_be=${is/t/r}
 
+    # if both files are empty skip comparison
+    [[ ! -s $is && ! -s ${should_be}  ]] && 
+    {
+      continue
+    }
+
+
+
+
     diff $is $should_be >/dev/null && 
     { 
       ok 
@@ -50,9 +59,9 @@ for test in t*.sh ; do
 
         [[ ${show_failed_diffs:-} == "true" ]] && 
         {
-        diff                                       \
-          <(egrep -v ${do_not_compare_list:-} $is) \
-          <(egrep -v ${do_not_compare_list:-} $should_be) 
+          colordiff                                       \
+            <(egrep -v ${do_not_compare_list:-} $is) \
+            <(egrep -v ${do_not_compare_list:-} $should_be) 
         }
       }
     } 

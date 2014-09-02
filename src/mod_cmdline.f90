@@ -143,7 +143,7 @@ module mod_cmdline
   logical :: method(3)
 
   character(9), dimension(3), parameter :: &
-    method3dnames=["point", "potential", "cylinder"]
+    method3dnames=[character(9)::"point", "potential", "cylinder"]
   logical :: method3d(3)
   logical :: method3d_compute_reference  = .false.
   real    :: method3d_refinment_distance = 0.1

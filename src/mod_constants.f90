@@ -11,9 +11,8 @@ module mod_constants
 
   real(dp), parameter ::        &
     R_air  = 287.05,            & ! dry air constant  [J/kg/K]
-    pi     = 4.*atan(dble(1.)), &
-    t_zero = -273.15 ,          &
-    dmr = 904
+    pi     = 4.*atan(dble(1.)), & ! 3.1415...
+    t_zero = -273.15              ! 0 kelvin in Celcius
 
   !---------------------------------------
   ! gravity
@@ -45,10 +44,10 @@ module mod_constants
   type(atmosphere_data) , parameter :: &
     atmosphere  = atmosphere_data (    &
     pressure    = pressure_data (      &
-    standard    = 101325._dp           & ! Pa (not hectoPascal!)
+    standard    = 101325._dp           & ! Pa (not hectopascal!)
     ),                                 &
     temperature = temperature_data (   &
-    standard    = 288.15_dp            & ! K (15 degC)
+    standard    = 288.15_dp            & ! K (15°C)
     )                                  &
     )
 
@@ -72,18 +71,18 @@ module mod_constants
     type(earth_density) :: density
   end type
 
-  type(earth_data), parameter ::            &
-    earth       = earth_data (              &
-    mass        = 5.97219e24_dp,            & ! kg
-    radius      = 6371000.,                 & ! m
-    gm          = 398600.4419,              & ! m3 s-2
-    gravity     = earth_gravity(            &
-    mean        = 9.80665                   & ! m s-2
-    ),                                      &
-    density     = earth_density(            &
-    crust       = 2670.,                    & ! kg m-3
-    mean        = 5500.                     & ! kg m-3
-    )                                       &
+  type(earth_data), parameter :: &
+    earth       = earth_data (   &
+    mass        = 5.97219e24_dp, & !kg
+    radius      = 6371000.,      & !m
+    gm          = 398600.4419,   & !m3 s-2
+    gravity     = earth_gravity( &
+    mean        = 9.80665        & !m s-2
+    ),                           &
+    density     = earth_density( &
+    crust       = 2670.,         & !kg m-3
+    mean        = 5500.          & !kg m-3
+    )                            &
     )
 
   !---------------------------------------
@@ -93,25 +92,27 @@ module mod_constants
     real(dp)      :: mass
     real(dp)      :: distance
   end type
+
   type(celestial_object_data), parameter :: &
     moon        = celestial_object_data (   &
-    distance    = 384000000._dp,            & ! m
-    mass        = 7.35e22_dp                & ! kg
+    distance    = 384000000._dp,            & !m
+    mass        = 7.35e22_dp                & !kg
     ),                                      &
     sun         = celestial_object_data (   &
-    distance    = 149600000000._dp ,        & ! m
-    mass        = 1.99e30_dp                & ! kg
+    distance    = 149600000000._dp ,        & !m
+    mass        = 1.99e30_dp                & !kg
     )
 
   !---------------------------------------
   ! densities
   !---------------------------------------
   type density_info
-    real(dp)      :: water
+    real(dp) :: water
   end type
-  type(density_info), parameter :: &
-    density = density_info ( &
-    water = 1000._dp & ! kg m-3
+
+  type(density_info), parameter :: & 
+  density = density_info (         & 
+  water   = 1000._dp               & ! kg m-3
     )
 
 end module mod_constants
