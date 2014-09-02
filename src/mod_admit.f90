@@ -40,6 +40,7 @@ real(dp) function admit(site_, date, number)
     enddo
 
   else
+
     ! get SP
     if (ind%model%sp.ne.0                         &
       .and.(model(ind%model%sp)%if                &
@@ -54,9 +55,11 @@ real(dp) function admit(site_, date, number)
         method = info(1)%interpolation, &
         date=date                       &
         )
+
     else
       call print_warning("@SP is required with -M1D", error=.true.)
     endif
+
   endif
 
 

@@ -36,6 +36,8 @@ FPP :=                         \
 	-D__COMPILER__='"$(FC_INFO)"' 
 endif
 
+bug1:
+	grat -F 10 @SP -Sj -M1 -wn
 #  tm: value_check
 	#  time \
 		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
