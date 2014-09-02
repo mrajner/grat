@@ -22,7 +22,6 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
 ifeq ($(FC),ifort)
 FFLAGS :=       \
-	-stand f08 \
 				 -fpic  \
 				 -O2    \
 				 -xHost \
@@ -42,7 +41,6 @@ endif
 
 #  dfs: grat
 	#  grat -v
-#  ddfff:buggy
 
 
 #  ifeq ($(FC),gfortran)

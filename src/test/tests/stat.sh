@@ -24,9 +24,11 @@ ok(){
   tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
 }
 
-for test in t*.sh ; do
-  
-  for is in ${test/.sh/.dat}* ; do
+for test in t*.sh t*.f90 ; do
+  [[ ${test} =~ ".sh" ]]  && results=${test/.sh/.dat}
+  [[ ${test} =~ ".f90" ]] && results=${test/.f90/.dat}
+
+  for is in ${results}* ; do
 
     should_be=${is/t/r}
 
@@ -35,9 +37,6 @@ for test in t*.sh ; do
     {
       continue
     }
-
-
-
 
     diff $is $should_be >/dev/null && 
     { 
@@ -71,4 +70,3 @@ done
 
 echo -e "\ntests: $good/$counter"
 [[ $bad -gt 0 ]] && echo failed: $bad || :
-

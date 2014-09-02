@@ -45,7 +45,7 @@ copy_dat_to_benchmark:
 	@tput setaf 1; echo -n Sure update benchmark results?: ; read  answer ; tput sgr0 ; \
 		case $${answer:-} in \
 		Y|y) echo yes ; \
-		for i in t*.dat*; do [[ -s $$i ]] && cp -uv $$i $${i/t/r} ; done ; \
+		for i in t*.dat* ; do [[ -s $$i ]] && cp -uv $$i $${i/t/r} ; done ; \
 		;; \
 		esac ;
 
