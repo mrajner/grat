@@ -16,6 +16,9 @@ program polygon_check
     program_calling   = "polygon_check", &
     accepted_switches = "VfABLPoShvIiR", &
     version           = __VERSION__,     &
+    cdate             = __CDATE__,       &
+    fflags            = __FFLAGS__,      &
+    compiler          = __COMPILER__,    &
     cmdlineargs       = .true.           &
     )
 

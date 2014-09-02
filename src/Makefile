@@ -1,4 +1,5 @@
-mod_printing.o:
+dgrat: grat
+	grat -S g :20 -M1 -F10@SP -o /dev/null -q 1
 
 
 # user definitions
@@ -25,7 +26,7 @@ FFLAGS :=       \
 				 -fpic  \
 				 -O2    \
 				 -xHost \
-				 -warn all 
+				 -warn all
 FPP := \
 	-fpp                          \
 	-D__FFLAGS__='"$(FFLAGS)"'    \
@@ -51,9 +52,6 @@ endif
 #  tm: value_check
 	#  time \
 		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
-
-#  buggy: grat  value_check
-		#  grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN 
 
 #  ra: grat  value_check
 	#  time \

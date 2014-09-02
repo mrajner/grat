@@ -33,6 +33,9 @@ program value_check
     program_calling   = "value_check",         &
     accepted_switches = "VFoShvIDLPRqwHMJ&!.", &
     version           = __VERSION__,           &
+    cdate             = __CDATE__,             &
+    fflags            = __FFLAGS__,            &
+    compiler          = __COMPILER__,          &
     cmdlineargs       = .true.                 &
     )
 

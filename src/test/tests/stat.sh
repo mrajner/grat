@@ -44,7 +44,7 @@ for test in t*.sh t*.f90 ; do
     } || 
     {
 
-      do_not_compare_list='compiled|Program|100%|ifort\s|Execution|FFLAGS'
+      do_not_compare_list='compiled|Program|100%|ifort\s|Execution|FFLAGS|\[eta'
 
       diff                                       \
         <(egrep -v ${do_not_compare_list:-} $is) \

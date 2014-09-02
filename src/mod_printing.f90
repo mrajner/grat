@@ -195,6 +195,7 @@ subroutine progress(j, time, cpu, every)
 
   if (.not.(quiet.or.output%unit.eq.output_unit)) then
     open (unit=output_unit, carriagecontrol='fortran')
+
     write(                                                &
       unit=output_unit,                                   &
       fmt="(a1,a1,a27,                                    &
