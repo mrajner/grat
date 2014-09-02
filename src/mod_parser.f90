@@ -718,11 +718,6 @@ subroutine parse_info (cmd_line_entry)
         '|HB:',    f8.1,               &
         '|HE:',    f8.1,               &
         '|HS:',    f7.2,               &
-        '|HSP:',   l,                  &
-        '|3D:',    f7.2,               &
-        '|3D:',    a,                  &
-        '|3:@DE',  f7.2,               &
-        '|3::ref', l,                  &
         '|'                            &
         )"),                           &
         info(i)%distance%start,        &
@@ -732,12 +727,25 @@ subroutine parse_info (cmd_line_entry)
         info(i)%distance%step,         &
         info(i)%height%start,          &
         info(i)%height%stop,           &
-        info(i)%height%step,           &
-        info(i)%height_progressive,    &
-        info(i)%distance%stop_3d,      &
-        pack(method3dnames,method3d) , &
-        method3d_refinment_distance,   &
-        method3d_compute_reference
+        info(i)%height%step
+
+
+      if (method(3)) then
+        write(log%unit,                  &
+          "("//form%t3//"                &
+          'HSP:',   l,                   &
+          '|3D:',    f7.2,               &
+          '|3D:',    a,                  &
+          '|3:@DE',  f7.2,               &
+          '|3::ref', l,                  &
+          '|'                            &
+          )"),                           &
+          info(i)%height_progressive,    &
+          info(i)%distance%stop_3d,      &
+          pack(method3dnames,method3d) , &
+          method3d_refinment_distance,   &
+          method3d_compute_reference
+      endif
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop.and.method(3)) then
         call print_warning( &
