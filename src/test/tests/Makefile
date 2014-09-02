@@ -1,6 +1,6 @@
 FC := ifort
 
-SHELL_TESTS   := $(wildcard t1*.sh)
+SHELL_TESTS   := $(wildcard t6*.sh)
 FORTRAN_TESTS := t_fortran.f90
 BUGS_TESTS     := t_bugs.sh
 
@@ -14,8 +14,8 @@ RESULTS :=     \
 	$(REAL)      \
 	$(SYNTHETIC) \
 	$(CONSTANT)  \
-	$(FORTRAN)   \
-	$(BUGS)
+	#  $(FORTRAN)   \
+	#  $(BUGS)
 
 all: $(RESULTS)
 

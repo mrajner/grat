@@ -44,13 +44,11 @@ for test in t*.sh t*.f90 ; do
     } || 
     {
 
-      do_not_compare_list='compiled|Program|100%|ifort\s|Execution|FFLAGS|\[eta'
+      do_not_compare_list='Program started\|eta *[[:digit:]]\|Execution time\|^#[[:space:]]\+v[[:digit:]]\|| %: *[[:digit:]]'
 
-      diff                                       \
-        <(egrep -v ${do_not_compare_list:-} $is) \
-        <(egrep -v ${do_not_compare_list:-} $should_be) -q >/dev/null  && 
+      diff  -I "$do_not_compare_list"  $is $should_be -q >/dev/null && 
       { 
-        ok
+      ok
       } || 
       {
 
@@ -58,9 +56,7 @@ for test in t*.sh t*.f90 ; do
 
         [[ ${show_failed_diffs:-} == "true" ]] && 
         {
-          colordiff                                       \
-            <(egrep -v ${do_not_compare_list:-} $is) \
-            <(egrep -v ${do_not_compare_list:-} $should_be) 
+          colordiff  -I "$do_not_compare_list"  $is $should_be 
         }
       }
     } 

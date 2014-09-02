@@ -1,5 +1,5 @@
 dgrat: grat
-	grat -S g :20 -M1 -F10@SP -o /dev/null -q 1
+	grat -S g :20 -M1 -F10@SP -o /dev/null -q 2 
 
 
 # user definitions
@@ -26,28 +26,15 @@ FFLAGS :=       \
 				 -fpic  \
 				 -O2    \
 				 -xHost \
-				 -warn all
-FPP := \
-	-fpp                          \
-	-D__FFLAGS__='"$(FFLAGS)"'    \
-	-D__CDATE__='"$(DATE)"'       \
-	-D__VERSION__='"$(VERSION)"'  \
+				 -warn all \
+				 -O0
+FPP :=                         \
+	-fpp                         \
+	-D__FFLAGS__='"$(FFLAGS)"'   \
+	-D__CDATE__='"$(DATE)"'      \
+	-D__VERSION__='"$(VERSION)"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 endif
-
-#  tmp:tmp.f90 .FORCE
-	#  ifort $< -o $@  -L. -lgrat
-	#  ./tmp
-
-
-#  dfs: grat
-	#  grat -v
-
-
-#  ifeq ($(FC),gfortran)
-#  FFLAGS=
-#  endif
-
 
 #  tm: value_check
 	#  time \

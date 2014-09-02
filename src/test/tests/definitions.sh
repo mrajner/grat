@@ -43,6 +43,7 @@ case ${1:-synthetic_data} in
     SP="1013.25 @ SP:@scale=100"
     T=" 15      @ T :@offset=273.15"
     GP="1e5 @GP "
+    VT="0@VT"
 
     suffix=".c"
     ;;

@@ -7,8 +7,21 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-grat \
-  -F ../data/pres.sfc.2012.nc @SP : pres \
-  -G merriam @GN \
-  -S pl -M2 -Dm -o t4.dat
+counter=0
 
+. definitions.sh
+
+for exclamation in "" "-!" ; do
+
+  grat             \
+    ${exclamation} \
+    -F $SP         \
+    -G merriam @GN \
+    -S pl:5.2 -M2 -Dm  \
+    -o ${0/.sh/.dat}${counter}${suffix} \
+    &> ${0/.sh/.dat}$((counter+1))${suffix}
+  let counter=counter+2
+
+done
+  
+touch ${0/.sh/.dat}${suffix}

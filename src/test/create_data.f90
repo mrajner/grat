@@ -114,7 +114,7 @@ program createdata
   call nc_error (nf90_put_var(ncid, gpvarid, gp))
 
   call nc_error (nf90_close(ncid=ncid))
-  call system("ncdump data/test_data.nc ")
+  call system("ncdump -h data/test_data.nc ")
   ! call system("ls -lh data/test_data.nc ")
 
   print *, int(sqrt(-1.))

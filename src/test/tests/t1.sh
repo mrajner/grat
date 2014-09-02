@@ -7,7 +7,7 @@
 #===============================================================================
 
 set -o nounset   
-. definitions.sh c
+. definitions.sh 
 
 counter=0
 
@@ -38,8 +38,6 @@ for exclamation in "" "-!" ; do
 
   let counter=counter+3
 
-  echo $counter
-
   value_check                                        \
     ${exclamation}                                   \
     -F $SP, $T                                       \
@@ -66,20 +64,3 @@ for exclamation in "" "-!" ; do
 done
 
 touch ${0/.sh/.dat}${suffix} 
-
-  value_check                                        \
-    ${exclamation}                                   \
-    -F $SP, $T                                       \
-    -S                                               \
-    r,                                               \
-    equator    : 0    : 0     : 0,                   \
-    south pole : -90  : 0     : 0,                   \
-    north_pole : 90   : 0     : 0,                   \
-    out        : 0    : 1361  : 0,                   \
-    out        : -100 : -1361 : 0                    \
-    out        : 100  : 161   : 0                    \
-                                                     \
-    -D                                               \
-    2012010124 ,2010,2009@~                                   \
-    -o \
-   -V

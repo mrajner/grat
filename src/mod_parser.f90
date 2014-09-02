@@ -419,6 +419,7 @@ subroutine intro ( &
         endif
       endif
     enddo
+
   else
     ! if you don't specify log file, or not switch on verbose mode
     ! all additional information will go to trash
@@ -708,6 +709,7 @@ subroutine parse_info (cmd_line_entry)
       enddo
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
+
       write(log%unit,                  &
         "("//form%t3//"                &
         'DB:',     f7.2,               &

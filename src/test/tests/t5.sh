@@ -7,12 +7,20 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-# grat \
-  # -F ../data/air.2012.nc @VT \
-  # -S joze:52:21:100
+counter=0
 
+. definitions.sh
 
-value_check \
-  -F ../data/air.2012.nc @VT : air \
-  -S g:20 -J 1000, 400 , 200 -o ${0/.sh/.dat} > ${0/.sh/.dat1}
+for exclamation in "" "-!" ; do
+
+  value_check                     \
+    ${exclamation}                \
+    -F $VT                        \
+    -S g:20 -J 1000, 400 , 200 -o \
+    &> ${0/.sh/.dat}${counter}${suffix} 
+  let counter++
+
+done
+
+touch ${0/.sh/.dat}${suffix}
 
