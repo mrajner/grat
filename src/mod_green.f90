@@ -1108,14 +1108,18 @@ subroutine convolve(site, date)
                       * area * normalize
 
                     if (.not.quiet) then
-                      open(unit=output_unit, carriagecontrol='fortran')
-                      call progress(                                               &
-                        100*igreen*idist                                           &
-                        /(size(green_common(igreen)%distance)*size(green_common)), &
-                        time  = 0.,                                                &
-                        cpu   = 0.,                                                &
-                        every = 1                                                  &
-                        )
+                      if(                                                         &
+                        100*igreen*idist                                          &
+                        /(size(green_common(igreen)%distance)*size(green_common)) &
+                        .lt.100) then
+                        call progress(                                               &
+                          100*igreen*idist                                           &
+                          /(size(green_common(igreen)%distance)*size(green_common)), &
+                          time  = 0.,                                                &
+                          cpu   = 0.,                                                &
+                          every = 1                                                  &
+                          )
+                      endif
                     endif
                   endif
 
