@@ -7,7 +7,7 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-. definitions.sh r
+. definitions.sh
 
 # test variable modifiers 
 
@@ -40,6 +40,4 @@ for exclamation in "" "-!" ; do
   let counter++
 done
 
-
-touch ${0/.sh/.dat}
-
+touch ${0/.sh/.dat}${suffix}

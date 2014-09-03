@@ -7,8 +7,9 @@ dgrat: grat value_check
 		NCEP@HP ,    \
 		NCEP @LS     \
 	-BN,I          \
-	-G@GN,@GE      \
-	-H -I-12@DD:10@AS : 3@DB:4@DE  -D2012
+	-G@GN,@GE , @GNc      \
+	-H -I-2@DD : 0.21@DB:140@DE  -D2012  \
+	-o aa 
 
 
 # user definitions

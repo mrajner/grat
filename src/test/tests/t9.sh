@@ -5,9 +5,7 @@
 #       CREATED: 30.06.2014 21:49
 #===============================================================================
 
-set -o nounset                              # Treat unset variables as an error
-
-. definitions.sh
+. definitions.sh 
 
 counter=0
 
@@ -23,7 +21,7 @@ for exclamation in "" "-!" ; do
     -Sj -BI  -H -I -10@DD : 5500@HS                                                   \
      -o ${0/.sh/.dat${counter}} :c                                          \
      -V ${0/.sh/.dat$((counter+1))}${suffix} : sparse                                
-   } &> ${0/.sh/.dat$((counter+2))}${suffix} 
+   } #&> ${0/.sh/.dat$((counter+2))}${suffix} 
 
   let counter=counter+3
 done

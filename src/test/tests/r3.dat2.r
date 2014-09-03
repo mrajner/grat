@@ -1,0 +1,9 @@
+    name       lat       lon level           SP            T           GP
+    auto   40.0000   10.0000   500          NaN          NaN   56.690E-06 
+    auto   66.0000   10.0000   500          NaN          NaN   53.010E-06 
+    auto   40.0000   22.0000   500          NaN          NaN   54.650E-06 
+    auto   66.0000   22.0000   500          NaN          NaN   52.560E-06 
+    auto   40.0000   10.0000   200          NaN          NaN  118.010E-06 
+    auto   66.0000   10.0000   200          NaN          NaN  112.920E-06 
+    auto   40.0000   22.0000   200          NaN          NaN  115.950E-06 
+    auto   66.0000   22.0000   200          NaN          NaN  112.290E-06 

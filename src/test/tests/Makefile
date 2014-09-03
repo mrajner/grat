@@ -1,6 +1,6 @@
 FC := ifort
 
-SHELL_TESTS   := $(wildcard t9*.sh)
+SHELL_TESTS   := $(wildcard t[0-9]*.sh)
 FORTRAN_TESTS := t_fortran.f90
 BUGS_TESTS     := t_bugs.sh
 

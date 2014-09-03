@@ -27,7 +27,3 @@ cat $OUT 2>/dev/null | sed 's/$/infile/'
   done 
 } 
 
-shopt -s extglob
-TODO
-
-ls !(time)t*dat*

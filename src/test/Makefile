@@ -38,7 +38,7 @@ ask:
 test: 
 	make -C tests/
 
-create_data: create_data.f90
+create_data: create_data.f90 data
 	$(FC) $< -o $@ $(NETCDFLIB) $(GRATLIB)
 
 run: create_data
