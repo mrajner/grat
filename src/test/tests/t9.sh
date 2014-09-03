@@ -21,7 +21,7 @@ for exclamation in "" "-!" ; do
     -Sj -BI  -H -I -10@DD : 5500@HS                                                   \
      -o ${0/.sh/.dat${counter}} :c                                          \
      -V ${0/.sh/.dat$((counter+1))}${suffix} : sparse                                
-   } #&> ${0/.sh/.dat$((counter+2))}${suffix} 
+   } &> ${0/.sh/.dat$((counter+2))}${suffix} 
 
   let counter=counter+3
 done
