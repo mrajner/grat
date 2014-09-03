@@ -1,5 +1,14 @@
 dgrat: grat value_check
-	grat -S g :20 -M1,2 -F10@SP -o /dev/null -BN -G@GN,@GE, @C 
+	grat -S o      \
+		-M1,2        \
+		-F NCEP@SP , \
+		NCEP1 @T ,   \
+		NCEP@H,      \
+		NCEP@HP ,    \
+		NCEP @LS     \
+	-BN,I          \
+	-G@GN,@GE      \
+	-H -I-12@DD:10@AS : 3@DB:4@DE  -D2012
 
 
 # user definitions
@@ -26,8 +35,7 @@ FFLAGS :=       \
 				 -fpic  \
 				 -O2    \
 				 -xHost \
-				 -warn all \
-				 -O0
+				 -warn all
 FPP :=                         \
 	-fpp                         \
 	-D__FFLAGS__='"$(FFLAGS)"'   \
