@@ -6,11 +6,11 @@
 #===============================================================================
 
 shopt -s nullglob
+
 OUT=${0/.sh/.dat}
 
 cat $OUT 2>/dev/null | sed 's/$/infile/'
 
-{ 
   for i in t9.dat* ; do
     egrep "^user" $i -q && 
     {
@@ -25,5 +25,4 @@ cat $OUT 2>/dev/null | sed 's/$/infile/'
     } || 
     : 
   done 
-} 
 

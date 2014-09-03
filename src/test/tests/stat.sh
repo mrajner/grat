@@ -12,16 +12,22 @@ counter=0
 good=0
 bad=0
 
-while getopts "b" flag ; do
+while getopts "bv" flag ; do
   case $flag in 
     b)
       show_failed_diffs=true
+      ;;
+    v)
+      verbose=true
       ;;
   esac
 done
 
 ok(){
-  tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
+  ${verbose:-false} && 
+  {
+    tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
+  } || :
 }
 
 for test in t*.sh t*.f90 ; do
@@ -44,17 +50,17 @@ for test in t*.sh t*.f90 ; do
     } || 
     {
 
-      do_not_compare_list='Program started\|eta *[[:digit:]]\|Execution time\|^#[[:space:]]\+v[[:digit:]]\|| %: *[[:digit:]]'
+      do_not_compare_list='^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|Execution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|| %: *[[:digit:]]'
 
       diff  -I "$do_not_compare_list"  $is $should_be -q >/dev/null && 
       { 
-      ok
+        ok
       } || 
       {
 
         tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
 
-        [[ ${show_failed_diffs:-} == "true" ]] && 
+        [[ ${show_failed_diffs:-} != "true" ]] && 
         {
           colordiff  -I "$do_not_compare_list"  $is $should_be 
         }

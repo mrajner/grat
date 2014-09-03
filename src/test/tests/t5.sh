@@ -13,11 +13,11 @@ counter=0
 
 for exclamation in "" "-!" ; do
 
-  value_check                     \
-    ${exclamation}                \
-    -F $VT                        \
-    -S g:20 -J 1000, 400 , 200 -o \
-    &> ${0/.sh/.dat}${counter}${suffix} 
+  value_check                           \
+    ${exclamation}                      \
+    -F $VT                              \
+    -S g:20 -J 1000, 400 , 200 -o       \
+    &> ${0/.sh/.dat}${counter}${suffix}
   let counter++
 
 done
