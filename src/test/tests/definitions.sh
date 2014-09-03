@@ -33,9 +33,9 @@ case ${1:-synthetic_data} in
     GP="../data/test_data.nc @GP : gp"
     SP="../data/test_data.nc @SP : sp"
     LS="../data/test_data.nc @LS : land"
-    HP="../data/test_data.nc @HP : hgt"
-    H="../data/test_data.nc @H  : hgt"
-    VSH="../data/test_data.nc @VSH: shum"
+    # HP="../data/test_data.nc @HP : hgt"
+    # H="../data/test_data.nc @H  : hgt"
+    # VSH="../data/test_data.nc @VSH: shum"
     suffix=".s"
     ;;
 
@@ -44,6 +44,10 @@ case ${1:-synthetic_data} in
     T=" 15      @ T :@offset=273.15"
     GP="1e5 @GP "
     VT="0@VT"
+    LS="0@LS"
+    HP="0@HP"
+    H="0@H"
+    VSH="0@VSH"
 
     suffix=".c"
     ;;

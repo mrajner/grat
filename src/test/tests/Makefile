@@ -1,6 +1,6 @@
 FC := ifort
 
-SHELL_TESTS   := $(wildcard t6*.sh)
+SHELL_TESTS   := $(wildcard t9*.sh)
 FORTRAN_TESTS := t_fortran.f90
 BUGS_TESTS     := t_bugs.sh
 
@@ -14,8 +14,8 @@ RESULTS :=     \
 	$(REAL)      \
 	$(SYNTHETIC) \
 	$(CONSTANT)  \
-	#  $(FORTRAN)   \
-	#  $(BUGS)
+	$(FORTRAN)   \
+	$(BUGS)
 
 all: $(RESULTS)
 
@@ -28,18 +28,18 @@ stat: $(RESULTS)
 	bash stat.sh
 	
 %.dat:%.sh
-	bash $< 
+	-bash $< 
 
 %.dat:%.f90 ../../libgrat.a
 	$(FC) $< -o $(subst .dat,,$@) -L../.. -lgrat -I../../
 	./$(subst .dat,,$@) > $@
 
 %.dat.s:%.sh
-	bash $< s
+	-bash $< s
 %.dat.r:%.sh
-	bash $< r
+	-bash $< r
 %.dat.c:%.sh
-	bash $< c
+	-bash $< c
 
 clean:
 	rm -v t*.dat* t_fortran

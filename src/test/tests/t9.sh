@@ -10,16 +10,22 @@ set -o nounset                              # Treat unset variables as an error
 . definitions.sh
 
 counter=0
+
 for exclamation in "" "-!" ; do
-  grat                                                                           \
-    ${exclamation} \
-    -M 1,2,3                                                                     \
-    -G rajner@GN , merriam @GE                                                   \
+  {
+    time grat                                                               \
+    ${exclamation}                                                          \
+    -M 1,2,3                                                                \
+    -G rajner@GN , merriam @GE                                              \
     -F $SP, $GP , $LS , $HP , $H , $VT , $T , $VSH , 101300 @ RSP , 0 @HRSP \
-    -U                                                                           \
-    -D m:m:210@D                                                                  \
-    -Sj -BI  -H -I500@HS                                                         \
-    -o ${0/.sh/.dat${counter/0}} :nc  \
-    -V ${0/.sh/.dat$((counter+1))} : sparse
-  let counter=counter+2
+    -U                                                                      \
+    -D m:m:210@D                                                            \
+    -Sj -BI  -H -I -10@DD : 5500@HS                                                   \
+     -o ${0/.sh/.dat${counter}} :c                                          \
+     -V ${0/.sh/.dat$((counter+1))}${suffix} : sparse                                
+   } &> ${0/.sh/.dat$((counter+2))}${suffix} 
+
+  let counter=counter+3
 done
+
+touch ${0/.sh/.dat}${suffix}

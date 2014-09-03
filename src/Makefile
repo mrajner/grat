@@ -1,5 +1,5 @@
-dgrat: grat
-	grat -S g :20 -M1 -F10@SP -o /dev/null -q 2 
+dgrat: grat value_check
+	grat -S g :20 -M1,2 -F10@SP -o /dev/null -BN -G@GN,@GE, @C 
 
 
 # user definitions

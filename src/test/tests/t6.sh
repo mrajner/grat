@@ -31,5 +31,3 @@ done
 done
 
 touch ${0/.sh/.dat}${suffix}
-
-

@@ -39,10 +39,6 @@ program value_check
     cmdlineargs       = .true.                 &
     )
 
-  ! for progress bar
-  if (output%unit.ne.output_unit.and..not.quiet) &
-    open (unit=output_unit, carriagecontrol='fortran')
-
   allocate (val (size(model)))
 
   start=0
