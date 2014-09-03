@@ -83,6 +83,7 @@ function standard_pressure (  &
         *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air)
 
     case ("full")
+
       if (.not.present(use_standard_temperature)) then
         call print_warning(                     &
           "error: you have to specify "         &
@@ -90,7 +91,9 @@ function standard_pressure (  &
           //"full method in standard_pressure", &
           error=.true.)
       endif
-      standard_pressure=0.
+
+      standard_pressure = 0.
+
       if (present(dz)) then
         dz_ = dz
       else
@@ -98,17 +101,23 @@ function standard_pressure (  &
       endif
 
       if (sfc_height.gt.height) dz_=-dz_
+
       do z_=sfc_height+dz_/2, height, dz_
+
         if (present(use_standard_temperature) .and. use_standard_temperature) then
           if (present(temperature).and.(abs(z_-sfc_height).lt.5000).and.temperature.gt.100.) then
             t_=sfc_temperature+alpha*(z_-sfc_height)
           else
             t_=standard_temperature(z_,fels_type=fels_type)
           endif
+        else
+          t_=sfc_temperature+alpha*(z_-sfc_height)
         endif
+
         standard_pressure = standard_pressure &
           + standard_gravity(sfc_height)/(R_air*t_)*dz_
       enddo
+
       standard_pressure = sfc_pressure*exp(-standard_pressure)
 
     case ("standard")
