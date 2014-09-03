@@ -1,4 +1,2 @@
-warning: something wrong with -F. ../data/pres.sfc.2012.nc : file do not exist 
-warning: something wrong with -F. ../data/air.sig995.2012.nc : file do not exist 
 warning: something wrong with -S|-R specification. IGNORED 
-error: no dates in first model: -Dm is forbidden (or -D before -F) 
+  0% |                    |  0.0s [eta  Inf] (proc:  0.0 | %:104.2) t1.dat0.r100% |********************|  0.1s [eta  0.1] (proc:  0.1 | %:100.1) t1.dat0.r 

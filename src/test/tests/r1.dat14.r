@@ -1,3 +1,129 @@
-warning: something wrong with -F. ../data/pres.sfc.2012.nc : file do not exist 
-warning: something wrong with -F. ../data/air.sig995.2012.nc : file do not exist 
-  0% |                    |  0.0s [eta  Inf] (proc:  0.0 | %:100.0) t1.dat12.r100% |********************|  0.1s [eta  0.1] (proc:  0.1 | %:100.0) t1.dat12.r 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+  0% |                    |  0.0s [eta  Inf] (proc:  0.0 | %: 97.8) t1.dat12.rwarning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+warning: check NetCDF: Index exceeds dimension bound 
+warning: skipping get_value 
+100% |********************|  0.3s [eta  0.3] (proc:  0.3 | %: 99.5) t1.dat12.r 

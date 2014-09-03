@@ -10,7 +10,7 @@
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-03 12:39:55 (+02h UTC)
+Program started: 2014-09-03 13:39:02 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F 1013.25 @ SP:@scale=100 -M1,2 -G rajner @GN -S joze:52:21:100

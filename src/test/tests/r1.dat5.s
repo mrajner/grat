@@ -1,6 +1,6 @@
 warning: cannot find date: 20111231180000      var: sp in file: ../data/test_data.nc 
 warning: cannot find date: 20111231180000      var: t in file: ../data/test_data.nc 
-  0% |                    |  0.0s [eta  Inf] (proc:  0.0 | %: 99.2) t1.dat3.swarning: outside lon|lat range maybe actual range not specified in nc file 
+  0% |                    |  0.0s [eta  Inf] (proc:  0.0 | %: 92.4) t1.dat3.swarning: outside lon|lat range maybe actual range not specified in nc file 
 warning: cannot find date: 20120103180000      var: sp in file: ../data/test_data.nc 
 warning: cannot find date: 20120103180000      var: t in file: ../data/test_data.nc 
 warning: cannot find date: 20120104060000      var: sp in file: ../data/test_data.nc 

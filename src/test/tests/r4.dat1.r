@@ -1,2 +1,1 @@
-warning: something wrong with -F. ../data/pres.sfc.2012.nc : file do not exist 
-error: no dates in first model: -Dm is forbidden (or -D before -F) 
+ 25% |*****               |  0.0s [eta  0.1] (proc:  0.0 | %:104.5) t4.dat0.r 50% |**********          |  0.0s [eta  0.0] (proc:  0.0 | %:102.9) t4.dat0.r100% |********************|  0.0s [eta  0.0] (proc:  0.0 | %:101.7) t4.dat0.r 

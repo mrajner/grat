@@ -10,7 +10,7 @@
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-03 12:39:55 (+02h UTC)
+Program started: 2014-09-03 13:39:02 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -! -F 1013.25 @ SP:@scale=100, 15 @ T :@offset=273.15 -S joz

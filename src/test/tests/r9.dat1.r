@@ -1,4 +1,4 @@
-Program started: 2014-09-03 12:44:18 (+02h UTC)
+Program started: 2014-09-03 13:38:49 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -M 1,2,3 -G rajner@GN , merriam @GE -F ../data/pres.sfc.2012.nc @SP
@@ -20,3 +20,14 @@ Command parsing:
       constant value was re-set:    0.000E+00
   -U { -U }
   -D { -Dm:m:210@D }
+  -S { -Sj }
+  -B { -BI }
+  -H { -H }
+  -I { -I-10@DD:5500@HS }
+    Range: 1
+      DB:   0.00|DE: 180.000|I:n|DD:**|DS:   0.00|HB:     0.0|HE: 60000.0|HS:5500.00|
+      HSP: F|3D:  10.00|3D:point    |3:@DE   0.10|3::ref F|
+  -o { -ot9.dat0:c }
+  -V { -Vt9.dat1.r:sparse }
+#-----------------------------------------------------------------------
+Execution time:   0.4s (proc time:   0.4 |% 99.8)

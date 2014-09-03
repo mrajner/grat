@@ -10,7 +10,7 @@
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-03 12:39:55 (+02h UTC)
+Program started: 2014-09-03 13:39:02 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F 10 , 20:@gh2h , 30:@ scale=10 @ invscale=1000 , 40@name ,

@@ -10,7 +10,7 @@
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-03 12:39:47 (+02h UTC)
+Program started: 2014-09-03 13:38:59 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -! -F ../data/test_data.nc @SP : sp, ../data/test_data.nc @T
@@ -59,5 +59,5 @@ Command parsing:
 jozefoslaw   52.0000   21.0000  110.0000        --        --        -- 
        tmp  -33.0000    1.0000 -110.0000        --        --        -- 
 #-----------------------------------------------------------------------
-Execution time:   0.0s (proc time:   0.0 |% 98.5)
+Execution time:   0.0s (proc time:   0.0 |% 92.3)
 #-----------------------------------------------------------------------

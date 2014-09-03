@@ -10,7 +10,7 @@
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-03 12:39:43 (+02h UTC)
+Program started: 2014-09-03 13:38:45 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F ../data/pres.sfc.2012.nc @SP :pres -M1,2 -G rajner @GN -S joz
@@ -21,7 +21,14 @@ Command parsing:
       header
   -F { pres.sfc.2012.nc@SP:pres }
     ../data/pres.sfc.2012.nc@SP:pres
-warning: something wrong with -F. ../data/pres.sfc.2012.nc : file do not exist 
+      Surface pressure (SP) pres lon lat level time 
+      Opening file: pres.sfc.2012.nc , huge [T/F]: F
+        Getting dim: lon ..     ok
+        Getting dim: lat ..     ok
+        Getting dim: level ..  level not found, allocating (1)...
+          lat, lon, time, pres,
+        Getting dim: time ..     ok
+        Converting time:  hours since 1800-1-1 00:00:0.0
   -M { -M1,2 }
     method was set: 1D 2D  
   -G { -Grajner@GN }
@@ -48,4 +55,8 @@ warning: something wrong with -F. ../data/pres.sfc.2012.nc : file do not exist
       joze   52.0000   21.0000  100.0000        --        --        -- 
 #-----------------------------------------------------------------------
          mjd           date     name       lat       lon         h          G1D           GN 
-   55927.000 20120101000000     joze   52.0000   21.0000   100.000error: @SP is required with -M1D 
+   55927.000 20120101000000     joze   52.0000   21.0000   100.000     -299.220     -288.303 
+warning: hours not matching model dates (0,6,12,18) are rejecting and not shown in output 
+   55927.250 20120101060000     joze   52.0000   21.0000   100.000     -299.190     -288.305 
+   55927.500 20120101120000     joze   52.0000   21.0000   100.000     -298.920     -287.917 
+   55927.750 20120101180000     joze   52.0000   21.0000   100.000     -298.110     -286.836 
