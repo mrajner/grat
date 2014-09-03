@@ -13,7 +13,7 @@ GRATLIB   = -I/usr/local/include \
 						-L/usr/local/lib     \
 						-lgrat
 
-all: run data
+all: run data test
 	
 df:
 	# ask run runtests

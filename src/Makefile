@@ -151,7 +151,7 @@ libgrat$(VERSION_MAJOR).a: $(OBJS)
 	ar rusv $@ $(OBJS)
 
 .PHONY: install 
-test: all
+test: all install
 	make -C test
 
 shared_libraries: $(OBJS)
