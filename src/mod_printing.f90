@@ -144,16 +144,16 @@ subroutine progress(j, time, cpu, every)
   use iso_fortran_env, only: output_unit
 
   implicit none
-  integer(kind=4)::j, k
+  integer(kind=4) :: j, k
   integer:: ii
-  character(len=27)::bar="???% |                    |"
+  character(len=27) :: bar="???% |                    |"
   real :: time, cpu
   integer, optional :: every
   integer :: every_
-  integer,save :: step=0
+  integer, save :: step=0
   character(len=1) :: timeunit
   logical :: logprinted
-
+  character(2) :: format
 
   if (present(every)) then
     every_=every
@@ -192,6 +192,7 @@ subroutine progress(j, time, cpu, every)
     timeunit = "s"
   endif
 
+  write(format,'(i0)') size(moreverbose)+1
 
   if (.not.(quiet.or.output%unit.eq.output_unit)) then
 
@@ -201,7 +202,7 @@ subroutine progress(j, time, cpu, every)
       f5.1,a1,1x,a,f5.1,a,1x,                             &
       a,f5.1,x,                                           &
       a,f5.1,a1,                                          &
-      x,a,<size(moreverbose)+1>(x,a))",                   &
+      x,a,"//format//"(x,a))",                   &
       advance="no"                                        &
       )                                                   &
       char(13), bar,                                      &
