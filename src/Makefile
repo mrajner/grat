@@ -1,3 +1,5 @@
+dfd: grat
+	grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
 dgrat: grat value_check
 	grat -S o      \
 		-M1,2        \

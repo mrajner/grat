@@ -2,5 +2,5 @@ warning: no explicit method3d given - falling into point mass (for backward comp
 error: no dates in first model: -Dm is forbidden (or -D before -F) 
 
 real	0m0.011s
-user	0m0.006s
-sys	0m0.004s
+user	0m0.005s
+sys	0m0.006s

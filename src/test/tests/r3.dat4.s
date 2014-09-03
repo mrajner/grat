@@ -1,2 +1,2 @@
 warning: level not found (no warning again) test_data.nc                                                                                                                                                                                             
- 25% |*****               |  0.0s [eta  0.1] (proc:  0.0 | %:105.6) t3.dat3.s100% |********************|  0.0s [eta  0.0] (proc:  0.0 | %:100.7) t3.dat3.s 
+ 25% |*****               |  0.0s [eta  0.0] (proc:  0.0 | %:100.9) t3.dat3.s100% |********************|  0.0s [eta  0.0] (proc:  0.0 | %: 96.5) t3.dat3.s 
