@@ -2,7 +2,7 @@ program testing_fortran_procedures
   use mod_utilities
   use mod_cmdline
   integer :: iunit
-  character(30) :: filename
+  character(30) :: filename, my_method
 
   print *, "output of: ./test"
 
@@ -13,4 +13,28 @@ program testing_fortran_procedures
 
   print *, method3dnames
 
+
+  call test_standard_atmosphere("full")
+  call test_standard_atmosphere("standard")
+  call test_standard_atmosphere("berg")
+  call test_standard_atmosphere("simple")
+
+contains
+
+subroutine test_standard_atmosphere (method)
+  use mod_atmosphere, only: standard_pressure
+  character(*),optional,intent(in)  :: method
+  print *, standard_pressure( &
+    height= 6000._dp,  &
+    use_standard_temperature=.true. ,&
+    temperature=480._dp, &
+    method=method &
+    )
+  print *, standard_pressure( &
+    height= 6000._dp,  &
+    use_standard_temperature=.false. ,&
+    temperature=480._dp, &
+    method=method &
+    )
+end subroutine
 end program
