@@ -166,7 +166,7 @@ subroutine progress(j, time, cpu, every)
   if ((every_.eq.0).and.j.ne.100) then
     return
   else if (every_.eq.0.and.j.eq.100) then
-  else if (                     &
+  else if (                  &
     modulo(step,every_).ne.0 &
     .and.j.ne.every_         &
     .and.j.ne.100            &
@@ -181,20 +181,19 @@ subroutine progress(j, time, cpu, every)
   enddo
 
   if (time.gt.60000) then
-    time = time/3600
-    cpu  = cpu/3600
+    time     = time/3600
+    cpu      = cpu/3600
     timeunit = "h"
   else if (time.gt.1000) then
-    time = time/60
-    cpu  = cpu/60
+    time     = time/60
+    cpu      = cpu/60
     timeunit = "m"
   else
-    timeunit="s"
+    timeunit = "s"
   endif
 
 
   if (.not.(quiet.or.output%unit.eq.output_unit)) then
-    open (unit=output_unit, carriagecontrol='fortran')
 
     write(                                                &
       unit=output_unit,                                   &
@@ -202,7 +201,8 @@ subroutine progress(j, time, cpu, every)
       f5.1,a1,1x,a,f5.1,a,1x,                             &
       a,f5.1,x,                                           &
       a,f5.1,a1,                                          &
-      x,a,<size(moreverbose)+1>(x,a)$)"                   &
+      x,a,<size(moreverbose)+1>(x,a))",                   &
+      advance="no"                                        &
       )                                                   &
       '+',char(13), bar,                                  &
       time, timeunit, "[eta", 100.*time/j,"]",            &
@@ -212,10 +212,11 @@ subroutine progress(j, time, cpu, every)
       (                                                   &
       trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
       )
+    flush(output_unit)
+    if(j.eq.100) write(output_unit,*)
   endif
 
   if (j.eq.100.and..not.logprinted) then
-    close(output_unit)
     write(log%unit,                                 &
       '("Execution time:",1x,f5.1,a,                &
       &" (proc time:",1x,f5.1,1x,"|%", f5.1,")")') &
