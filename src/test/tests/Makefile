@@ -32,7 +32,7 @@ stat: $(RESULTS)
 
 %.dat:%.f90 ../../libgrat.a
 	$(FC) $< -o $(subst .dat,,$@) -L../.. -lgrat -I../../
-	./$(subst .dat,,$@) > $@
+	./$(subst .dat,,$@) | tee $@
 
 %.dat.s:%.sh
 	-bash $< s

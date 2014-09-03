@@ -1,17 +1,3240 @@
 warning: check NetCDF: Variable not found 
 warning: check NetCDF: Variable not found 
 warning: check NetCDF: Variable not found 
-forrtl: severe (174): SIGSEGV, segmentation fault occurred
-Image              PC                Routine            Line        Source             
-value_check        00000000004E8E09  Unknown               Unknown  Unknown
-value_check        00000000004E7780  Unknown               Unknown  Unknown
-value_check        0000000000498332  Unknown               Unknown  Unknown
-value_check        000000000044ECC3  Unknown               Unknown  Unknown
-value_check        00000000004562CB  Unknown               Unknown  Unknown
-libpthread.so.0    0000003E2120EFE0  Unknown               Unknown  Unknown
-libnetcdff.so.6    00002AAAAAABFC32  Unknown               Unknown  Unknown
-value_check        0000000000419954  Unknown               Unknown  Unknown
-value_check        000000000040BCFA  Unknown               Unknown  Unknown
-value_check        000000000040A506  Unknown               Unknown  Unknown
-libc.so.6          0000003E20E21735  Unknown               Unknown  Unknown
-value_check        000000000040A3D9  Unknown               Unknown  Unknown
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000    0.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   20.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   40.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   60.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000   80.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  100.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  120.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  140.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  160.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  180.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  200.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  220.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  240.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  260.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  280.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  300.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  320.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -90.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -70.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -50.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -30.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto  -10.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   10.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   30.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   50.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   70.0000  340.0000          NaN 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: check NetCDF: Variable not found 
+warning: skipping get_value 
+    auto   90.0000  340.0000          NaN 
