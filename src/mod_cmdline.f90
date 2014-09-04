@@ -229,15 +229,23 @@ subroutine get_command_cleaned(dummy)
   character(*), intent(out) :: dummy
   character(355) :: a, b, arg
   integer :: i
-  dummy=" "
+
+  dummy=""
+
   do i = 1, iargc()
     call get_command_argument(i,a)
     call get_command_argument(i+1,b)
+
     if (check_if_switch_or_minus(a)) then
       arg = trim(a)
     else
-      arg=trim(arg)//trim(a)
+      if (i.ne.1) then
+        arg=trim(arg)//trim(a)
+      else
+        arg=""
+      endif
     endif
+
     if(check_if_switch_or_minus(b).or.i.eq.iargc()) then
       if(trim(dummy).eq."") then
         dummy=trim(arg)
@@ -245,6 +253,7 @@ subroutine get_command_cleaned(dummy)
         dummy=trim(dummy)//" "//trim(arg)
       endif
     endif
+
   enddo
 end subroutine
 
