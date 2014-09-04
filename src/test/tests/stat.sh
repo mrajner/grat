@@ -57,7 +57,7 @@ for test in t*.sh t*.f90 ; do
     } || 
     {
 
-      do_not_compare_list='^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|Execution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|| %: *[[:digit:]]'
+      do_not_compare_list='^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|Execution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]'
 
       diff  -I "$do_not_compare_list"  $is $should_be -q >/dev/null && 
       { 

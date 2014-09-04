@@ -35,7 +35,10 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
   select case (cmd_line_entry%switch)
 
   case ('-V')
-    if (.not.log%sparse) write(log%unit, form%i2) 'verbose mode'
+    if (.not.log%sparse) then
+      write(log%unit, form%i2) 'verbose mode'
+    endif
+
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
     endif
@@ -301,6 +304,7 @@ subroutine intro ( &
     )
   use mod_cmdline
   use mod_utilities, only: file_exists
+
   character(len=*), intent(in) :: program_calling
   character(len=*), intent (in), optional :: accepted_switches
   logical, intent (in), optional :: cmdlineargs
@@ -429,7 +433,13 @@ subroutine intro ( &
   endif
 
   if (.not. log%sparse) then
-    call print_version(program_calling=program_calling, version=version)
+    call print_version (                 &
+      program_calling = program_calling, &
+      version         = version,         &
+      cdate           = cdate,           &
+      fflags          = fflags ,         &
+      compiler        = compiler         &
+      )
   endif
 
   call date_and_time (values = execution_date)
@@ -537,9 +547,9 @@ subroutine check_arguments (program_calling)
     endif
   endif
 
-    if (.not.any(cmd_line%switch.eq.'-S')) then
-      call print_warning("-S not given")
-    endif
+  if (.not.any(cmd_line%switch.eq.'-S')) then
+    call print_warning("-S not given")
+  endif
 end subroutine
 
 ! =============================================================================

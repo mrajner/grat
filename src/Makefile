@@ -1,3 +1,10 @@
+ddd: grat
+	grat -V |grep FFL
+	grat -v | grep FFL
+	grat -V
+	value_check -V |grep FFL
+	value_check -v | grep FFL
+fdf:
 #  tmp:tmp.f90 .FORCE
 	#  make libgrat.a NODEP="D"
 	#  $(FC) $< -o $@ -L. -lgrat -I.
