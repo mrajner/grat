@@ -1,4 +1,4 @@
-Program started: 2014-09-03 14:51:14 (+02h UTC)
+Program started: 2014-09-04 08:02:04 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -M 1,2,3 -G rajner@GN , merriam @GE -F ../data/pres.sfc.2012.nc 
@@ -32,4 +32,4 @@ Command parsing:
   -o { -ot9.dat3:c }
   -V { -Vt9.dat4.r:sparse }
 #-----------------------------------------------------------------------
-Execution time:   1.3s (proc time:   1.3 |% 96.7)
+Execution time:   1.3s (proc time:   1.3 |% 99.8)

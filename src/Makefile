@@ -1,3 +1,16 @@
+#  tmp:tmp.f90 .FORCE
+	#  make libgrat.a NODEP="D"
+	#  $(FC) $< -o $@ -L. -lgrat -I.
+	#  ./$@ -Rfdsf -F -4 -Gdfdf 
+	#  @echo
+	#  ./$@ Rfdsf -F -4 -Gdfdf 
+
+fdf: all
+	value_check -fdfsdf -Sj -F10
+	value_check fdfsdf -Sj -F10
+	grat -fdfsdf -Sj -F10@SP
+	grat fdfsdf -Sj -F10@SP
+
 gfortran:
 	make grat FC=gfortran
 g95:
@@ -40,7 +53,7 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 ifeq ($(FC),ifort)
 FFLAGS :=       \
 				 -fpic  \
-				 -O2    \
+				 -O0    \
 				 -xHost \
 				 -warn all
 FPP :=                         \

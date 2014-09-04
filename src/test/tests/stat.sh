@@ -12,7 +12,7 @@ counter=0
 good=0
 bad=0
 
-while getopts "bv" flag ; do
+while getopts "bvui" flag ; do
   case $flag in 
     b)
       show_failed_diffs=true
@@ -20,13 +20,20 @@ while getopts "bv" flag ; do
     v)
       verbose=true
       ;;
+    u)
+      update=true
+      ;;
+    i)
+      interactive="-i"
+      ;;
   esac
 done
 
 ok(){
+  let good++
   ${verbose:-false} && 
   {
-    tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ; let good++; : ;
+    tput setaf 2 ;  echo "$is -- passed" ; tput sgr0 ;  : ;
   } || :
 }
 
@@ -60,10 +67,12 @@ for test in t*.sh t*.f90 ; do
 
         tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
 
-        [[ ${show_failed_diffs:-} != "true" ]] && 
+        [[ ${show_failed_diffs:-} == "true" ]] && 
         {
           colordiff  -I "$do_not_compare_list"  $is $should_be 
         }
+
+        ${update:-false} && cp -v ${interactive:-} $is $should_be
       }
     } 
     let counter++

@@ -1,4 +1,4 @@
-Program started: 2014-09-03 14:51:18 (+02h UTC)
+Program started: 2014-09-04 08:02:13 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -M 1,2,3 -G rajner@GN , merriam @GE -F 1013.25 @ SP:@scale=100, 
