@@ -28,12 +28,13 @@ let counter++
 # should ignore not_starting_with_dash 
 # but treat all after it as one parameter
 # i.e. not -S given error
+# FIXED 40927a5342cb05872bd9e063ddd9ed3edb235499
 {
   value_check -starting_with_dash -Sj -F10
   value_check not_starting_with_dash -Sj -F10
 	grat -starting_with_dash -Sj -F10@SP
 	grat not_starting_with_dash -Sj -F10@SP
-} 2>&1 | tee t_bugs.dat${counter}
+} &>t_bugs.dat${counter}
 let counter++ 
 
 # 2014.09.02
