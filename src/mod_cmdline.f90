@@ -231,6 +231,7 @@ subroutine get_command_cleaned(dummy)
   integer :: i
 
   dummy=""
+  arg=""
 
   do i = 1, iargc()
     call get_command_argument(i,a)
@@ -239,11 +240,7 @@ subroutine get_command_cleaned(dummy)
     if (check_if_switch_or_minus(a)) then
       arg = trim(a)
     else
-      if (i.ne.1) then
         arg=trim(arg)//trim(a)
-      else
-        arg=""
-      endif
     endif
 
     if(check_if_switch_or_minus(b).or.i.eq.iargc()) then
