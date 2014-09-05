@@ -32,18 +32,18 @@ program barometric_formula
   enddo
 
    print '(10a18)' , "h", "simple", "berg", "pred", "pred2", "std" , "full"
-   do i = 1, nheight,200
+   do i = 1, nheight,2000
      ! if (i.gt. 20 .and. i.lt.nheight-20) then
        ! cycle
      ! endif
      ! if (heights(i).lt.1000.or.heights(i).gt.1001) cycle
-     print '(10f18.9)' ,                                         & 
-       heights(i),                                               & 
-       1e-2*standard_pressure(heights(i),method="simple"),            & 
-       1e-2*standard_pressure(heights(i),method="berg") ,             & 
-       1e-2*pressures(i),                                             & 
-       1e-2*pressures2(i),                                            & 
-       1e-2*standard_pressure(heights(i),method="standard"),                            & 
+     print '(10f18.9)' ,                                     &
+       heights(i),                                           &
+       1e-2*standard_pressure(heights(i),method="simple"),   &
+       1e-2*standard_pressure(heights(i),method="berg") ,    &
+       1e-2*pressures(i),                                    &
+       1e-2*pressures2(i),                                   &
+       1e-2*standard_pressure(heights(i),method="standard"), &
        1e-2*standard_pressure(heights(i),method="full", use_standard_temperature=.true.)
    enddo
 

@@ -10,6 +10,7 @@
 counter=0
 
 for exclamation in "" "-!" ; do
+  [[ ${suffix} == ".s" ]] && continue
   {
     time grat                                                               \
     ${exclamation}                                                          \

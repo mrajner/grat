@@ -1,7 +1,7 @@
 FC := ifort
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)
-FORTRAN_TESTS := t_fortran.f90
+FORTRAN_TESTS := t_fortran.f90 t_barometric_formula.f90
 BUGS_TESTS     := t_bugs.sh
 
 REAL      := $(subst .sh,.dat.r,$(SHELL_TESTS))
