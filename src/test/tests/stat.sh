@@ -12,8 +12,11 @@ counter=0
 good=0
 bad=0
 
-while getopts "bvui" flag ; do
+while getopts "bvuid" flag ; do
   case $flag in 
+    d)
+      delete_bad_results=true
+      ;;
     b)
       show_failed_diffs=true
       ;;
@@ -57,9 +60,9 @@ for test in t*.sh t*.f90 ; do
     } || 
     {
 
-      do_not_compare_list='^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|Execution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]'
+      do_not_compare_list='com\|FF\|^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|[Ee]xecution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]'
 
-      diff  -I "$do_not_compare_list"  $is $should_be -q >/dev/null && 
+      diff -I "$do_not_compare_list"  $is $should_be -q >/dev/null && 
       { 
         ok
       } || 
@@ -69,10 +72,13 @@ for test in t*.sh t*.f90 ; do
 
         [[ ${show_failed_diffs:-} == "true" ]] && 
         {
+          echo ---
+          echo is: $is , should_be: $should_be
           colordiff  -I "$do_not_compare_list"  $is $should_be 
         }
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be
+        ${delete_bad_results:-false} && rm -v ${interactive:-} $is
       }
     } 
     let counter++
