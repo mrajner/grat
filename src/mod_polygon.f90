@@ -22,7 +22,7 @@ module mod_polygon
 
   type polygon_info
     integer :: unit
-    character(:), allocatable  :: name
+    character(len=200), allocatable  :: name
     character(len=25) :: dataname
     type(polygon_data), dimension (:), allocatable :: polygon
     logical :: if
@@ -184,25 +184,27 @@ subroutine chkgon (rlong , rlat , polygon , iok)
     ! loop twice for elastic and newtonian
     ! polygon is one we should not be in
     if(.not.polygon%polygon(i)%use) then
-      if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0 &
-        .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) then
-      iok=0
-      return
+      if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0   &
+        .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) &
+        then
+        iok=0
+        return
+      endif
     endif
-  endif
-enddo
-ianyok=0
-! polygon is one we should be in; test to see if we are, and if so set
-! iok to 1 and return
-do i=1,size(polygon%polygon)
-  if(polygon%polygon(i)%use) then
-    ianyok = ianyok+1
-    if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0 &
-      .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) then
-    iok=1
-    return
-  endif
-endif
+  enddo
+  ianyok=0
+  ! polygon is one we should be in; test to see if we are, and if so set
+  ! iok to 1 and return
+  do i=1,size(polygon%polygon)
+    if(polygon%polygon(i)%use) then
+      ianyok = ianyok+1
+      if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0   &
+        .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) &
+        then
+        iok=1
+        return
+      endif
+    endif
   enddo
   ! not inside any polygon%polygons; set iok to 0 if there are any we should have
   ! been in
@@ -297,10 +299,10 @@ integer function ncross(x1,y1,x2,y2)
   endif
 
   ! touches +x axis; crosses +x axis; lies entirely on -x axis
-  if(   (y1.eq.0.and.x1.gt.0)    &
-    .or.(y2.eq.0.and.x2.gt.0) &
-    .or.((y1.lt.0).and.(c12.gt.c21)) &
-    .or.((y1.gt.0).and.(c12.lt.c21)) &
+  if(   (y1.eq.0.and.x1.gt.0)                          &
+    .or.(y2.eq.0.and.x2.gt.0)                          &
+    .or.((y1.lt.0).and.(c12.gt.c21))                   &
+    .or.((y1.gt.0).and.(c12.lt.c21))                   &
     .or.(y1.eq.0.and.y2.eq.0.and.x1.lt.0.and.x2.lt.0)) &
     then
     ncross = 0
@@ -313,6 +315,7 @@ integer function ncross(x1,y1,x2,y2)
     if(y1.gt.0) ncross = -2
     return
   endif
+
   ! one end touches -x axis - goes which way?
   if(y1.eq.0) then
     if(y2.lt.0) ncross = -1
@@ -322,6 +325,7 @@ integer function ncross(x1,y1,x2,y2)
     if(y1.lt.0) ncross = 1
     if(y1.gt.0) ncross = -1
   endif
+
   return
 end function
 

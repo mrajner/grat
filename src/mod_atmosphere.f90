@@ -49,6 +49,7 @@ function standard_pressure (  &
   real(dp) :: sfc_height, sfc_temperature, sfc_gravity, alpha, sfc_pressure
   real(dp) :: z_, dz_, t_
   logical, intent(in), optional :: use_standard_temperature, nan_as_zero
+  integer :: i
 
   sfc_temperature = atmosphere%temperature%standard
   sfc_pressure    = atmosphere%pressure%standard
@@ -103,7 +104,10 @@ function standard_pressure (  &
 
       if (sfc_height.gt.height) dz_=-dz_
 
-      do z_=sfc_height+dz_/2, height, dz_
+      z_=sfc_height-dz_/2
+
+      do i = 1, int((- sfc_height+dz_/2 + height)/ dz_)
+        z_=z_+ dz_
 
         if (present(use_standard_temperature) .and. use_standard_temperature) then
           if (present(temperature).and.(abs(z_-sfc_height).lt.5000).and.temperature.gt.100.) then
@@ -122,7 +126,7 @@ function standard_pressure (  &
 
     case ("standard")
       !http://en.wikipedia.org/wiki/Barometric_formula
-      standard_pressure= sfc_pressure &
+      standard_pressure= sfc_pressure                                      &
         * (sfc_temperature /(sfc_temperature + alpha*(height-sfc_height))) &
         **(earth%gravity%mean /R_air/alpha)
 
@@ -130,6 +134,7 @@ function standard_pressure (  &
       call print_warning ("standard pressure: method not known", error=.true.)
 
     endselect
+
   else
     call print_warning("standard_pressure: set method explicitly",error=.true.)
   endif
