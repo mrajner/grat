@@ -1,6 +1,7 @@
 program testing_fortran_procedures
   use mod_utilities
   use mod_cmdline
+  use mod_aggf
   integer :: iunit
   character(30) :: filename, my_method
 
@@ -19,6 +20,8 @@ program testing_fortran_procedures
   call test_standard_atmosphere("berg")
   call test_standard_atmosphere("simple")
 
+  print *, aggf(psi=0.1_dp, method="simple", dz=2._dp)
+
 contains
 
 subroutine test_standard_atmosphere (method)
@@ -36,5 +39,6 @@ subroutine test_standard_atmosphere (method)
     temperature=480._dp, &
     method=method &
     )
+  
 end subroutine
 end program

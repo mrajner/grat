@@ -106,16 +106,15 @@ function standard_pressure (  &
 
         if (present(use_standard_temperature) .and. use_standard_temperature) then
           if (present(temperature).and.(abs(z_-sfc_height).lt.5000).and.temperature.gt.100.) then
-            t_=sfc_temperature+alpha*(z_-sfc_height)
+            t_ = sfc_temperature+alpha*(z_-sfc_height)
           else
-            t_=standard_temperature(z_,fels_type=fels_type)
+            t_ = standard_temperature(z_,fels_type=fels_type)
           endif
         else
-          t_=sfc_temperature+alpha*(z_-sfc_height)
+          t_ = sfc_temperature+alpha*(z_-sfc_height)
         endif
 
-        standard_pressure = standard_pressure &
-          + standard_gravity(sfc_height)/(R_air*t_)*dz_
+        standard_pressure = standard_pressure + standard_gravity(sfc_height)/(R_air*t_)*dz_
       enddo
 
       standard_pressure = sfc_pressure*exp(-standard_pressure)

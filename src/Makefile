@@ -1,9 +1,7 @@
 tmp:tmp.f90 .FORCE
 	make libgrat.a NODEP="D"
-	$(FC) $< -o $@ -L. -lgrat -I.
-	./$@ -Rfdsf -F -4 -Gdfdf 
-	@echo
-	./$@ Rfdsf -F -4 -Gdfdf 
+	$(FC) $< -o $@ -L. -lgrat -I. -lnetcdff -lgrat
+	./$@
 
 fdf: all
 	value_check -fdfsdf -Sj -F10
