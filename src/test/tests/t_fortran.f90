@@ -22,6 +22,9 @@ program testing_fortran_procedures
 
   print *, aggf(psi=0.1_dp, method="simple", dz=2._dp)
 
+  print *, aggf(psi=1e-6_dp, method="full")
+  print *, aggf(psi=1e-6_dp, method="standard")
+
 contains
 
 subroutine test_standard_atmosphere (method)

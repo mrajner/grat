@@ -49,18 +49,27 @@ VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
 ifeq ($(FC),ifort)
-FFLAGS :=       \
-				 -fpic  \
-				 -O0    \
-				 -xHost \
+FFLAGS :=          \
+				 -fpic     \
+				 -O2       \
+				 -xHost    \
 				 -warn all
+
+NETCDFf := -lnetcdff
+endif
+
+ifeq ($(FC),gfortran)
+FFLAGS :=          \
+				 -O2       
+NETCDFf := -L /usr/local/netcdff_gfortran/lib64 -lnetcdff -I/usr/local/netcdff_gfortran/include
+endif
+
 FPP :=                         \
 	-fpp                         \
 	-D__FFLAGS__='"$(FFLAGS)"'   \
 	-D__CDATE__='"$(DATE)"'      \
 	-D__VERSION__='"$(VERSION)"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
-endif
 
 bug1:
 	grat -F 10 @SP -Sj -M1 -wn
@@ -153,7 +162,7 @@ $(PROGS_SHORTCUTS):
 
 $(PROGS_DIR)/%:%.f90 libgrat.a
 	$(FC) $(FFLAGS) $(FPP)          \
-	$< -o $@ -L. -lgrat -lnetcdff
+	$< -o $@ -L. -lgrat $(NETCDFF)
 
 libgrat.a: libgrat$(VERSION_MAJOR).a
 	ln -sf $(realpath $<) $@
