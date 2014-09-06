@@ -74,6 +74,7 @@ function standard_pressure (  &
   alpha = -6.5e-3
 
   if (present (method)) then
+
     select case (method)
     case("berg")
       standard_pressure = sfc_pressure *(1-2.26e-5*(height-sfc_height))**(5.225)

@@ -6,7 +6,7 @@ program a
   print * , standard_pressure (height=300._8, method="full", h_zero=55._8, temperature=300._8, use_standard_temperature=.false.)
   print * , standard_pressure (height=300._8, method="full", h_zero=55._8, temperature=300._8, use_standard_temperature=.true.)
 
-  call compute_tabulated_green_functions ('rajner_green.dat'       , predefined=.false. , method="standard" )
+  call compute_tabulated_green_functions ('rajner_green.dat'       , predefined=.false. , method="berg" )
 
 contains
 
