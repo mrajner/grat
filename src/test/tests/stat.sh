@@ -57,7 +57,7 @@ for test in t*.sh t*.f90 ; do
       continue
     }
 
-    diff $is $should_be ${ignore_white_spaces:-} >/dev/null && 
+    diff $is $should_be ${ignore_white_spaces:-} ${ignore_white_spaces:-} >/dev/null && 
     { 
       ok 
     } || 
@@ -77,7 +77,7 @@ for test in t*.sh t*.f90 ; do
         {
           echo ---
           echo is: $is , should_be: $should_be
-          colordiff  -I "$do_not_compare_list"  $is $should_be 
+          colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
         }
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be
