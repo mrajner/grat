@@ -202,7 +202,7 @@ subroutine progress(j, time, cpu, every)
       f5.1,a1,1x,a,f5.1,a,1x,                             &
       a,f5.1,x,                                           &
       a,f5.1,a1,                                          &
-      x,a,"//format//"(x,a))",                   &
+      *(x,a))",                                           &
       advance="no"                                        &
       )                                                   &
       char(13), bar,                                      &

@@ -10,7 +10,7 @@
 !! \date 2013-03-04
 ! =============================================================================
 module mod_data
-  use mod_constants, only: dp
+  use mod_constants, only: dp, setnan
 
   implicit none
 
@@ -653,7 +653,6 @@ end subroutine
 subroutine nctime2date (model, print)
   use netcdf
   use mod_printing
-  use mod_constants, only: dp
   use mod_mjd,      only: mjd, invmjd
   type (file)        :: model
   real(dp)           :: mjd_start, mjd_
@@ -868,7 +867,7 @@ subroutine get_variable(model, date, print, level)
         endif
       endif
 
-      model%data= sqrt(-1.)
+      model%data= setnan()
       return
 
     endif
@@ -904,9 +903,10 @@ subroutine get_variable(model, date, print, level)
   model%data = model%data * scale_factor + add_offset
 
   status = nf90_get_att(model%ncid, varid, "actual_range", model%varrange)
-  if (status == 0 ) then
+
+  if (status == 0) then
     where(model%data.gt.model%varrange(2).or.model%data.lt.model%varrange(1))
-      model%data=sqrt(-1.)
+      model%data=setnan()
     end where
   end if
 
@@ -990,8 +990,7 @@ end subroutine
 !! lat and lon in decimal degree
 ! =============================================================================
 subroutine get_value(model, lat, lon, val, level, method, date)
-  use mod_constants, only: dp
-  use mod_cmdline
+  use mod_cmdline, only: moreverbose, ind
   use mod_utilities, only: r2d, bilinear
   use netcdf
   use mod_printing, only: print_warning
@@ -1014,7 +1013,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   end if
 
   if (.not.model%exist.or..not.model%if) then
-    val = sqrt(-1.)
+    val = setnan()
     return
   endif
 
@@ -1040,7 +1039,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
       warning = .false.
     endif
 
-    val = sqrt(-1.)
+    val = setnan()
     return
   endif
 
@@ -1065,7 +1064,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
         get_time_index(model,date=date)           &
         ]),                                       &
         success = success)
-      if(.not.success2) val =sqrt(-1.)
+      if(.not.success2) val = setnan()
 
     else
       call nc_error (nf90_get_var(      &
@@ -1082,13 +1081,15 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
     if(.not. success) then
       call print_warning ("skipping get_value")
-      val = sqrt(-1.)
+      val = setnan()
       return
     endif
 
     call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset, status)
 
-    if (status==nf90_noerr) val = val * scale_factor + add_offset
+    if (status==nf90_noerr) then
+      val = val * scale_factor + add_offset
+    endif
 
     if (trim(model%datanames(1)).ne."") then
       val = variable_modifier (val, model%datanames(1))
@@ -1134,7 +1135,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
 
-  if (.not.success2) val=sqrt(-1.)
+  if (.not.success2) val = setnan()
 
 end subroutine
 
@@ -1312,14 +1313,16 @@ subroutine parse_level (cmd_line_entry)
       level%all=.true.
     else
       allocate (level%level(size(cmd_line_entry%field)))
+
       do i =1,  size(level%level)
-        read(cmd_line_entry%field(i)%subfield(1)%name, '(i)') level%level(i)
+        read(cmd_line_entry%field(i)%subfield(1)%name, *) level%level(i)
       enddo
+
     endif
 
     write(log%unit, form%i2, advance="no") "level pressure:"
     if (allocated(level%level)) then
-      write (log%unit, '(<size(level%level)>i4)'), level%level
+      write (log%unit, '(*(i4))'), level%level
     else if (level%all) then
       write (log%unit, '(a)'), "all"
     endif
@@ -1338,6 +1341,7 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
     standard_temperature,   &
     virtual_temperature
   use mod_constants, only: R_air
+
   character(*), intent(in) :: what
   real(dp), intent(in), optional :: sp,t, hp, sh, gp, vsh, vt
   integer,  intent(in), optional :: level

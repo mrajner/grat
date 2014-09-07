@@ -115,4 +115,13 @@ module mod_constants
   water   = 1000._dp               & ! kg m-3
     )
 
+
+contains
+
+! naive method to force NaN for compilers
+real function setnan()
+  real :: minusone=-1
+  setnan = sqrt(minusone)
+end function
+
 end module mod_constants

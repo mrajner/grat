@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                     v1.0-45-gd55c4fe #
+#                                                     v1.0-48-g1971ecb #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.3 20140422 #
-#                           compiled on lidka_virt 2014-09-06 22:48:18 #
-#                                  FFLAGS = -fpic -O2 -xHost -warn all #
+#                           compiled on lidka_virt 2014-09-07 19:44:30 #
+#                                  FFLAGS = -fpic -O0 -xHost -warn all #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-06 23:39:04 (+02h UTC)
+Program started: 2014-09-07 19:44:38 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -Sg:75,j,b -F1013.25 @ SP:@scale=100 -P ../../../polygon/bal
@@ -30,7 +30,7 @@ Command parsing:
       var modifier: scale 100  101.325E+03
       constant value was re-set:  101.325E+03
   -P { baltyk.poly }
-    polygon file: ../../../polygon/baltyk.poly                                                                        
+    polygon file: ../../../polygon/baltyk.poly
        name: ../../../polygon/baltyk.poly
        number of polygons: 1
        use [true/false]: T
@@ -64,17 +64,17 @@ Execution time:   0.0s (proc time:   0.0 |%142.9)
 #-----------------------------------------------------------------------
 ########################################################################
 #                                                                 grat #
-#                                                     v1.0-45-gd55c4fe #
+#                                                     v1.0-48-g1971ecb #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.3 20140422 #
-#                           compiled on lidka_virt 2014-09-06 22:48:18 #
-#                                  FFLAGS = -fpic -O2 -xHost -warn all #
+#                           compiled on lidka_virt 2014-09-07 19:44:30 #
+#                                  FFLAGS = -fpic -O0 -xHost -warn all #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-06 23:39:04 (+02h UTC)
+Program started: 2014-09-07 19:44:38 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -Sg:75,j,b -F1013.25 @ SP:@scale=100 -P ../../../polygon/baltyk.pol
@@ -94,7 +94,7 @@ Command parsing:
       var modifier: scale 100  101.325E+03
       constant value was re-set:  101.325E+03
   -P { baltyk.poly }
-    polygon file: ../../../polygon/baltyk.poly                                                                        
+    polygon file: ../../../polygon/baltyk.poly
        name: ../../../polygon/baltyk.poly
        number of polygons: 1
        use [true/false]: T
@@ -125,20 +125,20 @@ warning: -M no method was set assuming 1D
     auto   60.0000  300.0000     0.000 -303.975E+00 
   joze_a   52.0000   21.0000   110.000 -303.975E+00 
   balt_a   57.0000   21.0000     0.000 -303.975E+00 
-Execution time:   0.0s (proc time:   0.0 |%142.9)
+Execution time:   0.0s (proc time:   0.0 |%  0.0)
 ########################################################################
 #                                                        polygon_check #
-#                                                     v1.0-45-gd55c4fe #
+#                                                     v1.0-48-g1971ecb #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.3 20140422 #
-#                           compiled on lidka_virt 2014-09-06 22:48:18 #
-#                                  FFLAGS = -fpic -O2 -xHost -warn all #
+#                           compiled on lidka_virt 2014-09-07 19:44:30 #
+#                                  FFLAGS = -fpic -O0 -xHost -warn all #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-06 23:39:04 (+02h UTC)
+Program started: 2014-09-07 19:44:38 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
       polygon_check -Sj,b,o,:57:22 -P ../../../polygon/baltyk.poly -V -H
@@ -153,7 +153,7 @@ Command parsing:
     :57:22
       added site(s): 1
   -P { baltyk.poly }
-    polygon file: ../../../polygon/baltyk.poly                                                                        
+    polygon file: ../../../polygon/baltyk.poly
        name: ../../../polygon/baltyk.poly
        number of polygons: 1
        use [true/false]: T

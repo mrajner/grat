@@ -1,3 +1,7 @@
+#  tfdsdf: tmp.f90
+	#  gfortran tmp.f90 -o tmp mod_data.o
+	#  ./tmp
+
 fds:gfortran
 tmp:tmp.f90 .FORCE
 	make libgrat.a NODEP="D"
@@ -11,7 +15,7 @@ fdf: all
 	grat fdfsdf -Sj -F10@SP
 
 gfortran:
-	make grat FC=gfortran
+	make mod_data.o FC=gfortran
 
 dfd: grat
 	grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
@@ -59,10 +63,12 @@ NETCDFF := -lnetcdff
 endif
 
 ifeq ($(FC),gfortran)
-FFLAGS := \
-				 -O2 -I/usr/local/netcdff_gfortran/include
-
-NETCDFF := -L /usr/local/netcdff_gfortran/lib64 -lnetcdff -I/usr/local/netcdff_gfortran/include
+FFLAGS  := -O2 -I/usr/local/netcdff_gfortran/include
+NETCDFF :=                            \
+	-L/usr/local/netcdff_gfortran/lib64 \
+	-lnetcdff                           \
+	-I/usr/local/netcdff_gfortran/include
+APPEND := gfortran
 endif
 
 FPP :=                         \
@@ -112,14 +118,11 @@ PROGSSRCS :=                  \
 						value_check.f90   \
 						polygon_check.f90
 
-OBJS            := $(SRCS:.f90=.o)
+OBJS            := $(SRCS:.f90=$(APPEND).o)
 MOD             := $(SRCS:.f90=.mod)
 PROGS_DIR       := ../bin
 PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
-
-	
-
 
 all: libgrat.a $(PROGS)
 clean:
