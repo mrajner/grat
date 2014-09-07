@@ -1443,7 +1443,7 @@ subroutine convolve(site, date)
                   date=date%date)
               enddo
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(*(en12.2), $)') val
+                '(*(en12.2)$)') val
             endif
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &

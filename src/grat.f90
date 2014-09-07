@@ -102,7 +102,7 @@ program grat
   endif
 
   if(output%header) then
-    write (output%unit, '(a8,3(x,a9)$)') "name", "lat", "lon", "h"
+    write (output%unit, '(a8,3(x,a9$))') "name", "lat", "lon", "h"
   endif
 
   if(output%header) then

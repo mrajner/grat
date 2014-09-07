@@ -19,7 +19,7 @@ module mod_site
   end type
 
   type site_info
-    character(20)            :: name
+    character(:), allocatable :: name
     real(dp)                 :: lat,lon,height
     type(more_site_heights)  :: hp, h, hrsp
     logical :: use_local_pressure=.false.
@@ -27,6 +27,7 @@ module mod_site
   end type
 
   type(site_info), allocatable, dimension(:) :: site
+
   logical :: site_height_from_model=.false.
 
   ! if using -S @LP substitute model values till this distance
