@@ -1,3 +1,4 @@
+fds:gfortran
 tmp:tmp.f90 .FORCE
 	make libgrat.a NODEP="D"
 	$(FC) $< -o $@ -L. -lgrat -I. -lnetcdff -lgrat
@@ -11,8 +12,7 @@ fdf: all
 
 gfortran:
 	make grat FC=gfortran
-g95:
-	make grat FC=g95
+
 dfd: grat
 	grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
 dgrat: grat value_check
@@ -51,17 +51,18 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 -fpic     \
-				 -O2       \
+				 -O0       \
 				 -xHost    \
 				 -warn all
 
-NETCDFf := -lnetcdff
+NETCDFF := -lnetcdff
 endif
 
 ifeq ($(FC),gfortran)
-FFLAGS :=          \
-				 -O2       
-NETCDFf := -L /usr/local/netcdff_gfortran/lib64 -lnetcdff -I/usr/local/netcdff_gfortran/include
+FFLAGS := \
+				 -O2 -I/usr/local/netcdff_gfortran/include
+
+NETCDFF := -L /usr/local/netcdff_gfortran/lib64 -lnetcdff -I/usr/local/netcdff_gfortran/include
 endif
 
 FPP :=                         \

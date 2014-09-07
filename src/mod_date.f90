@@ -194,21 +194,26 @@ subroutine parse_date(cmd_line_entry)
     endif
 
     if (interval_unit.eq."M".or.interval_unit.eq."Y") then
+
       if (interval_unit.eq."Y") then
         step=step*12
         interval_unit="M"
       endif
+
       if (interval_unit.eq."M") then
         call more_dates &
           (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
         date(start_index)%date=start
         date(start_index)%mjd=mjd(date(start_index)%date)
-        do i= start_index+1, size(date)
+
+        do i = start_index+1, size(date)
           date(i)%date=date(i-1)%date
           date(i)%date(2)=date(i-1)%date(2)+step
+
           if (date(i)%date(2).gt.12) then
             date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
             date(i)%date(2) =modulo(date(i)%date(2), 12)
+
           else if (date(i)%date(2).lt.1) then
             date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
             date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
@@ -217,6 +222,7 @@ subroutine parse_date(cmd_line_entry)
           call invmjd(date(i)%mjd, date(i)%date)
         enddo
       endif
+
     else
       if (cmd_line_entry%field(i_)%subfield(1)%name=="m" &
         .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
@@ -254,6 +260,7 @@ subroutine parse_date(cmd_line_entry)
 end subroutine
 
 ! =============================================================================
+!> Expand the array with date input
 ! =============================================================================
 subroutine more_dates (number, start_index)
   integer, intent(in)  :: number

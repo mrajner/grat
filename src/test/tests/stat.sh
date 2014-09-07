@@ -12,10 +12,13 @@ counter=0
 good=0
 bad=0
 
-while getopts "bvuid" flag ; do
+while getopts "bvuidw" flag ; do
   case $flag in 
     d)
       delete_bad_results=true
+      ;;
+    w)
+      ignore_white_spaces="-w"
       ;;
     b)
       show_failed_diffs=true
@@ -54,7 +57,7 @@ for test in t*.sh t*.f90 ; do
       continue
     }
 
-    diff $is $should_be >/dev/null && 
+    diff $is $should_be ${ignore_white_spaces:-} >/dev/null && 
     { 
       ok 
     } || 
@@ -62,7 +65,7 @@ for test in t*.sh t*.f90 ; do
 
       do_not_compare_list='com\|FF\|^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|[Ee]xecution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]'
 
-      diff -I "$do_not_compare_list"  $is $should_be -q >/dev/null && 
+      diff -I "$do_not_compare_list"  $is $should_be -q ${ignore_white_spaces:-} >/dev/null && 
       { 
         ok
       } || 

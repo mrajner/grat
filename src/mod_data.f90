@@ -19,7 +19,7 @@ module mod_data
 
     ! varname,lonname,latname,levelname,timename
     character(len=50) :: names(5) = &
-      ["z", "lon", "lat", "level", "time"]
+      [character (len=50) :: "z", "lon", "lat", "level", "time"]
 
     character(len=100) :: datanames(5)=" "
 

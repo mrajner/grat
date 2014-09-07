@@ -167,12 +167,18 @@ program value_check
             if (iok.eq.1) then
               if (j.eq.0) then
                 call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                  method=info(1)%interpolation, level=level%level(ilevel))
+                  method = info(1)%interpolation, level=level%level(ilevel))
               else
-                call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                  method=info(1)%interpolation, date=date(j)%date, level=level%level(ilevel))
+                call get_value (                  &
+                  model(ii),                      &
+                  site(i)%lat,                    &
+                  site(i)%lon,                    &
+                  val(imodel),                    &
+                  method = info(1)%interpolation, &
+                  date   = date(j)%date,          &
+                  level  = level%level(ilevel)    &
+                  )
               endif
-            else
             endif
 
             ! stop "BUG"

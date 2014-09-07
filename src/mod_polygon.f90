@@ -22,7 +22,7 @@ module mod_polygon
 
   type polygon_info
     integer :: unit
-    character(len=200), allocatable  :: name
+    character(len=200) :: name
     character(len=25) :: dataname
     type(polygon_data), dimension (:), allocatable :: polygon
     logical :: if
@@ -45,6 +45,7 @@ subroutine parse_polygon (cmd_line_entry)
   use mod_printing
   use mod_cmdline
   use mod_utilities, only: file_exists
+
   type(cmd_line_arg),intent(in):: cmd_line_entry
   integer :: i
 
@@ -54,13 +55,17 @@ subroutine parse_polygon (cmd_line_entry)
   endif
 
   allocate(polygon(size(cmd_line_entry%field)))
+
   do i=1, size(cmd_line_entry%field)
     polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+
     if(i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
       polygon(i)%name= polygon(i-1)%name
     endif
+
     polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
-    write(log%unit, form%i2), 'polygon file:' , polygon(i)%name
+    write(log%unit, form%i2), 'polygon file:' , trim(polygon(i)%name)
+
     if (file_exists((polygon(i)%name))) then
       polygon(i)%if=.true.
       if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
@@ -88,12 +93,12 @@ subroutine read_polygon (polygon)
   use mod_printing
 
   type(polygon_info) :: polygon
-  integer :: i , j , number_of_polygons , nvertex
-  character (1)  :: pm
+  integer :: i, j, number_of_polygons, nvertex
+  character (1) :: pm
 
   if (polygon%if) then
     ! polygon file
-    open (newunit = polygon%unit , action="read", file=polygon%name )
+    open (newunit = polygon%unit , action = "read", file = polygon%name )
 
     ! first get the number of polygon
     call skip_header(polygon%unit)
@@ -102,16 +107,21 @@ subroutine read_polygon (polygon)
 
     ! loop over all polygons in file
     do  i=1, number_of_polygons
+
       call skip_header(polygon%unit)
       read (polygon%unit, * ) nvertex
       allocate (polygon%polygon(i)%coords(nvertex, 2 ))
+
       call skip_header(polygon%unit)
       read (polygon%unit, * ) pm
+
       if (pm.eq."+") polygon%polygon(i)%use=.true.
       if (pm.eq."-") polygon%polygon(i)%use=.false.
+
       ! override file +|- with global given with command line
       if (polygon%pm.eq."+") polygon%polygon(i)%use=.true.
       if (polygon%pm.eq."-") polygon%polygon(i)%use=.false.
+
       do j = 1 , nvertex
         call skip_header(polygon%unit)
         ! lon lat , checks while reading
@@ -123,15 +133,19 @@ subroutine read_polygon (polygon)
           write (error_unit , form_63) "Somethings wrong with coords in polygon file"
           polygon%if=.false.
           return
+
         elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
           polygon%polygon(i)%coords(j,1) = polygon%polygon(i)%coords(j,1) + 360.
         endif
+
       enddo
     enddo
     close (polygon%unit)
+
     ! print summary to log file
     write (log%unit, form_63) "name:", trim(polygon%name)
     write (log%unit, form_63) "number of polygons:" , size (polygon%polygon)
+
     do i = 1 , size (polygon%polygon)
       if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_63) &
         "Usage overwritten with command line option", polygon%pm

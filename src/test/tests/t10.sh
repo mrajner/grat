@@ -12,8 +12,8 @@ set -o pipefail
 
 . definitions.sh
 {
-value_check -Sg:75,j,b -F${SP} -P ../../../polygon/baltyk.poly -V -H
-grat -Sg:75,j,b -F${SP} -P ../../../polygon/baltyk.poly -V -H
-polygon_check -Sj,b,o,:57:22 -P ../../../polygon/baltyk.poly -V -H
+  value_check -Sg:75,j,b -F${SP} -P ../../../polygon/baltyk.poly -V -H
+  grat -Sg:75,j,b -F${SP} -P ../../../polygon/baltyk.poly -V -H
+  polygon_check -Sj,b,o,:57:22 -P ../../../polygon/baltyk.poly -V -H
 } &> ${0/.sh/.dat}${suffix}
 
