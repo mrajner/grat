@@ -9,7 +9,7 @@ program value_check
   use mod_data
   use mod_date
   use mod_site
-  use mod_constants,  only: dp, R_air, earth
+  use mod_constants,  only: dp, R_air, earth, setnan
   use mod_polygon,    only: read_polygon, chkgon, polygon
   use mod_atmosphere, only: standard_pressure, standard_temperature, geop2geom
   use mod_utilities,  only: d2r
@@ -86,7 +86,7 @@ program value_check
           .and.                                              &
           .not.(                                             &
           model(i)%autoloadname(1:3).eq."ERA"                     &
-          .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])) &
+          .and.(any(model(i)%dataname.eq.["GP ","VT ","VSH"])) &
           )) then
 
           if (                                              &
@@ -204,7 +204,7 @@ program value_check
               rho   = any(model%name.eq."RHO") &
               )
           else
-            val (imodel) = sqrt(-1.)
+            val (imodel) = setnan()
           endif
         enddo
 

@@ -347,7 +347,7 @@ subroutine intro ( &
     then
 
     do i=1,size(cmd_line)
-      if (cmd_line(i).switch.eq."-w") then
+      if (cmd_line(i)%switch.eq."-w") then
         if ( &
           any(cmd_line(i)%field(1)%subfield(1:)%name.eq."n") &
           ) then
@@ -390,7 +390,7 @@ subroutine intro ( &
 
   if (any(cmd_line%switch.eq.'-V')) then
     do i=1,size(cmd_line)
-      if (cmd_line(i).switch.eq."-V") then
+      if (cmd_line(i)%switch.eq."-V") then
         if ( &
           any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
           .or. &
@@ -587,7 +587,7 @@ end function
 subroutine parse_moreverbose (cmd_line_entry)
   use mod_cmdline
   use mod_utilities, only: file_exists
-  type (cmd_line_arg)  :: cmd_line_entry
+  type (cmd_line_arg) :: cmd_line_entry
   integer :: i
 
   if(allocated(moreverbose)) then
@@ -622,12 +622,12 @@ subroutine parse_moreverbose (cmd_line_entry)
       endif
     endif
 
-    write (log%unit, form_62), trim(moreverbose(i)%name), &
-      "<-", dataname(moreverbose(i)%dataname)
-
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
-      moreverbose(i)%sparse=.true.
+      moreverbose(i)%sparse = .true.
     endif
+
+    write (log%unit, form_62), trim(moreverbose(i)%name), &
+      "<-", trim(dataname(moreverbose(i)%dataname)), "|sparse: ", moreverbose(i)%sparse
 
   enddo
 end subroutine

@@ -102,7 +102,7 @@ program grat
   endif
 
   if(output%header) then
-    write (output%unit, '(a8,3(x,a9$))') "name", "lat", "lon", "h"
+    write (output%unit, '(a8,3(x,a9)$)') "name", "lat", "lon", "h"
   endif
 
   if(output%header) then
@@ -213,7 +213,7 @@ program grat
             .and.                                                &
             .not.(                                               &
             model(i)%autoloadname(1:3).eq."ERA"                  &
-            .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])))) &
+            .and.(any(model(i)%dataname.eq.["GP ","VT ","VSH"])))) &
             then
 
             if (                                                      &

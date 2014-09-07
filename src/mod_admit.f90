@@ -1,6 +1,6 @@
 !> \file
 module mod_admit
-  use mod_constants, only: dp
+  use mod_constants, only: dp, setnan
 
   implicit none
   real(dp) :: default_admitance_value=-0.3
@@ -9,12 +9,11 @@ contains
 ! =============================================================================
 ! =============================================================================
 real(dp) function admit(site_, date, number)
-  use mod_cmdline, only: ind, info, admitance
+  use mod_cmdline, only: ind, info, admitance, transfer_sp
   use mod_data, only: get_value, model
   use mod_utilities, only: r2d
   use mod_atmosphere, only: standard_pressure
   use mod_site
-  use mod_cmdline, only: transfer_sp
 
   real(dp) :: val, rsp, t !, hrsp
   type(site_info) :: site_
@@ -33,8 +32,11 @@ real(dp) function admit(site_, date, number)
         exit
       endif
       if(i.eq.size(site_%lp%date)) then
-        if(first_warning) call print_warning("date not found in @LP")
-        val=sqrt(-1.)
+        if(first_warning) then
+          call print_warning("date not found in @LP")
+        endif
+
+        val = setnan()
       endif
 
     enddo

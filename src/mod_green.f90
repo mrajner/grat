@@ -324,7 +324,7 @@ subroutine green_unification ()
 
       else
         ! if @DD is negative make distance sparse
-        allocate(tmpgreen%distance((imax-imin)/-info(iinfo)%distance%denser &
+        allocate(tmpgreen%distance((imax-imin)/(-info(iinfo)%distance%denser) &
           +1+min(1,modulo(imax-imin,-info(iinfo)%distance%denser))))
         ii=0
         do j=1,imax-imin+1
@@ -510,7 +510,7 @@ subroutine convolve(site, date)
         exit
       endif
 
-      val(ind%model%sp) = sqrt(-1.)
+      val(ind%model%sp) = setnan()
       if(i.eq.size(site%lp%date)) &
         call print_warning("date not found in @LP")
     enddo
@@ -1277,9 +1277,11 @@ subroutine convolve(site, date)
 
                 endif
               endif
+
             else
-              result=sqrt(-1.)
+              result=setnan()
             endif
+
           elseif(ind%model%ewt.eq.0) then
             call print_warning("@SP is required with -M2D -G", error=.true.)
           endif
@@ -1325,9 +1327,11 @@ subroutine convolve(site, date)
 
         ! moreverbose point: -L@p
         if(ind%moreverbose%p.ne.0) then
-          if (header_p.and. output%header) then
-            if(size(green_common).gt.1) &
+          if (header_p.and.output%header) then
+
+            if(size(green_common).gt.1) then
               write(moreverbose(ind%moreverbose%p)%unit, "(a2, x$)") "i"
+            endif
 
             write(moreverbose(ind%moreverbose%p)%unit, &
               '(a8, 8a13, $)')                         &
@@ -1359,13 +1363,13 @@ subroutine convolve(site, date)
 
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               write(moreverbose(ind%moreverbose%p)%unit,         &
-                '(<size(model)>a12)', advance='no' )             &
+                '(*(a12))', advance='no' )             &
                 (trim(model(i)%dataname), i=lbound(model, 1), ubound(model, 1))
             endif
 
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(<size(iok)>(a3, i1))'),                &
+                '(*(a3, i1))'),                          &
                 ("ok", i, i =1, ubound(iok, 1))
             else
               write(moreverbose(ind%moreverbose%p)%unit, *)
@@ -1439,11 +1443,11 @@ subroutine convolve(site, date)
                   date=date%date)
               enddo
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(<size(model)>en12.2, $)') val
+                '(*(en12.2), $)') val
             endif
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(<size(iok)>(i4))'), iok
+                '(*(i4))'), iok
             else
               write(moreverbose(ind%moreverbose%p)%unit, * )
             endif

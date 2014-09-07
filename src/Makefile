@@ -1,12 +1,17 @@
+dfdsf:all
+	-value_check 
+	-value_check -F10@SP
+
+dfsd:
 #  tfdsdf: tmp.f90
 	#  gfortran tmp.f90 -o tmp mod_data.o
 	#  ./tmp
 
-fds:gfortran
-tmp:tmp.f90 .FORCE
-	make libgrat.a NODEP="D"
-	$(FC) $< -o $@ -L. -lgrat -I. -lnetcdff -lgrat
-	./$@
+#  fds:gfortran
+#  tmp:tmp.f90 .FORCE
+	#  make libgrat.a NODEP="D"
+	#  $(FC) $< -o $@ -L. -lgrat -I. -lnetcdff -lgrat
+	#  ./$@
 
 fdf: all
 	value_check -fdfsdf -Sj -F10
@@ -14,8 +19,8 @@ fdf: all
 	grat -fdfsdf -Sj -F10@SP
 	grat fdfsdf -Sj -F10@SP
 
-gfortran:
-	make mod_data.o FC=gfortran
+gfortran: 
+	make grat FC=gfortran
 
 dfd: grat
 	grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
@@ -59,6 +64,8 @@ FFLAGS :=          \
 				 -xHost    \
 				 -warn all
 
+ENABLE_PREPROCESSING = -fpp
+
 NETCDFF := -lnetcdff
 endif
 
@@ -68,11 +75,11 @@ NETCDFF :=                            \
 	-L/usr/local/netcdff_gfortran/lib64 \
 	-lnetcdff                           \
 	-I/usr/local/netcdff_gfortran/include
-APPEND := gfortran
+ENABLE_PREPROCESSING = -cpp
 endif
 
 FPP :=                         \
-	-fpp                         \
+	$(ENABLE_PREPROCESSING)      \
 	-D__FFLAGS__='"$(FFLAGS)"'   \
 	-D__CDATE__='"$(DATE)"'      \
 	-D__VERSION__='"$(VERSION)"' \
@@ -118,7 +125,7 @@ PROGSSRCS :=                  \
 						value_check.f90   \
 						polygon_check.f90
 
-OBJS            := $(SRCS:.f90=$(APPEND).o)
+OBJS            := $(SRCS:.f90=.o)
 MOD             := $(SRCS:.f90=.mod)
 PROGS_DIR       := ../bin
 PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))

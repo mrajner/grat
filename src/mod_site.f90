@@ -19,7 +19,7 @@ module mod_site
   end type
 
   type site_info
-    character(:),allocatable :: name
+    character(20)            :: name
     real(dp)                 :: lat,lon,height
     type(more_site_heights)  :: hp, h, hrsp
     logical :: use_local_pressure=.false.
@@ -83,7 +83,7 @@ subroutine parse_site(cmd_line_entry)
       read (cmd_line_entry%field(i)%subfield(2)%name, * ) site(start_index)%lat
 
       if (abs(site(start_index)%lat).gt.90.) &
-        site(start_index)%lat = sign(90.,site(start_index)%lat)
+        site(start_index)%lat = sign(90._dp,site(start_index)%lat)
       read (cmd_line_entry%field(i)%subfield(3)%name,*) site(start_index)%lon
 
       if (site(start_index)%lon.ge.360.) &
@@ -252,7 +252,7 @@ subroutine parse_GMT_like_boundaries (field)
       read (text(1:indeks_slash-1), *)  limits(i)
     else
       if (text.eq."g" ) then
-        limits=[0., 359.9999, -90, 90.]
+        limits=[0., 359.9999, -90., 90.]
       else if (text.eq."pl") then
         limits=[14.0, 24.2, 48.7, 55.]
       endif
