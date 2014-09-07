@@ -14,5 +14,5 @@ set -o pipefail
 {
 grat -F $SP -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V -L@p   -o /dev/null -q -H 
 grat -F $SP -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V -L@p:s -o /dev/null -q -H 
-} > ${0/.sh/.dat}${suffix}
+} | tee ${0/.sh/.dat}${suffix}
 

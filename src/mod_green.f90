@@ -1434,17 +1434,21 @@ subroutine convolve(site, date)
               endif
 
             endif
+
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
+
               do i=1, size(val)
-                call get_value (                          &
+                call get_value (                        &
                   model(i), r2d(lat), r2d(lon), val(i), &
                   level=1,                              &
                   method = info(igreen)%interpolation,  &
                   date=date%date)
               enddo
+
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(*(en12.2)$)') val
+                '(*(en12.2))', advance='no') val
             endif
+
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &
                 '(*(i4))'), iok
