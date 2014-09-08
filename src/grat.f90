@@ -102,7 +102,7 @@ program grat
   endif
 
   if(output%header) then
-    write (output%unit, '(a8,3(x,a9$))') "name", "lat", "lon", "h"
+    write (output%unit, '(a8,3(x,a9)$)') "name", "lat", "lon", "h"
   endif
 
   if(output%header) then
@@ -292,7 +292,7 @@ program grat
       endif
 
       write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)'), &
-        site(isite)%name,                             &
+        trim(site(isite)%name),                       &
         site(isite)%lat,                              &
         site(isite)%lon,                              &
         site(isite)%height

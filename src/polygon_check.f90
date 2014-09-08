@@ -36,7 +36,7 @@ program polygon_check
   endif
 
   do i=1 , size (site)
-    write (output%unit, '(a8,1x,2f10.5$)') site(i)%name, site(i)%lon, site(i)%lat
+    write (output%unit, '(a8,1x,2f10.5$)') trim(site(i)%name), site(i)%lon, site(i)%lat
 
     if (allocated(polygon)) then
       do j = 1 , size(polygon)

@@ -19,7 +19,7 @@ module mod_site
   end type
 
   type site_info
-    character(:), allocatable :: name
+    character(20) :: name
     real(dp)                 :: lat,lon,height
     type(more_site_heights)  :: hp, h, hrsp
     logical :: use_local_pressure=.false.
@@ -202,26 +202,32 @@ subroutine print_site_summary(site_parsing)
         "Name", "lat [deg]", "lon [deg]", "H [m]", "Hp [m]", "H* [m]", "Hrsp[m]"
 
       do j = 1,size(site)
-        write(log%unit, '(t1,a10,3f10.4)', advance="no") &
-          site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
-        if(present(site_parsing).and.site_parsing) &
-          write(output%unit, '(t6,a10,3f10.4)') &
-          site(j)%name, site(j)%lat, site(j)%lon, site(j)%height
+
+        write(log%unit, '(t1,a10,3f10.4)', advance="no")               &
+          trim(site(j)%name), site(j)%lat, site(j)%lon, site(j)%height
+
+        if(present(site_parsing).and.site_parsing)                     &
+          write(output%unit, '(t6,a10,3f10.4)')                        &
+          trim(site(j)%name), site(j)%lat, site(j)%lon, site(j)%height
+
         if (site(j)%hp%if) then
           write(log%unit, "(f10.4)", advance="no") site(j)%hp%val
         else
           write(log%unit, "(a10)", advance="no") "--"
         endif
+
         if (site(j)%h%if) then
           write(log%unit, "(f10.4)", advance="no") site(j)%h%val
         else
           write(log%unit, "(a10)", advance="no") "--"
         endif
+
         if (site(j)%hrsp%if) then
           write(log%unit, "(f10.4$)") site(j)%hrsp%val
         else
           write(log%unit, "(a10$)") "--"
         endif
+
         write(log%unit,*)
       enddo
     endif

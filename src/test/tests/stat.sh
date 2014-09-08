@@ -35,6 +35,9 @@ while getopts "bvuidw" flag ; do
   esac
 done
 
+shift $(($OPTIND-1))
+[[  $# -ge 1 ]] && test_what=($*) || test_what=(t*.sh t*.f90)
+
 ok(){
   let good++
   ${verbose:-false} && 
@@ -43,7 +46,8 @@ ok(){
   } || :
 }
 
-for test in t*.sh t*.f90 ; do
+for test in ${test_what[*]} ; do
+  [[ ! -f $test ]] && { echo $test not exist..;  continue ; }
   [[ ${test} =~ ".sh" ]]  && results=${test/.sh/.dat}
   [[ ${test} =~ ".f90" ]] && results=${test/.f90/.dat}
 

@@ -1389,7 +1389,7 @@ subroutine convolve(site, date)
 
             write(moreverbose(ind%moreverbose%p)%unit,       &
               '(a8, 6' // output%form //',2 en13.3, $)'),    &
-              site%name, site%lat, site%lon,                 &
+              trim(site%name), site%lat, site%lon,                 &
               green_common(igreen)%distance(idist), azimuth, &
               r2d(lat), r2d(lon), area, tot_area
 
@@ -1528,7 +1528,7 @@ subroutine convolve(site, date)
     if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
       "station", "npoints", "area", "area/R2", "t_area_used"
     write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)') &
-      site%name, npoints, tot_area, tot_area/earth%radius**2, tot_area_used
+      trim(site%name), npoints, tot_area, tot_area/earth%radius**2, tot_area_used
   endif
 
   ! green values : -L@g
