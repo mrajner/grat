@@ -298,9 +298,14 @@ end subroutine
 !!    (-S -11... was previously treated as two cmmand line entries, now only -?
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro ( &
-    program_calling, accepted_switches, cmdlineargs, &
-    version, cdate, fflags, compiler &
+subroutine intro (     &
+    program_calling,   &
+    accepted_switches, &
+    cmdlineargs,       &
+    version,           &
+    cdate,             &
+    fflags,            &
+    compiler           &
     )
   use mod_cmdline
   use mod_utilities, only: file_exists

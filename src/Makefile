@@ -1,6 +1,9 @@
-dfdsf:all
-	-value_check 
-	-value_check -F10@SP
+# compiler:  currently only ifort is supported
+#  FC      := ifort
+FC      := gfortran
+
+dfdsf: polygon_check
+	polygon_check -V
 
 dfsd:
 #  tfdsdf: tmp.f90
@@ -44,9 +47,6 @@ INCDIR    := /usr/local/include
 BINDIR    := /usr/local/bin
 LINKS_DIR := ~/.local/bin
 
-# compiler:  currently only ifort is supported
-FC      := ifort
-#  FC      := gfortran
 
 FC_INFO := $(shell $(FC) --version | sed -n 1p)
 HOST    := $(shell hostname)
@@ -70,7 +70,7 @@ NETCDFF := -lnetcdff
 endif
 
 ifeq ($(FC),gfortran)
-FFLAGS  := -O2 -I/usr/local/netcdff_gfortran/include
+FFLAGS  := -O0 -I/usr/local/netcdff_gfortran/include
 NETCDFF :=                            \
 	-L/usr/local/netcdff_gfortran/lib64 \
 	-lnetcdff                           \
