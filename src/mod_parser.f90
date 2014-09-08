@@ -527,7 +527,7 @@ subroutine check_arguments (program_calling)
 
   endif
 
-  do i=1, size(model)
+  do i=1, ubound(model,1)
     if (model(i)%autoload) then
       if (.not. allocated(date)) then
         call print_warning("alias_without_date", error=.true.)
@@ -931,7 +931,7 @@ subroutine get_index()
 
   integer :: i
 
-  do i = 1, size(model)
+  do i = 1, ubound(model,1)
     select case (model(i)%dataname)
     case ("SP")
       ind%model%sp = i
@@ -957,7 +957,8 @@ subroutine get_index()
       ind%model%vsh = i
     endselect
   enddo
-  do i = 1, size(moreverbose)
+
+  do i = 1, ubound(moreverbose,1)
     select case (moreverbose(i)%dataname)
     case ("p")
       ind%moreverbose%p = i
@@ -987,7 +988,8 @@ subroutine get_index()
       ind%moreverbose%v = i
     end select
   enddo
-  do i = 1, size(green)
+
+  do i = 1, ubound(green,1)
     select case (green(i)%dataname)
     case ("GE")
       ind%green%ge    = i
@@ -1015,7 +1017,8 @@ subroutine get_index()
       ind%green%gndz2 = i
     endselect
   enddo
-  do i = 1, size(polygon)
+
+  do i = 1, ubound(polygon,1)
     select case (polygon(i)%dataname)
     case ("E","")
       ! assume polygon is for elastic part
@@ -1024,6 +1027,7 @@ subroutine get_index()
       ind%polygon%n = i
     endselect
   enddo
+
 end subroutine
 
 ! =============================================================================

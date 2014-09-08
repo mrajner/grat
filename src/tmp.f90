@@ -1,7 +1,15 @@
 program a
+  
+  use mod_data
   use mod_constants
 
-  print * , "S", setnan()
+  type(file), allocatable, dimension(:) :: m
+
+  print *, size(m)
+
   
-  end program
+
+  print * , "S", setnan()
+
+end program
 

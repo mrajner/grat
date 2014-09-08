@@ -35,11 +35,11 @@ program polygon_check
 
   endif
 
-  do i=1 , size (site)
+  do i=1 , ubound(site,1)
     write (output%unit, '(a8,1x,2f10.5$)') trim(site(i)%name), site(i)%lon, site(i)%lat
 
     if (allocated(polygon)) then
-      do j = 1 , size(polygon)
+      do j = 1 , ubound(polygon,1)
         call chkgon (site(i)%lon, site(i)%lat, polygon(j), iok(j))
       enddo
       write (output%unit, '(*(i4))' ) , iok

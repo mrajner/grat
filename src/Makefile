@@ -5,16 +5,16 @@ FC      := gfortran
 dfdsf: polygon_check
 	polygon_check -V
 
-dfsd:
-#  tfdsdf: tmp.f90
-	#  gfortran tmp.f90 -o tmp mod_data.o
+ tfdsdf: tmp.f90 mod_constants.o
+	#  gfortran tmp.f90 -o tmp mod_constants.o 
 	#  ./tmp
 
 #  fds:gfortran
 #  tmp:tmp.f90 .FORCE
-	#  make libgrat.a NODEP="D"
-	#  $(FC) $< -o $@ -L. -lgrat -I. -lnetcdff -lgrat
-	#  ./$@
+dfsd:
+	make libgrat.a NODEP="D"
+	$(FC) $< -o $@ -L. -lgrat -I. -lnetcdff -lgrat
+	./$@
 
 fdf: all
 	value_check -fdfsdf -Sj -F10

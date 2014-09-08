@@ -195,7 +195,7 @@ subroutine print_site_summary(site_parsing)
   integer :: j
   logical, optional :: site_parsing
 
-  if (size(site).ge.1) then
+  if (ubound(site,1).ge.1) then
     write(log%unit, form%i2 ) "Processing:", size(site), "site(s)"
     if (size(site).le.15) then
       write(log%unit, '(t1, 3a10, 4a10)') &
@@ -467,7 +467,8 @@ subroutine gather_site_model_info()
   if (site_height_from_model.and. ind%model%h.eq.0) then
     call print_warning("site @H but not model @H was given", error=.true.)
   endif
-  do i = 1 , size(site)
+
+  do i = 1 , ubound(site,1)
     if (ind%model%hp.ne.0) then
       call get_variable(model(ind%model%hp))
       site(i)%hp%if=.true.
@@ -480,34 +481,38 @@ subroutine gather_site_model_info()
         method = info(1)%interpolation &
         )
     endif
+
     if(ind%model%h.ne.0) then
       site(i)%h%if=.true.
       call get_variable(model(ind%model%h))
-      call get_value (                      &
-        model=model(ind%model%h),         &
-        lat=site(i)%lat,                  &
-        lon=site(i)%lon,                  &
-        val=site(i)%h%val,                &
-        level=1,                          &
-        method = info(1)%interpolation    &
+      call get_value (                 &
+        model=model(ind%model%h),      &
+        lat=site(i)%lat,               &
+        lon=site(i)%lon,               &
+        val=site(i)%h%val,             &
+        level=1,                       &
+        method = info(1)%interpolation &
         )
     endif
+
     if(ind%model%hrsp.ne.0) then
       site(i)%hrsp%if=.true.
       call get_variable(model(ind%model%hrsp))
-      call get_value (                      &
-        model=model(ind%model%hrsp),      &
-        lat=site(i)%lat,                  &
-        lon=site(i)%lon,                  &
-        val=site(i)%hrsp%val,             &
-        level=1,                          &
-        method = info(1)%interpolation    &
+      call get_value (                 &
+        model=model(ind%model%hrsp),   &
+        lat=site(i)%lat,               &
+        lon=site(i)%lon,               &
+        val=site(i)%hrsp%val,          &
+        level=1,                       &
+        method = info(1)%interpolation &
         )
     endif
   enddo
+
   if (site_height_from_model) then
     site%height=site%h%val
   endif
+
   write(log%unit, form%separator)
   if(.not.log%sparse) then
     call print_site_summary()
