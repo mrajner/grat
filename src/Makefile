@@ -3,7 +3,7 @@
 FC      := gfortran
 
 dfdsf: polygon_check
-	polygon_check -V
+	polygon_check -V -S j  
 
  tfdsdf: tmp.f90 mod_constants.o
 	#  gfortran tmp.f90 -o tmp mod_constants.o 

@@ -35,6 +35,8 @@ program polygon_check
 
   endif
 
+
+  stop "S"
   do i=1 , ubound(site,1)
     write (output%unit, '(a8,1x,2f10.5$)') trim(site(i)%name), site(i)%lon, site(i)%lat
 
