@@ -238,7 +238,7 @@ program grat
             endif
           endif
 
-          if (size(date).eq.0.and.model(i)%exist) then
+          if (ubound(date,1).eq.0.and.model(i)%exist) then
             call get_variable (model(i))
           elseif (model(i)%exist) then
             call get_variable (model(i), date = date(idate)%date)
@@ -298,8 +298,8 @@ program grat
         site(isite)%height
 
       if (method(1)) then
-        do j=1, max(1,size(admitance%value(:)))
-          write (output%unit, "("// output%form // '$)'), &
+        do j=1, max(1,ubound(admitance%value(:),1))
+          write (output%unit, "("// output%form // ')' , advance = "no"), &
             admit(                                        &
             site(isite),                                  &
             date   = date(idate)%date,                    &

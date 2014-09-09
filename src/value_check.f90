@@ -41,6 +41,9 @@ program value_check
 
   allocate (val (ubound(model,1)))
 
+  ! initialize values
+  val = setnan()
+
   start=0
   if (ubound(date,1).gt.0) then
     start=1
@@ -186,6 +189,8 @@ program value_check
                   level  = level%level(ilevel)    &
                   )
               endif
+            else
+              val(imodel) = 0
             endif
 
             ! stop "BUG"

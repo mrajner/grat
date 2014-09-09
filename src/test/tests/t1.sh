@@ -24,6 +24,7 @@ for exclamation in "" "-!" ; do
     -o ${0/.sh/.dat}$((counter+0))${suffix} \
     -V ${0/.sh/.dat}$((counter+1))${suffix} \
     &> ${0/.sh/.dat}$((counter+2))${suffix}
+  wait
 
   let counter=counter+3
 
@@ -35,6 +36,7 @@ for exclamation in "" "-!" ; do
     -o ${0/.sh/.dat}$((counter+0))${suffix} \
     -V ${0/.sh/.dat}$((counter+1))${suffix} \
      &> ${0/.sh/.dat}$((counter+2))${suffix}
+  wait
 
   let counter=counter+3
 
@@ -58,6 +60,7 @@ for exclamation in "" "-!" ; do
     -o ${0/.sh/.dat}$((counter+0))${suffix}          \
     -V ${0/.sh/.dat}$((counter+1))${suffix}          \
     &> ${0/.sh/.dat}$((counter+2))${suffix}
+  wait
 
   let counter=counter+3
 

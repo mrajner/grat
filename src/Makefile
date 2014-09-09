@@ -1,13 +1,16 @@
+FC      := ifort
+#  FC      := gfortran
+#  value_chec: value_check
+	#  value_check -Sg:75,j,b -F1013.25 @ SP:@scale=100 -P ../polygon/baltyk.poly -V -H
 
-# compiler:  currently only ifort is supported
-#  FC      := ifort
-FC      := gfortran
+#  eo:  value_check
+	#  value_check -Sg:75,j,b -F1013.25@DD:@scale =100  -P ../polygon/baltyk.poly -V -H 
 
-#  dfdsf:  grat
-	#  grat -V -Sj -F10@SP -!
+eewr: grat
+	cd test/tests/ && ./t9.sh
 
-dfds:value_check
-	value_check -S j , r -F 10  -V  2>&1 | sed 's/$$/!/'
+dfds: grat 
+	grat -S j , r -F 102000@SP , 101000@RSP -M2 -BN -G@GE  -V  2>&1 | sed 's/$$/!/'
 
 
 tfdsdf: tmp.f90 mod_data.o

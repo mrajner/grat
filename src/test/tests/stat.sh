@@ -12,10 +12,13 @@ counter=0
 good=0
 bad=0
 
-while getopts "bvuidw" flag ; do
+while getopts "bvuidwV" flag ; do
   case $flag in 
     d)
       delete_bad_results=true
+      ;;
+    V)
+      vimdiff=true
       ;;
     w)
       ignore_white_spaces="-w"
@@ -82,6 +85,8 @@ for test in ${test_what[*]} ; do
           echo ---
           echo is: $is , should_be: $should_be
           colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
+
+          ${vimdiff:-false} && vimdiff $is $should_be
         }
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be

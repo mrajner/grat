@@ -1023,7 +1023,6 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   end if
 
   if (.not.model%exist.or..not.model%if) then
-    val = setnan()
     return
   endif
 
@@ -1032,6 +1031,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   if (model%autoloadname.eq."ETOPO") then
     if (lat.lt.-89.9999) lat=-89.99999
   endif
+
 
   ! check if inside model range
   if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360
