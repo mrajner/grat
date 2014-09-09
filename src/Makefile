@@ -1,9 +1,10 @@
+
 # compiler:  currently only ifort is supported
 #  FC      := ifort
 FC      := gfortran
 
 dfdsf:  value_check
-	value_check -F test/data/test_data.nc:sp   -Sj -V
+	value_check -F test/data/test_data.nc:sp   -Sj
 
 tfdsdf: tmp.f90 mod_data.o
 	#  $(FC) tmp.f90 -o tmp mod_data.o -lnetcdff -L. -lgrat
@@ -168,7 +169,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/,$@)
 
-$(PROGS_DIR)/%:%.f90 libgrat.a
+$(PROGS_DIR)/%:%.f90 libgrat.a $(FC)lib
 	$(FC) $(FFLAGS) $(FPP)          \
 	$< -o $@ -L. -lgrat $(NETCDFF)
 
@@ -219,3 +220,7 @@ install-doc: doc
 	cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 
 
+ifortlib:
+	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-fortran/fortran/libnetcdff.so.6 .
+gfortranlib:
+	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6 .

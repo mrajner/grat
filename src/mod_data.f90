@@ -34,12 +34,12 @@ module mod_data
 
     real (dp), dimension(2) :: latrange, lonrange, varrange
 
-    logical :: if_constant_value
+    logical :: if_constant_value = .false.
     real(dp):: constant_value
 
     real(dp), allocatable, dimension(:,:,:) :: data
 
-    integer :: ncid
+    integer :: ncid = 0
     logical :: huge     = .false.
     logical :: autoload = .false.
     logical :: exist    = .false.
@@ -613,7 +613,7 @@ subroutine get_dimension (model, i, print)
       model%latrange =[model%lat(1), model%lat(size(model%lat)) ]
     endif
 
-  else if (i.eq.2 ) then
+  else if (i.eq.2) then
     allocate(model%lon(length))
     call nc_error (nf90_get_var (model%ncid,  varid, model%lon))
 
