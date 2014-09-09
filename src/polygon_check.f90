@@ -12,14 +12,14 @@ program polygon_check
   integer(2) :: i , j
   integer(2) , allocatable , dimension (:) :: iok
 
-  call intro  (                          &
-    program_calling   = "polygon_check", &
-    accepted_switches = "VfABLPoShvIiR", &
-    version           = __VERSION__,     &
-    cdate             = __CDATE__,       &
-    fflags            = __FFLAGS__,      &
-    compiler          = __COMPILER__,    &
-    cmdlineargs       = .true.           &
+  call intro  (                           &
+    program_calling   = "polygon_check",  &
+    accepted_switches = "VfABLPoShvIiRw", &
+    version           = __VERSION__,      &
+    cdate             = __CDATE__,        &
+    fflags            = __FFLAGS__,       &
+    compiler          = __COMPILER__,     &
+    cmdlineargs       = .true.            &
     )
 
   allocate(iok(size(polygon)))
@@ -35,8 +35,6 @@ program polygon_check
 
   endif
 
-
-  stop "S"
   do i=1 , ubound(site,1)
     write (output%unit, '(a8,1x,2f10.5$)') trim(site(i)%name), site(i)%lon, site(i)%lat
 

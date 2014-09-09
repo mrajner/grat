@@ -1,7 +1,8 @@
 #  ffgfdg: create_data
 	#  ./$<
 
-FC = ifort
+FC := ifort
+FC := gfortran
 
 FTPDIR = ftp\://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2
 

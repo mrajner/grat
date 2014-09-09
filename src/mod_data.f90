@@ -654,15 +654,18 @@ subroutine nctime2date (model, print)
   use netcdf
   use mod_printing
   use mod_mjd,      only: mjd, invmjd
+
   type (file)        :: model
   real(dp)           :: mjd_start, mjd_
-  integer            :: varid,i, ind(2), date (6), status
-  character (len=66) :: dummy
+  integer            :: varid, i, ind(2), date(6), status, length
+  character(:), allocatable  :: dummy
   logical, optional :: print
 
   status = nf90_inq_varid (model%ncid, model%names(5), varid)
   if (status /=nf90_noerr) return
 
+  call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
+  allocate(character(length):: dummy)
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
@@ -676,19 +679,26 @@ subroutine nctime2date (model, print)
     ! this may need (?) change for other data fields
     ! be carefull
     mjd_start =  mjd([1,1,1,0,0,0]) - 2
+
   else if (index(dummy,"hours since").eq.1) then
-    do i=1,2
-      dummy = dummy(index(dummy, ' ')+1:)
-    enddo
+    dummy = trim (dummy(len("hours since")+1:))
+
     do
       ind=[index(dummy,'-'), index(dummy,':')]
       do i=1,2
-        if (ind(i).ne.0) dummy = dummy(1:ind(i)-1)//" "//dummy(ind(i)+i:)
+        if (ind(i).ne.0) dummy = trim(dummy(1:ind(i)-1))//" "//trim(dummy(ind(i)+i:))
       enddo
       if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0) exit
     enddo
+
+    if (dummy(len(dummy)-1:) == ".0") then
+      dummy = dummy(1:len(dummy)-2)//" 0"
+    endif
+
     read(dummy,*) date
+
     mjd_start = mjd (date)
+
   else if (index(dummy,"Days since").eq.1) then
     ! this option for gldas from grace tellus
     do i=1,2

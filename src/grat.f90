@@ -94,7 +94,7 @@ program grat
     call exit (0)
   endif
 
-  if (size(date).gt.0) then
+  if (ubound(date,1).gt.0) then
     if(output%header) then
       write (output%unit, '(a12,x,a14,x)', advance = "no" ) "mjd", "date"
     endif
@@ -108,7 +108,7 @@ program grat
   if(output%header) then
 
     if (method(1)) then
-      do i=1, max(1,size(admitance%value))
+      do i=1, max(1,ubound(admitance%value,1))
         if (i.gt.1) then
           write (output%unit,'(a11,"_",i1)', advance='no'), "G1D", i
         else
@@ -187,7 +187,7 @@ program grat
     model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
   endif
 
-  do idate=start, size (date)
+  do idate=start, ubound(date,1)
     if (idate.ge.1) then
       if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
 
@@ -203,7 +203,7 @@ program grat
       endif
     endif
 
-    do i = 1, size(model)
+    do i = 1, ubound(model,1)
       if(model(i)%if) then
 
         select case (model(i)%dataname)

@@ -304,11 +304,8 @@ end function
 function file_exists(string, double_check, verbose)
   character(len=*), intent(in) :: string
   logical, intent(in), optional :: double_check, verbose
-  logical :: verbose_, double_check_
   real :: randomnumber
   logical :: file_exists
-
-  verbose_=.false.
 
   if (string =="") then
     file_exists=.false.
@@ -316,9 +313,8 @@ function file_exists(string, double_check, verbose)
   endif
   inquire(file=string, exist=file_exists)
 
-  if (present(verbose))      verbose_      = verbose
-  if (present(double_check)) double_check_ = double_check
-  if (verbose_) then
+
+  if (present(verbose).and.verbose) then
     if (file_exists) then
       write (*, '(a,a)') trim(string), " exists"
     else
@@ -326,9 +322,10 @@ function file_exists(string, double_check, verbose)
     endif
   endif
 
-  if (double_check_.and..not.file_exists) then
+  if (present(double_check).and.double_check.and..not.file_exists) then
     call random_number(randomnumber)
-    if (verbose_) then
+
+    if (present(verbose).and.verbose) then
       print '(a,a,i3,"s...")', &
         trim(string), " not exists, slepping", int(randomnumber*5+1)
     endif
@@ -336,7 +333,7 @@ function file_exists(string, double_check, verbose)
     call sleep(int(randomnumber*5+1))
     inquire(file=string, exist=file_exists)
 
-    if (verbose_) then
+    if (present(verbose).and.verbose) then
       if (file_exists) then
         print '(a,a)', trim(string), " exists (indeed)"
       else

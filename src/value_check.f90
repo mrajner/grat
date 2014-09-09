@@ -39,10 +39,10 @@ program value_check
     cmdlineargs       = .true.                 &
     )
 
-  allocate (val (size(model)))
+  allocate (val (ubound(model,1)))
 
   start=0
-  if (size(date).gt.0) then
+  if (ubound(date,1).gt.0) then
     start=1
 
     ! print header
@@ -68,7 +68,7 @@ program value_check
 
   endif
 
-  do i = 1, size(model)
+  do i = 1, ubound(model,1)
     if (output%header) then
       if (model(i)%dataname.eq."custom") then
         write (output%unit,'(a6,"@custom")', advance='no') trim(model(i)%name)
@@ -77,10 +77,11 @@ program value_check
       endif
     endif
   enddo
+
   if(output%header) write(output%unit, *)
 
-  do j = start, size(date)
-    do i = 1 , size(model)
+  do j = start, ubound(date,1)
+    do i = 1 , ubound(model,1)
       if (model(i)%if) then
         if (model(i)%autoload                                &
           .and.                                              &
@@ -136,14 +137,15 @@ program value_check
       level%level=model(1)%level
     endif
 
-    if (size(level%level).lt.1) then
+    if (ubound(level%level,1).lt.1) then
       start_level=0
     else
       start_level=1
     endif
+
     lprogress =max(size(date),1)*max(size(site),1)*max(size(level%level),1)
-    do ilevel=start_level, size(level%level)
-      do i = 1 , size(site)
+    do ilevel=start_level, ubound(level%level,1)
+      do i = 1 , ubound(site,1)
         iprogress = iprogress + 1
 
         ! add time stamp if -D option was specified
@@ -161,8 +163,10 @@ program value_check
         endif
 
         imodel = 0
-        do ii = 1 , size (model)
+        do ii = 1 , ubound (model,1)
+
           imodel = imodel + 1
+
           if (model(ii)%if.or.model(ii)%if_constant_value) then
             if (iok.eq.1) then
               if (j.eq.0) then
@@ -223,9 +227,7 @@ program value_check
           write (output%unit, '(i6$)') ilevel
         endif
 
-        write (output%unit , "("//output%form//'$)') val
-
-        if (size(val).gt.0) write(output%unit,*)
+        write (output%unit , "(*("//output%form//'))') val
 
         if (.not.quiet.or.iprogress==lprogress) then
 
@@ -246,8 +248,8 @@ program value_check
   enddo
 
   if (ind%moreverbose%d.ne.0) then
-    do i=1, size(model)
-      do j=1, size(model(i)%time)
+    do i=1, ubound(model,1)
+      do j=1, ubound(model(i)%time,1)
         write (moreverbose(ind%moreverbose%d)%unit, '(g0,1x,i4,5i2.2)') &
           model(i)%time(j), model(i)%date(j,:)
       enddo

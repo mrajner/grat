@@ -49,7 +49,7 @@ subroutine parse_site(cmd_line_entry)
     return
   endif
 
-  do i = 1, size(cmd_line_entry%field)
+  do i = 1, ubound(cmd_line_entry%field,1)
     if (.not.log%sparse) write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
 
     if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
@@ -79,6 +79,7 @@ subroutine parse_site(cmd_line_entry)
       .and. is_numeric(cmd_line_entry%field(i)%subfield(2)%name) &
       .and. is_numeric(cmd_line_entry%field(i)%subfield(3)%name) &
       ) then
+
       call more_sites (1,start_index)
       site(start_index)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
       read (cmd_line_entry%field(i)%subfield(2)%name, * ) site(start_index)%lat
@@ -246,15 +247,17 @@ subroutine parse_GMT_like_boundaries (field)
   real(dp) :: limits (4), resolution (2)
   real(dp) :: range_lon, range_lat, lat, lon
   integer :: i, ii, indeks_slash
-  character(:),allocatable :: text
+  character(:), allocatable :: text
   integer :: n_lon, n_lat, start_index
 
   resolution =[1,1]
   text = field%subfield(1)%name
 
-  do i=1,4
+  do i = 1, 4
     indeks_slash=index(text,"/")
+
     if (indeks_slash.eq.0) indeks_slash=len(text)+1
+
     if (is_numeric (text(1:indeks_slash-1))) then
       read (text(1:indeks_slash-1), *)  limits(i)
     else
@@ -265,7 +268,7 @@ subroutine parse_GMT_like_boundaries (field)
       endif
       exit
     endif
-    text=text(index(text,"/")+1:)
+    text = text(index(text,"/")+1:)
   enddo
 
   do i = 1, 2

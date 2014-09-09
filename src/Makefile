@@ -2,19 +2,13 @@
 #  FC      := ifort
 FC      := gfortran
 
-dfdsf: polygon_check
-	polygon_check -V -S j  
+dfdsf:  value_check
+	value_check -F test/data/test_data.nc:sp   -Sj -V
 
- tfdsdf: tmp.f90 mod_constants.o
-	#  gfortran tmp.f90 -o tmp mod_constants.o 
+tfdsdf: tmp.f90 mod_data.o
+	#  $(FC) tmp.f90 -o tmp mod_data.o -lnetcdff -L. -lgrat
 	#  ./tmp
 
-#  fds:gfortran
-#  tmp:tmp.f90 .FORCE
-dfsd:
-	make libgrat.a NODEP="D"
-	$(FC) $< -o $@ -L. -lgrat -I. -lnetcdff -lgrat
-	./$@
 
 fdf: all
 	value_check -fdfsdf -Sj -F10
@@ -27,6 +21,7 @@ gfortran:
 
 dfd: grat
 	grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
+
 dgrat: grat value_check
 	grat -S o      \
 		-M1,2        \
@@ -57,25 +52,27 @@ VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 
 LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
+# ifort settings
 ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 -fpic     \
 				 -O0       \
 				 -xHost    \
-				 -warn all
+				 -warn all \
+				 -I /home/mrajner/src/netcdf-fortran/fortran \
+				 -L/home/mrajner/src/netcdf-fortran/fortran 
 
 ENABLE_PREPROCESSING = -fpp
-
-NETCDFF := -lnetcdff
+NETCDFF = -lnetcdff
 endif
 
+# gfortran settings
 ifeq ($(FC),gfortran)
-FFLAGS  := -O0 -I/usr/local/netcdff_gfortran/include
-NETCDFF :=                            \
-	-L/usr/local/netcdff_gfortran/lib64 \
-	-lnetcdff                           \
-	-I/usr/local/netcdff_gfortran/include
+FFLAGS  := -O0 \
+				 -I/home/mrajner/src/netcdf-gfortran/fortran \
+				 -L/home/mrajner/src/netcdf-gfortran/fortran 
 ENABLE_PREPROCESSING = -cpp
+NETCDFF = -lnetcdff
 endif
 
 FPP :=                         \

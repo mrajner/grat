@@ -2,7 +2,7 @@ program createdata
   use netcdf
   use mod_data, only: nc_error
   use mod_utilities, only: d2r, celcius_to_kelvin
-  use mod_constants, only: dp
+  use mod_constants, only: dp, setnan
 
   implicit none
 
@@ -117,7 +117,7 @@ program createdata
   call system("ncdump -h data/test_data.nc ")
   ! call system("ls -lh data/test_data.nc ")
 
-  print *, int(sqrt(-1.))
+  print *, int(setnan())
   stop "S"
 
 end program
