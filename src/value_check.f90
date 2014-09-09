@@ -57,14 +57,16 @@ program value_check
   if (output%header.and.ubound(site,1).gt.0) then
 
     if (.not.output%prune) then
-      write (output%unit, '(a8,2a10$)') "name", "lat", "lon"
+      write (output%unit, '(a8,2(a10))' , advance = "no") "name", "lat", "lon"
+
       if (output%height) then
-        write (output%unit, '(a10$)') "height"
+        write (output%unit, '(a10)', advance = "no") "height"
       endif
+
     endif
 
     if (output%level) then
-      write (output%unit, '(a6$)') "level"
+      write (output%unit, '(a6)' , advance = "no") "level"
     endif
 
   endif

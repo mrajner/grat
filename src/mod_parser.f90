@@ -109,7 +109,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
   case ('-!')
     all_huge=.true.
     write(log%unit, form%i2), 'all model as huge'
-    if (size(model).ge.1) call print_warning("put -! before -F")
+    if (ubound(model,1).ge.1) call print_warning("put -! before -F")
 
   case ("-G")
     call parse_green(cmd_line_entry)
@@ -234,9 +234,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
 
     if (len(output%name).gt.0.and. output%name.ne."") then
 
-      if (output%name == "/dev/null" ) then
-        inquire(file = output%name, opened = file_already_opened, number = i)
-      endif
+      inquire(file = output%name, opened = file_already_opened, number = i)
 
       if (file_already_opened) then
         output%unit = i
@@ -326,9 +324,11 @@ subroutine intro (     &
   character(len=*), intent (in), optional :: accepted_switches
   logical, intent (in), optional :: cmdlineargs
   character(*), intent (in), optional :: version, cdate, fflags, compiler
-  integer :: i
+  integer :: i, j
   character(len=355) :: dummy
   integer,dimension(8):: execution_date
+
+  logical :: file_already_opened
 
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
     call print_warning("args", program_calling=program_calling, error=.true.)
@@ -427,14 +427,23 @@ subroutine intro (     &
         if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
           log%if = .true.
           log%name=cmd_line(i)%field(1)%subfield(1)%name
+
           if(cmd_line(i)%field(1)%subfield(1)%dataname.ne."") then
             log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
           endif
+
           if (file_exists(log%name).and.log%noclobber) then
             if (.not.quiet) &
               call print_warning ("nc", more=trim(log%name), error=.true.)
           endif
-          open (newunit=log%unit, file = log%name, action='write')
+
+          inquire(file = log%name, opened = file_already_opened, number = j)
+
+          if (file_already_opened) then
+            log%unit = i
+          else
+            open (newunit = log%unit, file = log%name, action = "write" )
+          endif
         else
           log%unit=output_unit
         endif
@@ -446,7 +455,15 @@ subroutine intro (     &
     ! all additional information will go to trash
     ! Change /dev/null accordingly if your file system does not
     ! support this name
-    open (newunit=log%unit, file = "/dev/null", action = "write" )
+    inquire(file = "/dev/null", opened = file_already_opened, number = j)
+
+    if (file_already_opened) then
+      output%unit = i
+    else
+      open (newunit = log%unit, file = "/dev/null", action = "write" )
+    endif
+
+
   endif
 
   if (.not. log%sparse) then
@@ -472,6 +489,7 @@ subroutine intro (     &
   do i = 1, int(len(trim(dummy))/72)+1
     write (log%unit, '(a72)') trim(dummy(72*(i-1)+1:))
   enddo
+
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command parsing:"
 

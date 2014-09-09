@@ -47,6 +47,7 @@ module mod_printing
       nan       = .false.
     character(10) :: form="en13.3"
   end type
+
   type(output_info) :: log, output
 
 contains

@@ -3,8 +3,12 @@
 #  FC      := ifort
 FC      := gfortran
 
-dfdsf:  grat
-	grat -V -Sj -F10@SP
+#  dfdsf:  grat
+	#  grat -V -Sj -F10@SP -!
+
+dfds:value_check
+	value_check -S j , r -F 10  -V  2>&1 | sed 's/$$/!/'
+
 
 tfdsdf: tmp.f90 mod_data.o
 	#  $(FC) tmp.f90 -o tmp mod_data.o -lnetcdff -L. -lgrat
@@ -57,7 +61,7 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 -fpic     \
-				 -O2       \
+				 -O0       \
 				 -xHost    \
 				 -warn all \
 				 -I /home/mrajner/src/netcdf-fortran/fortran \
@@ -69,7 +73,7 @@ endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
-FFLAGS  := -O2 \
+FFLAGS  := -O0 \
 				 -I/home/mrajner/src/netcdf-gfortran/fortran \
 				 -L/home/mrajner/src/netcdf-gfortran/fortran
 ENABLE_PREPROCESSING = -cpp

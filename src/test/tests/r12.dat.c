@@ -1,16 +1,16 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.0-54-ge0772e1 #
+#                                                      v1.1-8-g6bc8c09 #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-08 06:02:07 #
-#                                  FFLAGS = -fpic -O0 -xHost -warn all #
+#                               compiled on lenovo 2014-09-09 15:36:36 #
+#                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-08 06:02:33 (+02h UTC)
+Program started: 2014-09-09 15:37:47 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F 1013.25 @ SP:@scale=100 -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V 
@@ -49,8 +49,8 @@ Command parsing:
 #-----------------------------------------------------------------------
     Processing: 2 site(s)
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
-    joze_a   52.0000   21.0000  110.0000        --        --        -- 
-    rysy_a   49.1794   20.0883 2499.0000        --        --        -- 
+    joze_a   52.0000   21.0000  110.0000        --        --        --
+    rysy_a   49.1794   20.0883 2499.0000        --        --        --
 #-----------------------------------------------------------------------
     name          lat          lon     distance      azimuth          lat          lon         area      totarea           GN          SP
   joze_a   52.000E+00   21.000E+00    2.500E-06    0.000E+00   52.000E+00   21.000E+00  424.714E-03  424.714E-03    0.000E+00  101.32E+03
@@ -75,20 +75,20 @@ Command parsing:
   rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -968.285E+09  101.32E+03
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.0s (proc time:   0.0 |%111.1)
+Execution time:   0.0s (proc time:   0.0 |% 16.7)
 ########################################################################
 #                                                                 grat #
-#                                                     v1.0-54-ge0772e1 #
+#                                                      v1.1-8-g6bc8c09 #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-08 06:02:07 #
-#                                  FFLAGS = -fpic -O0 -xHost -warn all #
+#                               compiled on lenovo 2014-09-09 15:36:36 #
+#                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-08 06:02:33 (+02h UTC)
+Program started: 2014-09-09 15:37:47 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F 1013.25 @ SP:@scale=100 -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V 
@@ -127,8 +127,8 @@ Command parsing:
 #-----------------------------------------------------------------------
     Processing: 2 site(s)
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
-    joze_a   52.0000   21.0000  110.0000        --        --        -- 
-    rysy_a   49.1794   20.0883 2499.0000        --        --        -- 
+    joze_a   52.0000   21.0000  110.0000        --        --        --
+    rysy_a   49.1794   20.0883 2499.0000        --        --        --
 #-----------------------------------------------------------------------
     name          lat          lon     distance      azimuth          lat          lon         area      totarea           GN 
   joze_a   52.000E+00   21.000E+00    2.500E-06  200.000E+00   52.000E+00   21.000E+00  424.714E-03    1.274E+00    0.000E+00 
@@ -141,4 +141,4 @@ Command parsing:
   rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -968.285E+09 
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.0s (proc time:   0.0 |%115.4)
+Execution time:   0.0s (proc time:   0.0 |% 16.0)

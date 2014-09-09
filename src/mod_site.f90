@@ -226,7 +226,7 @@ subroutine print_site_summary(site_parsing)
         if (site(j)%hrsp%if) then
           write(log%unit, "(f10.4$)") site(j)%hrsp%val
         else
-          write(log%unit, "(a10$)") "--"
+          write(log%unit, "(a10)", advance ="no") "--"
         endif
 
         write(log%unit,*)

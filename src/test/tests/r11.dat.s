@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                      v1.1-6-g95f7421 #
+#                                                      v1.1-8-g6bc8c09 #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 13:20:36 #
-# FFLAGS = -fpic -O0 -xHost -warn all -I /home/mrajner/src/netcdf-fort #
+#                               compiled on lenovo 2014-09-09 15:36:36 #
+#                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-09 13:21:02 (+02h UTC)
+Program started: 2014-09-09 15:37:46 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F ../data/test_data.nc @GP : gp -S 10,j , r -J 1000,100, 66
@@ -39,8 +39,8 @@ warning: something wrong with -S|-R specification. IGNORED
 #-----------------------------------------------------------------------
     Processing: 2 site(s)
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
-    joze_a   52.0000   21.0000  110.0000        --        --        -- 
-    rysy_a   49.1794   20.0883 2499.0000        --        --        -- 
+    joze_a   52.0000   21.0000  110.0000        --        --        --
+    rysy_a   49.1794   20.0883 2499.0000        --        --        --
 #-----------------------------------------------------------------------
 warning: reading whole file with levels into memory could slow down computation 
   joze_a   52.0000   21.0000   70.000E+00
@@ -50,7 +50,7 @@ warning: level not found (no warning again) test_data.nc
   rysy_a   49.1794   20.0883          NaN
   joze_a   52.0000   21.0000          NaN
   rysy_a   49.1794   20.0883          NaN
-Execution time:   0.0s (proc time:   0.0 |% 28.4)
+Execution time:   0.1s (proc time:   0.0 |% 23.3)
 #-----------------------------------------------------------------------
      out   90.0000  200.0000  100.623E+03
 warning: outside lon|lat range maybe actual range not specified in nc file 
@@ -72,17 +72,17 @@ warning: level not found (no warning again) test_data.nc
   balt_a   57.0000   21.0000   99.512E+03          NaN
 ########################################################################
 #                                                          value_check #
-#                                                      v1.1-6-g95f7421 #
+#                                                      v1.1-8-g6bc8c09 #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 13:20:36 #
-# FFLAGS = -fpic -O0 -xHost -warn all -I /home/mrajner/src/netcdf-fort #
+#                               compiled on lenovo 2014-09-09 15:36:36 #
+#                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-09 13:21:02 (+02h UTC)
+Program started: 2014-09-09 15:37:47 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -! -F ../data/test_data.nc @GP : gp -S 10,j , r -J 1000,100,
@@ -113,8 +113,8 @@ warning: something wrong with -S|-R specification. IGNORED
 #-----------------------------------------------------------------------
     Processing: 2 site(s)
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
-    joze_a   52.0000   21.0000  110.0000        --        --        -- 
-    rysy_a   49.1794   20.0883 2499.0000        --        --        -- 
+    joze_a   52.0000   21.0000  110.0000        --        --        --
+    rysy_a   49.1794   20.0883 2499.0000        --        --        --
 #-----------------------------------------------------------------------
   joze_a   52.0000   21.0000   70.000E+00
   rysy_a   49.1794   20.0883   70.000E+00
@@ -123,7 +123,7 @@ warning: level not found (no warning again) test_data.nc
   rysy_a   49.1794   20.0883          NaN
   joze_a   52.0000   21.0000          NaN
   rysy_a   49.1794   20.0883          NaN
-Execution time:   0.0s (proc time:   0.0 |% 22.1)
+Execution time:   0.1s (proc time:   0.0 |% 21.2)
 #-----------------------------------------------------------------------
      out   90.0000  200.0000  100.623E+03
 warning: outside lon|lat range maybe actual range not specified in nc file 

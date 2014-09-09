@@ -14,8 +14,8 @@ RESULTS :=     \
 	$(REAL)      \
 	$(SYNTHETIC) \
 	$(CONSTANT)  \
-	#  $(FORTRAN)   \
-	#  $(BUGS)
+	$(FORTRAN)   \
+	$(BUGS)
 
 all: $(RESULTS)
 

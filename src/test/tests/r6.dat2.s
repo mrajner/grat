@@ -1,16 +1,16 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.0-36-g2b51da8 #
+#                                                      v1.1-8-g6bc8c09 #
 ########################################################################
-#                                                           compiler:  #
-#                                                  compiled on lenovo  #
-#                                                            FFLAGS =  #
+#                              compiler: ifort (IFORT) 14.0.2 20140120 #
+#                               compiled on lenovo 2014-09-09 15:36:36 #
+#                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-04 08:02:07 (+02h UTC)
+Program started: 2014-09-09 15:37:48 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:52:
@@ -51,7 +51,7 @@ Command parsing:
 #-----------------------------------------------------------------------
     Processing: 1 site(s)
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
-      joze   52.0000   21.0000  100.0000        --        --        -- 
+      joze   52.0000   21.0000  100.0000        --        --        --
 #-----------------------------------------------------------------------
          mjd           date     name       lat       lon         h          G1D           GN 
    55927.000 20120101000000     joze   52.0000   21.0000   100.000     -297.771warning: outside lon|lat range maybe actual range not specified in nc file 
