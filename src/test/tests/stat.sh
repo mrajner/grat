@@ -85,7 +85,7 @@ for test in ${test_what[*]} ; do
         }
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be
-        ${delete_bad_results:-false} && rm -v ${interactive:-} $is
+        ${delete_bad_results:-false} && rm -v ${interactive:-} $is ${is%%.dat*}.dat.?
       }
     } 
     let counter++

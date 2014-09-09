@@ -54,7 +54,8 @@ program value_check
   endif
 
   ! print header
-  if (output%header.and.size(site).gt.0) then
+  if (output%header.and.ubound(site,1).gt.0) then
+
     if (.not.output%prune) then
       write (output%unit, '(a8,2a10$)') "name", "lat", "lon"
       if (output%height) then
@@ -242,6 +243,7 @@ program value_check
             every = quiet_step                                &
             )
         endif
+
 
       enddo
     enddo

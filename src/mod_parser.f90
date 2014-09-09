@@ -24,6 +24,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
   character(len=*), optional :: accepted_switches
   character(len=*), optional :: version
   integer(2) :: i
+  logical :: file_already_opened
 
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
@@ -188,10 +189,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
+
     if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
       output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) &
         // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
     endif
+
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
       output%tee=.true.
     endif
@@ -230,7 +233,16 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
     endif
 
     if (len(output%name).gt.0.and. output%name.ne."") then
-      open (newunit = output%unit, file = output%name, action = "write" )
+
+      if (output%name == "/dev/null" ) then
+        inquire(file = output%name, opened = file_already_opened, number = i)
+      endif
+
+      if (file_already_opened) then
+        output%unit = i
+      else
+        open (newunit = output%unit, file = output%name, action = "write" )
+      endif
     endif
 
   case ('-P')

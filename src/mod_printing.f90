@@ -196,22 +196,22 @@ subroutine progress(j, time, cpu, every)
 
   if (.not.(quiet.or.output%unit.eq.output_unit)) then
 
-    write(                                                &
-      unit=output_unit,                                   &
-      fmt="(a1,a27,                                       &
-      f5.1,a1,1x,a,f5.1,a,1x,                             &
-      a,f5.1,x,                                           &
-      a,f5.1,a1,                                          &
-      *(x,a))",                                           &
-      advance="no"                                        &
-      )                                                   &
-      char(13), bar,                                      &
-      time, timeunit, "[eta", 100.*time/j,"]",            &
-      "(proc:",cpu,                                       &
-      "| %:",cpu/time*100,")",                            &
-      trim(output%name),                                  &
-      (                                                   &
-      trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
+    write(                                                    &
+      unit=output_unit,                                       &
+      fmt="(a1,a27,                                           &
+      f5.1,a1,1x,a,f5.1,a,1x,                                 &
+      a,f5.1,x,                                               &
+      a,f5.1,a1,                                              &
+      *(x,a))",                                               &
+      advance="no"                                            &
+      )                                                       &
+      char(13), bar,                                          &
+      time, timeunit, "[eta", 100.*time/j,"]",                &
+      "(proc:",cpu,                                           &
+      "| %:",cpu/time*100,")",                                &
+      trim(output%name),                                      &
+      (                                                       &
+      trim(moreverbose(ii)%name), ii=1, ubound(moreverbose,1) &
       )
     flush(output_unit)
     if(j.eq.100) write(output_unit,*)

@@ -139,9 +139,9 @@ program grat
 
       if (result_total) then
         if (method(2)) then
-          if ( &
+          if (                                                &
             all([inverted_barometer, non_inverted_barometer]) &
-            .and. result_total_all &
+            .and. result_total_all                            &
             ) then
             write (output%unit,'(a13)',advance='no'), "G2D_t_IB"
             write (output%unit,'(a13)',advance='no'), "G2D_t_NIB"
@@ -248,7 +248,7 @@ program grat
       endif
     enddo
 
-    if (any(.not.model%exist).and..not.output%nan) cycle
+    if (any(.not.model(1:ubound(model,1))%exist).and..not.output%nan) cycle
 
     if (level%all.and..not.allocated(level%level)) then
       allocate(level%level(size(model(ind%model%gp)%level)))
@@ -283,7 +283,7 @@ program grat
     endif
 
     lprogress = max(size(date),1)*max(size(site),1)
-    do isite = 1, size(site)
+    do isite = 1, ubound(site,1)
       iprogress = iprogress + 1
 
       if (idate.gt.0) then

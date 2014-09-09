@@ -3,8 +3,8 @@
 #  FC      := ifort
 FC      := gfortran
 
-dfdsf:  value_check
-	value_check -F test/data/test_data.nc:sp   -Sj
+dfdsf:  grat
+	grat -V -Sj -F10@SP
 
 tfdsdf: tmp.f90 mod_data.o
 	#  $(FC) tmp.f90 -o tmp mod_data.o -lnetcdff -L. -lgrat
@@ -57,11 +57,11 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
 ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 -fpic     \
-				 -O0       \
+				 -O2       \
 				 -xHost    \
 				 -warn all \
 				 -I /home/mrajner/src/netcdf-fortran/fortran \
-				 -L/home/mrajner/src/netcdf-fortran/fortran 
+				 -L/home/mrajner/src/netcdf-fortran/fortran
 
 ENABLE_PREPROCESSING = -fpp
 NETCDFF = -lnetcdff
@@ -69,18 +69,18 @@ endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
-FFLAGS  := -O0 \
+FFLAGS  := -O2 \
 				 -I/home/mrajner/src/netcdf-gfortran/fortran \
-				 -L/home/mrajner/src/netcdf-gfortran/fortran 
+				 -L/home/mrajner/src/netcdf-gfortran/fortran
 ENABLE_PREPROCESSING = -cpp
 NETCDFF = -lnetcdff
 endif
 
 FPP :=                         \
 	$(ENABLE_PREPROCESSING)      \
-	-D__FFLAGS__='"$(FFLAGS)"'   \
 	-D__CDATE__='"$(DATE)"'      \
 	-D__VERSION__='"$(VERSION)"' \
+	-D__FFLAGS__='"(FFLAGS)"'   \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 bug1:
@@ -169,7 +169,13 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/,$@)
 
-$(PROGS_DIR)/%:%.f90 libgrat.a $(FC)lib
+$(PROGS_DIR)/%:%.f90 libgrat.a 
+ifeq ($(FC),ifort)
+	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-fortran/fortran/libnetcdff.so.6 .
+endif
+ifeq ($(FC),gfortran)
+	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6 .
+endif
 	$(FC) $(FFLAGS) $(FPP)          \
 	$< -o $@ -L. -lgrat $(NETCDFF)
 
@@ -220,7 +226,3 @@ install-doc: doc
 	cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 
 
-ifortlib:
-	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-fortran/fortran/libnetcdff.so.6 .
-gfortranlib:
-	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6 .
