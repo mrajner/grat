@@ -1,47 +1,33 @@
-FC      := ifort
-#  FC      := gfortran
-#  value_chec: value_check
-	#  value_check -Sg:75,j,b -F1013.25 @ SP:@scale=100 -P ../polygon/baltyk.poly -V -H
+FC := ifort
+#  FC := gfortran
+#
 
-#  eo:  value_check
-	#  value_check -Sg:75,j,b -F1013.25@DD:@scale =100  -P ../polygon/baltyk.poly -V -H 
-
-eewr: grat
-	cd test/tests/ && ./t9.sh
-
-dfds: grat 
-	grat -S j , r -F 102000@SP , 101000@RSP -M2 -BN -G@GE  -V  2>&1 | sed 's/$$/!/'
-
-
-tfdsdf: tmp.f90 mod_data.o
-	#  $(FC) tmp.f90 -o tmp mod_data.o -lnetcdff -L. -lgrat
-	#  ./tmp
-
+dfds: ../bin/grat_$(FC)
+	$< -S j \
+		 -F 102000@SP , 101000@RSP \
+		 -M2 -BN -G@GE -I-40@DD:90@AS : 30@DB -L@g
 
 fdf: all
-	value_check -fdfsdf -Sj -F10
-	value_check fdfsdf -Sj -F10
-	grat -fdfsdf -Sj -F10@SP
-	grat fdfsdf -Sj -F10@SP
+	#  value_check -fdfsdf -Sj -F10
+	#  value_check fdfsdf -Sj -F10
+	#  grat -fdfsdf -Sj -F10@SP
+	#  grat fdfsdf -Sj -F10@SP
 
-gfortran: 
-	make grat FC=gfortran
+#  dfd: grat
+	#  grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
 
-dfd: grat
-	grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
-
-dgrat: grat value_check
-	grat -S o      \
-		-M1,2        \
-		-F NCEP@SP , \
-		NCEP1 @T ,   \
-		NCEP@H,      \
-		NCEP@HP ,    \
-		NCEP @LS     \
-	-BN,I          \
-	-G@GN,@GE , @GNc      \
-	-H -I-2@DD : 0.21@DB:140@DE  -D2012  \
-	-o aa 
+#  dgrat: grat value_check
+	#  grat -S o                           \
+		#  -M1,2                             \
+		#  -F NCEP@SP ,                      \
+		#  NCEP1 @T ,                        \
+		#  NCEP@H,                           \
+		#  NCEP@HP ,                         \
+		#  NCEP @LS                          \
+	#  -BN,I                               \
+	#  -G@GN,@GE , @GNc                    \
+	#  -H -I-2@DD : 0.21@DB:140@DE  -D2012 \
+	#  -o aa 
 
 
 # user definitions
@@ -50,7 +36,6 @@ INCDIR    := /usr/local/include
 BINDIR    := /usr/local/bin
 LINKS_DIR := ~/.local/bin
 
-
 FC_INFO := $(shell $(FC) --version | sed -n 1p)
 HOST    := $(shell hostname)
 DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
@@ -58,7 +43,7 @@ DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
 VERSION := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 
-LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR).a
+LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)_$(FC).a
 
 # ifort settings
 ifeq ($(FC),ifort)
@@ -67,11 +52,12 @@ FFLAGS :=          \
 				 -O0       \
 				 -xHost    \
 				 -warn all \
-				 -I /home/mrajner/src/netcdf-fortran/fortran \
+				 -I/home/mrajner/src/netcdf-fortran/fortran \
 				 -L/home/mrajner/src/netcdf-fortran/fortran
 
 ENABLE_PREPROCESSING = -fpp
 NETCDFF = -lnetcdff
+MOD_OUT = -module
 endif
 
 # gfortran settings
@@ -81,6 +67,7 @@ FFLAGS  := -O0 \
 				 -L/home/mrajner/src/netcdf-gfortran/fortran
 ENABLE_PREPROCESSING = -cpp
 NETCDFF = -lnetcdff
+MOD_OUT = -J
 endif
 
 FPP :=                         \
@@ -90,21 +77,19 @@ FPP :=                         \
 	-D__FFLAGS__='"(FFLAGS)"'   \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-bug1:
-	grat -F 10 @SP -Sj -M1 -wn
-#  tm: value_check
-	#  time \
-		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+#  #  tm: value_check
+	#  #  time \
+		#  #  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
-#  ra: grat  value_check
-	#  time \
-		#  { grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+#  #  ra: grat  value_check
+	#  #  time \
+		#  #  { grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
 
-#  local:
-	#  file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
-	#  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
-	#  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
+#  #  local:
+	#  #  file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
+	#  #  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
+	#  #  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 SRCS      := \
 						mod_constants.f90     \
@@ -130,19 +115,20 @@ PROGSSRCS :=                  \
 						value_check.f90   \
 						polygon_check.f90
 
-OBJS            := $(SRCS:.f90=.o)
+OBJS            := $(addprefix $(FC)/,$(SRCS:.f90=.o))
 MOD             := $(SRCS:.f90=.mod)
 PROGS_DIR       := ../bin
-PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
+PROGS           := $(addsuffix _$(FC),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 
-all: libgrat.a $(PROGS)
+all: $(FC) $(FC)/libgrat.a $(PROGS)
+
 clean:
-	rm -f *.o *.mod *.a fort?????? $(PROGS_DIR)/* lib*.{a,so}
+	rm -f $(FC)/*{.o,.mod,.a,so} fort?????? $(PROGS_DIR)/*_$(FC) 
 	
 # local installation of executables
 LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-$(LINKS_DIR)/%: $(PROGS_DIR)/%
+$(LINKS_DIR)/%: $(PROGS_DIR)/%_$(FC)
 	ln -sf $(realpath $<) $@
 link: $(LINKS)
 unlink: 
@@ -169,14 +155,17 @@ $(INCDIR)/%.mod: %.mod
 $(BINDIR)/%: $(PROGS_DIR)/%
 	cp -uv $< $@
 
-%.o: %.f90
-	$(FC) $(FFLAGS) $< -c
+$(FC):
+	mkdir -pv $(FC)
+
+$(FC)/%.o: %.f90
+	$(FC) $(FFLAGS) $< -c -o $@  $(MOD_OUT) $(FC)
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
 	@make --no-print-directory $(addprefix $(PROGS_DIR)/,$@)
 
-$(PROGS_DIR)/%:%.f90 libgrat.a 
+$(PROGS_DIR)/%_$(FC):%.f90 $(FC)/libgrat.a 
 ifeq ($(FC),ifort)
 	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-fortran/fortran/libnetcdff.so.6 .
 endif
@@ -184,22 +173,22 @@ ifeq ($(FC),gfortran)
 	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6 .
 endif
 	$(FC) $(FFLAGS) $(FPP)          \
-	$< -o $@ -L. -lgrat $(NETCDFF)
+	$< -o $@ -I$(FC) -L$(FC) -lgrat $(NETCDFF)
 
-libgrat.a: libgrat$(VERSION_MAJOR).a
+$(FC)/libgrat.a: $(FC)/libgrat$(VERSION_MAJOR).a
 	ln -sf $(realpath $<) $@
 
-libgrat$(VERSION_MAJOR).a: $(OBJS)
+$(FC)/libgrat$(VERSION_MAJOR).a: $(OBJS)
 	ar rusv $@ $(OBJS)
 
 .PHONY: install 
 test: all install
 	make -C test
 
-shared_libraries: $(OBJS)
-	$(FC) -shared $(OBJS) -o libgrat$(VERSION_MAJOR).so
-install_shared)library:
-	cp -uv libgrat.so /usr/local/lib
+#  shared_libraries: $(OBJS)
+	#  $(FC) -shared $(OBJS) -o libgrat$(VERSION_MAJOR).so
+#  install_shared)library:
+	#  cp -uv libgrat.so /usr/local/lib
 
 # module dependencies
 ifndef NODEP
@@ -209,27 +198,24 @@ mod_dep.makefile: mod_dep.awk
 endif
 
 
-# help files
-HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
-HELPS=$(addprefix ../dat/, $(HELP_NAMES))
-helps: $(HELPS)
-$(HELPS): $(PROGS)
-%.hlp:
-	$(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+#  # help files
+#  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
+#  HELPS=$(addprefix ../dat/, $(HELP_NAMES))
+#  helps: $(HELPS)
+#  $(HELPS): $(PROGS)
+#  %.hlp:
+	#  $(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
 .FORCE:
-
-
-# documentation
-dochtml: doc
-	firefox ../doc/html/index.html &
-doc:
-	make -C ../doc/figures/
-	cd ../doc  &&  doxygen Doxyfile
-docpdf: doc
-	cd ../doc/latex/  &&  pdflatex -shell-escape refman
-	evince ../doc/latex/refman.pdf &
-install-doc: doc
-	cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
-
-
+#
+#  # documentation
+#  dochtml: doc
+	#  firefox ../doc/html/index.html &
+#  doc:
+	#  make -C ../doc/figures/
+	#  cd ../doc  &&  doxygen Doxyfile
+#  docpdf: doc
+	#  cd ../doc/latex/  &&  pdflatex -shell-escape refman
+	#  evince ../doc/latex/refman.pdf &
+#  install-doc: doc
+	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 

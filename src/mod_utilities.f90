@@ -59,6 +59,9 @@ subroutine spline (x, y, b, c, d, n)
   integer i, j, gap
   real(dp) ::  h
 
+
+  ! print '(5f15.5)' , x
+  ! stop
   gap = n-1
   ! check input
   if ( n < 2 ) return

@@ -281,9 +281,9 @@ subroutine green_unification ()
   integer :: i, iinfo, imin, imax, j, ii
   integer, allocatable, dimension(:):: which_green, tmp
 
-  allocate (green_common(size(info)))
-  allocate (which_green(size(info)))
-  allocate (tmp(size(green)))
+  allocate (green_common(ubound(info,1)))
+  allocate (which_green(ubound(info,1)))
+  allocate (tmp(ubound(green,1)))
 
   do iinfo=1, size(info)
 
@@ -327,6 +327,7 @@ subroutine green_unification ()
         allocate(tmpgreen%distance((imax-imin)/(-info(iinfo)%distance%denser) &
           +1+min(1,modulo(imax-imin,-info(iinfo)%distance%denser))))
         ii=0
+
         do j=1,imax-imin+1
           if (j.eq.imax-imin+1.or.modulo(j-1,info(iinfo)%distance%denser).eq.0) then
             ii=ii+1
@@ -342,9 +343,13 @@ subroutine green_unification ()
       imax = size(tmpgreen%distance) - &
         count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
 
+
       allocate(green_common(iinfo)%distance(imax-imin+1))
       green_common(iinfo)%distance =       &
         tmpgreen%distance(imin:imax)
+
+        ! print *, imax,imin, size(tmpgreen%distance), size(green_common(iinfo)%distance)
+        ! stop "D"
 
       green_common(iinfo)%distance(1) =                                  &
         (3/4.*info(iinfo)%distance%start+                                &
@@ -360,7 +365,7 @@ subroutine green_unification ()
 
       green_common(iinfo)%start=(green_common(iinfo)%distance)
 
-      do i =1, size(green_common(iinfo)%distance)
+      do i = 1, ubound(green_common(iinfo)%distance,1)
 
         green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) &
          + green_common(iinfo)%distance(i-1) ) / 2.
@@ -375,12 +380,12 @@ subroutine green_unification ()
         info(iinfo)%distance%stop
       deallocate(tmpgreen%distance)
 
-      !@DS =/ 0
     else
-      allocate(green_common(iinfo)%distance( &
-        ceiling( &
+      !@DS =/ 0
+      allocate(green_common(iinfo)%distance(                     &
+        ceiling(                                                 &
         (info(iinfo)%distance%stop - info(iinfo)%distance%start) &
-        /info(iinfo)%distance%step) &
+        /info(iinfo)%distance%step)                              &
         ))
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
@@ -403,17 +408,25 @@ subroutine green_unification ()
     allocate(green_common(iinfo)%dataname(size(green)))
 
     do i = 1,  size(green_common(iinfo)%data, 2)
-      call spline_interpolation(           &
-        green(i)%distance,                 &
-        green(i)%data,                     &
-        size(green(i)%distance),           &
-        green_common(iinfo)%distance,      &
-        green_common(iinfo)%data(:, i),    &
-        size(green_common(iinfo)%distance) &
+      ! print * , size(green_common(iinfo)%distance) ,"XXXXXX"
+      call spline_interpolation(               &
+        x = green(i)%distance,                 &
+        y = green(i)%data,                     &
+        n = size(green(i)%distance),           &
+        x_interpolated = green_common(iinfo)%distance,      &
+        y_interpolated = green_common(iinfo)%data(:, i),    &
+        n2 = size(green_common(iinfo)%distance) &
         )
+      ! print '(5f10.3)', green(i)%distance,                 &
+         ! green(i)%data,                     &
+         ! size(green(i)%distance),           &
+         ! green_common(iinfo)%distance,      &
+         ! green_common(iinfo)%data(:, i),    &
+         ! size(green_common(iinfo)%distance) 
+         ! stop "D"
 
       where(                                                                         &
-          green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
+          green_common(iinfo)%distance.gt.green(i)%distance(ubound(green(i)%distance,1)) &
           .or.green_common(iinfo)%distance.lt.green(i)%distance(1)                   &
           )
         green_common(iinfo)%data(:, i)=0
@@ -422,6 +435,7 @@ subroutine green_unification ()
       green_common(iinfo)%dataname(i) = green(i)%dataname
 
       if(green_common(iinfo)%dataname(i) == "G3D") then
+
         if (method3d_compute_reference) then
           do ii=1,size(green_common(iinfo)%data(:,i))
             green_common(iinfo)%data(ii,i) =                  &
@@ -438,6 +452,7 @@ subroutine green_unification ()
 
     enddo
   enddo
+
 end subroutine
 
 ! =============================================================================
@@ -774,6 +789,11 @@ subroutine convolve(site, date)
                         * green_common(igreen)%data(idist, ind%green%ge) &
                         * area * normalize
                     endif
+
+                    ! print * ,size(result),result(1) &
+                      ! ,"GC: ", green_common(igreen)%data(idist, ind%green%ge)
+                    ! if (isnan(result(1))) then
+                    ! endif
 
                     ! GEGdt pressure part from Guo 2004
                     if (ind%green%gegdt.ne.0) then
@@ -1378,6 +1398,7 @@ subroutine convolve(site, date)
             endif
             header_p=.false.
           endif
+
           if (                                            &
             .not.moreverbose(ind%moreverbose%p)%sparse    &
             .or.                                          &
@@ -1425,6 +1446,7 @@ subroutine convolve(site, date)
                   .or.green%dataname.eq."GNdh"             &
                   ))
               endif
+
               if (method(3)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(' // output%form //'$)'),              &
@@ -1472,9 +1494,8 @@ subroutine convolve(site, date)
     enddo
   enddo
 
-
   if (ind%green%g3d.ne.0) &
-    result(ind%green%g3d)=result(ind%green%g3d) - rsp
+    result(ind%green%g3d) = result(ind%green%g3d) - rsp
 
   ! results to output
   if (result_component) then
@@ -1543,7 +1564,7 @@ subroutine convolve(site, date)
         write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
         "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
 
-      do j=1,size(green_common(i)%distance)
+      do j = 1, size(green_common(i)%distance)
         write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, 100f14.7)'), &
           j, green_common(i)%distance(j),                                   &
           green_common(i)%start(j),                                         &

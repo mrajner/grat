@@ -9,6 +9,9 @@ set -o nounset
 
 counter=0
 
+# TODO co to
+  grat -F 10 @SP -Sj -M1 -wn
+
 # 2014.09.04
 # problem  when -D before -S
 {
@@ -43,3 +46,5 @@ value_check -F 10@SP -Sj -D 2010@~ > t_bugs.dat${counter}
 let counter++ 
 
 touch t_bugs.dat
+
+
