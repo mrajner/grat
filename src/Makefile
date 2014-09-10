@@ -1,12 +1,12 @@
 FC := ifort
-#  FC := gfortran
+FC := gfortran
 #
 #
-F= -F ./test/data/test_data.nc @SP :sp
+F= -F ./test/data/test_data.nc @SP :sp 
 
 
 fdf: tt all
-	../bin/value_check_$(FC)  -! -Sj $(F)  -D20120101:1@D , 2010 , 1999:1@D  
+	../bin/value_check_$(FC)  -! -Sj $(F)  -D20120101:1@D , 2010 , 1999:1@D   2>/dev/null
 
 tt: .FORCE
 	touch grat.f90 value_check.f90
@@ -73,7 +73,7 @@ FPP :=                         \
 	$(ENABLE_PREPROCESSING)      \
 	-D__CDATE__='"$(DATE)"'      \
 	-D__VERSION__='"$(VERSION)"' \
-	-D__FFLAGS__='"(FFLAGS)"'   \
+	-D__FFLAGS__='"$(FFLAGS)"'   \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 #  #  tm: value_check
@@ -123,7 +123,7 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 all: $(FC) $(FC)/libgrat.a $(PROGS)
 
 clean:
-	rm -f $(FC)/*{.o,.mod,.a,so} fort?????? $(PROGS_DIR)/*_$(FC) 
+	rm -fv {$(FC)/,}*{.o,.mod,.a,so} fort?????? $(PROGS_DIR)/*_$(FC) 
 	
 # local installation of executables
 LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))

@@ -665,7 +665,9 @@ subroutine nctime2date (model, print)
   if (status /=nf90_noerr) return
 
   call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
-  allocate(character(length):: dummy)
+
+  allocate(character(len=length):: dummy)
+
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
