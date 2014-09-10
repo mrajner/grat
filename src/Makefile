@@ -1,11 +1,11 @@
-FC := ifort
-#  FC := gfortran
+#  FC := ifort
+FC := gfortran
 #
 
 dfds: ../bin/grat_$(FC)
 	$< -S j \
-		 -F 102000@SP , 101000@RSP \
-		 -M2 -BN -G@GE -I-40@DD:90@AS : 30@DB -L@g
+		 -F 102000@SP , 1@LS  \
+		 -M2 -BN,I -G@GE,@GN  -I-8@DD:60@AS : 0.0@DB :0.3@DE -L@g -V
 
 fdf: all
 	#  value_check -fdfsdf -Sj -F10

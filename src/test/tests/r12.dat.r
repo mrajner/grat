@@ -1,16 +1,16 @@
 ########################################################################
 #                                                                 grat #
-#                                                      v1.1-8-g6bc8c09 #
+#                                                     v1.1-11-g274498a #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 15:36:36 #
+#                               compiled on lenovo 2014-09-10 09:13:38 #
 #                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-09 15:37:46 (+02h UTC)
+Program started: 2014-09-10 09:13:46 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F ../data/pres.sfc.2012.nc @SP :pres -M2 -G@GN -Sj, r -I-1000@DD :
@@ -28,7 +28,7 @@ Command parsing:
         Getting dim: time ..     ok
         Converting time:  hours since 1800-1-1 00:00:0.0
   -M { -M2 }
-    method was set: 2D  
+    method was set: 2D 
   -G { -G@GN }
     @GN
       merriam_green.dat GN columns: 1 2 lines: 85
@@ -79,20 +79,20 @@ Command parsing:
   rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -937.562E+09   94.51E+03
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.1s (proc time:   0.0 |% 16.5)
+Execution time:   0.0s (proc time:   0.0 |%105.3)
 ########################################################################
 #                                                                 grat #
-#                                                      v1.1-8-g6bc8c09 #
+#                                                     v1.1-11-g274498a #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 15:36:36 #
+#                               compiled on lenovo 2014-09-10 09:13:38 #
 #                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-09 15:37:47 (+02h UTC)
+Program started: 2014-09-10 09:13:46 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F ../data/pres.sfc.2012.nc @SP :pres -M2 -G@GN -Sj, r -I-1000@DD :
@@ -110,7 +110,7 @@ Command parsing:
         Getting dim: time ..     ok
         Converting time:  hours since 1800-1-1 00:00:0.0
   -M { -M2 }
-    method was set: 2D  
+    method was set: 2D 
   -G { -G@GN }
     @GN
       merriam_green.dat GN columns: 1 2 lines: 85
@@ -149,4 +149,4 @@ Command parsing:
   rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -937.562E+09 
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.1s (proc time:   0.0 |% 18.2)
+Execution time:   0.0s (proc time:   0.0 |% 95.9)

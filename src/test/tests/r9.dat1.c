@@ -1,10 +1,10 @@
-Program started: 2014-09-04 08:02:13 (+02h UTC)
+Program started: 2014-09-10 09:05:05 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -M 1,2,3 -G rajner@GN , merriam @GE -F 1013.25 @ SP:@scale=100, 1e5
  @GP , 0@LS , 0@HP , 0@H , 0@VT , 15 @ T :@offset=273.15 , 0@VSH , 10130
 0 @ RSP , 0 @HRSP -U -D m:m:210@D -Sj -BI -H -I -10@DD : 5500@HS -o t9.d
-                                            at0 :c -V t9.dat1.c : sparse
+                                          at0.c :c -V t9.dat1.c : sparse
 #-----------------------------------------------------------------------
 Command parsing:
   -M { -M1,2,3 }

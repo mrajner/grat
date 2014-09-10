@@ -78,7 +78,7 @@ for test in ${test_what[*]} ; do
       } || 
       {
 
-        tput setaf 1 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
+        tput setaf 3 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
 
         [[ ${show_failed_diffs:-} == "true" ]] && 
         {

@@ -1,16 +1,16 @@
 ########################################################################
 #                                                                 grat #
-#                                                      v1.1-9-gd6dc7fe #
+#                                                     v1.1-11-g274498a #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 18:02:24 #
+#                               compiled on lenovo 2014-09-10 09:13:38 #
 #                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-09 18:05:55 (+02h UTC)
+Program started: 2014-09-10 09:14:13 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F 1013.25 @ SP:@scale=100 -M1,2 -G rajner @GN -S joze:52:21:100
@@ -26,7 +26,7 @@ Command parsing:
       var modifier: scale 100  101.325E+03
       constant value was re-set:  101.325E+03
   -M { -M1,2 }
-    method was set: 1D 2D  
+    method was set: 1D 2D 
   -G { -Grajner@GN }
     rajner@GN
       rajner_green.dat GN columns: 1 2 lines: 85

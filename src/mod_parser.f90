@@ -171,7 +171,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
       write(log%unit, form_62, advance="no"), 'method was set:'
 
       do i=1,size(method)
-        if (method(i)) write(log%unit, '(i1,"D ",$)') i
+        if (method(i)) write(log%unit, '(i1,"D ")' , advance = "no") i
       enddo
       write(log%unit, *)
     endif

@@ -313,7 +313,7 @@ program grat
         call convolve (site(isite), date = date(idate))
       endif
 
-      write(output%unit,*)
+      write(output%unit,'("")')
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))

@@ -1,16 +1,16 @@
 ########################################################################
 #                                                                 grat #
-#                                                      v1.1-9-gd6dc7fe #
+#                                                     v1.1-11-g274498a #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 18:02:24 #
+#                               compiled on lenovo 2014-09-10 09:13:38 #
 #                                                    FFLAGS = (FFLAGS) #
 ########################################################################
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-09 18:05:47 (+02h UTC)
+Program started: 2014-09-10 09:14:06 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:52:
@@ -29,7 +29,7 @@ Command parsing:
         Getting dim: time ..     ok
         Converting time:  hours since 2012-1-1 00:00:0.0
   -M { -M1,2 }
-    method was set: 1D 2D  
+    method was set: 1D 2D 
   -G { -Grajner@GN }
     rajner@GN
       rajner_green.dat GN columns: 1 2 lines: 85
