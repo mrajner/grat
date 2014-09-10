@@ -48,7 +48,7 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)_$(FC).a
 ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 -fpic     \
-				 -O0       \
+				 -O2       \
 				 -xHost    \
 				 -warn all \
 				 -I/home/mrajner/src/netcdf-fortran/fortran \
