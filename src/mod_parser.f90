@@ -440,7 +440,7 @@ subroutine intro (     &
           inquire(file = log%name, opened = file_already_opened, number = j)
 
           if (file_already_opened) then
-            log%unit = i
+            log%unit = j
           else
             open (newunit = log%unit, file = log%name, action = "write" )
           endif
@@ -455,14 +455,8 @@ subroutine intro (     &
     ! all additional information will go to trash
     ! Change /dev/null accordingly if your file system does not
     ! support this name
-    inquire(file = "/dev/null", opened = file_already_opened, number = j)
-
-    if (file_already_opened) then
-      output%unit = i
-    else
-      open (newunit = log%unit, file = "/dev/null", action = "write" )
-    endif
-
+    ! inquire(file = "/dev/null", opened = file_already_opened, number = j)
+    open (newunit = log%unit, file = "/dev/null", action = "write" )
 
   endif
 

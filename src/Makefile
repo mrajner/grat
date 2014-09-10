@@ -1,18 +1,17 @@
-#  FC := ifort
-FC := gfortran
+FC := ifort
+#  FC := gfortran
 #
+#
+F= -F ./test/data/test_data.nc @SP :sp
 
-dfds: ../bin/grat_$(FC)
-	$< -S j \
-		 -F 102000@SP , 1@LS  \
-		 -M2 -BN,I -G@GE,@GN  -I-8@DD:60@AS : 0.0@DB :0.3@DE -L@g -V
 
-fdf: all
-	#  value_check -fdfsdf -Sj -F10
-	#  value_check fdfsdf -Sj -F10
-	#  grat -fdfsdf -Sj -F10@SP
-	#  grat fdfsdf -Sj -F10@SP
+fdf: tt all
+	../bin/value_check_$(FC)  -! -Sj $(F)  -D20120101:1@D , 2010 , 1999:1@D  
 
+tt: .FORCE
+	touch grat.f90 value_check.f90
+
+d:
 #  dfd: grat
 	#  grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
 

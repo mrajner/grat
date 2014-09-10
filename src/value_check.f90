@@ -39,6 +39,8 @@ program value_check
     cmdlineargs       = .true.                 &
     )
 
+  ! print *, log%unit, output%unit, "SSSS"
+  ! stop "XXX"
   allocate (val (ubound(model,1)))
 
   ! initialize values
@@ -129,10 +131,10 @@ program value_check
     enddo
 
     ! print only dates if no site given
-    if (j.gt.0 .and. size(site).lt.1) then
+    if (j.gt.0 .and. ubound(site,1).lt.1) then
       if (dryrun) then
         write (output%unit , '(i4.4,5(i2.2),$)') date(j)%date
-        if (j.lt.size(date)) write (output%unit , '(", ",$)')
+        ! if (j.lt.size(date)) write (output%unit , '(", ",$)')
       else
         write (output%unit , '(f10.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
       endif
@@ -176,18 +178,24 @@ program value_check
           if (model(ii)%if.or.model(ii)%if_constant_value) then
             if (iok.eq.1) then
               if (j.eq.0) then
-                call get_value (model(ii), site(i)%lat, site(i)%lon, val(imodel), &
-                  method = info(1)%interpolation, level=level%level(ilevel))
-              else
                 call get_value (                  &
                   model(ii),                      &
                   site(i)%lat,                    &
                   site(i)%lon,                    &
                   val(imodel),                    &
                   method = info(1)%interpolation, &
-                  date   = date(j)%date,          &
                   level  = level%level(ilevel)    &
                   )
+                else
+                call get_value (                  &
+                model(ii),                      &
+                site(i)%lat,                    &
+                site(i)%lon,                    &
+                val(imodel),                    &
+                method = info(1)%interpolation, &
+                date   = date(j)%date,          &
+                level  = level%level(ilevel)    &
+                )
               endif
             else
               val(imodel) = 0

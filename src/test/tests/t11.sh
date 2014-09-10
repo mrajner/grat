@@ -9,7 +9,7 @@ set -e
 set -o nounset 
 set -o pipefail
 
-. definitions.sh 
+. definitions.sh
 
 {
 
@@ -38,8 +38,9 @@ set -o pipefail
     value_check  \
       ${exclamation} \
       -F $SP ,$GP -S out : 400 :200 , b -J1000, 500
+
+    exit
   done
 
-} &> ${0/.sh/.dat}${suffix}
+} 2>${0/.sh/.dat1}${suffix} | tee  ${0/.sh/.dat}${suffix}
 
-cat ${0/.sh/.dat}${suffix}
