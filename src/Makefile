@@ -1,5 +1,5 @@
 FC := ifort
-FC := gfortran
+#  FC := gfortran
 #
 #
 F= -F ./test/data/test_data.nc @SP :sp 
@@ -48,7 +48,7 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)_$(FC).a
 ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 -fpic     \
-				 -fast       \
+				 -O3       \
 				 -xHost    \
 				 -warn all \
 				 -I/home/mrajner/src/netcdf-fortran/fortran \
