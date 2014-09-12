@@ -488,7 +488,6 @@ subroutine intro (     &
   write (log%unit, form%i0) "Command parsing:"
 
   do i=1, size(cmd_line)
-    print *,i,trim(cmd_line(i)%full)
     call parse_option(cmd_line(i), accepted_switches, version=version)
   enddo
 
