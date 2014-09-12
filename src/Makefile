@@ -6,7 +6,7 @@ F= -F ./test/data/test_data.nc @SP :sp
 
 
 fdf: tt all
-	../bin/value_check_$(FC)  -! -Sj $(F)  -D20120101:1@D , 2010 , 1999:1@D   2>/dev/null
+	../bin/value_check_$(FC) -! -Sj $(F)  -D20120101:1@D , 2010 , 1999:1@D 2>/dev/null
 
 tt: .FORCE
 	touch grat.f90 value_check.f90
@@ -35,7 +35,7 @@ INCDIR    := /usr/local/include
 BINDIR    := /usr/local/bin
 LINKS_DIR := ~/.local/bin
 
-FC_INFO := $(shell $(FC) --version | sed -n 1p)
+FC_INFO := $(shell $(FC) --version | sed -n 1p )
 HOST    := $(shell hostname)
 DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
 
@@ -69,11 +69,11 @@ NETCDFF = -lnetcdff
 MOD_OUT = -J
 endif
 
-FPP :=                         \
-	$(ENABLE_PREPROCESSING)      \
-	-D__CDATE__='"$(DATE)"'      \
-	-D__VERSION__='"$(VERSION)"' \
-	-D__FFLAGS__='"$(FFLAGS)"'   \
+FPP :=                                             \
+	$(ENABLE_PREPROCESSING)                          \
+	-D__CDATE__='"$(DATE)"'                          \
+	-D__VERSION__='"$(VERSION)"'                     \
+	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 #  #  tm: value_check
