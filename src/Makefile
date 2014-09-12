@@ -1,32 +1,22 @@
-FC := ifort
-#  FC := gfortran
+#  FC := ifort
+FC := gfortran
 #
 #
 F= -F ./test/data/test_data.nc @SP :sp 
 
 
-fdf: tt all
-	../bin/value_check_$(FC) -! -Sj $(F)  -D20120101:1@D , 2010 , 1999:1@D 2>/dev/null
-
-tt: .FORCE
-	touch grat.f90 value_check.f90
-
-d:
-#  dfd: grat
-	#  grat -o /dev/null -Sj -F10@SP -D2011:20110102 -L/dev/null@p, fdf@s
-
-#  dgrat: grat value_check
-	#  grat -S o                           \
-		#  -M1,2                             \
-		#  -F NCEP@SP ,                      \
-		#  NCEP1 @T ,                        \
-		#  NCEP@H,                           \
-		#  NCEP@HP ,                         \
-		#  NCEP @LS                          \
-	#  -BN,I                               \
-	#  -G@GN,@GE , @GNc                    \
-	#  -H -I-2@DD : 0.21@DB:140@DE  -D2012 \
-	#  -o aa 
+dgrat: grat value_check
+	../bin/grat_$(FC) -S o                           \
+		-M1,2                             \
+		-F NCEP@SP ,                      \
+		NCEP1 @T ,                        \
+		NCEP@H,                           \
+		NCEP@HP ,                         \
+		NCEP @LS                          \
+	-BN,I                               \
+	-G@GN,@GE , @GNc                    \
+	-H -I-2@DD : 0.21@DB:140@DE  -D2012 \
+	-o 
 
 
 # user definitions
@@ -34,6 +24,7 @@ LIBDIR    := /usr/local/lib
 INCDIR    := /usr/local/include
 BINDIR    := /usr/local/bin
 LINKS_DIR := ~/.local/bin
+SUFFIX    := _$(FC)
 
 FC_INFO := $(shell $(FC) --version | sed -n 1p )
 HOST    := $(shell hostname)
@@ -54,19 +45,20 @@ FFLAGS :=          \
 				 -I/home/mrajner/src/netcdf-fortran/fortran \
 				 -L/home/mrajner/src/netcdf-fortran/fortran
 
-ENABLE_PREPROCESSING = -fpp
-NETCDFF = -lnetcdff
-MOD_OUT = -module
+ENABLE_PREPROCESSING := -fpp
+NETCDFF := -lnetcdff
+MOD_OUT := -module
 endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
 FFLAGS  := -O0 \
-				 -I/home/mrajner/src/netcdf-gfortran/fortran \
-				 -L/home/mrajner/src/netcdf-gfortran/fortran
+				 -I/home/mrajner/src/netcdf-gfortran/fortran 
 ENABLE_PREPROCESSING = -cpp
-NETCDFF = -lnetcdff
+#  NETCDFF = -lnetcdff
+NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
 MOD_OUT = -J
+LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
 endif
 
 FPP :=                                             \
@@ -123,11 +115,11 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 all: $(FC) $(FC)/libgrat.a $(PROGS)
 
 clean:
-	rm -fv {$(FC)/,}*{.o,.mod,.a,so} fort?????? $(PROGS_DIR)/*_$(FC) 
+	rm -fv {$(FC)/,}*{.o,.mod,.a,so} fort??????
 	
 # local installation of executables
 LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-$(LINKS_DIR)/%: $(PROGS_DIR)/%_$(FC)
+$(LINKS_DIR)/%: $(PROGS_DIR)/%_$(FC) .FORCE
 	ln -sf $(realpath $<) $@
 link: $(LINKS)
 unlink: 
@@ -147,6 +139,7 @@ uninstall:
 
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat$(VERSION_MAJOR).a
 	cp -uv $< $@
+
 $(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
 	ln -sf $< $@
 $(INCDIR)/%.mod: %.mod
@@ -162,14 +155,14 @@ $(FC)/%.o: %.f90
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
-	@make --no-print-directory $(addprefix $(PROGS_DIR)/,$@)
+	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)_$(FC))
 
 $(PROGS_DIR)/%_$(FC):%.f90 $(FC)/libgrat.a 
 ifeq ($(FC),ifort)
-	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-fortran/fortran/libnetcdff.so.6 .
+	#  cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-fortran/fortran/libnetcdff.so.6 .
 endif
 ifeq ($(FC),gfortran)
-	cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6 .
+	#  cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6 .
 endif
 	$(FC) $(FFLAGS) $(FPP)          \
 	$< -o $@ -I$(FC) -L$(FC) -lgrat $(NETCDFF)
@@ -206,7 +199,6 @@ endif
 	#  $(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
 .FORCE:
-#
 #  # documentation
 #  dochtml: doc
 	#  firefox ../doc/html/index.html &
@@ -218,3 +210,4 @@ endif
 	#  evince ../doc/latex/refman.pdf &
 #  install-doc: doc
 	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
+.EXPORT_ALL_VARIABLES:

@@ -375,6 +375,8 @@ subroutine model_aliases(model, dryrun, year, month)
       model%names(1)="z"
       write(model%name,'(a,a)') trim(prefix),"ETOPO_zero_ocean.grd"
 
+    model%huge=.true.
+
     case default
       model%if=.false.
     endselect
@@ -765,7 +767,7 @@ function get_level_index(model, level, sucess)
 
   get_level_index=1
 
-  if (.not.present(level).or.size(model%level).le.1) then
+  if (.not.present(level).or.ubound(model%level,1).le.1) then
     if (present(sucess)) sucess=.true.
     return
   endif
@@ -891,11 +893,13 @@ subroutine get_variable(model, date, print, level)
   if(present(level)) stop '!?! look into source -- strange (not probable) execution!'
 
 
+  ! PRINT *, first_warning, "-FIRST", if_variable_use_dimension(model,1,4)
   if (if_variable_use_dimension(model,1,4))  then
     start = [1,1,1,index_time]
     if (first_warning) then
       call print_warning('reading whole file with levels into memory could slow down computation')
       first_warning=.false.
+  ! stop "D"
     endif
   else
     start = [1,1,index_time,1]
