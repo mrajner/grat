@@ -132,8 +132,8 @@ program grat
           endif
         enddo
 
-        if (inverted_barometer.and.non_inverted_barometer) then
-          write (output%unit,'(a13$)'), "GE_NIB"
+        if (inverted_barometer.and.non_inverted_barometer.and.any(green%dataname.eq."GE")) then
+          write (output%unit,'(a13)' , advance = "no"), "GE_NIB"
         endif
       endif
 
