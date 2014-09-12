@@ -117,6 +117,7 @@ program grat
       enddo
     endif
 
+
     if (method(2).or.method(3)) then
 
       if (result_component) then
@@ -300,10 +301,10 @@ program grat
       if (method(1)) then
         do j=1, max(1,ubound(admitance%value(:),1))
           write (output%unit, "("// output%form // ')' , advance = "no"), &
-            admit(                                        &
-            site(isite),                                  &
-            date   = date(idate)%date,                    &
-            number = j                                    &
+            admit(                                                        &
+            site(isite),                                                  &
+            date   = date(idate)%date,                                    &
+            number = j                                                    &
             )
         enddo
       endif

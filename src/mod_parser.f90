@@ -258,8 +258,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
       quiet_step=0
     endif
 
-    write(log%unit,form%i3) &
-      "quiet step", quiet_step
+    write(log%unit,form%i3) "quiet step", quiet_step
 
   case ('-U')
     select case (cmd_line_entry%field(1)%subfield(1)%name)
@@ -282,6 +281,10 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
 
   case ("-J")
     call parse_level(cmd_line_entry)
+
+  case ("-n")
+    write(log%unit, form%i2) "dryrun"
+    dryrun=.true.
 
   case ("--")
     call parse_long_option(cmd_line_entry, version)

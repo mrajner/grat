@@ -670,7 +670,13 @@ subroutine green_unification ()
                     level  = 1,                         &
                     method = info(igreen)%interpolation &
                     ) 
-                  ! stop "SX"
+                  ! print *, "t",                     &
+                    ! ind%model%hrsp,              &
+                    ! r2d(lat),                           &
+                    ! r2d(lon),                           &
+                    ! val(ind%model%hrsp),                &
+                    ! info(igreen)%interpolation 
+                   ! stop "SX"
                 endiF
 
                 ! get T
