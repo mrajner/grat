@@ -9,9 +9,17 @@ set -o nounset
 
 counter=0
 
+
 # TODO co to
   grat -F 10 @SP -Sj -M1 -wn
 
+  exit
+
+# 2014.09.12
+# unnecessary header output when -BI,N but no @GE
+# 59a6cb55654b458fcfc048253723ede06f0970a1
+grat -F10@SP -M2 -G@GN -BI,N -Sj -H>t_bugs.dat${counter}
+let counter++
 # 2014.09.04
 # problem  when -D before -S
 {

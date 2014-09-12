@@ -365,6 +365,8 @@ subroutine model_aliases(model, dryrun, year, month)
 
   case ("ETOPO")
     prefix="/home/mrajner/dat/etopo/"
+    model%huge=.true.
+
     select case (model%dataname)
 
     case ("LS")
@@ -375,7 +377,6 @@ subroutine model_aliases(model, dryrun, year, month)
       model%names(1)="z"
       write(model%name,'(a,a)') trim(prefix),"ETOPO_zero_ocean.grd"
 
-    model%huge=.true.
 
     case default
       model%if=.false.
@@ -772,7 +773,7 @@ function get_level_index(model, level, sucess)
     return
   endif
 
-  if (.not.if_variable_use_dimension(model,ivarname=1, idimname=4)) then
+  if (.not.if_variable_use_dimension(model, ivarname=1, idimname=4)) then
     sucess = .true.
     return
   endif
@@ -893,13 +894,11 @@ subroutine get_variable(model, date, print, level)
   if(present(level)) stop '!?! look into source -- strange (not probable) execution!'
 
 
-  ! PRINT *, first_warning, "-FIRST", if_variable_use_dimension(model,1,4)
   if (if_variable_use_dimension(model,1,4))  then
     start = [1,1,1,index_time]
     if (first_warning) then
       call print_warning('reading whole file with levels into memory could slow down computation')
       first_warning=.false.
-  ! stop "D"
     endif
   else
     start = [1,1,index_time,1]
@@ -1023,6 +1022,10 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   integer, intent(in), optional::date(6)
   logical :: success, success2, warning=.true.
 
+  ! print *, model%name
+  ! val=0
+  ! return
+  ! stop "VCV"
   if (model%if_constant_value) then
     val = model%constant_value
     return
@@ -1430,8 +1433,10 @@ function if_variable_use_dimension (model, ivarname, idimname)
   integer, intent(in) :: ivarname, idimname
   integer :: i, dimids(4), status
 
+  dimids = 0
+
   call nc_error (nf90_inq_varid(model%ncid, model%names(ivarname),i))
-  call nc_error (nf90_inquire_variable (model%ncid,i,dimids=dimids))
+  call nc_error (nf90_inquire_variable(model%ncid,i,dimids=dimids))
   status = nf90_inq_varid(model%ncid, model%names(idimname), i)
 
   if(any(dimids == i)) then

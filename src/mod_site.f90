@@ -185,7 +185,6 @@ subroutine parse_site(cmd_line_entry)
       site_height_from_model=.true.
     endif
   enddo
-
 end subroutine
 
 ! =============================================================================

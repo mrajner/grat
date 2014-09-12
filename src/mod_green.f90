@@ -500,7 +500,6 @@ subroutine green_unification ()
 
     first_reduction=.true.
 
-
     if (transfer_sp%if) then
       if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
       if (ind%model%h .eq.0) call print_warning("no @H  with -U", error=.true.)
@@ -658,19 +657,21 @@ subroutine green_unification ()
                 endif
                 old_val_rsp=val(ind%model%rsp)
 
-
                 if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                   call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
                 else
-                  call get_value (                       &
-                    model(ind%model%hrsp),               &
-                    r2d(lat),                            &
-                    r2d(lon),                            &
-                    val(ind%model%hrsp),                 &
-                    level  = 1,                          &
+                    ! print *, ind%model%hrsp
+                    ! stop "X"
+                  call get_value (                      &
+                    model(ind%model%hrsp),              &
+                    r2d(lat),                           &
+                    r2d(lon),                           &
+                    val(ind%model%hrsp),                &
+                    level  = 1,                         &
                     method = info(igreen)%interpolation &
                     ) 
-                endif
+                  ! stop "SX"
+                endiF
 
                 ! get T
                 if (ind%model%t.ne.0 &

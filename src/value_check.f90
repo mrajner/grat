@@ -4,12 +4,12 @@
 !! \author M. Rajner
 ! =============================================================================
 program value_check
-  use mod_cmdline
+  use mod_constants,  only: dp, R_air, earth, setnan
+  use mod_cmdline, only: info, quiet_step, ind, dryrun, moreverbose, quiet
   use mod_parser
   use mod_data
   use mod_date
   use mod_site
-  use mod_constants,  only: dp, R_air, earth, setnan
   use mod_polygon,    only: read_polygon, chkgon, polygon
   use mod_atmosphere, only: standard_pressure, standard_temperature, geop2geom
   use mod_utilities,  only: d2r
@@ -187,7 +187,7 @@ program value_check
                   level  = level%level(ilevel)    &
                   )
                 else
-                call get_value (                  &
+                call get_value (                &
                 model(ii),                      &
                 site(i)%lat,                    &
                 site(i)%lon,                    &

@@ -5,18 +5,33 @@ FC := gfortran
 F= -F ./test/data/test_data.nc @SP :sp 
 
 
+rgrat: grat value_check
+	../bin/grat_$(FC) -S o                \
+		-M1,2                               \
+		-F                                  \
+		NCEP@SP,                            \
+		NCEP1 @T ,                          \
+		NCEP@H,                             \
+		NCEP@HP ,                           \
+		NCEP @LS                            \
+		-BN,I                               \
+		-G@GN                               \
+		-H -I-2@DD : 0.21@DB:140@DE  -D2009 \
+		-o  
+
 dgrat: grat value_check
-	../bin/grat_$(FC) -S o                           \
+	../bin/grat_$(FC) -S o              \
 		-M1,2                             \
-		-F NCEP@SP ,                      \
+		-F                                \
+		NCEP@SP ,                         \
 		NCEP1 @T ,                        \
 		NCEP@H,                           \
 		NCEP@HP ,                         \
 		NCEP @LS                          \
 	-BN,I                               \
 	-G@GN,@GE , @GNc                    \
-	-H -I-2@DD : 0.21@DB:140@DE  -D2012 \
-	-o 
+	-H -I-2@DD : 0.21@DB:140@DE  -D2009 \
+	-o  
 
 
 # user definitions

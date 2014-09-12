@@ -64,7 +64,6 @@ real(dp) function admit(site_, date, number)
 
   endif
 
-
   ! get RSP
   if (ind%model%rsp.ne.0) then
     call get_value (                   &

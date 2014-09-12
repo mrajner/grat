@@ -6,10 +6,10 @@ module mod_parser
   implicit none
 
 contains
+
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-
 subroutine parse_option (cmd_line_entry, accepted_switches, version)
   use mod_cmdline
   use mod_site,      only: parse_site
@@ -488,6 +488,7 @@ subroutine intro (     &
   write (log%unit, form%i0) "Command parsing:"
 
   do i=1, size(cmd_line)
+    print *,i,trim(cmd_line(i)%full)
     call parse_option(cmd_line(i), accepted_switches, version=version)
   enddo
 
