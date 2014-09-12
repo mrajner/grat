@@ -1022,8 +1022,8 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   integer, intent(in), optional::date(6)
   logical :: success, success2, warning=.true.
 
-  ! print *, model%name
-  ! val=0
+  val=0
+
   ! return
   ! stop "VCV"
   if (model%if_constant_value) then

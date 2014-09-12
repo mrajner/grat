@@ -95,9 +95,11 @@ program grat
   endif
 
   if (ubound(date,1).gt.0) then
+
     if(output%header) then
       write (output%unit, '(a12,x,a14,x)', advance = "no" ) "mjd", "date"
     endif
+
     start = 1
   endif
 

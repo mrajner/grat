@@ -348,16 +348,12 @@ subroutine green_unification ()
         green(which_green(iinfo))%distance(imax)
 
       imin = count(tmpgreen%distance.le.info(iinfo)%distance%start)
-      imax = size(tmpgreen%distance) - &
-        count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
+      imax = size(tmpgreen%distance)                                 &
+        - count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
 
 
       allocate(green_common(iinfo)%distance(imax-imin+1))
-      green_common(iinfo)%distance =       &
-        tmpgreen%distance(imin:imax)
-
-      ! print *, imax,imin, size(tmpgreen%distance), size(green_common(iinfo)%distance)
-      ! stop "D"
+      green_common(iinfo)%distance = tmpgreen%distance(imin:imax)
 
       green_common(iinfo)%distance(1) =                                  &
         (3/4.*info(iinfo)%distance%start+                                &
@@ -660,8 +656,8 @@ subroutine green_unification ()
                 if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                   call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
                 else
-                    ! print *, ind%model%hrsp
-                    ! stop "X"
+                    print *, ind%model%hrsp
+                    stop "X"
                   call get_value (                      &
                     model(ind%model%hrsp),              &
                     r2d(lat),                           &

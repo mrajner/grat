@@ -7,7 +7,7 @@ F= -F ./test/data/test_data.nc @SP :sp
 
 rgrat: grat value_check
 	../bin/grat_$(FC) -S o                \
-		-M1,2                               \
+		-M1                               \
 		-F                                  \
 		NCEP@SP,                            \
 		NCEP1 @T ,                          \
@@ -17,7 +17,7 @@ rgrat: grat value_check
 		-BN,I                               \
 		-G@GN                               \
 		-H -I-2@DD : 0.21@DB:140@DE  -D2009 \
-		-o  
+		-o  -A 10000
 
 dgrat: grat value_check
 	../bin/grat_$(FC) -S o              \
@@ -72,7 +72,7 @@ FFLAGS  := -O0 \
 ENABLE_PREPROCESSING = -cpp
 #  NETCDFF = -lnetcdff
 NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
-MOD_OUT = -J
+MOD_OUT := -J
 LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
 endif
 
@@ -166,7 +166,7 @@ $(FC):
 	mkdir -pv $(FC)
 
 $(FC)/%.o: %.f90
-	$(FC) $(FFLAGS) $< -c -o $@  $(MOD_OUT) $(FC)
+	$(FC) $(FFLAGS) $< -c -o $@ $(MOD_OUT) $(FC)
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
