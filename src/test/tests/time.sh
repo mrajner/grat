@@ -9,20 +9,31 @@ shopt -s nullglob
 
 OUT=${0/.sh/.dat}
 
-cat $OUT 2>/dev/null | sed 's/$/infile/'
+touch t3.sh t2.sh
 
-  for i in t9.dat* ; do
-    egrep "^user" $i -q && 
-    {
-      line=$(echo -n " $HOSTNAME $i "
-      egrep "^(user|real)" $i | tr "\n" " "
-      echo)
+VERSION=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/-[^-]*//2' -e 3p | tr "\n" " ")
+OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 7p)
 
-      grep -q "$line" $OUT 2>/dev/null && : || 
-      {
-        echo "$line" | tee -a ${OUT}
-      }
-    } || 
-    : 
-  done 
+{      \
+  time \
+  { 
+    make t[23].dat*c
+    echo TOTAL
+  }  ; } 2>&1 \
+    | awk '
+  {
+    if(/^time.**bash/ || /^TOTAL/){
+      FILE[++i] = gensub(/(.*bash\s*)(.*\.sh [crs])(.*)/,"\\2","g",$0) 
+    }
+
+    if(/^real|^user|^sys/){
+      TIME[i][$1]=$2
+    }
+  }
+
+  END {
+  for (i=1;i<=length(FILE);i++){
+    print FILE[i] , TIME[i]["real"], TIME[i]["user"] , TIME[i]["sys"]
+  }
+}'
 
