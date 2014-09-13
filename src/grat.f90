@@ -73,7 +73,9 @@ program grat
   integer :: isite, i, idate, start, iprogress = 0, lprogress, j
   logical :: first_waning = .true.
 
-  real(dp), allocatable, dimension(:) :: monte_carlo_results
+  real(dp), allocatable, dimension(:,:) :: monte_carlo_results
+
+  real(dp), allocatable, dimension(:) :: results
 
 
   ! program starts here with time stamp
@@ -99,7 +101,6 @@ program grat
   endif
 
   if(monte_carlo) then
-    allocate(monte_carlo_results(monte_carlo_samples))
     call set_seed(10)
   endif
 
@@ -324,20 +325,23 @@ program grat
             )
 
           if(monte_carlo) then
-          do i = 1, monte_carlo_samples
 
-            monte_carlo_results(i) = admit( &
-              site(isite),                  &
-              date   = date(idate)%date,    &
-              number = j,                   &
-              randomize = .true.            &
-              )
-          enddo
+            if(allocated(monte_carlo_results)) deallocate(monte_carlo_results)
+            allocate(monte_carlo_results(monte_carlo_samples,1))
 
-          write(output%unit, "(2f8.3)" , advance = "no" ) &
-            mean(monte_carlo_results,monte_carlo_samples) , &
-            stdev(monte_carlo_results,monte_carlo_samples)
-        endif
+            do i = 1, monte_carlo_samples
+              monte_carlo_results(i,1) = admit( &
+                site(isite),                  &
+                date   = date(idate)%date,    &
+                number = j,                   &
+                randomize = .true.            &
+                )
+            enddo
+
+            write(output%unit, "(2f8.3)" , advance = "no" ) &
+              mean(monte_carlo_results,monte_carlo_samples) , &
+              stdev(monte_carlo_results,monte_carlo_samples)
+          endif
 
         enddo
       endif
@@ -346,6 +350,15 @@ program grat
       if (method(2).or.method(3)) then
         ! perform convolution
         call convolve (site(isite), date = date(idate))
+
+        if (monte_carlo) then
+          if(allocated(monte_carlo_results)) deallocate(monte_carlo_results)
+
+          call convolve (site(isite), date = date(idate), results = results)
+
+          allocate(monte_carlo_results(monte_carlo_samples,size(results)))
+          write(output%unit, '(*(f8.3))', advance ='no') results
+        endif
       endif
 
       write(output%unit,'("")')

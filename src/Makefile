@@ -6,7 +6,7 @@ F= -F ./test/data/test_data.nc @SP :sp
 
 
 rgrat: grat value_check
-	@../bin/grat_$(FC)\
+	@time ../bin/grat_$(FC)\
 		-S j                \
 		-M1,2                           \
 		-F                                  \
@@ -18,12 +18,12 @@ rgrat: grat value_check
 		NCEP@HP ,                           \
 		NCEP @LS                            \
 		-BN,I                               \
-		-G@GN,@GE                               \
+		-G@GE                               \
 		-U \
 		-H \
 		-I-2@DD : 0.21@DB:140@DE \
 		-D2009:20090102 \
-		-o : free -A 1  -m 100 -H
+		-o : free -A 1  -m 10000 -H
 	@../bin/grat_$(FC)\
 		-S j                \
 		-M1,2                           \

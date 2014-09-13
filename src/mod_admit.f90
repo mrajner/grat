@@ -87,15 +87,15 @@ real(dp) function admit(site_, date, number, randomize)
 
     ! get T
     if (ind%model%t.ne.0) then
-      call get_value (                  &
-        model  = model(ind%model%t),    &
-        lat    = site_%lat,             &
-        lon    = site_%lon,             &
-        val    = t,                     &
-        level  = 1,                     &
-        method = info(1)%interpolation, &
-        date   = date,                  &
-        randomize = randomize           &
+      call get_value (                     &
+        model     = model(ind%model%t),    &
+        lat       = site_%lat,             &
+        lon       = site_%lon,             &
+        val       = t,                     &
+        level     = 1,                     &
+        method    = info(1)%interpolation, &
+        date      = date,                  &
+        randomize = randomize              &
         )
     endif
 
@@ -113,7 +113,7 @@ real(dp) function admit(site_, date, number, randomize)
     endif
 
     ! if (ind%model%hrsp.ne.0 .and.ind%model%rsp.ne.0)  then
-    ! call get_value (                 &
+    ! call get_value (               &
     ! model=model(ind%model%hrsp),   &
     ! lat=site_%lat,                 &
     ! lon=site_%lon,                 &
@@ -122,7 +122,7 @@ real(dp) function admit(site_, date, number, randomize)
     ! method = info(1)%interpolation &
     ! )
 
-    ! rsp = standard_pressure(     &
+    ! rsp = standard_pressure(   &
     ! height=site_%height,       &
     ! h_zero=hrsp,               &
     ! p_zero=rsp,                &
