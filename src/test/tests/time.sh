@@ -9,7 +9,6 @@ shopt -s nullglob
 
 OUT=${0/.sh/.dat}
 
-touch t3.sh t2.sh
 
 VERSION=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/-[^-]*//2' -e 3p | tr "\n" " ")
 OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 7p)
@@ -17,10 +16,10 @@ OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 7p)
 {      \
   time \
   { 
-    make t[23].dat*c
+    make 
     echo TOTAL
   }  ; } 2>&1 \
-    | awk '
+    | awk -v version=$VERSION -v opt=$OPT -v date="$(date)" -v host=$HOSTNAME '
   {
     if(/^time.**bash/ || /^TOTAL/){
       FILE[++i] = gensub(/(.*bash\s*)(.*\.sh [crs])(.*)/,"\\2","g",$0) 
@@ -33,7 +32,8 @@ OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 7p)
 
   END {
   for (i=1;i<=length(FILE);i++){
-    print FILE[i] , TIME[i]["real"], TIME[i]["user"] , TIME[i]["sys"]
+    printf "%10s %10s %1i %10s %10s %10s %10s\n",
+    host, version, opt, FILE[i] , TIME[i]["real"], TIME[i]["user"] , TIME[i]["sys"]
   }
 }'
 
