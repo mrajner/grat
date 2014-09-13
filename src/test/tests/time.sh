@@ -11,7 +11,7 @@ VERSION=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/-[^-]*//2' -e 3p | tr "\n" " "
 OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 7p)
 COMPILER=$(grat -v  | grep "compiler:" | sed 's/\(^.*compiler: \)\([^[[:space:]]*\).*/\2/')
 
-cd $GS ; make clean  ; make all FFLAGS=-00 FC=ifort link ; cd - ; make clean 
+cd $GS ; make clean  ; make all FFLAGS=-O2 FC=ifort link ; make all FFLAGS=-O2 FC=ifort link ; cd - ; make clean 
 
 {      \
   time \
