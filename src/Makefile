@@ -4,7 +4,6 @@ FC := ifort
 #
 F= -F ./test/data/test_data.nc @SP :sp 
 
-
 rgrat: grat value_check
 	@time ../bin/grat_$(FC)\
 		-S j                \

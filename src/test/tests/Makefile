@@ -37,7 +37,7 @@ stat: $(RESULTS)
 %.dat.s:%.sh
 	-time { bash $< s ; }
 %.dat.r:%.sh
-	-time bash $< r
+	-time { bash $< r ; }
 %.dat.c:%.sh
 	-time { bash $< c ; }
 
