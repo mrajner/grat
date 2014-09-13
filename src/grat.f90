@@ -57,6 +57,7 @@
 !! \example grat_usage.sh
 ! ==============================================================================
 program grat
+  use lib_random
   use mod_parser,    only: intro
   use mod_data
   use mod_date
@@ -64,7 +65,7 @@ program grat
   use mod_site,      only: print_site_summary, site
   use mod_cmdline
   use mod_admit,     only: admit
-  use mod_utilities, only: Bubble_Sort
+  use mod_utilities, only: Bubble_Sort, mean, stdev
 
   implicit none
   real    :: cpu(2)
@@ -72,19 +73,22 @@ program grat
   integer :: isite, i, idate, start, iprogress = 0, lprogress, j
   logical :: first_waning = .true.
 
+  real(dp), allocatable, dimension(:) :: monte_carlo_results
+
+
   ! program starts here with time stamp
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                          &
-    program_calling   = "grat",                         &
-    version           = __VERSION__,                    &
-    cdate             = __CDATE__,                      &
-    fflags            = __FFLAGS__,                     &
-    compiler          = __COMPILER__,                   &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-", &
-    cmdlineargs       = .true.                          &
+  call intro (                                           &
+    program_calling   = "grat",                          &
+    version           = __VERSION__,                     &
+    cdate             = __CDATE__,                       &
+    fflags            = __FFLAGS__,                      &
+    compiler          = __COMPILER__,                    &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-m", &
+    cmdlineargs       = .true.                           &
     )
 
   start = 0
@@ -92,6 +96,11 @@ program grat
   if (dryrun) then
     call print_site_summary (site_parsing=.true.)
     call exit (0)
+  endif
+
+  if(monte_carlo) then
+    allocate(monte_carlo_results(monte_carlo_samples))
+    call set_seed(10)
   endif
 
   if (ubound(date,1).gt.0) then
@@ -115,6 +124,10 @@ program grat
           write (output%unit,'(a11,"_",i1)', advance='no'), "G1D", i
         else
           write (output%unit,'(a13)', advance='no'), "G1D"
+        endif
+        
+        if (monte_carlo) then
+          write (output%unit,'(2a8)', advance='no') "mean", "std"
         endif
       enddo
     endif
@@ -302,14 +315,33 @@ program grat
 
       if (method(1)) then
         do j=1, max(1,ubound(admitance%value(:),1))
+
           write (output%unit, "("// output%form // ')' , advance = "no"), &
             admit(                                                        &
             site(isite),                                                  &
             date   = date(idate)%date,                                    &
             number = j                                                    &
             )
+
+          if(monte_carlo) then
+          do i = 1, monte_carlo_samples
+
+            monte_carlo_results(i) = admit( &
+              site(isite),                  &
+              date   = date(idate)%date,    &
+              number = j,                   &
+              randomize = .true.            &
+              )
+          enddo
+
+          write(output%unit, "(2f8.3)" , advance = "no" ) &
+            mean(monte_carlo_results,monte_carlo_samples) , &
+            stdev(monte_carlo_results,monte_carlo_samples)
+        endif
+
         enddo
       endif
+
 
       if (method(2).or.method(3)) then
         ! perform convolution

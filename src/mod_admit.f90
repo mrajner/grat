@@ -1,14 +1,16 @@
 !> \file
 module mod_admit
+  use lib_random
   use mod_constants, only: dp, setnan
 
   implicit none
-  real(dp) :: default_admitance_value=-0.3
+  real(dp) :: default_admitance_value = -0.3 , admitance_randomize
 
 contains
+
 ! =============================================================================
 ! =============================================================================
-real(dp) function admit(site_, date, number)
+real(dp) function admit(site_, date, number, randomize)
   use mod_cmdline, only: ind, info, admitance, transfer_sp
   use mod_data, only: get_value, model
   use mod_utilities, only: r2d
@@ -21,7 +23,7 @@ real(dp) function admit(site_, date, number)
   integer :: i
   integer :: number
   logical, save :: first_warning=.true.
-
+  logical, intent(in), optional :: randomize
 
   if (site_%lp%if) then
 
@@ -55,7 +57,8 @@ real(dp) function admit(site_, date, number)
         val=val,                        &
         level=1,                        &
         method = info(1)%interpolation, &
-        date=date                       &
+        date=date,                      &
+        randomize=randomize             &
         )
 
     else
@@ -66,13 +69,14 @@ real(dp) function admit(site_, date, number)
 
   ! get RSP
   if (ind%model%rsp.ne.0) then
-    call get_value (                   &
-      model=model(ind%model%rsp),    &
-      lat=site_%lat,                 &
-      lon=site_%lon,                 &
-      val=rsp,                       &
-      level=1,                       &
-      method = info(1)%interpolation &
+    call get_value (                  &
+      model=model(ind%model%rsp),     &
+      lat=site_%lat,                  &
+      lon=site_%lon,                  &
+      val=rsp,                        &
+      level=1,                        &
+      method = info(1)%interpolation, &
+      randomize = randomize           &
       )
   endif
 
@@ -84,27 +88,28 @@ real(dp) function admit(site_, date, number)
     ! get T
     if (ind%model%t.ne.0) then
       call get_value (                  &
-        model=model(ind%model%t),     &
-        lat=site_%lat,                &
-        lon=site_%lon,                &
-        val=t,                        &
-        level=1,                      &
-        method=info(1)%interpolation, &
-        date=date                     &
+        model  = model(ind%model%t),    &
+        lat    = site_%lat,             &
+        lon    = site_%lon,             &
+        val    = t,                     &
+        level  = 1,                     &
+        method = info(1)%interpolation, &
+        date   = date,                  &
+        randomize = randomize           &
         )
     endif
 
     ! transfer SP
     if (site_%hp%if.and..not.isnan(val)) then
-      val = standard_pressure(                &
-        height=site_%height,                &
-        h_zero=site_%hp%val,                &
-        p_zero=val,                         &
-        method=transfer_sp%method,          &
-        temperature=t,                      &
-        use_standard_temperature            &
-        = ind%model%t.eq.0,                 &
-        nan_as_zero=.false.)
+      val = standard_pressure(                         &
+        height                   = site_%height,       &
+        h_zero                   = site_%hp%val,       &
+        p_zero                   = val,                &
+        method                   = transfer_sp%method, &
+        temperature              = t,                  &
+        use_standard_temperature = ind%model%t.eq.0,   &
+        nan_as_zero              = .false.             &
+        )
     endif
 
     ! if (ind%model%hrsp.ne.0 .and.ind%model%rsp.ne.0)  then
@@ -136,10 +141,17 @@ real(dp) function admit(site_, date, number)
 
   if (ind%model%rsp.ne.0) val = val-rsp
 
+
   if (allocated(admitance%value)) then
     admit = admitance%value(number)*1.e-2 * val
   else
     admit = default_admitance_value*1.e-2 * val
+  endif
+
+  if (present(randomize).and.randomize) then
+    call random_gau(admitance_randomize,0._dp,1._dp) 
+    admitance_randomize =admitance_randomize * admitance%value(number) * admitance%uncerteinty
+    admit = admit + admitance_randomize *1e-2*val
   endif
 
   if (first_warning) first_warning=.false.

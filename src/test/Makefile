@@ -2,7 +2,7 @@
 	#  ./$<
 
 FC := ifort
-FC := gfortran
+#  FC := gfortran
 
 FTPDIR = ftp\://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2
 
@@ -40,7 +40,7 @@ test:
 	make -C tests/
 
 create_data: create_data.f90 data
-	$(FC) $< -o $@ $(NETCDFLIB) $(GRATLIB)
+	$(FC) $< -o $@ $(NETCDFLIB) $(GRATLIB) ~/src/fortranlib/src/lib_random.f90
 
 run: create_data
 	./$< 

@@ -1,14 +1,34 @@
-#  FC := ifort
-FC := gfortran
+FC := ifort
+#  FC := gfortran
 #
 #
 F= -F ./test/data/test_data.nc @SP :sp 
 
 
 rgrat: grat value_check
-	../bin/grat_$(FC) -S o                \
-		-M1                               \
+	@../bin/grat_$(FC)\
+		-S j                \
+		-M1,2                           \
 		-F                                  \
+		VIENNA@RSP, \
+		VIENNA@HRSP, \
+		NCEP@SP,                            \
+		NCEP1 @T ,                          \
+		NCEP@H,                             \
+		NCEP@HP ,                           \
+		NCEP @LS                            \
+		-BN,I                               \
+		-G@GN,@GE                               \
+		-U \
+		-H \
+		-I-2@DD : 0.21@DB:140@DE \
+		-D2009:20090102 \
+		-o : free -A 1  -m 100 -H
+	@../bin/grat_$(FC)\
+		-S j                \
+		-M1,2                           \
+		-F                                  \
+		VIENNA@RSP, \
 		NCEP@SP,                            \
 		NCEP1 @T ,                          \
 		NCEP@H,                             \
@@ -16,8 +36,10 @@ rgrat: grat value_check
 		NCEP @LS                            \
 		-BN,I                               \
 		-G@GN                               \
-		-H -I-2@DD : 0.21@DB:140@DE  -D2009 \
-		-o  -A 10000
+		-H \
+		-I-2@DD : 0.21@DB:140@DE \
+		-D2009:20090102 \
+		-o : free -A  -H
 
 dgrat: grat value_check
 	../bin/grat_$(FC) -S o              \
@@ -152,35 +174,30 @@ uninstall:
 		$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
 		/usr/local/lib/libgrat*      
 
-$(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat$(VERSION_MAJOR).a
+$(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(FC)/libgrat$(VERSION_MAJOR).a
 	cp -uv $< $@
 
 $(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
 	ln -sf $< $@
-$(INCDIR)/%.mod: %.mod
+$(INCDIR)/%.mod: $(FC)/%.mod
 	cp -uv $< $@
-$(BINDIR)/%: $(PROGS_DIR)/%
+$(BINDIR)/%: $(PROGS_DIR)/%_$(FC)
 	cp -uv $< $@
 
 $(FC):
 	mkdir -pv $(FC)
 
 $(FC)/%.o: %.f90
-	$(FC) $(FFLAGS) $< -c -o $@ $(MOD_OUT) $(FC)
+	$(FC) $(FFLAGS) $< -c -o $@ $(MOD_OUT) $(FC) -I ~/src/fortranlib/src
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
 	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)_$(FC))
 
 $(PROGS_DIR)/%_$(FC):%.f90 $(FC)/libgrat.a 
-ifeq ($(FC),ifort)
-	#  cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-fortran/fortran/libnetcdff.so.6 .
-endif
-ifeq ($(FC),gfortran)
-	#  cd /usr/local/lib64/ && sudo ln -sf /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6 .
-endif
 	$(FC) $(FFLAGS) $(FPP)          \
-	$< -o $@ -I$(FC) -L$(FC) -lgrat $(NETCDFF)
+	$< -o $@ -I$(FC) -L$(FC) -lgrat $(NETCDFF) \
+	~/src/fortranlib/src/lib_random.f90
 
 $(FC)/libgrat.a: $(FC)/libgrat$(VERSION_MAJOR).a
 	ln -sf $(realpath $<) $@

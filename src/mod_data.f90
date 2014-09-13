@@ -1004,11 +1004,13 @@ end subroutine
 !!
 !! lat and lon in decimal degree
 ! =============================================================================
-subroutine get_value(model, lat, lon, val, level, method, date)
+subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   use mod_cmdline, only: moreverbose, ind
   use mod_utilities, only: r2d, bilinear
   use netcdf
   use mod_printing, only: print_warning
+
+  use lib_random
 
   type(file), intent (in) :: model
   real(dp) :: lat, lon
@@ -1021,6 +1023,8 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   real(dp) :: scale_factor, add_offset
   integer, intent(in), optional::date(6)
   logical :: success, success2, warning=.true.
+  real(dp) :: random_value
+  logical, intent(in), optional :: randomize
 
   val=0
 
@@ -1156,6 +1160,19 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   if (.not.success2) val = setnan()
 
+  if(present(randomize).and.randomize)then
+    call random_gau(random_value,0._dp, 1._dp)
+    select case (model%dataname)
+      case ("SP")
+      val=val+random_value * val * 0.0015
+    case ("RSP")
+      val=val+random_value * 0.0015
+    case ("T")
+      val=val+random_value * 1
+    case default
+      call print_warning (model%dataname // "randomize how?" , error=.true.)
+    end select
+  endif
 end subroutine
 
 ! =============================================================================
@@ -1214,9 +1231,9 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   integer, intent(in), optional :: date(6)
   integer(1) :: ivalls
 
-  total_area = 0
-  ocean_area = 0
-  valoceanarea    = 0
+  total_area   = 0
+  ocean_area   = 0
+  valoceanarea = 0
 
   do ilat = 1, size(model%lat)
     do ilon = 1, size(model%lon)

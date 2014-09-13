@@ -118,6 +118,13 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
     if (.not.log%sparse) write(log%unit, form%i3) 'header'
     output%header=.true.
 
+  case ("-m")
+    monte_carlo = .true.
+    if(is_numeric(cmd_line_entry%field(1)%subfield(1)%name)) then
+      read(cmd_line_entry%field(1)%subfield(1)%name, *) monte_carlo_samples
+    endif
+    write(log%unit, form%i2) "monte carlo, samples: ", monte_carlo_samples
+
   case ('-M')
     method=.false.
     do i =1, size(cmd_line_entry%field)
@@ -687,6 +694,7 @@ subroutine parse_info (cmd_line_entry)
     do i = 1, size(cmd_line_entry%field)
       write(log%unit, form%i2), "Range:", i
       call info_defaults(info(i))
+
       do j = 1, size(cmd_line_entry%field(i)%subfield)
         if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)

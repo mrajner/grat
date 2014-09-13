@@ -348,8 +348,7 @@ subroutine green_unification ()
         green(which_green(iinfo))%distance(imax)
 
       imin = count(tmpgreen%distance.le.info(iinfo)%distance%start)
-      imax = size(tmpgreen%distance)                                 &
-        - count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
+      imax = size(tmpgreen%distance) - count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
 
 
       allocate(green_common(iinfo)%distance(imax-imin+1))
@@ -413,13 +412,13 @@ subroutine green_unification ()
 
       do i = 1,  size(green_common(iinfo)%data, 2)
         call spline_interpolation(                       &
-        x = green(i)%distance,                           &
-        y = green(i)%data,                               &
-        n = size(green(i)%distance),                     &
-        x_interpolated = green_common(iinfo)%distance,   &
-        y_interpolated = green_common(iinfo)%data(:, i), &
-        n2 = size(green_common(iinfo)%distance)          &
-        )
+          x = green(i)%distance,                           &
+          y = green(i)%data,                               &
+          n = size(green(i)%distance),                     &
+          x_interpolated = green_common(iinfo)%distance,   &
+          y_interpolated = green_common(iinfo)%data(:, i), &
+          n2 = size(green_common(iinfo)%distance)          &
+          )
 
         where(                                                                         &
             green_common(iinfo)%distance.gt.green(i)%distance(ubound(green(i)%distance,1)) &
@@ -656,8 +655,8 @@ subroutine green_unification ()
                 if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                   call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
                 else
-                    print *, ind%model%hrsp
-                    stop "X"
+                  ! print *, ind%model%hrsp
+                  ! stop "X"
                   call get_value (                      &
                     model(ind%model%hrsp),              &
                     r2d(lat),                           &
@@ -667,12 +666,12 @@ subroutine green_unification ()
                     method = info(igreen)%interpolation &
                     ) 
                   ! print *, "t",                     &
-                    ! ind%model%hrsp,              &
-                    ! r2d(lat),                           &
-                    ! r2d(lon),                           &
-                    ! val(ind%model%hrsp),                &
-                    ! info(igreen)%interpolation 
-                   ! stop "SX"
+                  ! ind%model%hrsp,              &
+                  ! r2d(lat),                           &
+                  ! r2d(lon),                           &
+                  ! val(ind%model%hrsp),                &
+                  ! info(igreen)%interpolation 
+                  ! stop "SX"
                 endiF
 
                 ! get T

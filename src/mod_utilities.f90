@@ -578,12 +578,16 @@ real function mean (vec, i, nan)
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
+
   if (present(nan).and.nan) then
     mean = sum(vec, mask = .not.(isnan(vec))) / real(count(.not.isnan(vec)))
   else
     mean = sum(vec) / real(i)
   endif
 end function
+
+! ==============================================================================
+! ==============================================================================
 real function stdev (vec,i, nan)
   integer :: i
   real(dp)  :: vec(i)
