@@ -35,11 +35,11 @@ stat: $(RESULTS)
 	./$(subst .dat,,$@) | tee $@
 
 %.dat.s:%.sh
-	-bash $< s
+	-time { bash $< s ; }
 %.dat.r:%.sh
-	-bash $< r
+	-time { bash $< r ; }
 %.dat.c:%.sh
-	-bash $< c
+	-time { bash $< c ; }
 
 clean:
 	rm -v t*.dat* t_fortran
