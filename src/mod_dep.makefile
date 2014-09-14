@@ -13,6 +13,5 @@ $(FC)/mod_parser.o $(FC)/mod_parser.mod: $(FC)/mod_admit.o $(FC)/mod_admit.mod $
 $(FC)/mod_polygon.o $(FC)/mod_polygon.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
 $(FC)/mod_printing.o $(FC)/mod_printing.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod
 $(FC)/mod_site.o $(FC)/mod_site.mod: $(FC)/mod_date.o $(FC)/mod_date.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_data.o $(FC)/mod_data.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_sizeshadow.o $(FC)/mod_sizeshadow.mod:
 $(FC)/mod_spherical.o $(FC)/mod_spherical.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod
 $(FC)/mod_utilities.o $(FC)/mod_utilities.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod

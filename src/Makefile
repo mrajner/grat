@@ -3,10 +3,11 @@ FC := ifort
 #
 #
 F= -F ./test/data/test_data.nc @SP :sp 
+fdsf:all
 
 
 rgrat: grat value_check
-	@time ../bin/grat_$(FC)\
+	@time { ../bin/grat_$(FC)\
 		-S j                \
 		-M1,2                           \
 		-F                                  \
@@ -23,7 +24,7 @@ rgrat: grat value_check
 		-H \
 		-I-2@DD : 0.21@DB:140@DE \
 		-D2009:20090102 \
-		-o : free -A 1  -m 10000 -H
+		-o : free -A 1  -m 10000 -H ; }
 	@../bin/grat_$(FC)\
 		-S j                \
 		-M1,2                           \
@@ -163,7 +164,6 @@ unlink:
 	-rm -f $(LINKS)
 
 install:                                     \
-	$(LIBDIR)/libgrat$(VERSION_MAJOR).a        \
 	$(LIBDIR)/libgrat.a                        \
 	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
 	$(addprefix $(INCDIR)/,$(MOD))
@@ -200,7 +200,7 @@ $(PROGS_DIR)/%_$(FC):%.f90 $(FC)/libgrat.a
 	~/src/fortranlib/src/lib_random.f90
 
 $(FC)/libgrat.a: $(FC)/libgrat$(VERSION_MAJOR).a
-	ln -sf $(realpath $<) $@
+	cd $(FC) && ln -sf libgrat$(VERSION_MAJOR).a libgrat.a
 
 $(FC)/libgrat$(VERSION_MAJOR).a: $(OBJS)
 	ar rusv $@ $(OBJS)
