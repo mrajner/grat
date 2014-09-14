@@ -1,12 +1,81 @@
 FC := ifort
-#  FC := gfortran
-#
-#
-F= -F ./test/data/test_data.nc @SP :sp 
-fdsf:all
+OPT := -O0
 
+WITH_MONTE_CARLO := yes
+
+ifdef (WITH_MONTE_CARLO)
+$(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
+lib_random$(SUFFIX).o:  ~/src/fortranlib/src/lib_random.f90 
+	$(FC) $(FFLAGS) $< -o $@
+endif
+	#  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
+#  FC := gfortran
+
+#  WITH_MONTE_CARLO := ~/src/fortranlib/src/lib_random.f90
+
+# user definitions
+LIBDIR    := /usr/local/lib
+INCDIR    := /usr/local/include
+BINDIR    := /usr/local/bin
+LINKS_DIR := ~/.local/bin
+SUFFIX    := _$(FC)$(OPT)
+
+FC_INFO := $(shell $(FC) --version | sed -n 1p )
+HOST    := $(shell hostname)
+DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
+
+VERSION := $(shell git describe --match "v*")
+VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
+
+LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
+
+# ifort settings
+ifeq ($(FC),ifort)
+FFLAGS :=                                           \
+				 -fpic                                      \
+				 $(OPT)                                     \
+				 -xHost                                     \
+				 -warn all                                  \
+				 -I/home/mrajner/src/netcdf-fortran/fortran \
+				 -L/home/mrajner/src/netcdf-fortran/fortran
+
+ENABLE_PREPROCESSING := -fpp
+NETCDFF := -lnetcdff
+endif
+
+# gfortran settings
+ifeq ($(FC),gfortran)
+FFLAGS  := -O0 \
+				 -I/home/mrajner/src/netcdf-gfortran/fortran 
+ENABLE_PREPROCESSING = -cpp
+NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
+LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
+endif
+
+FPP :=                                             \
+	$(ENABLE_PREPROCESSING)                          \
+	-D__CDATE__='"$(DATE)"'                          \
+	-D__VERSION__='"$(VERSION)"'                     \
+	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
+	-D__COMPILER__='"$(FC_INFO)"' 
+
+#  tm: value_check
+	#  time \
+		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+
+#  #  ra: grat  value_check
+	#  #  time \
+		#  #  { grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+
+
+#  #  local:
+	#  #  file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
+	#  #  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
+	#  #  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
+
+F= -F ./test/data/test_data.nc @SP :sp 
 rgrat: grat value_check
-	@time { ../bin/grat_$(FC)\
+	@time { ../bin/grat$(SUFFIX)\
 		-S j                \
 		-M1,2                           \
 		-F                                  \
@@ -24,7 +93,7 @@ rgrat: grat value_check
 		-I-2@DD : 0.21@DB:140@DE \
 		-D2009:20090102 \
 		-o : free -A 1  -m 10000 -H ; }
-	@../bin/grat_$(FC)\
+	@../bin/grat$(SUFFIX)\
 		-S j                \
 		-M1,2                           \
 		-F                                  \
@@ -42,7 +111,7 @@ rgrat: grat value_check
 		-o : free -A  -H
 
 dgrat: grat value_check
-	../bin/grat_$(FC) -S o              \
+	../bin/grat_$(SUFFIX) -S o              \
 		-M1,2                             \
 		-F                                \
 		NCEP@SP ,                         \
@@ -55,68 +124,6 @@ dgrat: grat value_check
 	-H -I-2@DD : 0.21@DB:140@DE  -D2009 \
 	-o  
 
-
-# user definitions
-LIBDIR    := /usr/local/lib
-INCDIR    := /usr/local/include
-BINDIR    := /usr/local/bin
-LINKS_DIR := ~/.local/bin
-SUFFIX    := _$(FC)
-
-FC_INFO := $(shell $(FC) --version | sed -n 1p )
-HOST    := $(shell hostname)
-DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
-
-VERSION := $(shell git describe --match "v*")
-VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
-
-LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)_$(FC).a
-
-# ifort settings
-ifeq ($(FC),ifort)
-FFLAGS :=          \
-				 -fpic     \
-				 -fast       \
-				 -xHost    \
-				 -warn all \
-				 -I/home/mrajner/src/netcdf-fortran/fortran \
-				 -L/home/mrajner/src/netcdf-fortran/fortran
-
-ENABLE_PREPROCESSING := -fpp
-NETCDFF := -lnetcdff
-MOD_OUT := -module
-endif
-
-# gfortran settings
-ifeq ($(FC),gfortran)
-FFLAGS  := -O0 \
-				 -I/home/mrajner/src/netcdf-gfortran/fortran 
-ENABLE_PREPROCESSING = -cpp
-NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
-MOD_OUT := -J
-LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
-endif
-
-FPP :=                                             \
-	$(ENABLE_PREPROCESSING)                          \
-	-D__CDATE__='"$(DATE)"'                          \
-	-D__VERSION__='"$(VERSION)"'                     \
-	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
-	-D__COMPILER__='"$(FC_INFO)"' 
-
-#  #  tm: value_check
-	#  #  time \
-		#  #  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
-
-#  #  ra: grat  value_check
-	#  #  time \
-		#  #  { grat -F  check/data/air.2012.nc@SP : air  -M2,1 -wn,t -Sj,r,o:g -V -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
-
-
-#  #  local:
-	#  #  file=$$(basename $$(ls /home/mrajner/dat/ispd/hourly/___*WARSZAWA*));                               \
-	#  #  grep $$file /home/mrajner/dat/ispd/hourly/sites.sta |awk '{print "aaa" , $$2, $$3}' > local_site  ; \
-	#  #  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 SRCS      := \
 						mod_constants.f90     \
@@ -142,27 +149,27 @@ PROGSSRCS :=                  \
 						value_check.f90   \
 						polygon_check.f90
 
-OBJS            := $(addprefix $(FC)/,$(SRCS:.f90=.o))
+OBJS            := $(SRCS:.f90=$(SUFFIX).o)
 MOD             := $(SRCS:.f90=.mod)
 PROGS_DIR       := ../bin
-PROGS           := $(addsuffix _$(FC),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
+PROGS           := $(addsuffix $(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 
-all: $(FC) $(FC)/libgrat.a $(PROGS)
+all: libgrat$(SUFFIX).a $(PROGS)
 
 clean:
-	rm -fv {$(FC)/,}*{.o,.mod,.a,so} fort??????
+	rm -fv *$(SUFFIX){.o,.mod,.a,so} fort??????
 	
 # local installation of executables
 LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-$(LINKS_DIR)/%: $(PROGS_DIR)/%_$(FC) .FORCE
+$(LINKS_DIR)/%: $(PROGS_DIR)/%$(SUFFIX) .FORCE
 	ln -sf $(realpath $<) $@
 link: $(LINKS)
 unlink: 
 	-rm -f $(LINKS)
 
 install:                                     \
-	$(LIBDIR)/libgrat.a                        \
+	$(LIBDIR)/libgrat$(SUFFIX).a               \
 	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
 	$(addprefix $(INCDIR)/,$(MOD))
 	
@@ -170,38 +177,34 @@ uninstall:
 	-rm -f                                       \
 		$(addprefix $(INCDIR)/,$(MOD))             \
 		$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
-		/usr/local/lib/libgrat*      
+		/usr/local/lib/libgrat$(SUFFIX)*      
 
-$(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(FC)/libgrat$(VERSION_MAJOR).a
+$(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a
 	cp -uv $< $@
 
-$(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
+$(LIBDIR)/libgrat$(SUFFIX).a: $(LIBDIR)/libgrat$(SUFFIX)$(VERSION_MAJOR).a
 	ln -sf $< $@
-$(INCDIR)/%.mod: $(FC)/%.mod
+$(INCDIR)/%.mod: %.mod
 	cp -uv $< $@
 $(BINDIR)/%: $(PROGS_DIR)/%_$(FC)
 	cp -uv $< $@
 
-$(FC):
-	mkdir -pv $(FC)
-
-$(FC)/%.o: %.f90
-	$(FC) $(FFLAGS) $< -c -o $@ $(MOD_OUT) $(FC) -I ~/src/fortranlib/src
+%$(SUFFIX).o: %.f90
+	$(FC) $(FFLAGS) $< -c -o $@  -I ~/src/fortranlib/src $(FPP)
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
-	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)_$(FC))
+	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
 
-$(PROGS_DIR)/%_$(FC):%.f90 $(FC)/libgrat.a 
+$(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
 	$(FC) $(FFLAGS) $(FPP)          \
-	$< -o $@ -I$(FC) -L$(FC) -lgrat $(NETCDFF) \
-	~/src/fortranlib/src/lib_random.f90
+	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
 
-$(FC)/libgrat.a: $(FC)/libgrat$(VERSION_MAJOR).a
-	cd $(FC) && ln -sf libgrat$(VERSION_MAJOR).a libgrat.a
+libgrat$(SUFFIX).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a
+	ln -sf libgrat$(SUFFIX)$(VERSION_MAJOR).a libgrat$(SUFFIX).a
 
-$(FC)/libgrat$(VERSION_MAJOR).a: $(OBJS)
-	xiar rusv $@ $(OBJS)
+libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
+	ar rusv $@ $(OBJS)
 
 .PHONY: install 
 test: all install
@@ -241,3 +244,5 @@ endif
 #  install-doc: doc
 	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 .EXPORT_ALL_VARIABLES:
+
+

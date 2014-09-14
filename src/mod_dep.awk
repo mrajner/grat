@@ -9,7 +9,8 @@ BEGIN{
 
   for (i in MODULES) {
 
-    printf gensub("(.*).f90","$(FC)/\\1.o $(FC)/\\1.mod:","g",MODULES[i])
+    # printf gensub("(.*).f90","\\1$(SUFFIX).o \\1$(SUFFIX).mod:","g",MODULES[i])
+    printf gensub("(.*).f90","\\1$(SUFFIX).o:","g",MODULES[i])
 
     while(getline < MODULES[i]){
       if (/^[^!]*\<use\>\s+\<mod/){
@@ -19,7 +20,8 @@ BEGIN{
 
     if(length(DEPS[MODULES[i]])>0){
       for (dependency in DEPS[MODULES[i]]){
-        printf gensub("(.*)"," $(FC)/\\1.o $(FC)/\\1.mod","g",dependency)
+        # printf gensub("(.*)"," \\1$(SUFFIX).o \\1$(SUFFIX).mod","g",dependency)
+        printf gensub("(.*)"," \\1$(SUFFIX).o","g",dependency)
       }
     }
     printf "\n"

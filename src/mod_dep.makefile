@@ -1,17 +1,17 @@
-$(FC)/mod_3d.o $(FC)/mod_3d.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod
-$(FC)/mod_admit.o $(FC)/mod_admit.mod: $(FC)/mod_atmosphere.o $(FC)/mod_atmosphere.mod $(FC)/mod_site.o $(FC)/mod_site.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_data.o $(FC)/mod_data.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_aggf.o $(FC)/mod_aggf.mod: $(FC)/mod_normalization.o $(FC)/mod_normalization.mod $(FC)/mod_atmosphere.o $(FC)/mod_atmosphere.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_atmosphere.o $(FC)/mod_atmosphere.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod
-$(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_constants.o $(FC)/mod_constants.mod:
-$(FC)/mod_data.o $(FC)/mod_data.mod: $(FC)/mod_mjd.o $(FC)/mod_mjd.mod $(FC)/mod_atmosphere.o $(FC)/mod_atmosphere.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_polygon.o $(FC)/mod_polygon.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_date.o $(FC)/mod_date.mod: $(FC)/mod_mjd.o $(FC)/mod_mjd.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_data.o $(FC)/mod_data.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_green.o $(FC)/mod_green.mod: $(FC)/mod_atmosphere.o $(FC)/mod_atmosphere.mod $(FC)/mod_normalization.o $(FC)/mod_normalization.mod $(FC)/mod_date.o $(FC)/mod_date.mod $(FC)/mod_site.o $(FC)/mod_site.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_3d.o $(FC)/mod_3d.mod $(FC)/mod_polygon.o $(FC)/mod_polygon.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_aggf.o $(FC)/mod_aggf.mod $(FC)/mod_data.o $(FC)/mod_data.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_spherical.o $(FC)/mod_spherical.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_mjd.o $(FC)/mod_mjd.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod
-$(FC)/mod_normalization.o $(FC)/mod_normalization.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_parser.o $(FC)/mod_parser.mod: $(FC)/mod_admit.o $(FC)/mod_admit.mod $(FC)/mod_date.o $(FC)/mod_date.mod $(FC)/mod_green.o $(FC)/mod_green.mod $(FC)/mod_site.o $(FC)/mod_site.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_polygon.o $(FC)/mod_polygon.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_data.o $(FC)/mod_data.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_polygon.o $(FC)/mod_polygon.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_printing.o $(FC)/mod_printing.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod
-$(FC)/mod_site.o $(FC)/mod_site.mod: $(FC)/mod_date.o $(FC)/mod_date.mod $(FC)/mod_constants.o $(FC)/mod_constants.mod $(FC)/mod_cmdline.o $(FC)/mod_cmdline.mod $(FC)/mod_data.o $(FC)/mod_data.mod $(FC)/mod_printing.o $(FC)/mod_printing.mod $(FC)/mod_utilities.o $(FC)/mod_utilities.mod
-$(FC)/mod_spherical.o $(FC)/mod_spherical.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod
-$(FC)/mod_utilities.o $(FC)/mod_utilities.mod: $(FC)/mod_constants.o $(FC)/mod_constants.mod
+mod_3d$(SUFFIX).o: mod_constants$(SUFFIX).o
+mod_admit$(SUFFIX).o: mod_atmosphere$(SUFFIX).o mod_site$(SUFFIX).o mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_printing$(SUFFIX).o mod_data$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_aggf$(SUFFIX).o: mod_normalization$(SUFFIX).o mod_atmosphere$(SUFFIX).o mod_constants$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_atmosphere$(SUFFIX).o: mod_constants$(SUFFIX).o mod_printing$(SUFFIX).o
+mod_cmdline$(SUFFIX).o: mod_constants$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_constants$(SUFFIX).o:
+mod_data$(SUFFIX).o: mod_mjd$(SUFFIX).o mod_atmosphere$(SUFFIX).o mod_constants$(SUFFIX).o mod_polygon$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_date$(SUFFIX).o: mod_mjd$(SUFFIX).o mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_green$(SUFFIX).o: mod_atmosphere$(SUFFIX).o mod_normalization$(SUFFIX).o mod_date$(SUFFIX).o mod_site$(SUFFIX).o mod_constants$(SUFFIX).o mod_3d$(SUFFIX).o mod_polygon$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_aggf$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_spherical$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_mjd$(SUFFIX).o: mod_constants$(SUFFIX).o
+mod_normalization$(SUFFIX).o: mod_constants$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_parser$(SUFFIX).o: mod_admit$(SUFFIX).o mod_date$(SUFFIX).o mod_green$(SUFFIX).o mod_site$(SUFFIX).o mod_constants$(SUFFIX).o mod_polygon$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_polygon$(SUFFIX).o: mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_printing$(SUFFIX).o: mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o
+mod_site$(SUFFIX).o: mod_date$(SUFFIX).o mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
+mod_spherical$(SUFFIX).o: mod_constants$(SUFFIX).o
+mod_utilities$(SUFFIX).o: mod_constants$(SUFFIX).o

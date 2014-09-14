@@ -14,6 +14,7 @@ module mod_green
     real(dp), allocatable,dimension(:) :: distance
     real(dp), allocatable,dimension(:) :: data
   end type
+
   type(green_functions), allocatable, dimension(:) :: green
 
   real(dp), allocatable, dimension(:) :: result
@@ -26,9 +27,10 @@ module mod_green
     character (len=25), allocatable, dimension(:) :: dataname
     logical, allocatable, dimension(:) :: elastic
   end type
+
   type(green_common_info), allocatable, dimension(:) :: green_common
 
-  integer :: gnc_looseness=1
+  integer :: gnc_looseness = 1
 
 contains
 ! =============================================================================
@@ -247,10 +249,10 @@ subroutine read_green (green, print)
   endif
 
   if (.not.present(print)) then
-    if (.not.log%sparse) &
-      write(log%unit, form%i3) &
+    if (.not.log%sparse)                                      &
+      write(log%unit, form%i3)                                &
       trim(basename(trim(green%name))), trim(green%dataname), &
-      "columns:", green%column, &
+      "columns:", green%column,                               &
       "lines:", size(green%distance)
 
     if (green%dataname.eq."GNc") then

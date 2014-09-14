@@ -1023,8 +1023,11 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   real(dp) :: scale_factor, add_offset
   integer, intent(in), optional::date(6)
   logical :: success, success2, warning=.true.
-  real(dp) :: random_value
   logical, intent(in), optional :: randomize
+
+#ifdef WITH_MONTE_CARLO
+  real(dp) :: random_value
+#endif
 
   val=0
 
@@ -1161,17 +1164,18 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   if (.not.success2) val = setnan()
 
   if(present(randomize).and.randomize)then
-    call random_gau(random_value,0._dp, 1._dp)
-    select case (model%dataname)
-      case ("SP")
-      val=val+random_value * val * 0.0015
-    case ("RSP")
-      val=val+random_value * 0.0015
-    case ("T")
-      val=val+random_value * 1
-    case default
-      call print_warning (model%dataname // "randomize how?" , error=.true.)
-    end select
+    ! HHH
+    ! call random_gau(random_value,0._dp, 1._dp)
+    ! select case (model%dataname)
+      ! case ("SP")
+      ! val=val+random_value * val * 0.0015
+    ! case ("RSP")
+      ! val=val+random_value * 0.0015
+    ! case ("T")
+      ! val=val+random_value * 1
+    ! case default
+      ! call print_warning (model%dataname // "randomize how?" , error=.true.)
+    ! end select
   endif
 end subroutine
 
