@@ -39,7 +39,7 @@ while getopts "bvuidwV" flag ; do
 done
 
 shift $(($OPTIND-1))
-[[  $# -ge 1 ]] && test_what=($*) || test_what=(t*.sh t*.f90)
+[[  $# -ge 1 ]] && test_what=($*) || test_what=(t[0-9_]*.sh t*.f90)
 
 ok(){
   let good++

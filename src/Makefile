@@ -76,7 +76,7 @@ LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)_$(FC).a
 ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 -fpic     \
-				 -O0       \
+				 -fast       \
 				 -xHost    \
 				 -warn all \
 				 -I/home/mrajner/src/netcdf-fortran/fortran \
@@ -92,7 +92,6 @@ ifeq ($(FC),gfortran)
 FFLAGS  := -O0 \
 				 -I/home/mrajner/src/netcdf-gfortran/fortran 
 ENABLE_PREPROCESSING = -cpp
-#  NETCDFF = -lnetcdff
 NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
 MOD_OUT := -J
 LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
@@ -202,7 +201,7 @@ $(FC)/libgrat.a: $(FC)/libgrat$(VERSION_MAJOR).a
 	cd $(FC) && ln -sf libgrat$(VERSION_MAJOR).a libgrat.a
 
 $(FC)/libgrat$(VERSION_MAJOR).a: $(OBJS)
-	ar rusv $@ $(OBJS)
+	xiar rusv $@ $(OBJS)
 
 .PHONY: install 
 test: all install

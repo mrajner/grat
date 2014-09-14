@@ -42,7 +42,7 @@ stat: $(RESULTS)
 	-time { bash $< c ; }
 
 clean:
-	rm -v t*.dat* t_fortran
+	rm -v t[_0-9]*.dat* t_fortran
 
 copy_dat_to_benchmark: 
 	@tput setaf 1; echo -n Sure update benchmark results?: ; read  answer ; tput sgr0 ; \
