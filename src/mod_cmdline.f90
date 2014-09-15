@@ -155,6 +155,7 @@ module mod_cmdline
     result_total     = .false.,  &
     result_total_all = .false.,  &
     result_component = .true. ,  &
+    center_data      = .false. ,  &
     monte_carlo      = .false.
   
   integer :: monte_carlo_samples = 10

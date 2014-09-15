@@ -92,7 +92,7 @@ program grat
     cdate             = __CDATE__,                       &
     fflags            = __FFLAGS__,                      &
     compiler          = __COMPILER__,                    &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-m", &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-mC", &
     cmdlineargs       = .true.                           &
     )
 
@@ -132,9 +132,11 @@ program grat
           write (output%unit,'(a13)', advance='no'), "G1D"
         endif
 
+#ifdef WITH_MONTE_CARLO
         if (monte_carlo) then
           write (output%unit,'(2a8)', advance='no') "mean", "std"
         endif
+#endif
       enddo
     endif
 
@@ -370,7 +372,7 @@ program grat
 
           do i = 1,monte_carlo_samples
             call convolve (site(isite), date = date(idate), randomize=monte_carlo, results = results)
-              monte_carlo_results(i,:) = results
+            monte_carlo_results(i,:) = results
           enddo
 
           do i = 1, size(results)
@@ -382,7 +384,7 @@ program grat
           ! print *
           ! do i = 1 , monte_carlo_samples
           ! print * , monte_carlo_results(i,:)
-        ! enddo
+          ! enddo
         endif
 #endif
 

@@ -1,6 +1,8 @@
 !> \file
 module mod_admit
+#ifdef WITH_MONTE_CARLO
   use lib_random
+#endif
   use mod_constants, only: dp, setnan
 
   implicit none
@@ -11,7 +13,7 @@ contains
 ! =============================================================================
 ! =============================================================================
 real(dp) function admit(site_, date, number, randomize)
-  use mod_cmdline, only: ind, info, admitance, transfer_sp
+  use mod_cmdline, only: ind, info, admitance, transfer_sp, center_data
   use mod_data, only: get_value, model
   use mod_utilities, only: r2d
   use mod_atmosphere, only: standard_pressure
@@ -22,8 +24,9 @@ real(dp) function admit(site_, date, number, randomize)
   integer, optional :: date(6)
   integer :: i
   integer :: number
-  logical, save :: first_warning=.true.
+  logical, save :: first_warning=.true. , first_call = .true.
   logical, intent(in), optional :: randomize
+  real(dp), save :: reference_admit 
 
   if (site_%lp%if) then
 
@@ -156,7 +159,14 @@ real(dp) function admit(site_, date, number, randomize)
   ! endif
 #endif
 
-  if (first_warning) first_warning=.false.
+  ! if (first_warning) first_warning=.false.
+  ! if(center_data) then
+    ! if (first_call) then
+      ! first_call=.false.
+      ! reference_admit=admit
+    ! endif
+      ! admit=admit - reference_admit
+  ! endif
 end function
 
 ! =============================================================================

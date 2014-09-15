@@ -1010,7 +1010,9 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   use netcdf
   use mod_printing, only: print_warning
 
+#ifdef WITH_MONTE_CARLO
   use lib_random
+#endif
 
   type(file), intent (in) :: model
   real(dp) :: lat, lon
@@ -1169,11 +1171,11 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
     select case (model%dataname)
       case ("SP")
       ! val=val+random_value *150 !* val * 0.0015
-       val=val+150
+       val=val !+150
     case ("RSP")
       ! val=val+random_value * 0.0015
     case ("T")
-      val=val+random_value * 1
+      val=val !+random_value * 1
     case default
       call print_warning (model%dataname // "randomize how?" , error=.true.)
     end select

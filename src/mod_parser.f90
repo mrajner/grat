@@ -106,6 +106,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
   case ('-F')
     call parse_model(cmd_line_entry)
 
+  case ('-C')
+    center_data=.true.
+
   case ('-!')
     all_huge=.true.
     write(log%unit, form%i2), 'all model as huge'

@@ -456,7 +456,11 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
+#ifdef WITH_MONTE_CARLO
 subroutine convolve(site, date, randomize, results)
+#else
+subroutine convolve(site, date, randomize)
+#endif
   use, intrinsic :: iso_fortran_env
   use mod_constants
   use mod_site, only : site_info, local_pressure_distance
@@ -1506,14 +1510,16 @@ subroutine convolve(site, date, randomize, results)
     result(ind%green%g3d) = result(ind%green%g3d) - rsp
 
   ! results to output
+#ifdef WITH_MONTE_CARLO
   if (result_component.and..not.present(results)) then
     write (output%unit, "(*("// output%form //'))', advance = "no") result
   else
-#ifdef WITH_MONTE_CARLO
     allocate(results(size(result)))
     results=result 
-#endif
   endif
+#else
+    write (output%unit, "(*("// output%form //'))', advance = "no") result
+#endif
 
 
   if (result_total) then
