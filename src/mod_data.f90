@@ -1168,9 +1168,10 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
     call random_gau(random_value,0._dp, 1._dp)
     select case (model%dataname)
       case ("SP")
-      val=val+random_value *150 !* val * 0.0015
+      ! val=val+random_value *150 !* val * 0.0015
+       val=val+150
     case ("RSP")
-      val=val+random_value * 0.0015
+      ! val=val+random_value * 0.0015
     case ("T")
       val=val+random_value * 1
     case default

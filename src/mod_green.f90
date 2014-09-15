@@ -630,14 +630,16 @@ subroutine convolve(site, date, randomize, results)
             if (.not.(site%lp%if                        &
               .and.green_common(igreen)%distance(idist) &
               .lt.local_pressure_distance)) then
-              call get_value (                       &
-                model(ind%model%sp),                 &
-                r2d(lat),                            &
-                r2d(lon),                            &
-                val(ind%model%sp),                   &
-                level  = 1,                          &
-                method = info(igreen)%interpolation, &
-                date   = date%date)
+              call get_value (                          &
+                model(ind%model%sp),                    &
+                r2d(lat),                               &
+                r2d(lon),                               &
+                val(ind%model%sp),                      &
+                level     = 1,                          &
+                method    = info(igreen)%interpolation, &
+                date      = date%date ,                 &
+                randomize = randomize                   &
+                )
             endif
 
             old_val_sp=val(ind%model%sp)
@@ -1376,14 +1378,17 @@ subroutine convolve(site, date, randomize, results)
             endif
 
             if (result_total) then
+
               if (method(2)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(a13, $)') "G2D_t"
               endif
+
               if (method(3)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(a13, $)') "G3D_t"
               endif
+
             endif
 
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then

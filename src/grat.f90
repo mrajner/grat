@@ -72,13 +72,12 @@ program grat
   implicit none
   real    :: cpu(2)
   integer :: execution_time(3)
-  integer :: isite, i, idate, start, iprogress = 0, lprogress, j, ix
+  integer :: isite, i, idate, start, iprogress = 0, lprogress, j
   logical :: first_waning = .true.
 
 #ifdef WITH_MONTE_CARLO
   real(dp), allocatable, dimension(:,:) :: monte_carlo_results
   real(dp), allocatable, dimension(:) :: results
-  real(dp), allocatable, dimension(:) :: tmp
 #endif
 
 
@@ -332,15 +331,17 @@ program grat
 
 #ifdef WITH_MONTE_CARLO
           if(monte_carlo) then
-            if(allocated(monte_carlo_results)) deallocate(monte_carlo_results)
+            if(allocated(monte_carlo_results)) then
+              deallocate(monte_carlo_results)
+            endif
             allocate(monte_carlo_results(monte_carlo_samples,1))
 
             do i = 1, monte_carlo_samples
               monte_carlo_results(i,1) = admit( &
-                site(isite),                  &
-                date   = date(idate)%date,    &
-                number = j,                   &
-                randomize = .true.            &
+                site(isite),                    &
+                date      = date(idate)%date,   &
+                number    = j,                  &
+                randomize = .true.              &
                 )
             enddo
 
@@ -359,32 +360,29 @@ program grat
 
 #ifdef WITH_MONTE_CARLO
         if (monte_carlo) then
-          if(allocated(monte_carlo_results)) deallocate(monte_carlo_results)
-          allocate(monte_carlo_results(monte_carlo_samples,size(results)))
-          ! monte_carlo_results=0
-          print *
+          if(allocated(monte_carlo_results)) then
+            deallocate(monte_carlo_results)
+          endif
 
-          do ix =1,monte_carlo_samples
-            print *,ix, "HE", site(isite)%name,  date(idate)
-            call convolve (site(isite), date = date(idate), results = results)
-            ! do j = 1 , size(results)
-              monte_carlo_results(ix,:) = results
-            ! enddo
+          ! TODO
+          ! change 9 in line below
+          allocate(monte_carlo_results(monte_carlo_samples,9))
+
+          do i = 1,monte_carlo_samples
+            call convolve (site(isite), date = date(idate), randomize=monte_carlo, results = results)
+              monte_carlo_results(i,:) = results
           enddo
 
-          print *,monte_carlo_results, size(monte_carlo_results,1) , size(monte_carlo_results,2), "XXX"
-          ! print *,monte_carlo_results, lbound(monte_carlo_results,1) , lbound(monte_carlo_results,2)
-          ! print *,monte_carlo_results, ubound(monte_carlo_results,1) , ubound(monte_carlo_results,2)
+          do i = 1, size(results)
+            write(output%unit, "(2f8.3)" , advance = "no" )      &
+              mean(monte_carlo_results(:,i),monte_carlo_samples) , &
+              stdev(monte_carlo_results(:,i),monte_carlo_samples)
+          enddo
 
-          ! print *, monte_carlo_results(1,1)
-
-          ! print '(<size(results)>f10.3)', (monte_carlo_results(i,:), i=1,monte_carlo_samples)
-          ! write(output%unit, "(2f8.3)" , advance = "no" ) &
-          ! mean(monte_carlo_results(:,1),monte_carlo_samples) , &
-          ! stdev(monte_carlo_results(:,2),monte_carlo_samples)
-          ! print * , size(monte_carlo_results(:,1)) , monte_carlo_samples
-          ! print *, mean(results,4), "TT"
-          ! print *, stdev(monte_carlo_results(:,1),2), "TT",size(monte_carlo_results,2)
+          ! print *
+          ! do i = 1 , monte_carlo_samples
+          ! print * , monte_carlo_results(i,:)
+        ! enddo
         endif
 #endif
 
