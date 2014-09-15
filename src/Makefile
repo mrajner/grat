@@ -34,7 +34,9 @@ FFLAGS :=                                           \
 				 -xHost                                     \
 				 -warn all                                  \
 				 -I/home/mrajner/src/netcdf-fortran/fortran \
-				 -L/home/mrajner/src/netcdf-fortran/fortran
+				 -L/home/mrajner/src/netcdf-fortran/fortran 
+
+				 #  -check all
 
 ENABLE_PREPROCESSING := -fpp
 NETCDFF := -lnetcdff
@@ -92,24 +94,25 @@ rgrat: grat value_check
 		-U \
 		-H \
 		-I-2@DD : 0.21@DB:140@DE \
-		-D2009:20090102 \
-		-o : free -A 1  -m 10000 -H ; }
-	@../bin/grat$(SUFFIX)\
-		-S j                \
-		-M1,2                           \
-		-F                                  \
-		VIENNA@RSP, \
-		NCEP@SP,                            \
-		NCEP1 @T ,                          \
-		NCEP@H,                             \
-		NCEP@HP ,                           \
-		NCEP @LS                            \
-		-BN,I                               \
-		-G@GN                               \
-		-H \
-		-I-2@DD : 0.21@DB:140@DE \
-		-D2009:20090102 \
-		-o : free -A  -H
+		-D2009:2009010106 \
+		-o : free -A 1  -m 5 -H ; }
+sdf:
+	#  @../bin/grat$(SUFFIX)\
+		#  -S j                \
+		#  -M1,2                           \
+		#  -F                                  \
+		#  VIENNA@RSP, \
+		#  NCEP@SP,                            \
+		#  NCEP1 @T ,                          \
+		#  NCEP@H,                             \
+		#  NCEP@HP ,                           \
+		#  NCEP @LS                            \
+		#  -BN,I                               \
+		#  -G@GN                               \
+		#  -H \
+		#  -I-2@DD : 0.21@DB:140@DE \
+		#  -D2009:20090102 \
+		#  -o : free -A  -H
 
 dgrat: grat value_check
 	../bin/grat_$(SUFFIX) -S o              \

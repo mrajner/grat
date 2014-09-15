@@ -592,6 +592,7 @@ real function stdev (vec,i, nan)
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
+
   if (present(nan).and.nan) then
     stdev = sqrt(sum((vec - mean(vec,i,nan=nan))**2,mask=.not.isnan(vec))/real(size(vec)))
   else

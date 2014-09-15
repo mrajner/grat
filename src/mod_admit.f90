@@ -148,12 +148,13 @@ real(dp) function admit(site_, date, number, randomize)
     admit = default_admitance_value*1.e-2 * val
   endif
 
+#ifdef WITH_MONTE_CARLO
   if (present(randomize).and.randomize) then
-    ! HHH
-    ! call random_gau(admitance_randomize,0._dp,1._dp) 
-    admitance_randomize =admitance_randomize * admitance%value(number) * admitance%uncerteinty
-    admit = admit + admitance_randomize *1e-2*val
+    call random_gau(admitance_randomize,0._dp,1._dp) 
+    admitance_randomize = admitance_randomize * admitance%value(number) * admitance%uncerteinty
+    admit = admit + admitance_randomize/5 !* 1e-2*val
   endif
+#endif
 
   if (first_warning) first_warning=.false.
 end function
