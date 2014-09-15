@@ -26,7 +26,7 @@ real(dp) function admit(site_, date, number, randomize)
   integer :: number
   logical, save :: first_warning=.true. , first_call = .true.
   logical, intent(in), optional :: randomize
-  real(dp), save :: reference_admit 
+  real(dp), save :: eference_admit 
 
   if (site_%lp%if) then
 
@@ -159,14 +159,14 @@ real(dp) function admit(site_, date, number, randomize)
   ! endif
 #endif
 
-  ! if (first_warning) first_warning=.false.
-  ! if(center_data) then
-    ! if (first_call) then
-      ! first_call=.false.
-      ! reference_admit=admit
-    ! endif
-      ! admit=admit - reference_admit
-  ! endif
+  if (first_warning) first_warning=.false.
+  if(center_data) then
+    if (first_call) then
+      first_call=.false.
+      reference_admit=admit
+    endif
+      admit=admit - reference_admit
+  endif
 end function
 
 ! =============================================================================

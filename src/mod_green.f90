@@ -496,6 +496,8 @@ subroutine convolve(site, date, randomize)
   real(dp), dimension(:), allocatable :: result_partial
 
   logical :: first_reduction
+  logical, save :: first_call = .true.
+  real(dp), dimension(:), allocatable, save :: reference_results
 
   logical, intent(in), optional :: randomize
 #ifdef WITH_MONTE_CARLO
@@ -1506,8 +1508,20 @@ subroutine convolve(site, date, randomize)
     enddo
   enddo
 
-  if (ind%green%g3d.ne.0) &
+  if (ind%green%g3d.ne.0) then
     result(ind%green%g3d) = result(ind%green%g3d) - rsp
+  endif
+
+    if (center_data) then
+    if(first_call) then
+      first_call=.false.
+      allocate(reference_results(size(result)))
+      reference_results=result
+    endif
+
+    result = result - reference_resuls
+  endif
+
 
   ! results to output
 #ifdef WITH_MONTE_CARLO
@@ -1515,7 +1529,7 @@ subroutine convolve(site, date, randomize)
     write (output%unit, "(*("// output%form //'))', advance = "no") result
   else
     allocate(results(size(result)))
-    results=result 
+    results(1:size(result))=result 
   endif
 #else
     write (output%unit, "(*("// output%form //'))', advance = "no") result

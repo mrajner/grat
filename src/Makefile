@@ -89,13 +89,13 @@ rgrat: grat value_check
 		NCEP@H,                    \
 		NCEP@HP ,                  \
 		NCEP @LS                   \
-		-BN,I                      \
+		-BN                      \
 		-G @GN, @GE                     \
 		-U                         \
 		-H                         \
 		-C                         \
 		-D2009:2009010206          \
-		-o : free -A 4 -H ; }
+		-o : free -A -H -rt  ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \
