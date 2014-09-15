@@ -57,7 +57,9 @@
 !! \example grat_usage.sh
 ! ==============================================================================
 program grat
+#ifdef WITH_MONTE_CARLO
   use lib_random
+#endif
   use mod_parser,    only: intro
   use mod_data
   use mod_date
@@ -73,10 +75,10 @@ program grat
   integer :: isite, i, idate, start, iprogress = 0, lprogress, j
   logical :: first_waning = .true.
 
-#ifdef WITH_MONTE_CARLO
-  real(dp), allocatable, dimension(:,:) :: monte_carlo_results
-  real(dp), allocatable, dimension(:) :: results
-#endif
+! #ifdef WITH_MONTE_CARLO
+  ! real(dp), allocatable, dimension(:,:) :: monte_carlo_results
+  ! real(dp), allocatable, dimension(:) :: results
+! #endif
 
 
   ! program starts here with time stamp

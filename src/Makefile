@@ -3,11 +3,6 @@ OPT := -O0
 
 WITH_MONTE_CARLO := yes
 
-ifdef (WITH_MONTE_CARLO)
-$(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
-lib_random$(SUFFIX).o:  ~/src/fortranlib/src/lib_random.f90 
-	$(FC) $(FFLAGS) $< -o $@
-endif
 	#  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
 #  FC := gfortran
 
@@ -20,11 +15,13 @@ BINDIR    := /usr/local/bin
 LINKS_DIR := ~/.local/bin
 SUFFIX    := _$(FC)$(OPT)
 
+
+
 FC_INFO := $(shell $(FC) --version | sed -n 1p )
 HOST    := $(shell hostname)
 DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
 
-VERSION := $(shell git describe --match "v*")
+VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 
 LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
@@ -52,12 +49,16 @@ NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
 LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
 endif
 
+ifdef WITH_MONTE_CARLO
+FFLAGS += -DWITH_MONTE_CARLO
+endif
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
 	-D__CDATE__='"$(DATE)"'                          \
 	-D__VERSION__='"$(VERSION)"'                     \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
+
 
 #  tm: value_check
 	#  time \
@@ -196,9 +197,17 @@ $(BINDIR)/%: $(PROGS_DIR)/%_$(FC)
 $(PROGS_SHORTCUTS):
 	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
 
+ifdef WITH_MONTE_CARLO
+$(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a lib_random$(SUFFIX).o
+	$(FC) $(FFLAGS) $(FPP)          \
+	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) lib_random$(SUFFIX).o 
+lib_random$(SUFFIX).o:  ~/src/fortranlib/src/lib_random.f90 
+	$(FC) $(FFLAGS) $< -c -o $@$
+endif
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
 	$(FC) $(FFLAGS) $(FPP)          \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
+
 
 libgrat$(SUFFIX).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a
 	ln -sf libgrat$(SUFFIX)$(VERSION_MAJOR).a libgrat$(SUFFIX).a
