@@ -1519,7 +1519,7 @@ subroutine convolve(site, date, randomize)
       reference_results=result
     endif
 
-    result = result - reference_resuls
+    result = result - reference_results
   endif
 
 

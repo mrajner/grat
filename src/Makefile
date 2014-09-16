@@ -1,4 +1,5 @@
 FC := ifort
+FC=gfortran
 OPT := -O0
 
 WITH_MONTE_CARLO := yes
@@ -15,15 +16,11 @@ BINDIR    := /usr/local/bin
 LINKS_DIR := ~/.local/bin
 SUFFIX    := _$(FC)$(OPT)
 
-
-
 FC_INFO := $(shell $(FC) --version | sed -n 1p )
 HOST    := $(shell hostname)
 DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
-
 VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
-
 LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
 # ifort settings
@@ -79,6 +76,7 @@ FPP :=                                             \
 F= -F ./test/data/test_data.nc @SP :sp 
 rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
+		-V \
 		-Sj                        \
 		-M1,2                        \
 		-F                         \
@@ -89,13 +87,13 @@ rgrat: grat value_check
 		NCEP@H,                    \
 		NCEP@HP ,                  \
 		NCEP @LS                   \
-		-BN                      \
+		-BN,I                      \
 		-G @GN, @GE                     \
 		-U                         \
 		-H                         \
 		-C                         \
 		-D2009:2009010206          \
-		-o : free -A -H -rt  ; }
+		-o  -A -H -rt  ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \
@@ -204,12 +202,16 @@ ifdef WITH_MONTE_CARLO
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a lib_random$(SUFFIX).o
 	$(FC) $(FFLAGS) $(FPP)          \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) lib_random$(SUFFIX).o 
-lib_random$(SUFFIX).o:  ~/src/fortranlib/src/lib_random.f90 
-	$(FC) $(FFLAGS) $< -c -o $@$
-endif
+
+mod_data$(SUFFIX).o: lib_random$(SUFFIX).o
+lib_random$(SUFFIX).o:  /home/mrajner/src/fortranlib/src/lib_random.f90 
+	$(FC) $(FFLAGS) $< -c -o $@
+
+else
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
-	$(FC) $(FFLAGS) $(FPP)          \
+	$(FC) $(FFLAGS) $(FPP) \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
+endif
 
 
 libgrat$(SUFFIX).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a

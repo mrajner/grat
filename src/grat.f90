@@ -112,7 +112,7 @@ program grat
   if (ubound(date,1).gt.0) then
 
     if(output%header) then
-      write (output%unit, '(a12,x,a14,x)', advance = "no" ) "mjd", "date"
+      write (output%unit, '(a9,x,a14,x)', advance = "no" ) "mjd", "date"
     endif
 
     start = 1
@@ -311,7 +311,7 @@ program grat
       iprogress = iprogress + 1
 
       if (idate.gt.0) then
-        write(output%unit, '(f12.3,x,i4.4,5(i2.2),x$)', advance="no") &
+        write(output%unit, '(f9.3,x,i4.4,5(i2.2),x$)', advance="no") &
           date(idate)%mjd, date(idate)%date
       endif
 

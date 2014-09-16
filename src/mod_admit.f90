@@ -26,7 +26,7 @@ real(dp) function admit(site_, date, number, randomize)
   integer :: number
   logical, save :: first_warning=.true. , first_call = .true.
   logical, intent(in), optional :: randomize
-  real(dp), save :: eference_admit 
+  real(dp), save :: reference_admit 
 
   if (site_%lp%if) then
 

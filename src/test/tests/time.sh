@@ -7,8 +7,8 @@
 
 shopt -s nullglob
 
-for flags in O3  ; do
-  cd $GS ; make clean  ; make all FFLAGS=-$flags FC=ifort link ; make all FFLAGS=-$flags FC=ifort link ; cd - ; make clean 
+for flags in O1 O0 O2  ; do
+  cd $GS ; make all OPT=-$flags FC=ifort link ; cd - ; make clean 
 
   VERSION=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/-[^-]*//2' -e 3p | tr "\n" " ")
   OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 7p)
