@@ -9,13 +9,6 @@ set -o nounset
 
 counter=0
 
-grat -D2000
-# value_check -D1950
-
-exit
-
-value_check -FNCEP@SP -D1777 -Sj
-value_check -FNCEP@SP,NCEP -D2100,2014 -Sj
 
 exit
 
@@ -23,10 +16,27 @@ exit
   grat -F 10 @SP -Sj -M1 -wn
 
   exit
+# set NaN if value cannot be found (previousle 0)
+# FIXED 14eea59d5338d987901cc44bdbd10fc8af6c792d
+{
+value_check -v -H
+value_check -FNCEP@SP -D1777 -Sj -H
+value_check -FNCEP@SP,NCEP -D2100,2014 -Sj -H -wn
+} &>t_bugs.dat${counter}
+let counter++ 
+
+# 2014.09.16
+# segmentation fault
+# FIXED 5a582b0e0148df1b22f8f74d0ddd7d581bf53374
+{
+grat -D2000
+value_check -D1950
+} &>t_bugs.dat${counter}
+let counter++ 
 
 # 2014.09.12
 # unnecessary header output when -BI,N but no @GE
-# 59a6cb55654b458fcfc048253723ede06f0970a1
+# FIXED 59a6cb55654b458fcfc048253723ede06f0970a1
 grat -F10@SP -M2 -G@GN -BI,N -Sj -H>t_bugs.dat${counter}
 let counter++
 # 2014.09.04

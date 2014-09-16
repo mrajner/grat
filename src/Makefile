@@ -59,7 +59,7 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 adf: value_check link
-	value_check -D2011
+	value_check -D2014 , 2012 ,201202 -H -FNCEP@SP -Sj,r
 
 dfd:
 #  tm: value_check

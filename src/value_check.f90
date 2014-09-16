@@ -38,8 +38,6 @@ program value_check
     cmdlineargs       = .true.                 &
     )
 
-  ! print *, log%unit, output%unit, "SSSS"
-  ! stop "XXX"
   allocate (val (ubound(model,1)))
 
   ! initialize values
@@ -52,7 +50,7 @@ program value_check
     ! print header
     if (output%header) then
       if (.not.output%prune) then
-        write (output%unit , '(a10,1x,a14,1x)' , advance = "no" ) "#mjd", "date"
+        write (output%unit , '(a9,1x,a14,1x)' , advance = "no" ) "#mjd", "date"
       endif
     endif
   endif
@@ -135,7 +133,7 @@ program value_check
         write (output%unit , '(i4.4,5(i2.2),$)') date(j)%date
         ! if (j.lt.size(date)) write (output%unit , '(", ",$)')
       else
-        write (output%unit , '(f10.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
+        write (output%unit , '(f9.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
       endif
     endif
 
@@ -158,7 +156,7 @@ program value_check
         ! add time stamp if -D option was specified
         if (j.gt.0) then
           if (.not.output%prune) then
-            write (output%unit , '(f10.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
+            write (output%unit , '(f9.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
           endif
         endif
 
@@ -185,16 +183,16 @@ program value_check
                   method = info(1)%interpolation, &
                   level  = level%level(ilevel)    &
                   )
-                else
+              else
                 call get_value (                &
-                model(ii),                      &
-                site(i)%lat,                    &
-                site(i)%lon,                    &
-                val(imodel),                    &
-                method = info(1)%interpolation, &
-                date   = date(j)%date,          &
-                level  = level%level(ilevel)    &
-                )
+                  model(ii),                      &
+                  site(i)%lat,                    &
+                  site(i)%lon,                    &
+                  val(imodel),                    &
+                  method = info(1)%interpolation, &
+                  date   = date(j)%date,          &
+                  level  = level%level(ilevel)    &
+                  )
               endif
             else
               val(imodel) = 0

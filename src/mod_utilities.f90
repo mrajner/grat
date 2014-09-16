@@ -357,7 +357,8 @@ end function
 function d2r (degree)
   real(dp), intent (in) :: degree
   real(dp) :: d2r
-  d2r= pi / 180.0 * degree
+
+  d2r= pi / 180. * degree
 end function
 
 ! =============================================================================
@@ -370,6 +371,7 @@ end function
 function r2d ( radian )
   real(dp) :: r2d
   real(dp), intent (in) :: radian
+
   r2d= 180. / pi * radian
 end function
 
@@ -480,7 +482,7 @@ function datanameunit (dataname, datanames, count)
 end function
 
 ! ==============================================================================
-!  p = rho h g
+!>  p = rho h g
 ! converts mm of EWT to Pascal
 ! inverted: converts Pascal to mm EWT
 ! ==============================================================================
@@ -498,18 +500,21 @@ function mmwater2pascal(mmwater, inverted)
   endif
 end function
 
+! ==============================================================================
+! ==============================================================================
 function linspace(xmin, xmax, n)
   real(dp), intent(in) :: xmin, xmax
   real(dp), dimension(:), allocatable :: linspace
   integer, intent(in), optional :: n
   integer :: i
+
   if (present(n)) then
     allocate(linspace(n))
   else
     allocate(linspace(10))
   endif
-  do i=1,size(linspace)
-    linspace(i) = xmin + (xmax-xmin)  * real(i-1,dp)/ real(size(linspace)-1,dp)
+  do i = 1, size(linspace)
+    linspace(i) = xmin + (xmax-xmin) * real(i-1,dp) / real(size(linspace)-1,dp)
   end do
 end function
 
@@ -643,16 +648,16 @@ SUBROUTINE Bubble_Sort(a)
   end do
 END SUBROUTINE Bubble_Sort
 
-
 ! =============================================================================
 !> Performs bilinear interpolation
 !! \author Marcin Rajner
 !! \date 2013-05-07
 ! =============================================================================
-function bilinear (x, y, aux )
+function bilinear (x, y, aux)
   real(dp) :: bilinear
   real(dp) :: x, y, aux(4,3)
   real(dp) :: a, b, c
+
   a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
   b = a * (aux(3,3) - aux(1,3)) + aux(1,3)
   c = a * (aux(4,3) - aux(2,3)) + aux(2,3)

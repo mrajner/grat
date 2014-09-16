@@ -20,6 +20,7 @@ module mod_constants
   type gravity_data
     real(dp) :: constant
   end type
+
   type(gravity_data) , parameter :: &
     gravity  = gravity_data(        &
     constant = 6.674e-11_dp         & ! m3 kg-1 s-2
@@ -71,18 +72,18 @@ module mod_constants
     type(earth_density) :: density
   end type
 
-  type(earth_data), parameter :: &
-    earth       = earth_data (   &
-    mass        = 5.97219e24_dp, & !kg
-    radius      = 6371000.,      & !m
-    gm          = 398600.4419,   & !m3 s-2
-    gravity     = earth_gravity( &
-    mean        = 9.80665        & !m s-2
-    ),                           &
-    density     = earth_density( &
-    crust       = 2670.,         & !kg m-3
-    mean        = 5500.          & !kg m-3
-    )                            &
+  type(earth_data), parameter ::  &
+    earth       = earth_data (    &
+    mass        = 5.97219e24_dp,  & !kg
+    radius      = 6371000.,       & !m
+    gm          = 398600.4419_dp, & !m3 s-2
+    gravity     = earth_gravity(  &
+    mean        = 9.80665         & !m s-2
+    ),                            &
+    density     = earth_density(  &
+    crust       = 2670.,          & !kg m-3
+    mean        = 5500.           & !kg m-3
+    )                             &
     )
 
   !---------------------------------------
@@ -118,7 +119,9 @@ module mod_constants
 
 contains
 
-! naive method to force NaN for compilers
+! ==============================================================================
+!> naive method to force NaN for compilers
+! ==============================================================================
 real function setnan()
   real :: minusone=-1
   setnan = sqrt(minusone)
