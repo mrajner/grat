@@ -1031,10 +1031,8 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   real(dp) :: random_value
 #endif
 
-  val=0
+  val=setnan()
 
-  ! return
-  ! stop "VCV"
   if (model%if_constant_value) then
     val = model%constant_value
     return
