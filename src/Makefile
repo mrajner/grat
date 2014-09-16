@@ -77,7 +77,7 @@ F= -F ./test/data/test_data.nc @SP :sp
 rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
 		-V \
-		-Sj                        \
+		-Sj,l                        \
 		-M1,2                        \
 		-F                         \
 		VIENNA@RSP,                \
@@ -93,7 +93,7 @@ rgrat: grat value_check
 		-H                         \
 		-C                         \
 		-D2009:2009010206          \
-		-o  -A -H -rt  ; }
+		-o :free -m2 -A -H -rt  ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \
