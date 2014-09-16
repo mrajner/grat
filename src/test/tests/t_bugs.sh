@@ -9,6 +9,15 @@ set -o nounset
 
 counter=0
 
+grat -D2000
+# value_check -D1950
+
+exit
+
+value_check -FNCEP@SP -D1777 -Sj
+value_check -FNCEP@SP,NCEP -D2100,2014 -Sj
+
+exit
 
 # TODO co to
   grat -F 10 @SP -Sj -M1 -wn

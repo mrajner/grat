@@ -108,14 +108,16 @@ subroutine parse_date(cmd_line_entry)
     stop = start
 
     ! tilde
-    if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~" .and.(size(model(1)%date).gt.0)) then
-      swap = model(1)%date(1, :)
-      do i=2, size(model(1)%date(:, :), 1)
-        if (abs(mjd(model(1)%date(i, :))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
-          swap = model(1)%date(i, :)
-        endif
-      enddo
-      start = swap
+    if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~".and. allocated(model)) then
+      if ((ubound(model(1)%date,1).gt.0)) then
+        swap = model(1)%date(1, :)
+        do i=2, size(model(1)%date(:, :), 1)
+          if (abs(mjd(model(1)%date(i, :))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
+            swap = model(1)%date(i, :)
+          endif
+        enddo
+        start = swap
+      endif
     endif
 
     if (size(cmd_line_entry%field(i_)%subfield).ge.2        &
@@ -290,7 +292,7 @@ subroutine more_dates (number, start_index)
   ! print *, date%mjd, "mjd"
   ! print '(*(i6))', date%date(6)
   ! print * , size(date(1)%date) , "SDD"
-    ! PRINT *, start_index, "SI", size(date), ubound(date,1)
+  ! PRINT *, start_index, "SI", size(date), ubound(date,1)
 end subroutine
 
 ! =============================================================================

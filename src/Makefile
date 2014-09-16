@@ -1,5 +1,5 @@
 FC := ifort
-FC=gfortran
+#  FC=gfortran
 OPT := -O0
 
 WITH_MONTE_CARLO := yes
@@ -58,7 +58,10 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
+adf: value_check link
+	value_check -D2011
 
+dfd:
 #  tm: value_check
 	#  time \
 		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
