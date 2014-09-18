@@ -97,5 +97,5 @@ for test in ${test_what[*]} ; do
   done
 done
 
-echo -e "\npassed: $good/$counter !164"
+echo -e "\npassed: $good/$counter !168"
 [[ $bad -gt 0 ]] && echo failed: $bad || :

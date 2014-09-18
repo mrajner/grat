@@ -1,5 +1,5 @@
-FC := ifort
-#  FC=gfortran
+#  FC := ifort
+FC=gfortran
 OPT := -O0
 
 WITH_MONTE_CARLO := yes

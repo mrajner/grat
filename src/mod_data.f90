@@ -669,7 +669,10 @@ subroutine nctime2date (model, print)
 
   call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
 
-  allocate(character(len=length):: dummy)
+  ! allocate(character(len=length):: dummy)
+  ! allocate(dummy(6))
+  dummy=repeat(" ",10)
+  stop "SYYYYYYYY"
 
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
