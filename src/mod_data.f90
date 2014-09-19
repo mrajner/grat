@@ -623,14 +623,14 @@ subroutine get_dimension (model, i, print)
     status = nf90_get_att ( model%ncid, varid, &
       "actual_range", model%lonrange)
 
-    if (status /= nf90_noerr ) model%lonrange &
-      =[model%lon(1), model%lon(size(model%lon)) ]
+    if (status /= nf90_noerr ) &
+      model%lonrange = [model%lon(1), model%lon(size(model%lon))]
 
     where (model%lonrange.ge.357.5)
-      model%lonrange=360
+      model%lonrange = 360
     end where
 
-  else if (i.eq.4 ) then
+  else if (i.eq.4) then
     allocate(model%level(length))
     status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
 
@@ -641,8 +641,8 @@ subroutine get_dimension (model, i, print)
       status = nf90_get_var (model%ncid, varid, model%level)
     endif
 
-  elseif (i.eq.5 ) then
-    allocate(model%time (length) )
+  elseif (i.eq.5) then
+    allocate(model%time(length))
     status = nf90_get_var (model%ncid, varid, model%time)
   endif
 end subroutine
@@ -661,15 +661,18 @@ subroutine nctime2date (model, print)
   type (file)        :: model
   real(dp)           :: mjd_start, mjd_
   integer            :: varid, i, ind(2), date(6), status, length
-  character(:), allocatable  :: dummy
+  character(:), allocatable :: dummy
   logical, optional :: print
 
   status = nf90_inq_varid (model%ncid, model%names(5), varid)
-  if (status /=nf90_noerr) return
+  if (status /= nf90_noerr) return
 
   call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
 
-  allocate(character(len=length):: dummy)
+  ! allocate(character(len=length):: dummy)
+  ! allocate(dummy(6))
+  dummy=repeat(" ",10)
+  stop "SYYYYYYYY"
 
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
