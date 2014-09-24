@@ -1,6 +1,6 @@
-#  FC := ifort
-FC=gfortran
-OPT := -O0
+FC := ifort
+#  FC=gfortran
+OPT := -O3
 
 WITH_MONTE_CARLO := yes
 

@@ -661,7 +661,8 @@ subroutine nctime2date (model, print)
   type (file)        :: model
   real(dp)           :: mjd_start, mjd_
   integer            :: varid, i, ind(2), date(6), status, length
-  character(:), allocatable :: dummy
+  ! character(:), allocatable :: dummy
+  character(:), allocatable, dimension(:) :: dummy
   logical, optional :: print
 
   status = nf90_inq_varid (model%ncid, model%names(5), varid)
@@ -669,10 +670,9 @@ subroutine nctime2date (model, print)
 
   call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
 
-  ! allocate(character(len=length):: dummy)
-  ! allocate(dummy(6))
-  dummy=repeat(" ",10)
-  stop "SYYYYYYYY"
+  allocate(character(len=length):: dummy)
+  ! dummy=repeat(" ",length)
+  ! stop "SYYYYYYYY"
 
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
