@@ -1,6 +1,6 @@
 FC := ifort
 #  FC=gfortran
-OPT := -O3
+OPT := -O0
 
 WITH_MONTE_CARLO := yes
 
@@ -58,8 +58,12 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-adf: value_check link
-	value_check -D2014 , 2012 ,201202 -H -FNCEP@SP -Sj,r
+adf: all 
+	value_check -D2014 , 2012 ,201202 -H -FNCEP@SP -Sj,r,l,i,b
+	value_check -v | grep compiler
+	@echo
+	grat -F NCEP@SP , ERA@H -D2012 -M1 -Sl,j,o,b @H 
+	grat -v | grep compiler
 
 dfd:
 #  tm: value_check

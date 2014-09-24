@@ -391,6 +391,9 @@ program grat
       endif
 
       write(output%unit,'("")')
+      ! flush(output%unit)
+      ! close(output_unit)
+      ! flush(6)
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))
