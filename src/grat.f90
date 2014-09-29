@@ -359,6 +359,8 @@ program grat
       if (method(2).or.method(3)) then
         ! perform convolution
         call convolve (site(isite), date = date(idate))
+        print * , "DFDFDFDSFAXXXXXXXXX"
+        stop "S"
 
 #ifdef WITH_MONTE_CARLO
         if (monte_carlo) then
@@ -387,13 +389,9 @@ program grat
           ! enddo
         endif
 #endif
-
       endif
 
       write(output%unit,'("")')
-      ! flush(output%unit)
-      ! close(output_unit)
-      ! flush(6)
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))

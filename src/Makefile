@@ -56,9 +56,8 @@ FPP :=                                             \
 
 
 adf: all 
-	echo $$LD_LIBRARY_PATH
-	grat -F NCEP@SP , ERA@H! -H -D2012 -M2 -G@GN -I2@DD -Sl,j,o,b @H  -C
-	grat -v | grep compiler
+	grat -F NCEP@SP,0@LS  -D2012 -M2 -G@GE   -Sl
+	@grat -v | grep compiler
 
 dfd:
 #  tm: value_check

@@ -487,8 +487,8 @@ subroutine convolve(site, date, randomize)
   integer(2) :: iok(size(polygon))
 
   real(dp) :: normalize, aux
-  real(dp), allocatable, dimension(:) :: azimuths, &
-    heights, pressures, temperatures
+  real(dp), allocatable, dimension(:) :: &
+    azimuths, heights, pressures, temperatures
   logical :: header_p = .true.
 
   ! real(dp) :: h1, h2, v1, v2, p_int !temporary
@@ -1251,7 +1251,6 @@ subroutine convolve(site, date, randomize)
                     result(ind%green%gndz) = result(ind%green%gndz) +       &
                       result_partial(ind%green%gndz)
                   endif
-
 
                   ! GNdz2
                   if (ind%green%gndz2.ne.0) then
