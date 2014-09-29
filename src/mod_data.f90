@@ -1035,6 +1035,8 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   real(dp) :: random_value
 #endif
 
+  if (model%ncid==0 .and. .not. model%if_constant_value) return
+
   val=setnan()
 
   if (model%if_constant_value) then

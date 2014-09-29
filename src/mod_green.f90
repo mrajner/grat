@@ -664,12 +664,11 @@ subroutine convolve(site, date, randomize)
                   )
               endif
               old_val_rsp=val(ind%model%rsp)
+              ! print *,old_val_rsp
 
               if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                 call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
               else
-                ! print *, ind%model%hrsp
-                ! stop "X"
                 call get_value (                      &
                   model(ind%model%hrsp),              &
                   r2d(lat),                           &
@@ -678,14 +677,7 @@ subroutine convolve(site, date, randomize)
                   level  = 1,                         &
                   method = info(igreen)%interpolation &
                   ) 
-                ! print *, "t",                     &
-                ! ind%model%hrsp,              &
-                ! r2d(lat),                           &
-                ! r2d(lon),                           &
-                ! val(ind%model%hrsp),                &
-                ! info(igreen)%interpolation 
-                ! stop "SX"
-              endiF
+              endif
 
               ! get T
               if (ind%model%t.ne.0 &
@@ -1503,15 +1495,16 @@ subroutine convolve(site, date, randomize)
             d2r(green_common(igreen)%stop(idist))                      &
             )
         endif
-      enddo
-    enddo
-  enddo
+
+      enddo ! iazimuth
+    enddo ! idist
+  enddo ! igreen
 
   if (ind%green%g3d.ne.0) then
     result(ind%green%g3d) = result(ind%green%g3d) - rsp
   endif
 
-    if (center_data) then
+  if (center_data) then
     if(first_call) then
       first_call=.false.
       allocate(reference_results(size(result)))
@@ -1531,9 +1524,8 @@ subroutine convolve(site, date, randomize)
     results(1:size(result))=result 
   endif
 #else
-    write (output%unit, "(*("// output%form //'))', advance = "no") result
+  write (output%unit, '(*('// output%form //'))' , advance="no" ) result
 #endif
-
 
   if (result_total) then
     if (method(2)) then

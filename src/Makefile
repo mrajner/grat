@@ -55,8 +55,11 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 
-adf: all 
-	grat -F NCEP@SP,0@LS  -D2012 -M2 -G@GE   -Sl
+adf: all link
+	grat -H -C -F NCEP@SP,NCEP@LS,VIENNA@RSP  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
+	grat -H -C -F NCEP@SP,NCEP@LS  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
+	grat -H -C -F NCEP@SP,NCEP@LS,1000@RSP:@scale=100  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
+	grat -H -C -F NCEP@SP,NCEP@LS,10@RSP:@scale=100  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
 	@grat -v | grep compiler
 
 dfd:
@@ -258,6 +261,4 @@ endif
 	#  evince ../doc/latex/refman.pdf &
 #  install-doc: doc
 	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
-.EXPORT_ALL_VARIABLES:
-
-
+#  .EXPORT_ALL_VARIABLES:

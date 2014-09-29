@@ -359,8 +359,6 @@ program grat
       if (method(2).or.method(3)) then
         ! perform convolution
         call convolve (site(isite), date = date(idate))
-        print * , "DFDFDFDSFAXXXXXXXXX"
-        stop "S"
 
 #ifdef WITH_MONTE_CARLO
         if (monte_carlo) then
