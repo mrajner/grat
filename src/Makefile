@@ -2,12 +2,10 @@ FC := ifort
 #  FC=gfortran
 OPT := -O0
 
-WITH_MONTE_CARLO := yes
+#  WITH_MONTE_CARLO := yes
 
 	#  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
 #  FC := gfortran
-
-#  WITH_MONTE_CARLO := ~/src/fortranlib/src/lib_random.f90
 
 # user definitions
 LIBDIR    := /usr/local/lib
@@ -29,9 +27,7 @@ FFLAGS :=                                           \
 				 -fpic                                      \
 				 $(OPT)                                     \
 				 -xHost                                     \
-				 -warn all                                  \
-				 -I/home/mrajner/src/netcdf-fortran/fortran \
-				 -L/home/mrajner/src/netcdf-fortran/fortran 
+				 -warn all                                  
 
 				 #  -check all
 
@@ -58,11 +54,10 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
+
 adf: all 
-	value_check -D2014 , 2012 ,201202 -H -FNCEP@SP -Sj,r,l,i,b
-	value_check -v | grep compiler
-	@echo
-	grat -F NCEP@SP , ERA@H -D2012 -M1 -Sl,j,o,b @H 
+	echo $$LD_LIBRARY_PATH
+	grat -F NCEP@SP , ERA@H! -H -D2012 -M2 -G@GN -I2@DD -Sl,j,o,b @H  -C
 	grat -v | grep compiler
 
 dfd:

@@ -227,7 +227,6 @@ program value_check
 
         if (.not.output%prune) then
 
-          ! call sleep(1)
           write (output%unit , '(a8,2f10.4)' , advance="no") trim(site(i)%name), site(i)%lat, site(i)%lon
 
           if (output%height) then
