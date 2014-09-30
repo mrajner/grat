@@ -1421,10 +1421,11 @@ subroutine convolve(site, date, randomize)
               green_common(igreen)%distance(idist), azimuth, &
               r2d(lat), r2d(lon), area, tot_area
 
-            if (result_component)                        &
+            if (result_component) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-              '(' // output%form //'$)'),                &
-              (result(i), i =1, size(result))
+                '(' // output%form //'$)'),              &
+                (result(i), i =1, size(result))
+            endif
 
             if (result_total) then
               if (method(2)) then
@@ -1524,7 +1525,9 @@ subroutine convolve(site, date, randomize)
     results(1:size(result))=result 
   endif
 #else
-  write (output%unit, '(*('// output%form //'))' , advance="no" ) result
+  if (result_component) then
+    write (output%unit, '(*('// output%form //'))' , advance="no" ) result
+  endif
 #endif
 
   if (result_total) then
