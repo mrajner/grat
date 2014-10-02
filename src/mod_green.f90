@@ -1440,17 +1440,17 @@ subroutine convolve(site, date, randomize)
                   .or.green%dataname.eq."GNdz2"            &
                   .or.green%dataname.eq."GNdh"             &
                   ))
-                write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(' // output%form //'$)'),              &
-                  sum(result,                              &
-                  mask=(                                   &
-                  green%dataname.eq."GN"                   &
-                  .or.green%dataname.eq."GE"               &
-                  .or.green%dataname.eq."GNdt"             &
-                  .or.green%dataname.eq."GNdz"             &
-                  .or.green%dataname.eq."GNdz2"            &
-                  .or.green%dataname.eq."GNdh"             &
-                  ))
+                ! write(moreverbose(ind%moreverbose%p)%unit, &
+                  ! '(' // output%form //'$)'),              &
+                  ! sum(result,                              &
+                  ! mask=(                                   &
+                  ! green%dataname.eq."GN"                   &
+                  ! .or.green%dataname.eq."GE"               &
+                  ! .or.green%dataname.eq."GNdt"             &
+                  ! .or.green%dataname.eq."GNdz"             &
+                  ! .or.green%dataname.eq."GNdz2"            &
+                  ! .or.green%dataname.eq."GNdh"             &
+                  ! ))
               endif
 
               if (method(3)) then
