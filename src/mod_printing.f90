@@ -249,9 +249,12 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
-subroutine print_version (            &
-    program_calling,                  &
-    version, cdate, fflags, compiler  &
+subroutine print_version ( &
+    program_calling,       &
+    version,               &
+    cdate,                 &
+    fflags,                &
+    compiler               &
     )
   character(*) :: program_calling
   character(*), optional :: version, cdate, fflags, compiler
@@ -263,11 +266,10 @@ subroutine print_version (            &
   write(log%unit, form_inheader), trim(program_calling)
   write(log%unit, form_inheader), version
   write(log%unit, form_header)
-  write(log%unit, form_inheader), &
-    "compiler: "// trim(compiler)
-  write(log%unit, form_inheader), "compiled on "//trim(host)//" "//cdate
+  write(log%unit, form_inheader), "compiler: "// trim(compiler)
   write(log%unit, form_inheader), 'FFLAGS = '//fflags
-  write(log%unit, form_header)
+  write(log%unit, form_inheader), "compiled on "//trim(host)//" "//cdate
+  write(log%unit, form_inheader), ""
   write(log%unit, form_inheader), 'Copyright 2013, 2014 by Marcin Rajner'
   write(log%unit, form_inheader), 'Warsaw University of Technology'
   write(log%unit, form_inheader), 'License: GPL v3 or later'

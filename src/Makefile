@@ -2,6 +2,9 @@ FC := ifort
 #  FC=gfortran
 OPT := -O0
 
+dd: grat
+	grat -v
+
 #  WITH_MONTE_CARLO := yes
 
 	#  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
@@ -199,8 +202,9 @@ $(BINDIR)/%: $(PROGS_DIR)/%_$(FC)
 	$(FC) $(FFLAGS) $< -c -o $@  -I ~/src/fortranlib/src $(FPP)
 
 .PHONY: $(PROGS_SHORTCUTS)
-$(PROGS_SHORTCUTS):
-	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
+#  $(PROGS_SHORTCUTS):
+	#  make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
+grat: $(addprefix $(PROGS_DIR)/grat,$(@)$(SUFFIX))
 
 ifdef WITH_MONTE_CARLO
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a lib_random$(SUFFIX).o
