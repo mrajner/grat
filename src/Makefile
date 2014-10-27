@@ -3,11 +3,12 @@ FC := ifort
 OPT := -O0
 
 dd: grat
+	echo $(HOST)
 	grat -v
 
 #  WITH_MONTE_CARLO := yes
 
-	#  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
+#  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
 #  FC := gfortran
 
 # user definitions
@@ -18,7 +19,7 @@ LINKS_DIR := ~/.local/bin
 SUFFIX    := _$(FC)$(OPT)
 
 FC_INFO := $(shell $(FC) --version | sed -n 1p )
-HOST    := $(shell hostname)
+HOST    := $(shell hostname ; uname -r)
 DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
 VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
