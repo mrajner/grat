@@ -1,7 +1,6 @@
 -C option to center data files
 
 ifort -i2 -i4 ... -r8... sprawdz czy znaczenie w prędkości?
-
 variable modifer call only if necessary, do not correct all fields
 
 
@@ -11,3 +10,5 @@ higro Merriam s. 491
 latitude gravity dependence Merriam s. 491
 
 GE+GN na 1 hPa do 50 km? -0.356
+
+x
