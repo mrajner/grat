@@ -31,7 +31,7 @@ FFLAGS :=                                           \
 				 -fpic                                      \
 				 $(OPT)                                     \
 				 -xHost                                     \
-				 -warn all                                  
+				 -warn all
 
 				 #  -check all
 
