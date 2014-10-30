@@ -2,11 +2,7 @@ FC := ifort
 #  FC=gfortran
 OPT := -O0
 
-dd: grat
-	echo $(HOST)
-	grat -v
-
-#  WITH_MONTE_CARLO := yes
+WITH_MONTE_CARLO := yes
 
 #  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
 #  FC := gfortran
@@ -67,9 +63,9 @@ adf: all link
 	@grat -v | grep compiler
 
 dfd:
-#  tm: value_check
-	#  time \
-		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+tm: value_check
+	time \
+		{ value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
 #  #  ra: grat  value_check
 	#  #  time \
