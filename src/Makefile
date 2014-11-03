@@ -73,7 +73,7 @@ rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
 		-V                         \
 		-Sj,l                      \
-		-M1,2                      \
+		-M2                        \
 		-F                         \
 		VIENNA@RSP,                \
 		VIENNA@HRSP,               \
@@ -87,7 +87,8 @@ rgrat: grat value_check
 		-U                         \
 		-H                         \
 		-D2009:2009010206          \
-		-o :prune:free  -m mc1.scheme -A -H -rnc:t  ; }
+		-I-10@DD : 20@AS           \
+		-o :prune:free -m mc1.scheme -A -H -rt  ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \

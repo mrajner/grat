@@ -456,11 +456,7 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-#ifdef WITH_MONTE_CARLO
 subroutine convolve(site, date, randomize, results)
-#else
-subroutine convolve(site, date, randomize)
-#endif
   use, intrinsic :: iso_fortran_env
   use mod_constants
   use mod_site, only : site_info, local_pressure_distance
@@ -475,6 +471,9 @@ subroutine convolve(site, date, randomize)
   use mod_aggf, only: aggf
   use mod_atmosphere, only: standard_pressure, standard_temperature, virtual_temperature
   use mod_3d
+#ifdef WITH_MONTE_CARLO
+  ! use mod_montecarlo, only: monte_carlo
+#endif
 
   type(site_info),  intent(in) :: site
   type(dateandmjd), intent(in), optional :: date
@@ -500,9 +499,7 @@ subroutine convolve(site, date, randomize)
   real(dp), dimension(:), allocatable, save :: reference_results
 
   logical, intent(in), optional :: randomize
-#ifdef WITH_MONTE_CARLO
   real(dp), intent(out), optional, dimension(:), allocatable :: results
-#endif
 
   first_reduction=.true.
 
@@ -1517,23 +1514,37 @@ subroutine convolve(site, date, randomize)
 
 
   ! results to output
-#ifdef WITH_MONTE_CARLO
   if (result_component.and..not.present(results)) then
     write (output%unit, "(*("// output%form //'))', advance = "no") result
-  else
-    print * , size(results)
-    ! allocate(results(size(result)))
-    ! results(1:size(result))=result 
-  stop "SXXXXX"
   endif
-#else
-  if (result_component) then
-    write (output%unit, '(*('// output%form //'))' , advance="no" ) result
-  endif
-#endif
 
-  if (result_total) then
-    if (method(2)) then
+  if (present(results)) then
+
+    if(result_total) then
+      allocate(results(size(result)+1))
+    else
+      allocate(results(size(result)))
+    endif
+
+    results(1:size(result))=result 
+  endif
+
+if (result_total) then
+  if (method(2)) then
+
+    if (present(results)) then
+
+      results(size(results)) =        &
+        sum(result,                   &
+        mask=(                        &
+        green%dataname.eq."GN"        &
+        .or.green%dataname.eq."GE"    &
+        .or.green%dataname.eq."GNdt"  &
+        .or.green%dataname.eq."GNdz"  &
+        .or.green%dataname.eq."GNdz2" &
+        .or.green%dataname.eq."GNdh"  &
+        ))
+    else
       write(output%unit,              &
         '(' // output%form //'$)'),   &
         sum(result,                   &
@@ -1545,69 +1556,70 @@ subroutine convolve(site, date, randomize)
         .or.green%dataname.eq."GNdz2" &
         .or.green%dataname.eq."GNdh"  &
         ))
-
-      if (result_total_all) then
-        write(output%unit,              &
-          '(' // output%form //'$)'),   &
-          sum(result,                   &
-          mask=(                        &
-          green%dataname.eq."GN"        &
-          .or.green%dataname.eq."GNdt"  &
-          .or.green%dataname.eq."GNdz"  &
-          .or.green%dataname.eq."GNdz2" &
-          .or.green%dataname.eq."GNdh"  &
-          )) + result(size(green)+1)
-      endif
-
     endif
 
-    if (method(3)) then
+    if (result_total_all) then
+      write(output%unit,              &
+        '(' // output%form //'$)'),   &
+        sum(result,                   &
+        mask=(                        &
+        green%dataname.eq."GN"        &
+        .or.green%dataname.eq."GNdt"  &
+        .or.green%dataname.eq."GNdz"  &
+        .or.green%dataname.eq."GNdz2" &
+        .or.green%dataname.eq."GNdh"  &
+        )) + result(size(green)+1)
+    endif
 
+  endif
+
+  if (method(3)) then
+
+    write(output%unit,            &
+      '(' // output%form //'$)'), &
+      sum(result,                 &
+      mask=(                      &
+      green%dataname.eq."G3D"     &
+      .or.green%dataname.eq."GE"  &
+      ))
+
+    if (result_total_all) then
       write(output%unit,            &
         '(' // output%form //'$)'), &
         sum(result,                 &
         mask=(                      &
         green%dataname.eq."G3D"     &
-        .or.green%dataname.eq."GE"  &
-        ))
-
-      if (result_total_all) then
-        write(output%unit,            &
-          '(' // output%form //'$)'), &
-          sum(result,                 &
-          mask=(                      &
-          green%dataname.eq."G3D"     &
-          )) + result(size(green)+1)
-      endif
+        )) + result(size(green)+1)
     endif
   endif
+endif
 
-  ! summary: -L@s
-  if (ind%moreverbose%s.ne.0) then
-    if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
-      "station", "npoints", "area", "area/R2", "t_area_used"
-    write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)')               &
-      trim(site%name), npoints, tot_area, tot_area/earth%radius**2, tot_area_used
-  endif
+! summary: -L@s
+if (ind%moreverbose%s.ne.0) then
+  if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
+    "station", "npoints", "area", "area/R2", "t_area_used"
+  write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)')               &
+    trim(site%name), npoints, tot_area, tot_area/earth%radius**2, tot_area_used
+endif
 
-  ! green values : -L@g
-  if(ind%moreverbose%g.ne.0) then
-    do i = 1, size(green_common)
-      if (output%header)                                          &
-        write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
-        "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
+! green values : -L@g
+if(ind%moreverbose%g.ne.0) then
+  do i = 1, size(green_common)
+    if (output%header)                                          &
+      write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
+      "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
 
-      do j = 1, size(green_common(i)%distance)
-        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, *(f14.7))'), &
-          j, green_common(i)%distance(j),                                   &
-          green_common(i)%start(j),                                         &
-          green_common(i)%stop(j),                                          &
-          green_common(i)%data(j,:),                                        &
-          green_common(i)%distance(j)-green_common(i)%distance(j-1)
-      enddo
-
+    do j = 1, size(green_common(i)%distance)
+      write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, *(f14.7))'), &
+        j, green_common(i)%distance(j),                                   &
+        green_common(i)%start(j),                                         &
+        green_common(i)%stop(j),                                          &
+        green_common(i)%data(j,:),                                        &
+        green_common(i)%distance(j)-green_common(i)%distance(j-1)
     enddo
-  endif
+
+  enddo
+endif
 end subroutine
 
 ! =============================================================================
