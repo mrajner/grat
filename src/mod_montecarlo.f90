@@ -15,6 +15,8 @@ module mod_montecarlo
     admitance_uncerteinty = 0.0_dp, &
     sp_uncerteinty        = 0.000_dp 
 
+  real(dp), allocatable, dimension(:,:) :: monte_carlo_results
+  real(dp), allocatable, dimension(:) :: results
 
 contains
 

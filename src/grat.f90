@@ -76,12 +76,6 @@ program grat
   integer :: isite, i, idate, start, iprogress = 0, lprogress, j
   logical :: first_waning = .true.
 
-#ifdef WITH_MONTE_CARLO
-  real(dp), allocatable, dimension(:,:) :: monte_carlo_results
-  real(dp), allocatable, dimension(:) :: results
-#endif
-
-
   ! program starts here with time stamp
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
@@ -369,10 +363,11 @@ program grat
 
           ! TODO
           ! change 9 in line below
-          allocate(monte_carlo_results(monte_carlo_samples,9))
+          allocate(monte_carlo_results(monte_carlo_samples,3))
 
           do i = 1,monte_carlo_samples
             call convolve (site(isite), date = date(idate), randomize=monte_carlo, results = results)
+            stop "PPPPPPP"
             monte_carlo_results(i,:) = results
           enddo
 
