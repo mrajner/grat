@@ -12,8 +12,8 @@ module mod_montecarlo
 
 
   real(dp) :: &
-    admitance_uncerteinty = 0.0_dp, &  ! 10%
-    sp_uncerteinty        = 0.000_dp ! 0.1%
+    admitance_uncerteinty = 0.0_dp, &
+    sp_uncerteinty        = 0.000_dp 
 
 
 contains
