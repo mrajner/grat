@@ -501,7 +501,7 @@ subroutine convolve(site, date, randomize)
 
   logical, intent(in), optional :: randomize
 #ifdef WITH_MONTE_CARLO
-  real(dp), intent(out), optional , dimension(:), allocatable :: results
+  real(dp), intent(out), optional, dimension(:), allocatable :: results
 #endif
 
   first_reduction=.true.
@@ -1521,8 +1521,10 @@ subroutine convolve(site, date, randomize)
   if (result_component.and..not.present(results)) then
     write (output%unit, "(*("// output%form //'))', advance = "no") result
   else
-    allocate(results(size(result)))
-    results(1:size(result))=result 
+    print * , size(results)
+    ! allocate(results(size(result)))
+    ! results(1:size(result))=result 
+  stop "SXXXXX"
   endif
 #else
   if (result_component) then
