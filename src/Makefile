@@ -1,11 +1,9 @@
 FC := ifort
+
 #  FC=gfortran
-OPT := -O0
 
+OPT := -O2
 WITH_MONTE_CARLO := yes
-
-#  $(FC) -c ~/src/fortranlib/src/lib_random.f90 -o lib_random$(SUFFIX).o
-#  FC := gfortran
 
 # user definitions
 LIBDIR    := /usr/local/lib
@@ -37,8 +35,9 @@ endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
-FFLAGS  := -O0 \
-				 -I/home/mrajner/src/netcdf-gfortran/fortran 
+FFLAGS  := \
+	-O0      \
+	-I/home/mrajner/src/netcdf-gfortran/fortran 
 ENABLE_PREPROCESSING = -cpp
 NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
 LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
@@ -47,6 +46,7 @@ endif
 ifdef WITH_MONTE_CARLO
 FFLAGS += -DWITH_MONTE_CARLO
 endif
+
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
 	-D__CDATE__='"$(DATE)"'                          \
@@ -175,7 +175,7 @@ unlink:
 	-rm -f $(LINKS)
 
 install:                                     \
-	$(LIBDIR)/libgrat$(SUFFIX).a               \
+	$(LIBDIR)/libgrat.a                        \
 	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
 	$(addprefix $(INCDIR)/,$(MOD))
 	
@@ -183,16 +183,18 @@ uninstall:
 	-rm -f                                       \
 		$(addprefix $(INCDIR)/,$(MOD))             \
 		$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
-		/usr/local/lib/libgrat$(SUFFIX)*      
+		/usr/local/lib/libgrat*      
 
-$(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a
+$(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
+	ln -sf $< $@
+$(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat$(SUFFIX).a
+	ln -sf $< $@
+$(LIBDIR)/libgrat$(SUFFIX).a: libgrat$(SUFFIX).a
 	cp -uv $< $@
 
-$(LIBDIR)/libgrat$(SUFFIX).a: $(LIBDIR)/libgrat$(SUFFIX)$(VERSION_MAJOR).a
-	ln -sf $< $@
 $(INCDIR)/%.mod: %.mod
 	cp -uv $< $@
-$(BINDIR)/%: $(PROGS_DIR)/%_$(FC)
+$(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 	cp -uv $< $@
 
 %$(SUFFIX).o: %.f90

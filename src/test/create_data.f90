@@ -115,9 +115,5 @@ program createdata
 
   call nc_error (nf90_close(ncid=ncid))
   call system("ncdump -h data/test_data.nc ")
-  ! call system("ls -lh data/test_data.nc ")
-
-  print *, int(setnan())
-  stop "S"
 
 end program
