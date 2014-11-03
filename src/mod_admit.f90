@@ -6,7 +6,8 @@ module mod_admit
   use mod_constants, only: dp, setnan
 
   implicit none
-  real(dp) :: default_admitance_value = -0.3 , admitance_randomize
+  real(dp), parameter :: default_admitance_value = -0.3_dp
+  real(dp) :: admitance_randomize
 
 contains
 
@@ -18,6 +19,9 @@ real(dp) function admit(site_, date, number, randomize)
   use mod_utilities, only: r2d
   use mod_atmosphere, only: standard_pressure
   use mod_site
+#ifdef WITH_MONTE_CARLO
+  use mod_montecarlo
+#endif
 
   real(dp) :: val, rsp, t !, hrsp
   type(site_info) :: site_
@@ -27,6 +31,8 @@ real(dp) function admit(site_, date, number, randomize)
   logical, save :: first_warning=.true. , first_call = .true.
   logical, intent(in), optional :: randomize
   real(dp), save :: reference_admit 
+
+
 
   if (site_%lp%if) then
 
@@ -144,20 +150,21 @@ real(dp) function admit(site_, date, number, randomize)
 
   if (ind%model%rsp.ne.0) val = val-rsp
 
-
   if (allocated(admitance%value)) then
-    admit = admitance%value(number)*1.e-2 * val
+    admit = admitance%value(number)
   else
-    admit = default_admitance_value*1.e-2 * val
+    admit = default_admitance_value
   endif
 
 #ifdef WITH_MONTE_CARLO
-  ! if (present(randomize).and.randomize) then
-    ! call random_gau(admitance_randomize,0._dp,1._dp) 
-    ! admitance_randomize = admitance_randomize * admitance%value(number) * admitance%uncerteinty
-    ! admit = admit + admitance_randomize/5 !* 1e-2*val
-  ! endif
+  if (present(randomize).and.randomize) then
+    call random_gau(admitance_randomize,0._dp,1._dp) 
+    admit = admit + admit * admitance_randomize * admitance_uncerteinty 
+  endif
 #endif
+
+  admit = admit * 1.e-2 * val ! Pa -> hPa
+
 
   if (first_warning) first_warning=.false.
   if(center_data) then
@@ -165,7 +172,7 @@ real(dp) function admit(site_, date, number, randomize)
       first_call=.false.
       reference_admit=admit
     endif
-      admit=admit - reference_admit
+    admit=admit - reference_admit
   endif
 end function
 

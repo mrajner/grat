@@ -137,7 +137,6 @@ module mod_cmdline
   type admitance_info
     logical :: if
     real(dp), allocatable, dimension(:) :: value
-    real(dp) :: uncerteinty = 0.1
   end type
 
   type(admitance_info) :: admitance
@@ -155,10 +154,8 @@ module mod_cmdline
     result_total     = .false.,  &
     result_total_all = .false.,  &
     result_component = .true. ,  &
-    center_data      = .false. ,  &
-    monte_carlo      = .false.
+    center_data      = .false. 
   
-  integer :: monte_carlo_samples = 10
 contains
 
 ! =============================================================================

@@ -2,7 +2,7 @@ FC := ifort
 
 #  FC=gfortran
 
-OPT := -O2
+OPT := -O0
 WITH_MONTE_CARLO := yes
 
 # user definitions
@@ -54,18 +54,9 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-
-adf: all link
-	grat -H -C -F NCEP@SP,NCEP@LS,VIENNA@RSP  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
-	grat -H -C -F NCEP@SP,NCEP@LS  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
-	grat -H -C -F NCEP@SP,NCEP@LS,1000@RSP:@scale=100  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
-	grat -H -C -F NCEP@SP,NCEP@LS,10@RSP:@scale=100  -D2012 -M2 -G@GN,@GE -BI,N -Sl,j,r -o:free 
-	@grat -v | grep compiler
-
-dfd:
-tm: value_check
-	time \
-		{ value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
+#  tm: value_check
+	#  time \
+		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
 
 #  #  ra: grat  value_check
 	#  #  time \
@@ -80,9 +71,9 @@ tm: value_check
 F= -F ./test/data/test_data.nc @SP :sp 
 rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
-		-V \
-		-Sj,l                        \
-		-M1,2                        \
+		-V                         \
+		-Sj,l                      \
+		-M1                      \
 		-F                         \
 		VIENNA@RSP,                \
 		VIENNA@HRSP,               \
@@ -92,12 +83,11 @@ rgrat: grat value_check
 		NCEP@HP ,                  \
 		NCEP @LS                   \
 		-BN,I                      \
-		-G @GN, @GE                     \
+		-G @GN, @GE                \
 		-U                         \
 		-H                         \
-		-C                         \
 		-D2009:2009010206          \
-		-o :free -m2 -A -H -rt  ; }
+		-o :prune:free  -m mc1.scheme -A -H -rt  ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \
@@ -149,6 +139,9 @@ SRCS      := \
 						mod_green.f90         \
 						mod_admit.f90         \
 						mod_parser.f90        
+ifdef WITH_MONTE_CARLO
+	SRCS := $(addprefix mod_montecarlo.f90 , $(SRCS))
+endif
 
 PROGSSRCS :=                  \
 						grat.f90          \
@@ -183,7 +176,7 @@ uninstall:
 	-rm -f                                       \
 		$(addprefix $(INCDIR)/,$(MOD))             \
 		$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
-		/usr/local/lib/libgrat*      
+		/usr/local/lib/libgrat.*      
 
 $(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
 	ln -sf $< $@

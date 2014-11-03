@@ -12,8 +12,20 @@ counter=0
 good=0
 bad=0
 
-while getopts "bvuidwV" flag ; do
+help(){
+  echo << EOF
+-h show help
+-d delete bad result
+-V vimdiff
+EOF
+}
+
+while getopts "hbvuidwV" flag ; do
   case $flag in 
+    h)
+      help
+      exit 0
+      ;;
     d)
       delete_bad_results=true
       ;;
@@ -70,7 +82,7 @@ for test in ${test_what[*]} ; do
     } || 
     {
 
-      do_not_compare_list='com\|FF\|^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|[Ee]xecution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]'
+      do_not_compare_list='com\|FF\|^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|[Ee]xecution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#.*#$\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]'
 
       diff -I "$do_not_compare_list"  $is $should_be -q ${ignore_white_spaces:-} >/dev/null && 
       { 

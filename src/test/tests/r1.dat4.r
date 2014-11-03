@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                     v1.0-36-g2b51da8 #
+#                                                     v1.1-67-g1d624f7 #
 ########################################################################
-#                                                           compiler:  #
-#                                                  compiled on lenovo  #
-#                                                            FFLAGS =  #
-########################################################################
+#                              compiler: ifort (IFORT) 14.0.2 20140120 #
+#               FFLAGS = -fpic -O0 -xHost -warn all -DWITH_MONTE_CARLO #
+#                               compiled on lenovo 2014-11-03 10:33:07 #
+#                                                                      #
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-04 08:02:02 (+02h UTC)
+Program started: 2014-11-03 11:11:43 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F ../data/pres.sfc.2012.nc @SP :pres, ../data/air.sig995.20
@@ -36,7 +36,7 @@ Command parsing:
         Getting dim: level ..  level not found, allocating (1)...
           lat, lon, time, air,
         Getting dim: time ..     ok
-        Converting time:  hours since 1-1-1 00:00:0.0
+        Converting time:  hours since 1800-01-01 00:00:0.0
   -S { -Sg:50 }
     g:50
   -D { -D2011123118:2@M:12@H }
@@ -53,5 +53,5 @@ Command parsing:
 #-----------------------------------------------------------------------
     Processing: 32 site(s)
 #-----------------------------------------------------------------------
-Execution time:   0.1s (proc time:   0.1 |%100.6)
+Execution time:   0.3s (proc time:   0.3 |% 99.9)
 #-----------------------------------------------------------------------

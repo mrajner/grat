@@ -59,6 +59,7 @@
 program grat
 #ifdef WITH_MONTE_CARLO
   use lib_random
+  use mod_montecarlo
 #endif
   use mod_parser,    only: intro
   use mod_data
@@ -336,6 +337,7 @@ program grat
             if(allocated(monte_carlo_results)) then
               deallocate(monte_carlo_results)
             endif
+
             allocate(monte_carlo_results(monte_carlo_samples,1))
 
             do i = 1, monte_carlo_samples
@@ -352,7 +354,6 @@ program grat
               stdev(monte_carlo_results,monte_carlo_samples)
           endif
 #endif
-
         enddo
       endif
 
@@ -389,7 +390,7 @@ program grat
 #endif
       endif
 
-      write(output%unit,'("")')
+      write(output%unit, *) ""
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))

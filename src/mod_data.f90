@@ -1016,6 +1016,7 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
 
 #ifdef WITH_MONTE_CARLO
   use lib_random
+  use mod_montecarlo
 #endif
 
   type(file), intent (in) :: model
@@ -1030,10 +1031,6 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   integer, intent(in), optional::date(6)
   logical :: success, success2, warning=.true.
   logical, intent(in), optional :: randomize
-
-#ifdef WITH_MONTE_CARLO
-  real(dp) :: random_value
-#endif
 
   if (model%ncid==0 .and. .not. model%if_constant_value) return
 
@@ -1174,14 +1171,13 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
     call random_gau(random_value,0._dp, 1._dp)
     select case (model%dataname)
       case ("SP")
-      ! val=val+random_value *150 !* val * 0.0015
-       val=val !+150
-    case ("RSP")
+        val = val + val * random_value * sp_uncerteinty
+    ! case ("RSP")
       ! val=val+random_value * 0.0015
-    case ("T")
-      val=val !+random_value * 1
-    case default
-      call print_warning (model%dataname // "randomize how?" , error=.true.)
+    ! case ("T")
+      ! val=val !+random_value * 1
+    ! case default
+      ! call print_warning (model%dataname // "randomize how?" , error=.true.)
     end select
   endif
 #endif

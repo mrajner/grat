@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                      v1.1-8-g6bc8c09 #
+#                                                     v1.1-67-g1d624f7 #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 15:36:36 #
-#                                                    FFLAGS = (FFLAGS) #
-########################################################################
+#               FFLAGS = -fpic -O0 -xHost -warn all -DWITH_MONTE_CARLO #
+#                               compiled on lenovo 2014-11-03 10:33:07 #
+#                                                                      #
 #                                Copyright 2013, 2014 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                             License: GPL v3 or later #
 ########################################################################
-Program started: 2014-09-09 15:37:50 (+02h UTC)
+Program started: 2014-11-03 11:11:43 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F ../data/pres.sfc.2012.nc @SP :pres, ../data/air.sig995.20
@@ -38,7 +38,7 @@ Command parsing:
         Getting dim: level ..  level not found, allocating (1)...
           lat, lon, time, air,
         Getting dim: time ..     ok
-        Converting time:  hours since 1-1-1 00:00:0.0
+        Converting time:  hours since 1800-01-01 00:00:0.0
   -S { -Sr,equator:0:0:0,southpole:-90:0:0,north_pole:90:0:0,out:0:1361:0,out:-100:-1361:0out:100:161:0 }
     r
     equator:0:0:0
@@ -79,5 +79,5 @@ north_pole   90.0000    0.0000    0.0000        --        --        --
        out    0.0000  281.0000    0.0000        --        --        --
        out  -90.0000   79.0000    0.0000        --        --        --
 #-----------------------------------------------------------------------
-Execution time:   0.1s (proc time:   0.0 |% 43.5)
+Execution time:   0.0s (proc time:   0.0 |% 98.5)
 #-----------------------------------------------------------------------
