@@ -1,8 +1,5 @@
 !> \file
 module mod_admit
-#ifdef WITH_MONTE_CARLO
-  use lib_random
-#endif
   use mod_constants, only: dp, setnan
 
   implicit none
@@ -31,8 +28,6 @@ real(dp) function admit(site_, date, number, randomize)
   logical, save :: first_warning=.true. , first_call = .true.
   logical, intent(in), optional :: randomize
   real(dp), save :: reference_admit 
-
-
 
   if (site_%lp%if) then
 
@@ -158,7 +153,13 @@ real(dp) function admit(site_, date, number, randomize)
 
 #ifdef WITH_MONTE_CARLO
   if (present(randomize).and.randomize) then
-    call random_gau(admitance_randomize,0._dp,1._dp) 
+
+    if (monte_carlo_systematic) then
+      admitance_randomize = 1.
+    else
+      call random_gau(admitance_randomize,0._dp,1._dp) 
+    endif
+
     admit = admit + admit * admitance_randomize * admitance_uncerteinty 
   endif
 #endif

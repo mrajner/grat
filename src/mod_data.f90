@@ -1017,7 +1017,6 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   use iso_fortran_env, only: error_unit
 
 #ifdef WITH_MONTE_CARLO
-  use lib_random
   use mod_montecarlo
 #endif
 
@@ -1137,6 +1136,11 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
       val = variable_modifier (val, model%datanames(1))
     endif
 
+#ifdef WITH_MONTE_CARLO
+  if(present(randomize).and.randomize)then
+    val = add_noise_to_value(val,model%dataname, ilat, ilon, get_level_index(model,ilevel))
+  endif
+#endif
     return
   endif
 
@@ -1181,19 +1185,7 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
 
 #ifdef WITH_MONTE_CARLO
   if(present(randomize).and.randomize)then
-    call random_gau(random_value,0._dp, 1._dp)
-    select case (model%dataname)
-      case ("SP")
-        val = val + val * random_value * sp_uncerteinty
-    case ("RSP")
-        val = val + val * random_value * rsp_uncerteinty
-    case ("T")
-        val = val + val * random_value * t_uncerteinty
-    case ("H")
-        val = val + random_value * h_uncerteinty
-    ! case default
-      ! call print_warning (model%dataname // "randomize how?" , error=.true.)
-    end select
+    val = add_noise_to_value(val,model%dataname, ilat, ilon, get_level_index(model,ilevel))
   endif
 #endif
 

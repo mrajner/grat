@@ -66,7 +66,6 @@ program grat
   use mod_admit,     only: admit
   use mod_utilities, only: Bubble_Sort, mean, stdev
 #ifdef WITH_MONTE_CARLO
-  use lib_random
   use mod_montecarlo
 #endif
 

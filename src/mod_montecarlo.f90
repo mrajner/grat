@@ -1,10 +1,15 @@
 module mod_montecarlo
   use mod_constants
+  use lib_random
 
   implicit none
   character(200) :: monte_carlo_settings = ""
 
-  logical :: monte_carlo = .false.
+  logical :: &
+    monte_carlo = .false., &
+    monte_carlo_systematic = .false., &
+    monte_carlo_keep_cell = .false.
+
 
   real(dp) :: random_value
 
@@ -58,19 +63,47 @@ subroutine get_monte_carlo_settings(file)
       t_uncerteinty = value
     case("H")
       h_uncerteinty = value
+    case("SYSTEMATIC")
+      monte_carlo_systematic=.true.
     case default
       stop "YYYYYYYYYYYYY"
     end select
 
     write(log%unit, '(3x,a6,":",g10.3)'), trim(key), value
-
-
   enddo
-
-
   close (i)
-  ! stop "S"
-
-
 end subroutine
+
+real(dp) function add_noise_to_value(val, dataname, ilon, ilat, ilevel)
+  use mod_printing, only: print_warning
+
+  real(dp), intent(in) :: val
+  character(*), intent(in) :: dataname
+  integer, intent(in), optional :: ilat, ilon, ilevel
+
+  integer, dimension(3) :: &
+    oldsp =[-1,-1,-1]
+
+  if (monte_carlo_systematic) then
+    random_value = 1.
+  else
+    call random_gau(random_value,0._dp, 1._dp)
+  endif
+
+  select case (dataname)
+  case ("SP")
+
+    add_noise_to_value = val + val * random_value * sp_uncerteinty
+    print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
+  case ("RSP")
+    add_noise_to_value = val + val * random_value * rsp_uncerteinty
+    case ("T")
+    add_noise_to_value = val + val * random_value * t_uncerteinty
+    print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
+  case ("H")
+    add_noise_to_value = val + random_value * h_uncerteinty
+  case default
+    call print_warning (dataname // "randomize how?" , error=.true.)
+  end select
+end function
 end module
