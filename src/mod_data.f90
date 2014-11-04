@@ -325,7 +325,7 @@ subroutine model_aliases(model, dryrun, year, month)
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"sh_l.",year_,month_,".nc"
     case ("T")
       model%names(1)="v2t"
-      ! model%names(1)="t2m"
+      model%names(1)="t2m"
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
     case ("HP","H")
       model%names(1)="z"
@@ -1185,7 +1185,7 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
 
 #ifdef WITH_MONTE_CARLO
   if(present(randomize).and.randomize)then
-    val = add_noise_to_value(val,model%dataname, ilat, ilon, get_level_index(model,ilevel))
+    val = add_noise_to_value(val, model%dataname, ilat, ilon, get_level_index(model,ilevel))
   endif
 #endif
 

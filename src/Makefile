@@ -74,21 +74,18 @@ rgrat: grat value_check
 		-!                         \
 		-V:sparse                  \
 		-Sj                        \
-		-M1,3                        \
+		-M2                        \
 		-F                         \
 		VIENNA@RSP,                \
 		VIENNA@HRSP,               \
 		ERA@SP,                    \
 		ERA @T ,                   \
-		ERA@H,                     \
-		ERA@HP ,                   \
-		ERA@GP! ,                  \
-		ERA@VT! ,                  \
+		ERA@ H,                     \
 		ERA @LS                    \
 		-G @GN ,@GE                \
 		-BI                        \
 		-H                         \
-		-D2013                     \
+		-D2013:6@H                     \
 		-I-20@DD : 90@AS :1000@HS          \
 		-o:prune:free -m mc1.scheme -A -H -r  ; }
 sdf:

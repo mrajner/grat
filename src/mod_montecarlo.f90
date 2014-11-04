@@ -74,34 +74,62 @@ subroutine get_monte_carlo_settings(file)
   close (i)
 end subroutine
 
+
 real(dp) function add_noise_to_value(val, dataname, ilon, ilat, ilevel)
   use mod_printing, only: print_warning
+  use mod_cmdline, only: ind
+  use mod_data, only : model
 
   real(dp), intent(in) :: val
   character(*), intent(in) :: dataname
   integer, intent(in), optional :: ilat, ilon, ilevel
 
-  integer, dimension(3) :: &
-    oldsp =[-1,-1,-1]
+  type val_data
+    real(dp), dimension(:,:,:), allocatable :: sp
+  end type
+  type (val_data) :: vals
+  
+  integer::i
 
-  if (monte_carlo_systematic) then
-    random_value = 1.
+  if(monte_carlo_systematic) then
+    random_value=1.
   else
     call random_gau(random_value,0._dp, 1._dp)
   endif
 
   select case (dataname)
-  case ("SP")
 
-    add_noise_to_value = val + val * random_value * sp_uncerteinty
-    print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
+  case ("SP")
+    if (.not.allocated(vals%sp)) then 
+      allocate(                          &
+        vals%sp(                         &
+        size(model(ind%model%sp)%lon),   &
+        size(model(ind%model%sp)%lat),   &
+        size(model(ind%model%sp)%level)) &
+        )
+
+      vals%sp = setnan()
+    endif
+
+    if(isnan(vals%sp(ilon,ilat,ilevel))) then
+      vals%sp(ilon,ilat,ilevel) = val + val * random_value * sp_uncerteinty
+    endif
+    ! add_noise_to_value = vals%sp(ilon,ilat,ilevel)
+    ! add_noise_to_value 
+    ! old%spval = add_noise_to_value
+    ! old%sp = [ ilat , ilon , ilevel ]
+  ! endif
+    ! print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
+    ! print *, old%sp 
+    ! print *
+    ! print * ,all(old%date .eq. date)
   case ("RSP")
-    add_noise_to_value = val + val * random_value * rsp_uncerteinty
-    case ("T")
-    add_noise_to_value = val + val * random_value * t_uncerteinty
-    print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
-  case ("H")
-    add_noise_to_value = val + random_value * h_uncerteinty
+    ! add_noise_to_value = val + val * random_value * rsp_uncerteinty
+    ! case ("T")
+    ! add_noise_to_value = val + val * random_value * t_uncerteinty
+    ! print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
+    ! case ("H")
+    ! add_noise_to_value = val + random_value * h_uncerteinty
   case default
     call print_warning (dataname // "randomize how?" , error=.true.)
   end select
