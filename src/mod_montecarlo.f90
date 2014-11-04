@@ -59,7 +59,7 @@ subroutine get_monte_carlo_settings(file)
     case("H")
       h_uncerteinty = value
     case default
-      stop "YYYYYYYYYYYYY"
+      call print_warning("unknown key in monte carlo settings "// key , error =.true.)
     end select
 
     write(log%unit, '(3x,a6,":",g10.3)'), trim(key), value
