@@ -325,6 +325,7 @@ subroutine model_aliases(model, dryrun, year, month)
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"sh_l.",year_,month_,".nc"
     case ("T")
       model%names(1)="v2t"
+      model%names(1)="t2m"
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
     case ("HP","H")
       model%names(1)="z"
@@ -1012,7 +1013,8 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   use mod_cmdline, only: moreverbose, ind
   use mod_utilities, only: r2d, bilinear
   use netcdf
-  use mod_printing, only: print_warning
+  use mod_printing, only: print_warning, basename
+  use iso_fortran_env, only: error_unit
 
 #ifdef WITH_MONTE_CARLO
   use lib_random
@@ -1063,12 +1065,23 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
     ) then
 
     if (warning) then
-      call print_warning("outside lon|lat range " &
-        // "maybe actual range not specified in nc file")
+
+      write(error_unit,                                                         &
+        '(/,"lon, lat", 2f10.3,/, "latrange", 2f10.3,/, "lonrange", 2f10.3,/)') &
+        lon , lat, model%latrange, model%lonrange
+
+      call print_warning(                                 &
+        "outside lon|lat range "                          &
+        // "maybe actual range not specified in nc file:" &
+        // basename(model%name)                           &
+        )
+
       warning = .false.
+
     endif
 
     val = setnan()
+    val =0
     return
   endif
 
@@ -1172,10 +1185,12 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
     select case (model%dataname)
       case ("SP")
         val = val + val * random_value * sp_uncerteinty
-    ! case ("RSP")
-      ! val=val+random_value * 0.0015
-    ! case ("T")
-      ! val=val !+random_value * 1
+    case ("RSP")
+        val = val + val * random_value * rsp_uncerteinty
+    case ("T")
+        val = val + val * random_value * t_uncerteinty
+    case ("H")
+        val = val + random_value * h_uncerteinty
     ! case default
       ! call print_warning (model%dataname // "randomize how?" , error=.true.)
     end select

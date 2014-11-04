@@ -13,7 +13,10 @@ module mod_montecarlo
 
   real(dp) :: &
     admitance_uncerteinty = 0.0_dp, &
-    sp_uncerteinty        = 0.000_dp 
+    sp_uncerteinty        = 0.000_dp , &
+    t_uncerteinty         = 0.000_dp , &
+    h_uncerteinty         = 0.000_dp , &
+    rsp_uncerteinty       = 0.000_dp 
 
   real(dp), allocatable, dimension(:,:) :: monte_carlo_results
   real(dp), allocatable, dimension(:) :: results
@@ -21,8 +24,8 @@ module mod_montecarlo
 contains
 
 subroutine get_monte_carlo_settings(file)
-  use mod_utilities, only: file_exists
-  use mod_printing, only: print_warning
+  use mod_utilities, only: file_exists, skip_header
+  use mod_printing, only: print_warning, log, form
   use iso_fortran_env
 
   character(*), intent(in) :: file
@@ -39,6 +42,9 @@ subroutine get_monte_carlo_settings(file)
   do 
     read(i,*, iostat=io_stat) key , value
     if(io_stat== iostat_end) exit
+
+    call skip_header(i)
+
     select case(key)
     case("SP")
       sp_uncerteinty = value
@@ -46,15 +52,20 @@ subroutine get_monte_carlo_settings(file)
       monte_carlo_samples = value
     case("A")
       admitance_uncerteinty = value
+    case("RSP")
+      rsp_uncerteinty = value
+    case("T")
+      t_uncerteinty = value
+    case("H")
+      h_uncerteinty = value
     case default
       stop "YYYYYYYYYYYYY"
     end select
 
-    print *, trim(key), "::" ,value
+    write(log%unit, '(3x,a6,":",g10.3)'), trim(key), value
 
 
   enddo
-
 
 
   close (i)

@@ -71,24 +71,25 @@ FPP :=                                             \
 F= -F ./test/data/test_data.nc @SP :sp 
 rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
-		-V                         \
-		-Sj,l                      \
-		-M2                        \
+		-V :sparse                 \
+		-Sj                        \
+		-M3                       \
 		-F                         \
 		VIENNA@RSP,                \
 		VIENNA@HRSP,               \
-		NCEP@SP,                   \
-		NCEP1 @T ,                 \
-		NCEP@H,                    \
-		NCEP@HP ,                  \
-		NCEP @LS                   \
-		-BN,I                      \
-		-G @GN                     \
-		-U                         \
+		ERA@SP,                   \
+		ERA @T ,                 \
+		ERA@H,                    \
+		ERA@HP ,                  \
+		ERA@GP! ,                  \
+		ERA@VT! , \
+		ERA @LS                   \
+		-G @GN ,@GE \
+		-BI                        \
 		-H                         \
-		-D2009:2009010206          \
-		-I-10@DD : 20@AS           \
-		-o :prune:free -m mc1.scheme -A -H -rt  ; }
+		-D2012          \
+		-I-20@DD :1000@HS           \
+		-o:prune:free -m mc1.scheme -A -H -r  ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \

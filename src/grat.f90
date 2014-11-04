@@ -129,7 +129,7 @@ program grat
 
 #ifdef WITH_MONTE_CARLO
         if (monte_carlo) then
-          write (output%unit,'(2a8)', advance='no') "mean", "std"
+          write (output%unit,'(2a13)', advance='no') "mean1", "std1"
         endif
 #endif
       enddo
@@ -149,16 +149,21 @@ program grat
           else
             write (output%unit,'(a13$)'), trim(green(i)%dataname)
           endif
-        enddo
-
-        if (inverted_barometer.and.non_inverted_barometer.and.any(green%dataname.eq."GE")) then
-          write (output%unit,'(a13)' , advance = "no"), "GE_NIB"
-        endif
 #ifdef WITH_MONTE_CARLO
         if (monte_carlo) then
           write (output%unit,'(2a13)', advance='no') "mean", "std"
         endif
 #endif
+        enddo
+
+        if (inverted_barometer.and.non_inverted_barometer.and.any(green%dataname.eq."GE")) then
+          write (output%unit,'(a13)' , advance = "no"), "GE_NIB"
+#ifdef WITH_MONTE_CARLO
+          if (monte_carlo) then
+            write (output%unit,'(2a13)', advance='no') "mean", "std"
+          endif
+#endif
+        endif
       endif
 
       if (result_total) then
@@ -358,7 +363,7 @@ program grat
                 )
             enddo
 
-            write(output%unit, "(2f8.3)" , advance = "no" ) &
+            write(output%unit, "(2"// output%form // ")" , advance = "no" ) &
               mean(monte_carlo_results,monte_carlo_samples) , &
               stdev(monte_carlo_results,monte_carlo_samples)
           endif
@@ -367,16 +372,22 @@ program grat
       endif
 
       if (method(2).or.method(3)) then
-#ifdef WITH_MONTE_CARLO and monte_carlo
-        call convolve (       &
-          site(isite),        &
-          date = date(idate), &
-          results = results   &
-          )
+#ifdef WITH_MONTE_CARLO
+        if(monte_carlo) then
+          call convolve (       &
+            site(isite),        &
+            date = date(idate), &
+            results = results   &
+            )
+        else
+          call convolve (      &
+            site(isite),       &
+            date = date(idate) &
+            )
+        endif
 #else
-        ! perform convolution
-        call convolve (       &
-          site(isite),        &
+        call convolve (      &
+          site(isite),       &
           date = date(idate) &
           )
 #endif
@@ -389,6 +400,7 @@ program grat
           allocate(monte_carlo_results(0:monte_carlo_samples,size(results)))
 
           monte_carlo_results(0,:) = results
+          ! print * ,results, "}"
 
           do i = 1,monte_carlo_samples
             call convolve (            &
@@ -397,19 +409,17 @@ program grat
               randomize = monte_carlo, &
               results   = results      &
               )
+            monte_carlo_results(i,:) = results
 
+            ! print * ,results, "}"
           enddo
 
           do i = 1, size(results)
-            write(output%unit, "(2f13.3)" , advance = "no" )       &
-              mean(monte_carlo_results(:,i),monte_carlo_samples) , &
-              stdev(monte_carlo_results(:,i),monte_carlo_samples)
+            write(output%unit, "(3" // output%form // ")" , advance = "no" )       &
+              monte_carlo_results(0,i) , &
+              mean(monte_carlo_results(1:,i),monte_carlo_samples) , &
+              stdev(monte_carlo_results(1:,i),monte_carlo_samples)
           enddo
-
-          ! print *
-          ! do i = 1 , monte_carlo_samples
-          ! print * , monte_carlo_results(i,:)
-          ! enddo
         endif
 #endif
       endif

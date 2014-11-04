@@ -651,17 +651,17 @@ subroutine convolve(site, date, randomize, results)
 
               ! get RSP if given
               if (ind%model%rsp.ne.0) then
-                call get_value (                      &
-                  model(ind%model%rsp),               &
-                  r2d(lat),                           &
-                  r2d(lon),                           &
-                  val(ind%model%rsp),                 &
-                  level=1,                            &
-                  method = info(igreen)%interpolation &
+                call get_value (                       &
+                  model(ind%model%rsp),                &
+                  r2d(lat),                            &
+                  r2d(lon),                            &
+                  val(ind%model%rsp),                  &
+                  level=1,                             &
+                  method = info(igreen)%interpolation, &
+                  randomize= randomize                 &
                   )
               endif
               old_val_rsp=val(ind%model%rsp)
-              ! print *,old_val_rsp
 
               if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                 call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
@@ -688,9 +688,18 @@ subroutine convolve(site, date, randomize, results)
                 ]).ne.0)           &
                 )                  &
                 ) then
-                call get_value (                                            &
-                  model(ind%model%t), r2d(lat), r2d(lon), val(ind%model%t), &
-                  level=1, method=info(igreen)%interpolation, date=date%date)
+
+                call get_value (                     &
+                  model(ind%model%t),                &
+                  r2d(lat),                          &
+                  r2d(lon),                          &
+                  val(ind%model%t),                  &
+                  level=1,                           &
+                  method=info(igreen)%interpolation, &
+                  date=date%date,                    &
+                  randomize=randomize                &
+                  )
+
               endif
 
               ! get HP
@@ -724,13 +733,15 @@ subroutine convolve(site, date, randomize, results)
                 if (optimize.and.green_common(igreen)%distance(idist).gt.3) then
                   val(ind%model%h)=val(ind%model%hp)
                 else
-                  call get_value (               &
-                    model  = model(ind%model%h), &
-                    lat    = r2d(lat),           &
-                    lon    = r2d(lon),           &
-                    val    = val(ind%model%h),   &
-                    level  = 1,                  &
-                    method = info(igreen)%interpolation)
+                  call get_value (                       &
+                    model  = model(ind%model%h),         &
+                    lat    = r2d(lat),                   &
+                    lon    = r2d(lon),                   &
+                    val    = val(ind%model%h),           &
+                    level  = 1,                          &
+                    method = info(igreen)%interpolation, &
+                    randomize = randomize                &
+                    )
                 endif
               endif
 
@@ -1465,10 +1476,13 @@ subroutine convolve(site, date, randomize, results)
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
 
               do i=1, size(val)
-                call get_value (                        &
-                  model(i), r2d(lat), r2d(lon), val(i), &
-                  level=1,                              &
-                  method = info(igreen)%interpolation,  &
+                call get_value (                       &
+                  model(i),                            &
+                  r2d(lat),                            &
+                  r2d(lon),                            &
+                  val(i),                              &
+                  level=1,                             &
+                  method = info(igreen)%interpolation, &
                   date=date%date)
               enddo
 
