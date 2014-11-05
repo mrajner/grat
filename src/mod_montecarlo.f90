@@ -8,7 +8,7 @@ module mod_montecarlo
   logical :: &
     monte_carlo = .false., &
     monte_carlo_systematic = .false., &
-    monte_carlo_keep_cell = .false.
+    monte_carlo_progress = .false.
 
 
   real(dp) :: random_value
@@ -69,6 +69,8 @@ subroutine get_monte_carlo_settings(file)
       h_uncerteinty = value
     case("SYSTEMATIC")
       monte_carlo_systematic=.true.
+    case("PROGRESS")
+      monte_carlo_progress=.true.
     case default
       call print_warning("unknown key in monte carlo settings "// key , error =.true.)
     end select

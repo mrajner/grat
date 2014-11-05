@@ -69,30 +69,16 @@ FPP :=                                             \
 	#  #  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 F= -F ./test/data/test_data.nc @SP :sp 
-dffsf: grat
-	grat                           \
-		-F  ERA @SP \
-		-Sj                          \
-		-D2013                       \
-		-H                           \
-		-G @GN                       \
-		-m mc1.scheme                       \
-		-M1                          \
-		-o : c 
 rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
-		-!                         \
 		-V:sparse                  \
 		-Sj                        \
 		-M1,2                        \
 		-F                         \
 		VIENNA@RSP,                \
-		VIENNA@HRSP,               \
 		ERA@SP,                    \
-		ERA @T ,                   \
-		ERA@ H,                     \
 		ERA @LS                    \
-		-G @GN, @GNdt ,@GE                \
+		-G @GN,@GE                \
 		-BI                        \
 		-H                         \
 		-D2013:6@H                     \

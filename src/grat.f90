@@ -407,7 +407,9 @@ program grat
           do i = 1, monte_carlo_samples
 
             call monte_carlo_reset
+            if(monte_carlo_progress) then
               call progress(100*i/monte_carlo_samples, 3., 0., every=1)
+            endif
 
             call convolve (            &
               site(isite),             &
