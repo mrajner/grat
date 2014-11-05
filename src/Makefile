@@ -69,6 +69,16 @@ FPP :=                                             \
 	#  #  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 F= -F ./test/data/test_data.nc @SP :sp 
+dffsf: grat
+	grat                           \
+		-F  ERA @SP \
+		-Sj                          \
+		-D2013                       \
+		-H                           \
+		-G @GN                       \
+		-m mc1                       \
+		-M1                          \
+		-o : c 
 rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
 		-!                         \

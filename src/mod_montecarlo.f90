@@ -82,14 +82,11 @@ end subroutine
 ! =============================================================================
 real(dp) function add_noise_to_value(val, dataname, ilon, ilat, ilevel)
   use mod_printing, only: print_warning
-  ! use mod_cmdline, only: ind
-  ! use mod_data, only : model
 
   real(dp), intent(in) :: val
   character(*), intent(in) :: dataname
   integer, intent(in), optional :: ilat, ilon, ilevel
 
-  
   integer::i
 
   if(monte_carlo_systematic) then
