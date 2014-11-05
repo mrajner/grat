@@ -20,13 +20,16 @@ module mod_montecarlo
     admitance_uncerteinty = 0.0_dp, &
     sp_uncerteinty        = 0.000_dp , &
     t_uncerteinty         = 0.000_dp , &
-    h_uncerteinty         = 0.000_dp 
+    tv_uncerteinty        = 0.000_dp , &
+    gp_uncerteinty        = 0.000_dp , & ! m
+    vt_uncerteinty        = 0.000_dp , & ! m
+    h_uncerteinty         = 0.000_dp  ! m
 
   real(dp), allocatable, dimension(:,:) :: monte_carlo_results
   real(dp), allocatable, dimension(:) :: results
 
   type val_data
-    real(dp), dimension(:,:,:), allocatable :: sp, t, h
+    real(dp), dimension(:,:,:), allocatable :: sp, t, h , gp, vt
   end type
   type (val_data) :: mcval
 
@@ -67,6 +70,10 @@ subroutine get_monte_carlo_settings(file)
       t_uncerteinty = value
     case("H")
       h_uncerteinty = value
+    case("GP")
+      gp_uncerteinty = value
+    case("VT")
+      vt_uncerteinty = value
     case("SYSTEMATIC")
       monte_carlo_systematic=.true.
     case("PROGRESS")
@@ -99,7 +106,6 @@ real(dp) function add_noise_to_value(val, dataname, ilon, ilat, ilevel)
   endif
 
   select case (dataname)
-
   case ("SP")
     if( any([ilon,ilat,ilevel].gt.[(size(mcval%sp,i), i =1,3)])) then
       call print_warning ("PROBLEM montecarlo", error=.true.)
@@ -128,10 +134,30 @@ real(dp) function add_noise_to_value(val, dataname, ilon, ilat, ilevel)
     endif
 
     if(isnan(mcval%h(ilon,ilat,ilevel))) then
-      mcval%h(ilon,ilat,ilevel) = val + val * random_value * t_uncerteinty
+      mcval%h(ilon,ilat,ilevel) = val + val * random_value * h_uncerteinty
     endif
 
     add_noise_to_value = mcval%h(ilon,ilat,ilevel)
+
+  case ("GP")
+    if( any([ilon,ilat,ilevel].gt.[(size(mcval%gp,i), i =1,3)])) then
+      call print_warning ("PROBLEM montecarlo", error=.true.)
+    endif
+
+    if(isnan(mcval%gp(ilon,ilat,ilevel))) then
+      mcval%gp(ilon,ilat,ilevel) = val + gp_uncerteinty
+    endif
+    add_noise_to_value = mcval%gp(ilon,ilat,ilevel)
+
+  case ("VT")
+    if( any([ilon,ilat,ilevel].gt.[(size(mcval%vt,i), i =1,3)])) then
+      call print_warning ("PROBLEM montecarlo", error=.true.)
+    endif
+
+    if(isnan(mcval%vt(ilon,ilat,ilevel))) then
+      mcval%vt(ilon,ilat,ilevel) = val + val * random_value * vt_uncerteinty
+    endif
+    add_noise_to_value = mcval%vt(ilon,ilat,ilevel)
 
   case default
     call print_warning (dataname // "randomize how?" , error=.true.)
@@ -184,6 +210,34 @@ subroutine monte_carlo_reset()
         size(model(ind%model%h)%level)) &
         )
       mcval%h = setnan()
+    endif
+  endif
+
+  if(ind%model%gp.ne.0) then
+    if(allocated(mcval%gp)) deallocate(mcval%gp)
+
+    if (.not.allocated(mcval%gp)) then 
+      allocate(                          &
+        mcval%gp(                        &
+        size(model(ind%model%gp)%lon),   &
+        size(model(ind%model%gp)%lat),   &
+        size(model(ind%model%gp)%level)) &
+        )
+      mcval%gp = setnan()
+    endif
+  endif
+
+  if(ind%model%vt.ne.0) then
+    if(allocated(mcval%vt)) deallocate(mcval%vt)
+
+    if (.not.allocated(mcval%vt)) then 
+      allocate(                          &
+        mcval%vt(                        &
+        size(model(ind%model%vt)%lon),   &
+        size(model(ind%model%vt)%lat),   &
+        size(model(ind%model%vt)%level)) &
+        )
+      mcval%vt = setnan()
     endif
   endif
 

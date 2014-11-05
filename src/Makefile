@@ -3,6 +3,7 @@ FC := ifort
 #  FC=gfortran
 
 OPT := -O0
+#  OPT := -O2
 WITH_MONTE_CARLO := yes
 
 # user definitions
@@ -69,23 +70,26 @@ FPP :=                                             \
 	#  #  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 F= -F ./test/data/test_data.nc @SP :sp 
-rgrat: grat value_check
+rgrat: grat link
 	@time { ../bin/grat$(SUFFIX) \
-		-V:sparse                  \
 		-Sj                        \
-		-M1,2                      \
+		-M3,:potential          \
+		-G @GN, @GE           \
 		-F                         \
 		VIENNA@RSP,                \
+		VIENNA@HRSP,                \
 		ERA@SP,                    \
-		ERA @LS                    \
-		-G @GN,@GE                 \
+		ERA@T,                     \
+		ERA@HP, \
+		ERA@H, \
+		ERA @LS, \
+		ERA @GP! , ERA@VT!  \
 		-BI                        \
 		-H                         \
-		-D2013:6@H                 \
-		-o a:prune:free            \
+		-D2013:1@D                     \
+		-o a :free                  \
 		-m mc1.scheme              \
-		-A -H -rt  ; }
-	cat a
+		-A -H  -r ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \

@@ -939,7 +939,8 @@ subroutine convolve(site, date, randomize, results)
                           level%height(i),                     &
                           level  = level%level(i),             &
                           method = info(igreen)%interpolation, &
-                          date   = date%date                   &
+                          date   = date%date,                   &
+                          randomize = randomize &
                           )
 
                         if (ind%model%vt.ne.0) then
@@ -948,7 +949,8 @@ subroutine convolve(site, date, randomize, results)
                             val    = level%temperature(i),           &
                             level  = level%level(i),                 &
                             method = info(igreen)%interpolation,     &
-                            date   = date%date                       &
+                            date   = date%date,                       &
+                            randomize = randomize &
                             )
                         endif
 
@@ -1533,10 +1535,14 @@ subroutine convolve(site, date, randomize, results)
 
   if (present(results)) then
 
-    if(result_total) then
+    if(result_total.and.result_component) then
       allocate(results(size(result)+1))
-    else
+    elseif(.not.result_total.and.result_component) then
       allocate(results(size(result)))
+    elseif(result_total.and..not.result_component) then
+      allocate(results(1))
+    elseif(.not.result_total.and..not.result_component) then
+      allocate(results(0))
     endif
 
     results(1:size(result))=result 
