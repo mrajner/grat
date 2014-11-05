@@ -355,7 +355,6 @@ program grat
 
             do i = 1, monte_carlo_samples
 
-
               call monte_carlo_reset
 
               monte_carlo_results(i,1) = admit( &

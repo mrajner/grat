@@ -143,40 +143,46 @@ subroutine monte_carlo_reset()
   use mod_cmdline, only: ind
   use mod_data, only : model
 
-  if(allocated(mcval%sp)) deallocate(mcval%sp)
+  if(ind%model%sp.ne.0) then
+    if(allocated(mcval%sp)) deallocate(mcval%sp)
 
-  if (.not.allocated(mcval%sp)) then 
-    allocate(                          &
-      mcval%sp(                        &
-      size(model(ind%model%sp)%lon),   &
-      size(model(ind%model%sp)%lat),   &
-      size(model(ind%model%sp)%level)) &
-      )
-    mcval%sp = setnan()
+    if (.not.allocated(mcval%sp)) then 
+      allocate(                          &
+        mcval%sp(                        &
+        size(model(ind%model%sp)%lon),   &
+        size(model(ind%model%sp)%lat),   &
+        size(model(ind%model%sp)%level)) &
+        )
+      mcval%sp = setnan()
+    endif
   endif
 
-  if(allocated(mcval%t)) deallocate(mcval%t)
+  if(ind%model%t.ne.0) then
+    if(allocated(mcval%t)) deallocate(mcval%t)
 
-  if (.not.allocated(mcval%t)) then 
-    allocate(                          &
-      mcval%t(                        &
-      size(model(ind%model%t)%lon),   &
-      size(model(ind%model%t)%lat),   &
-      size(model(ind%model%t)%level)) &
-      )
-    mcval%t = setnan()
+    if (.not.allocated(mcval%t)) then 
+      allocate(                          &
+        mcval%t(                        &
+        size(model(ind%model%t)%lon),   &
+        size(model(ind%model%t)%lat),   &
+        size(model(ind%model%t)%level)) &
+        )
+      mcval%t = setnan()
+    endif
   endif
 
-  if(allocated(mcval%h)) deallocate(mcval%h)
+  if(ind%model%h.ne.0) then
+    if(allocated(mcval%h)) deallocate(mcval%h)
 
-  if (.not.allocated(mcval%h)) then 
-    allocate(                          &
-      mcval%h(                        &
-      size(model(ind%model%h)%lon),   &
-      size(model(ind%model%h)%lat),   &
-      size(model(ind%model%h)%level)) &
-      )
-    mcval%h = setnan()
+    if (.not.allocated(mcval%h)) then 
+      allocate(                          &
+        mcval%h(                        &
+        size(model(ind%model%h)%lon),   &
+        size(model(ind%model%h)%lat),   &
+        size(model(ind%model%h)%level)) &
+        )
+      mcval%h = setnan()
+    endif
   endif
 
 end subroutine

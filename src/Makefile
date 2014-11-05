@@ -76,7 +76,7 @@ dffsf: grat
 		-D2013                       \
 		-H                           \
 		-G @GN                       \
-		-m mc1                       \
+		-m mc1.scheme                       \
 		-M1                          \
 		-o : c 
 rgrat: grat value_check
