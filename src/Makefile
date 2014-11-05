@@ -73,17 +73,17 @@ rgrat: grat value_check
 	@time { ../bin/grat$(SUFFIX) \
 		-V:sparse                  \
 		-Sj                        \
-		-M1,2                        \
+		-M1,2                      \
 		-F                         \
 		VIENNA@RSP,                \
 		ERA@SP,                    \
 		ERA @LS                    \
-		-G @GN,@GE                \
+		-G @GN,@GE                 \
 		-BI                        \
 		-H                         \
-		-D2013:6@H                     \
-		-o a:prune:free \
-		-m mc1.scheme \
+		-D2013:6@H                 \
+		-o a:prune:free            \
+		-m mc1.scheme              \
 		-A -H -rt  ; }
 	cat a
 sdf:
