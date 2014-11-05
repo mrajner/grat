@@ -74,7 +74,7 @@ rgrat: grat value_check
 		-!                         \
 		-V:sparse                  \
 		-Sj                        \
-		-M2                        \
+		-M1,2                        \
 		-F                         \
 		VIENNA@RSP,                \
 		VIENNA@HRSP,               \
@@ -82,12 +82,14 @@ rgrat: grat value_check
 		ERA @T ,                   \
 		ERA@ H,                     \
 		ERA @LS                    \
-		-G @GN ,@GE                \
+		-G @GN, @GNdt ,@GE                \
 		-BI                        \
 		-H                         \
 		-D2013:6@H                     \
-		-I-20@DD : 90@AS :1000@HS          \
-		-o:prune:free -m mc1.scheme -A -H -r  ; }
+		-o a:prune:free \
+		-m mc1.scheme \
+		-A -H -rt  ; }
+	cat a
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \

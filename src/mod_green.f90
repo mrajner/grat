@@ -657,8 +657,7 @@ subroutine convolve(site, date, randomize, results)
                   r2d(lon),                            &
                   val(ind%model%rsp),                  &
                   level=1,                             &
-                  method = info(igreen)%interpolation, &
-                  randomize= randomize                 &
+                  method = info(igreen)%interpolation  &
                   )
               endif
               old_val_rsp=val(ind%model%rsp)

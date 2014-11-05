@@ -20,14 +20,20 @@ module mod_montecarlo
     admitance_uncerteinty = 0.0_dp, &
     sp_uncerteinty        = 0.000_dp , &
     t_uncerteinty         = 0.000_dp , &
-    h_uncerteinty         = 0.000_dp , &
-    rsp_uncerteinty       = 0.000_dp 
+    h_uncerteinty         = 0.000_dp 
 
   real(dp), allocatable, dimension(:,:) :: monte_carlo_results
   real(dp), allocatable, dimension(:) :: results
 
+  type val_data
+    real(dp), dimension(:,:,:), allocatable :: sp, t, h
+  end type
+  type (val_data) :: mcval
+
 contains
 
+! =============================================================================
+! =============================================================================
 subroutine get_monte_carlo_settings(file)
   use mod_utilities, only: file_exists, skip_header
   use mod_printing, only: print_warning, log, form
@@ -57,8 +63,6 @@ subroutine get_monte_carlo_settings(file)
       monte_carlo_samples = value
     case("A")
       admitance_uncerteinty = value
-    case("RSP")
-      rsp_uncerteinty = value
     case("T")
       t_uncerteinty = value
     case("H")
@@ -74,20 +78,17 @@ subroutine get_monte_carlo_settings(file)
   close (i)
 end subroutine
 
-
+! =============================================================================
+! =============================================================================
 real(dp) function add_noise_to_value(val, dataname, ilon, ilat, ilevel)
   use mod_printing, only: print_warning
-  use mod_cmdline, only: ind
-  use mod_data, only : model
+  ! use mod_cmdline, only: ind
+  ! use mod_data, only : model
 
   real(dp), intent(in) :: val
   character(*), intent(in) :: dataname
   integer, intent(in), optional :: ilat, ilon, ilevel
 
-  type val_data
-    real(dp), dimension(:,:,:), allocatable :: sp
-  end type
-  type (val_data) :: vals
   
   integer::i
 
@@ -95,43 +96,91 @@ real(dp) function add_noise_to_value(val, dataname, ilon, ilat, ilevel)
     random_value=1.
   else
     call random_gau(random_value,0._dp, 1._dp)
+    ! print*,random_value
   endif
 
   select case (dataname)
 
   case ("SP")
-    if (.not.allocated(vals%sp)) then 
-      allocate(                          &
-        vals%sp(                         &
-        size(model(ind%model%sp)%lon),   &
-        size(model(ind%model%sp)%lat),   &
-        size(model(ind%model%sp)%level)) &
-        )
-
-      vals%sp = setnan()
+    if( any([ilon,ilat,ilevel].gt.[(size(mcval%sp,i), i =1,3)])) then
+      call print_warning ("PROBLEM montecarlo", error=.true.)
     endif
 
-    if(isnan(vals%sp(ilon,ilat,ilevel))) then
-      vals%sp(ilon,ilat,ilevel) = val + val * random_value * sp_uncerteinty
+    if(isnan(mcval%sp(ilon,ilat,ilevel))) then
+      mcval%sp(ilon,ilat,ilevel) = val + val * random_value * sp_uncerteinty
     endif
-    ! add_noise_to_value = vals%sp(ilon,ilat,ilevel)
-    ! add_noise_to_value 
-    ! old%spval = add_noise_to_value
-    ! old%sp = [ ilat , ilon , ilevel ]
-  ! endif
-    ! print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
-    ! print *, old%sp 
-    ! print *
-    ! print * ,all(old%date .eq. date)
-  case ("RSP")
-    ! add_noise_to_value = val + val * random_value * rsp_uncerteinty
-    ! case ("T")
-    ! add_noise_to_value = val + val * random_value * t_uncerteinty
-    ! print '(3i6,2f14.3)' , ilat, ilon,ilevel , val , add_noise_to_value
-    ! case ("H")
-    ! add_noise_to_value = val + random_value * h_uncerteinty
+
+    add_noise_to_value = mcval%sp(ilon,ilat,ilevel)
+
+  case ("T")
+    if( any([ilon,ilat,ilevel].gt.[(size(mcval%t,i), i =1,3)])) then
+      call print_warning ("PROBLEM montecarlo", error=.true.)
+    endif
+
+    if(isnan(mcval%t(ilon,ilat,ilevel))) then
+      mcval%t(ilon,ilat,ilevel) = val + val * random_value * t_uncerteinty
+    endif
+
+    add_noise_to_value = mcval%t(ilon,ilat,ilevel)
+
+  case ("H")
+    if( any([ilon,ilat,ilevel].gt.[(size(mcval%h,i), i =1,3)])) then
+      call print_warning ("PROBLEM montecarlo", error=.true.)
+    endif
+
+    if(isnan(mcval%h(ilon,ilat,ilevel))) then
+      mcval%h(ilon,ilat,ilevel) = val + val * random_value * t_uncerteinty
+    endif
+
+    add_noise_to_value = mcval%h(ilon,ilat,ilevel)
+
   case default
     call print_warning (dataname // "randomize how?" , error=.true.)
   end select
+
 end function
+
+! =============================================================================
+! =============================================================================
+subroutine monte_carlo_reset()
+  use mod_cmdline, only: ind
+  use mod_data, only : model
+
+  if(allocated(mcval%sp)) deallocate(mcval%sp)
+
+  if (.not.allocated(mcval%sp)) then 
+    allocate(                          &
+      mcval%sp(                        &
+      size(model(ind%model%sp)%lon),   &
+      size(model(ind%model%sp)%lat),   &
+      size(model(ind%model%sp)%level)) &
+      )
+    mcval%sp = setnan()
+  endif
+
+  if(allocated(mcval%t)) deallocate(mcval%t)
+
+  if (.not.allocated(mcval%t)) then 
+    allocate(                          &
+      mcval%t(                        &
+      size(model(ind%model%t)%lon),   &
+      size(model(ind%model%t)%lat),   &
+      size(model(ind%model%t)%level)) &
+      )
+    mcval%t = setnan()
+  endif
+
+  if(allocated(mcval%h)) deallocate(mcval%h)
+
+  if (.not.allocated(mcval%h)) then 
+    allocate(                          &
+      mcval%h(                        &
+      size(model(ind%model%h)%lon),   &
+      size(model(ind%model%h)%lat),   &
+      size(model(ind%model%h)%level)) &
+      )
+    mcval%h = setnan()
+  endif
+
+end subroutine
 end module

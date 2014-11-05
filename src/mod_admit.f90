@@ -79,8 +79,7 @@ real(dp) function admit(site_, date, number, randomize)
       lon=site_%lon,                  &
       val=rsp,                        &
       level=1,                        &
-      method = info(1)%interpolation, &
-      randomize = randomize           &
+      method = info(1)%interpolation  &
       )
   endif
 

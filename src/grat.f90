@@ -354,6 +354,10 @@ program grat
             allocate(monte_carlo_results(monte_carlo_samples,1))
 
             do i = 1, monte_carlo_samples
+
+
+              call monte_carlo_reset
+
               monte_carlo_results(i,1) = admit( &
                 site(isite),                    &
                 date      = date(idate)%date,   &
@@ -363,7 +367,7 @@ program grat
             enddo
 
             write(output%unit, "(2"// output%form // ")" , advance = "no" ) &
-              mean(monte_carlo_results,monte_carlo_samples) , &
+              mean(monte_carlo_results,monte_carlo_samples) ,               &
               stdev(monte_carlo_results,monte_carlo_samples)
           endif
 #endif
@@ -401,7 +405,11 @@ program grat
           monte_carlo_results(0,:) = results
           ! print * ,results, "}"
 
-          do i = 1,monte_carlo_samples
+          do i = 1, monte_carlo_samples
+
+            call monte_carlo_reset
+              call progress(100*i/monte_carlo_samples, 3., 0., every=1)
+
             call convolve (            &
               site(isite),             &
               date      = date(idate), &
@@ -410,12 +418,11 @@ program grat
               )
             monte_carlo_results(i,:) = results
 
-            ! print * ,results, "}"
           enddo
 
           do i = 1, size(results)
-            write(output%unit, "(3" // output%form // ")" , advance = "no" )       &
-              monte_carlo_results(0,i) , &
+            write(output%unit, "(" // output%form // "$)" )         &
+              monte_carlo_results(0,i) ,                            &
               mean(monte_carlo_results(1:,i),monte_carlo_samples) , &
               stdev(monte_carlo_results(1:,i),monte_carlo_samples)
           enddo

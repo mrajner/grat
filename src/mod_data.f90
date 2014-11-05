@@ -1138,11 +1138,17 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
 
 #ifdef WITH_MONTE_CARLO
   if(present(randomize).and.randomize)then
-    val = add_noise_to_value(val,model%dataname, ilat, ilon, get_level_index(model,ilevel))
+    val = add_noise_to_value(                   &
+      val      = val,                           &
+      dataname = model%dataname,                &
+      ilat     = ilat,                          &
+      ilon     = ilon,                          &
+      ilevel   = get_level_index(model, ilevel) &
+      )
   endif
 #endif
-    return
-  endif
+  return
+endif
 
   if (present(method) .and. method .eq."l") then
     ilon2 = minloc(abs(model%lon-lon), 1, model%lon/=model%lon(ilon))
@@ -1185,7 +1191,13 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
 
 #ifdef WITH_MONTE_CARLO
   if(present(randomize).and.randomize)then
-    val = add_noise_to_value(val, model%dataname, ilat, ilon, get_level_index(model,ilevel))
+    val = add_noise_to_value(                   &
+      val      = val,                           &
+      dataname = model%dataname,                &
+      ilat     = ilat,                          &
+      ilon     = ilon,                          &
+      ilevel   = get_level_index(model, ilevel) &
+      )
   endif
 #endif
 
@@ -1473,9 +1485,9 @@ function if_variable_use_dimension (model, ivarname, idimname)
   status = nf90_inq_varid(model%ncid, model%names(idimname), i)
 
   if(any(dimids == i)) then
-    if_variable_use_dimension=.true.
+    if_variable_use_dimension = .true.
   else
-    if_variable_use_dimension=.false.
+    if_variable_use_dimension = .false.
   endif
 end function
 
