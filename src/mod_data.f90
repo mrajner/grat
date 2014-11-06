@@ -325,7 +325,7 @@ subroutine model_aliases(model, dryrun, year, month)
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"sh_l.",year_,month_,".nc"
     case ("T")
       model%names(1)="v2t"
-      ! model%names(1)="t2m"
+      model%names(1)="t2m"
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
     case ("HP","H")
       model%names(1)="z"

@@ -3,7 +3,7 @@ FC := ifort
 #  FC=gfortran
 
 OPT := -O0
-#  OPT := -O2
+OPT := -O2
 WITH_MONTE_CARLO := yes
 
 # user definitions
