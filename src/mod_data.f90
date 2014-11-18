@@ -69,7 +69,7 @@ contains
 !! \author M. Rajner
 !! \date 2013.05.20
 ! =============================================================================
-subroutine parse_model (cmd_line_entry)
+subroutine parse_model(cmd_line_entry)
   use mod_cmdline
   use mod_printing
   use mod_utilities, only: file_exists, is_numeric
@@ -84,26 +84,25 @@ subroutine parse_model (cmd_line_entry)
   allocate(model(size(cmd_line_entry%field)))
 
   do i = 1, size(cmd_line_entry%field)
+
     model(i)%exist=.true.
-    if (.not.log%sparse) &
+
+    if (.not.log%sparse) then
       write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
+    endif
 
     model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
     model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
 
     if (model(i)%dataname.eq."") then
       model(i)%dataname="NN"
-    else
-      if ( &
-        index(model(i)%dataname,"!").ne.0 &
-      ) then
+
+    elseif (index(model(i)%dataname,"!").ne.0) then
 
         model(i)%huge=.true.
         model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
 
-        if (.not.log%sparse) &
-          write(log%unit, form%i3) "!:huge"
-      endif
+        if (.not.log%sparse) write(log%unit, form%i3) "!:huge"
     endif
 
     if (all_huge) model(i)%huge=.true.
@@ -178,7 +177,7 @@ subroutine parse_model (cmd_line_entry)
 
     else
       !check autoload
-      call model_aliases(model(i), dryrun=.true.)
+      call model_aliases(model(i), dryrun=.true., fieldname="t2m")
 
       if (.not.model(i)%if) then
         call print_warning (                                   &
@@ -194,7 +193,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine model_aliases(model, dryrun, year, month)
+subroutine model_aliases(model, dryrun, year, month, fieldname)
   use mod_printing
   use mod_utilities, only: file_exists
   use mod_cmdline,   only: warnings
@@ -202,6 +201,7 @@ subroutine model_aliases(model, dryrun, year, month)
   type(file) :: model
   logical, intent(in), optional :: dryrun
   integer, intent(in), optional :: year, month
+  character(*), intent(in), optional :: fieldname
   character(150) :: prefix
   integer :: year_, month_
 
@@ -353,15 +353,20 @@ subroutine model_aliases(model, dryrun, year, month)
 
   case ("VIENNA")
     prefix="/home/mrajner/dat/refpres/"
+
     select case (model%dataname)
+
     case ("RSP", "SP")
       model%names(1)="rp"
       write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
+
     case ("H", "HRSP", "HP")
       model%names(1)="height"
       write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
+
     case default
       model%if=.false.
+
     endselect
 
   case ("ETOPO")
@@ -387,6 +392,14 @@ subroutine model_aliases(model, dryrun, year, month)
     model%if       = .false.
     model%autoload = .false.
   endselect
+
+  if(present(fieldname)) then
+    stop "TODO"
+    ! print*, model%names
+    ! model%names(1)=fieldname
+    ! print*, model%names
+    ! stop "XXX"
+  endif
 
   ! listing in log
   model%constant_value =         &

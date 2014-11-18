@@ -3,8 +3,13 @@ FC := ifort
 #  FC=gfortran
 
 OPT := -O0
+<<<<<<< HEAD
 OPT := -O2
 WITH_MONTE_CARLO := yes
+=======
+#  OPT := -O2
+#  WITH_MONTE_CARLO := yes
+>>>>>>> b1b755f8c3b9c16e3c480d64d0ff4ac2d6aad8cd
 
 # user definitions
 LIBDIR    := /usr/local/lib
@@ -55,6 +60,11 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
+BUG: value_check
+	value_check \
+		-Sj \
+		-D2013 \
+		-F ERA@T : t2m , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
 #  tm: value_check
 	#  time \
 		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
@@ -83,7 +93,7 @@ rgrat: grat link
 		ERA@HP, \
 		ERA@H, \
 		ERA @LS, \
-		ERA @GP! , ERA@VT!  \
+		ERA @GP! , ERA@VT!:t2m  \
 		-BI                        \
 		-H                         \
 		-D2013:1@D                     \
@@ -199,6 +209,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 #  $(PROGS_SHORTCUTS):
 	#  make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
 grat: $(addprefix $(PROGS_DIR)/grat,$(@)$(SUFFIX))
+value_check: $(addprefix $(PROGS_DIR)/value_check,$(@)$(SUFFIX))
 
 ifdef WITH_MONTE_CARLO
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a lib_random$(SUFFIX).o
