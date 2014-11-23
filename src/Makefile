@@ -3,13 +3,9 @@ FC := ifort
 #  FC=gfortran
 
 OPT := -O0
-<<<<<<< HEAD
 OPT := -O2
-WITH_MONTE_CARLO := yes
-=======
-#  OPT := -O2
 #  WITH_MONTE_CARLO := yes
->>>>>>> b1b755f8c3b9c16e3c480d64d0ff4ac2d6aad8cd
+#  WITH_MONTE_CARLO := yes
 
 # user definitions
 LIBDIR    := /usr/local/lib
