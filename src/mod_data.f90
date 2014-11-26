@@ -394,7 +394,7 @@ subroutine model_aliases(model, dryrun, year, month, fieldname)
   endselect
 
   if(present(fieldname)) then
-    stop "TODO"
+    ! stop "TODO"
     ! print*, model%names
     ! model%names(1)=fieldname
     ! print*, model%names

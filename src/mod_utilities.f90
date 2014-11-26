@@ -59,9 +59,6 @@ subroutine spline (x, y, b, c, d, n)
   integer i, j, gap
   real(dp) ::  h
 
-
-  ! print '(5f15.5)' , x
-  ! stop
   gap = n-1
   ! check input
   if ( n < 2 ) return
@@ -457,7 +454,7 @@ integer function count_separator (dummy, separator, consecutive_as_one)
 
     if (present(consecutive_as_one).and.consecutive_as_one) then
       ! print *, index(dummy, dummy2)
-      stop "TODO"
+      ! stop "TODO"
       ! if (dummy(i-1:i-1) == sep) then
       ! count_separator = count_separator -1
       ! endif
