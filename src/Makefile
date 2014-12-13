@@ -57,10 +57,16 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: value_check
-	value_check \
+	-value_check \
 		-Sj \
 		-D2013 \
 		-F ERA@T : t2m , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
+	-value_check \
+		-Sj \
+		-D2013 \
+		-F ERA@T : v2t , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
+
+xxx:
 #  tm: value_check
 	#  time \
 		#  { value_check -q -F  check/data/air.2012.nc@SP : air  -Sg:10 -wn -Dm:3@D -J1000,950  -otmp:level -G@GN ; }
@@ -76,26 +82,6 @@ BUG: value_check
 	#  #  cat /home/mrajner/dat/ispd/hourly/$${file} | awk '{print $$1, $$3}' > local
 
 F= -F ./test/data/test_data.nc @SP :sp 
-rgrat: grat link
-	@time { ../bin/grat$(SUFFIX) \
-		-Sj                        \
-		-M3,:potential          \
-		-G @GN, @GE           \
-		-F                         \
-		VIENNA@RSP,                \
-		VIENNA@HRSP,                \
-		ERA@SP,                    \
-		ERA@T,                     \
-		ERA@HP, \
-		ERA@H, \
-		ERA @LS, \
-		ERA @GP! , ERA@VT!:t2m  \
-		-BI                        \
-		-H                         \
-		-D2013:1@D                     \
-		-o a :free                  \
-		-m mc1.scheme              \
-		-A -H  -r ; }
 sdf:
 	#  @../bin/grat$(SUFFIX)      \
 		#  -S j                     \
