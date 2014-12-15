@@ -1,8 +1,12 @@
-xf: pdf
+
+#  man:
+
 doxygen:
-	doxygen
+	{ cat ./Doxyfile ; echo "PROJECT_NUMBER = $$(git describe)" ; } \
+	| doxygen -
+
 html: doxygen
 
-pdf: 
+pdf: doxygen
 	cd ./latex/ && pdflatex -shell-escape refman
 

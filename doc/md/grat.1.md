@@ -1,6 +1,6 @@
 % grat(1) grat user manual
 % Marcin Rajner
-% June ,2014
+% June, 2014
 
 # NAME
 
@@ -9,15 +9,12 @@ using numerical weather models
 
 # SYNOPSIS
 
-grat [*options*] [*input-file*]...
+grat [*options*]
 
 # DESCRIPTION
 
-Pandoc converts files from one markup format to another. It can
-read markdown and (subsets of) reStructuredText, HTML, and LaTeX, and
-it can write plain text, markdown, reStructuredText, HTML, LaTeX,
-ConTeXt, Texinfo, groff man, MediaWiki markup, RTF, OpenDocument XML,
-ODT, DocBook XML, EPUB, and Slidy or S5 HTML slide shows.
+`grat` computes atmospheric gravity correction using
+numerical weather model.
 
 If no *input-file* is specified, input is read from *stdin*.
 Otherwise, the *input-files* are concatenated (with a blank
@@ -61,6 +58,7 @@ should pipe input and output through `iconv`:
     iconv -t utf-8 input.txt | pandoc | iconv -f utf-8
 
 # OPTIONS
+-h print help
 
 -f *FORMAT*, -r *FORMAT*, \--from=*FORMAT*, \--read=*FORMAT*
 :   Specify input format.  *FORMAT* can be
