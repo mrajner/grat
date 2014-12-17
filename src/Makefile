@@ -1,9 +1,14 @@
 FC := ifort
 
 #  FC=gfortran
+define colorecho
+@tput setaf $1
+@echo -n "$2: "
+@tput sgr0
+endef
 
 OPT := -O0
-OPT := -O2
+#  OPT := -O2
 #  WITH_MONTE_CARLO := yes
 #  WITH_MONTE_CARLO := yes
 
@@ -56,7 +61,9 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-BUG: value_check
+
+BUG: all
+	exit
 	-value_check \
 		-Sj \
 		-D2013 \
@@ -101,7 +108,7 @@ sdf:
 		#  -o : free -A  -H
 
 dgrat: grat value_check
-	../bin/grat_$(SUFFIX) -S o              \
+	../bin/grat_$(SUFFIX) -S o          \
 		-M1,2                             \
 		-F                                \
 		NCEP@SP ,                         \
@@ -115,7 +122,7 @@ dgrat: grat value_check
 	-o  
 
 
-SRCS      := \
+SRCS      :=                      \
 						mod_constants.f90     \
 						mod_utilities.f90     \
 						mod_cmdline.f90       \
@@ -133,6 +140,7 @@ SRCS      := \
 						mod_green.f90         \
 						mod_admit.f90         \
 						mod_parser.f90        
+
 ifdef WITH_MONTE_CARLO
 	SRCS := $(addprefix mod_montecarlo.f90 , $(SRCS))
 endif
@@ -167,6 +175,7 @@ install:                                     \
 	$(addprefix $(INCDIR)/,$(MOD))
 	
 uninstall: 
+	$(call colorecho,1,$@)
 	-rm -f                                       \
 		$(addprefix $(INCDIR)/,$(MOD))             \
 		$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
@@ -185,6 +194,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 	cp -uv $< $@
 
 %$(SUFFIX).o: %.f90
+	$(call colorecho,2,$@)
 	$(FC) $(FFLAGS) $< -c -o $@  -I ~/src/fortranlib/src $(FPP)
 
 .PHONY: $(PROGS_SHORTCUTS)
@@ -253,3 +263,6 @@ endif
 #  install-doc: doc
 	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 #  .EXPORT_ALL_VARIABLES:
+#
+ddd:
+	echo dfsdf
