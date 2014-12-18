@@ -214,6 +214,7 @@ lib_random$(SUFFIX).o:  /home/mrajner/src/fortranlib/src/lib_random.f90
 
 else
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
+	$(call colorecho,3,$@)
 	$(FC) $(FFLAGS) $(FPP) \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
 endif
@@ -223,6 +224,7 @@ libgrat$(SUFFIX).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a
 	ln -sf libgrat$(SUFFIX)$(VERSION_MAJOR).a libgrat$(SUFFIX).a
 
 libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
+	$(call colorecho,4,$@)
 	ar rusv $@ $(OBJS)
 
 .PHONY: install 
