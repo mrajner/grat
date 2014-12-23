@@ -1,6 +1,6 @@
 FC := ifort
 
-#  FC=gfortran
+FC=gfortran
 define colorecho
 @tput setaf $1
 @echo -n "$2: "
@@ -9,7 +9,7 @@ endef
 
 OPT := -O0
 #  OPT := -O2
-#  WITH_MONTE_CARLO := yes
+WITH_MONTE_CARLO := yes
 #  WITH_MONTE_CARLO := yes
 
 # user definitions
