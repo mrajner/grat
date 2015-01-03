@@ -7,8 +7,8 @@ define colorecho
 @tput sgr0
 endef
 
-OPT := -O0
-#  OPT := -O2
+#  OPT := -O0
+OPT := -O2
 
 # user definitions
 LIBDIR    := /usr/local/lib
@@ -41,7 +41,7 @@ endif
 # gfortran settings
 ifeq ($(FC),gfortran)
 FFLAGS  := \
-	-O0      \
+	$(OPT)   \
 	-I/home/mrajner/src/netcdf-gfortran/fortran 
 ENABLE_PREPROCESSING = -cpp
 NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
