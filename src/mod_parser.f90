@@ -19,9 +19,6 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
   use mod_green,     only: parse_green, green
   use mod_utilities, only: file_exists, is_numeric
   use mod_admit,     only: parse_admit
-#ifdef WITH_MONTE_CARLO
-  use mod_montecarlo
-#endif
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
@@ -123,16 +120,6 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
   case ("-H")
     if (.not.log%sparse) write(log%unit, form%i3) 'header'
     output%header=.true.
-
-  case ("-m")
-#ifdef WITH_MONTE_CARLO
-    monte_carlo = .true.
-    monte_carlo_settings=cmd_line_entry%field(1)%subfield(1)%name
-    write(log%unit, form%i2) "monte carlo settings: ", trim(monte_carlo_settings)
-    call get_monte_carlo_settings(monte_carlo_settings)
-#else
-    call print_warning("-m| compile with WITH_MONTE_CARLO=YES",error=.true.)
-#endif
 
   case ('-M')
     method=.false.

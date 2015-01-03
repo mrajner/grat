@@ -1029,10 +1029,6 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   use mod_printing, only: print_warning, basename
   use iso_fortran_env, only: error_unit
 
-#ifdef WITH_MONTE_CARLO
-  use mod_montecarlo
-#endif
-
   type(file), intent (in) :: model
   real(dp) :: lat, lon
   real(dp), intent(out) ::  val
@@ -1149,17 +1145,6 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
       val = variable_modifier (val, model%datanames(1))
     endif
 
-#ifdef WITH_MONTE_CARLO
-  if(present(randomize).and.randomize)then
-    val = add_noise_to_value(                   &
-      val      = val,                           &
-      dataname = model%dataname,                &
-      ilat     = ilat,                          &
-      ilon     = ilon,                          &
-      ilevel   = get_level_index(model, ilevel) &
-      )
-  endif
-#endif
   return
 endif
 
@@ -1201,19 +1186,6 @@ endif
   val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
 
   if (.not.success2) val = setnan()
-
-#ifdef WITH_MONTE_CARLO
-  if(present(randomize).and.randomize)then
-    val = add_noise_to_value(                   &
-      val      = val,                           &
-      dataname = model%dataname,                &
-      ilat     = ilat,                          &
-      ilon     = ilon,                          &
-      ilevel   = get_level_index(model, ilevel) &
-      )
-  endif
-#endif
-
 end subroutine
 
 ! =============================================================================

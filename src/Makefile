@@ -9,8 +9,6 @@ endef
 
 OPT := -O0
 #  OPT := -O2
-WITH_MONTE_CARLO := yes
-#  WITH_MONTE_CARLO := yes
 
 # user definitions
 LIBDIR    := /usr/local/lib
@@ -48,10 +46,6 @@ FFLAGS  := \
 ENABLE_PREPROCESSING = -cpp
 NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
 LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
-endif
-
-ifdef WITH_MONTE_CARLO
-FFLAGS += -DWITH_MONTE_CARLO
 endif
 
 FPP :=                                             \
@@ -141,10 +135,6 @@ SRCS      :=                      \
 						mod_admit.f90         \
 						mod_parser.f90        
 
-ifdef WITH_MONTE_CARLO
-	SRCS := $(addprefix mod_montecarlo.f90 , $(SRCS))
-endif
-
 PROGSSRCS :=                  \
 						grat.f90          \
 						value_check.f90   \
@@ -203,21 +193,10 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 grat: $(addprefix $(PROGS_DIR)/grat,$(@)$(SUFFIX))
 value_check: $(addprefix $(PROGS_DIR)/value_check,$(@)$(SUFFIX))
 
-ifdef WITH_MONTE_CARLO
-$(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a lib_random$(SUFFIX).o
-	$(FC) $(FFLAGS) $(FPP)          \
-	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) lib_random$(SUFFIX).o 
-
-mod_data$(SUFFIX).o: lib_random$(SUFFIX).o
-lib_random$(SUFFIX).o:  /home/mrajner/src/fortranlib/src/lib_random.f90 
-	$(FC) $(FFLAGS) $< -c -o $@
-
-else
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
 	$(call colorecho,3,$@)
 	$(FC) $(FFLAGS) $(FPP) \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
-endif
 
 
 libgrat$(SUFFIX).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a

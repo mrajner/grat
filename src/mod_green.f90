@@ -471,9 +471,6 @@ subroutine convolve(site, date, randomize, results)
   use mod_aggf, only: aggf
   use mod_atmosphere, only: standard_pressure, standard_temperature, virtual_temperature
   use mod_3d
-#ifdef WITH_MONTE_CARLO
-  ! use mod_montecarlo, only: monte_carlo
-#endif
 
   type(site_info),  intent(in) :: site
   type(dateandmjd), intent(in), optional :: date

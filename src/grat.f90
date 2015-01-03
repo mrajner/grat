@@ -65,9 +65,6 @@ program grat
   use mod_cmdline
   use mod_admit,     only: admit
   use mod_utilities, only: Bubble_Sort, mean, stdev
-#ifdef WITH_MONTE_CARLO
-  use mod_montecarlo
-#endif
 
   implicit none
   real    :: cpu(2)
@@ -97,12 +94,6 @@ program grat
     call exit (0)
   endif
 
-#ifdef WITH_MONTE_CARLO
-  if(monte_carlo) then
-    call set_seed(10)
-  endif
-#endif
-
   if (ubound(date,1).gt.0) then
 
     if(output%header) then
@@ -126,14 +117,8 @@ program grat
           write (output%unit,'(a13)', advance='no'), "G1D"
         endif
 
-#ifdef WITH_MONTE_CARLO
-        if (monte_carlo) then
-          write (output%unit,'(2a13)', advance='no') "mean1", "std1"
-        endif
-#endif
       enddo
     endif
-
 
     if (method(2).or.method(3)) then
 
@@ -148,20 +133,10 @@ program grat
           else
             write (output%unit,'(a13$)'), trim(green(i)%dataname)
           endif
-#ifdef WITH_MONTE_CARLO
-        if (monte_carlo) then
-          write (output%unit,'(2a13)', advance='no') "mean", "std"
-        endif
-#endif
         enddo
 
         if (inverted_barometer.and.non_inverted_barometer.and.any(green%dataname.eq."GE")) then
           write (output%unit,'(a13)' , advance = "no"), "GE_NIB"
-#ifdef WITH_MONTE_CARLO
-          if (monte_carlo) then
-            write (output%unit,'(2a13)', advance='no') "mean", "std"
-          endif
-#endif
         endif
       endif
 
@@ -172,20 +147,10 @@ program grat
             .and. result_total_all                            &
             ) then
             write (output%unit,'(a13)',advance='no'), "G2D_t_IB"
-#ifdef WITH_MONTE_CARLO
-            if (monte_carlo) then
-              write (output%unit,'(2a13)', advance='no') "mean", "std"
-            endif
-#endif
             write (output%unit,'(a13)',advance='no'), "G2D_t_NIB"
           else
             write (output%unit,'(a13)',advance='no'), "G2D_t"
           endif
-#ifdef WITH_MONTE_CARLO
-          if (monte_carlo) then
-            write (output%unit,'(2a13)', advance='no') "mean", "std"
-          endif
-#endif
         endif
         if (method(3)) then
           if ( &
@@ -345,90 +310,14 @@ program grat
             number = j                                                    &
             )
 
-#ifdef WITH_MONTE_CARLO
-          if(monte_carlo) then
-            if(allocated(monte_carlo_results)) then
-              deallocate(monte_carlo_results)
-            endif
-
-            allocate(monte_carlo_results(monte_carlo_samples,1))
-
-            do i = 1, monte_carlo_samples
-
-              call monte_carlo_reset
-
-              monte_carlo_results(i,1) = admit( &
-                site(isite),                    &
-                date      = date(idate)%date,   &
-                number    = j,                  &
-                randomize = .true.              &
-                )
-            enddo
-
-            write(output%unit, "(2"// output%form // ")" , advance = "no" ) &
-              mean(monte_carlo_results,monte_carlo_samples) ,               &
-              stdev(monte_carlo_results,monte_carlo_samples)
-          endif
-#endif
         enddo
       endif
 
       if (method(2).or.method(3)) then
-#ifdef WITH_MONTE_CARLO
-        if(monte_carlo) then
-          call convolve (       &
-            site(isite),        &
-            date = date(idate), &
-            results = results   &
-            )
-        else
-          call convolve (      &
-            site(isite),       &
-            date = date(idate) &
-            )
-        endif
-#else
         call convolve (      &
           site(isite),       &
           date = date(idate) &
           )
-#endif
-
-#ifdef WITH_MONTE_CARLO
-        if (monte_carlo) then
-          if(allocated(monte_carlo_results)) then
-            deallocate(monte_carlo_results)
-          endif
-          allocate(monte_carlo_results(0:monte_carlo_samples,size(results)))
-
-          monte_carlo_results(0,:) = results
-          ! print * ,results, "}"
-
-          do i = 1, monte_carlo_samples
-
-            call monte_carlo_reset
-            if(monte_carlo_progress) then
-              call progress(100*i/monte_carlo_samples, 3., 0., every=1)
-            endif
-
-            call convolve (            &
-              site(isite),             &
-              date      = date(idate), &
-              randomize = monte_carlo, &
-              results   = results      &
-              )
-            monte_carlo_results(i,:) = results
-
-          enddo
-
-          do i = 1, size(results)
-            write(output%unit, "(" // output%form // "$)" )         &
-              monte_carlo_results(0,i) ,                            &
-              mean(monte_carlo_results(1:,i),monte_carlo_samples) , &
-              stdev(monte_carlo_results(1:,i),monte_carlo_samples)
-          enddo
-        endif
-#endif
       endif
 
       write(output%unit, *) ""
