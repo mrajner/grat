@@ -401,7 +401,7 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
 
   open (newunit = file_unit,  file = file_name, status = "old", action ="read")
   do
-    call skip_header (file_unit, comment_char_)
+    ! call skip_header (file_unit, comment_char_)
     read (file_unit, '(a)', iostat=io_stat) line
     if (io_stat == iostat_end) exit
 
@@ -409,10 +409,10 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
     n_rows    = n_rows + 1
   enddo
 
-  close (file_unit)
-
   if (present(rows))    rows    = n_rows
   if (present(columns)) columns = n_columns
+
+  close (file_unit)
 end subroutine
 
 ! ==============================================================================
@@ -581,6 +581,7 @@ end subroutine
 ! ==============================================================================
 ! ==============================================================================
 real function mean (vec, i, nan)
+
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
