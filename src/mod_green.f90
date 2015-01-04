@@ -456,7 +456,7 @@ end subroutine
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve(site, date, randomize, results)
+subroutine convolve(site, date, results)
   use, intrinsic :: iso_fortran_env
   use mod_constants
   use mod_site, only : site_info, local_pressure_distance
@@ -495,7 +495,6 @@ subroutine convolve(site, date, randomize, results)
   logical, save :: first_call = .true.
   real(dp), dimension(:), allocatable, save :: reference_results
 
-  logical, intent(in), optional :: randomize
   real(dp), intent(out), optional, dimension(:), allocatable :: results
 
   first_reduction=.true.
@@ -637,8 +636,7 @@ subroutine convolve(site, date, randomize, results)
                 val(ind%model%sp),                      &
                 level     = 1,                          &
                 method    = info(igreen)%interpolation, &
-                date      = date%date ,                 &
-                randomize = randomize                   &
+                date      = date%date                   &
                 )
             endif
 
@@ -685,15 +683,14 @@ subroutine convolve(site, date, randomize, results)
                 )                  &
                 ) then
 
-                call get_value (                     &
-                  model(ind%model%t),                &
-                  r2d(lat),                          &
-                  r2d(lon),                          &
-                  val(ind%model%t),                  &
-                  level=1,                           &
-                  method=info(igreen)%interpolation, &
-                  date=date%date,                    &
-                  randomize=randomize                &
+                call get_value (                       &
+                  model(ind%model%t),                  &
+                  r2d(lat),                            &
+                  r2d(lon),                            &
+                  val(ind%model%t),                    &
+                  level  = 1,                          &
+                  method = info(igreen)%interpolation, &
+                  date   = date%date                   &
                   )
 
               endif
@@ -735,8 +732,7 @@ subroutine convolve(site, date, randomize, results)
                     lon    = r2d(lon),                   &
                     val    = val(ind%model%h),           &
                     level  = 1,                          &
-                    method = info(igreen)%interpolation, &
-                    randomize = randomize                &
+                    method = info(igreen)%interpolation  &
                     )
                 endif
               endif
@@ -936,8 +932,7 @@ subroutine convolve(site, date, randomize, results)
                           level%height(i),                     &
                           level  = level%level(i),             &
                           method = info(igreen)%interpolation, &
-                          date   = date%date,                   &
-                          randomize = randomize &
+                          date   = date%date                   &
                           )
 
                         if (ind%model%vt.ne.0) then
@@ -946,8 +941,7 @@ subroutine convolve(site, date, randomize, results)
                             val    = level%temperature(i),           &
                             level  = level%level(i),                 &
                             method = info(igreen)%interpolation,     &
-                            date   = date%date,                       &
-                            randomize = randomize &
+                            date   = date%date                       &
                             )
                         endif
 

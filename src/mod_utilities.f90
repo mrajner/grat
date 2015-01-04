@@ -736,4 +736,19 @@ function version_split(version, which)
   end select
 end function
 
+function length_pl(string)
+  character(*), intent(in) :: string
+  character(2) :: polish_letters(18)= &
+    ["Ą","ą","Ć","ć","Ł","ł", "Ś","ś", "Ż","ż","Ź","ź", "Ó","ó", "Ę","ę", "Ń","ń"]
+  integer :: length_pl, i
+
+  length_pl = 0
+
+  do i = 1, size(polish_letters)
+    length_pl = length_pl - countsubstring(string,polish_letters(i))
+  enddo
+
+  length_pl = length_pl + len_trim(string)
+end function
+
 end module

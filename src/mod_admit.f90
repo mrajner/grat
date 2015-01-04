@@ -4,13 +4,12 @@ module mod_admit
 
   implicit none
   real(dp), parameter :: default_admitance_value = -0.3_dp
-  real(dp) :: admitance_randomize
 
 contains
 
 ! =============================================================================
 ! =============================================================================
-real(dp) function admit(site_, date, number, randomize)
+real(dp) function admit(site_, date, number)
   use mod_cmdline, only: ind, info, admitance, transfer_sp, center_data
   use mod_data, only: get_value, model
   use mod_utilities, only: r2d
@@ -23,7 +22,6 @@ real(dp) function admit(site_, date, number, randomize)
   integer :: i
   integer :: number
   logical, save :: first_warning=.true. , first_call = .true.
-  logical, intent(in), optional :: randomize
   real(dp), save :: reference_admit 
 
   if (site_%lp%if) then
@@ -52,14 +50,13 @@ real(dp) function admit(site_, date, number, randomize)
       .or. model(ind%model%sp)%if_constant_value) &
       ) then
       call get_value (                  &
-        model=model(ind%model%sp),      &
-        lat=site_%lat,                  &
-        lon=site_%lon,                  &
-        val=val,                        &
-        level=1,                        &
+        model  = model(ind%model%sp),   &
+        lat    = site_%lat,             &
+        lon    = site_%lon,             &
+        val    = val,                   &
+        level  = 1,                     &
         method = info(1)%interpolation, &
-        date=date,                      &
-        randomize=randomize             &
+        date   = date                   &
         )
 
     else
@@ -87,15 +84,14 @@ real(dp) function admit(site_, date, number, randomize)
 
     ! get T
     if (ind%model%t.ne.0) then
-      call get_value (                     &
-        model     = model(ind%model%t),    &
-        lat       = site_%lat,             &
-        lon       = site_%lon,             &
-        val       = t,                     &
-        level     = 1,                     &
-        method    = info(1)%interpolation, &
-        date      = date,                  &
-        randomize = randomize              &
+      call get_value (                  &
+        model  = model(ind%model%t),    &
+        lat    = site_%lat,             &
+        lon    = site_%lon,             &
+        val    = t,                     &
+        level  = 1,                     &
+        method = info(1)%interpolation, &
+        date   = date                   &
         )
     endif
 

@@ -1022,7 +1022,7 @@ end subroutine
 !!
 !! lat and lon in decimal degree
 ! =============================================================================
-subroutine get_value(model, lat, lon, val, level, method, date, randomize)
+subroutine get_value(model, lat, lon, val, level, method, date)
   use mod_cmdline, only: moreverbose, ind
   use mod_utilities, only: r2d, bilinear
   use netcdf
@@ -1040,7 +1040,6 @@ subroutine get_value(model, lat, lon, val, level, method, date, randomize)
   real(dp) :: scale_factor, add_offset
   integer, intent(in), optional::date(6)
   logical :: success, success2, warning=.true.
-  logical, intent(in), optional :: randomize
 
   if (model%ncid==0 .and. .not. model%if_constant_value) return
 

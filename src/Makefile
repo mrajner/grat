@@ -1,6 +1,6 @@
 FC := ifort
 
-FC=gfortran
+#  FC=gfortran
 define colorecho
 @tput setaf $1
 @echo -n "$2: "
