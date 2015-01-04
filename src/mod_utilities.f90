@@ -393,19 +393,23 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
   n_columns = 0
 
   if (present(comment_char)) then
-    comment_char_=comment_char
+    comment_char_ = comment_char
   else
-    comment_char_='#'
+    ! default comment_char
+    comment_char_ = '#'
   endif
 
-  open (newunit = file_unit,  file=file_name, status = "old", action ="read")
+  open (newunit = file_unit,  file = file_name, status = "old", action ="read")
   do
     call skip_header (file_unit, comment_char_)
     read (file_unit, '(a)', iostat=io_stat) line
     if (io_stat == iostat_end) exit
+
     n_columns = max (n_columns, ntokens(line))
-    n_rows = n_rows + 1
+    n_rows    = n_rows + 1
   enddo
+
+  close (file_unit)
 
   if (present(rows))    rows    = n_rows
   if (present(columns)) columns = n_columns
