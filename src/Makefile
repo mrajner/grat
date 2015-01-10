@@ -11,28 +11,27 @@ endef
 OPT := -O2
 
 # user definitions
-LIBDIR    := /usr/local/lib
-INCDIR    := /usr/local/include
-BINDIR    := /usr/local/bin
-LINKS_DIR := ~/.local/bin
-SUFFIX    := _$(FC)$(OPT)
+LIBDIR        := /usr/local/lib
+INCDIR        := /usr/local/include
+BINDIR        := /usr/local/bin
+LINKS_DIR     := ~/.local/bin
+SUFFIX        := _$(FC)$(OPT)
 
-FC_INFO := $(shell $(FC) --version | sed -n 1p )
-HOST    := $(shell hostname ; uname -r)
-DATE    := $(shell date "+%Y-%m-%d %H:%M:%S")
+FC_INFO       := $(shell $(FC) --version | sed -n 1p )
+HOST          := $(shell hostname ; uname -r)
+DATE          := $(shell date "+%Y-%m-%d %H:%M:%S")
 VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
-LIBGRAT := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
+LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
 # ifort settings
 ifeq ($(FC),ifort)
-FFLAGS :=                                           \
-				 -fpic                                      \
-				 $(OPT)                                     \
-				 -xHost                                     \
-				 -warn all
-
-				 #  -check all
+FFLAGS :=          \
+				 -fpic     \
+				 $(OPT)    \
+				 -xHost    \
+				 -warn all \
+				 -check all
 
 ENABLE_PREPROCESSING := -fpp
 NETCDFF := -lnetcdff
