@@ -30,8 +30,7 @@ FFLAGS :=          \
 				 -fpic     \
 				 $(OPT)    \
 				 -xHost    \
-				 -warn all \
-				 -check all
+				 -warn all 
 
 ENABLE_PREPROCESSING := -fpp
 NETCDFF := -lnetcdff
