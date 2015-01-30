@@ -21,7 +21,7 @@ subroutine invmjd (mjd, date)
   integer :: t1, t4, h, t2, t3, ih1, ih2
   real(dp) :: dayfrac
 
-  date =0
+  date = 0
 
   t1      = 1+ int(mjd) + 2400000
   t4      = mjd - int (mjd);

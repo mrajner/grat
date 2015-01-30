@@ -77,14 +77,14 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                           &
-    program_calling   = "grat",                          &
-    version           = __VERSION__,                     &
-    cdate             = __CDATE__,                       &
-    fflags            = __FFLAGS__,                      &
-    compiler          = __COMPILER__,                    &
+  call intro (                                            &
+    program_calling   = "grat",                           &
+    version           = __VERSION__,                      &
+    cdate             = __CDATE__,                        &
+    fflags            = __FFLAGS__,                       &
+    compiler          = __COMPILER__,                     &
     accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-mC", &
-    cmdlineargs       = .true.                           &
+    cmdlineargs       = .true.                            &
     )
 
   start = 0
@@ -213,10 +213,12 @@ program grat
         case ("SP", "T", "GP", "VT", "VSH")
           if (                                                   &
             model(i)%autoload                                    &
-            .and.                                                &
-            .not.(                                               &
+            .and..not.                                           &
+            (                                                    &
             model(i)%autoloadname(1:3).eq."ERA"                  &
-            .and.(any(model(i)%dataname.eq.["GP ","VT ","VSH"])))) &
+            .and.(any(model(i)%dataname.eq.["GP ","VT ","VSH"])) &
+            )                                                    &
+            )                                                    &
             then
 
             if (                                                      &
@@ -327,7 +329,7 @@ program grat
         call system_clock(execution_time(2),execution_time(3))
 
         call progress(                                      &
-          100*iprogress/lprogress ,                         &
+          100 * iprogress/lprogress ,                       &
           time  = real(execution_time(2)-execution_time(1)) &
           /execution_time(3),                               &
           cpu   = cpu(2)-cpu(1),                            &
