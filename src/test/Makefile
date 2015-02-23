@@ -1,18 +1,40 @@
 #  ffgfdg: create_data
 	#  ./$<
 
-FC := ifort
-#  FC := gfortran
+#  FC := ifort
+FC := gfortran
 
 FTPDIR = ftp\://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2
 
-NETCDFLIB = -I/usr/local/include \
-						-L/usr/local/lib     \
-						-lnetcdff            \
-						-lnetcdf
+#  NETCDFLIB = -I/usr/local/include \
+						#  -L/usr/local/lib     \
+						#  -lnetcdff            \
+						#  -lnetcdf
 GRATLIB   = -I/usr/local/include \
 						-L/usr/local/lib     \
 						-lgrat
+
+# ifort settings
+ifeq ($(FC),ifort)
+FFLAGS :=          \
+				 -fpic     \
+				 $(OPT)    \
+				 -xHost    \
+				 -warn all 
+
+ENABLE_PREPROCESSING := -fpp
+NETCDFF := -lnetcdff
+endif
+
+# gfortran settings
+ifeq ($(FC),gfortran)
+FFLAGS  := \
+	$(OPT)   \
+	-I/home/mrajner/src/netcdf-gfortran/fortran 
+ENABLE_PREPROCESSING = -cpp
+NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
+LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
+endif
 
 all: run data test
 	
@@ -40,7 +62,7 @@ test:
 	make -C tests/
 
 create_data: create_data.f90 data
-	$(FC) $< -o $@ $(NETCDFLIB) $(GRATLIB) ~/src/fortranlib/src/lib_random.f90
+	$(FC) $< -o $@ $(NETCDFF) $(GRATLIB) ~/src/fortranlib/src/lib_random.f90
 
 run: create_data
 	./$< 
