@@ -24,12 +24,6 @@ VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
-dfffff: value_check
-	value_check \
-		-V \
-		-S j , b, o , e, jb \
-		-o /dev/null -q
-
 # ifort settings
 ifeq ($(FC),ifort)
 FFLAGS :=          \
