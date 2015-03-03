@@ -12,8 +12,8 @@ counter=0
 good=0
 bad=0
 
-help(){
-  echo << EOF
+help () {
+  cat << EOF
 -h show help
 -d delete bad result
 -V vimdiff
@@ -109,5 +109,5 @@ for test in ${test_what[*]} ; do
   done
 done
 
-echo -e "\npassed: $good/$counter !168"
+echo -e "\npassed: $good of total $counter tests"
 [[ $bad -gt 0 ]] && echo failed: $bad || :

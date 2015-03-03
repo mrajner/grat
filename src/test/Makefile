@@ -62,7 +62,7 @@ test:
 	make -C tests/
 
 create_data: create_data.f90 data
-	$(FC) $< -o $@ $(NETCDFF) $(GRATLIB) ~/src/fortranlib/src/lib_random.f90
+	$(FC) $< -o $@ $(NETCDFF) $(GRATLIB) 
 
 run: create_data
 	./$< 

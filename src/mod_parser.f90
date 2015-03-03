@@ -182,7 +182,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
     if (method(3)) then
       write(log%unit, form_62, advance="no"), "method refinment for near area using 3D"
       write(log%unit,'(a$)') pack(method3dnames,method3d)
-      write(log%unit,*) method3d_refinment_distance
+      write(log%unit, '(g10.3)') method3d_refinment_distance
     endif
 
     if (.not.any(method).and..not.dryrun) then

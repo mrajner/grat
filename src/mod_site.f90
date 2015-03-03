@@ -104,6 +104,8 @@ subroutine parse_site(cmd_line_entry)
     else
 
       select case(cmd_line_entry%field(i)%subfield(1)%name)
+
+      ! sone predefined sites for test purposes
       case ("j")
         ! this is shortcut for Józefosław -Sj
         call more_sites (1,start_index)
@@ -114,7 +116,7 @@ subroutine parse_site(cmd_line_entry)
         continue
 
       case("b")
-        ! and point on Baltic Sea
+        ! and point on Baltic Sea -Sb
         call more_sites (1,start_index)
         site(start_index)%name   = "balt_a"
         site(start_index)%lat    = 57
@@ -123,7 +125,7 @@ subroutine parse_site(cmd_line_entry)
         continue
 
       case("r")
-        ! and point on Rysy
+        ! and point on Rysy -Sr
         call more_sites (1,start_index)
         site(start_index)%name   = "rysy_a"
         site(start_index)%lat    = 49.17944
@@ -132,7 +134,7 @@ subroutine parse_site(cmd_line_entry)
         continue
 
       case("l")
-        ! Lamkówko
+        ! Lamkówko -Sl
         call more_sites (1,start_index)
         site(start_index)%name   = "lama_a"
         site(start_index)%lat    = 53.883
@@ -141,7 +143,7 @@ subroutine parse_site(cmd_line_entry)
         continue
 
       case("o")
-        ! Marian trench
+        ! Marian trench -So
         call more_sites (1,start_index)
         site(start_index)%name   = "mari_a"
         site(start_index)%lat    = 11.317
@@ -150,7 +152,7 @@ subroutine parse_site(cmd_line_entry)
         continue
 
       case("e")
-        ! Mount Everest
+        ! Mount Everest -Se
         call more_sites (1,start_index)
         site(start_index)%name   = "ever_a"
         site(start_index)%lat    = 27.988056
@@ -159,7 +161,7 @@ subroutine parse_site(cmd_line_entry)
         continue
 
       case("jb")
-        ! Bajkal Lake
+        ! Bajkal Lakea -Sb
         call more_sites (1,start_index)
         site(start_index)%name   = "bajk_a"
         site(start_index)%lat    = 53.699959
