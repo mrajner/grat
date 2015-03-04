@@ -56,7 +56,18 @@ subroutine parse_date(cmd_line_entry)
     return
   endif
 
+
   do i_ = 1, ubound(cmd_line_entry%field,1)
+
+    if (any(cmd_line_entry%field(i_)%subfield%name.eq."m")) then
+      if (.not. allocated (model)) then
+        call print_warning("cannot use m in data specifier (-Dm) if no model file" &
+          //" with dates given",error=.true.)
+      else
+        ! call print_warning("cannot use m in data specifier if first model file" &
+          ! //" with dates given",error=.true.)
+      endif
+    endif
 
     if (trim(cmd_line_entry%field(i_)%full).eq."") then
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
@@ -163,7 +174,15 @@ subroutine parse_date(cmd_line_entry)
       stop = start
     endif
 
-    if (size(cmd_line_entry%field(i_)%subfield).ge.3)then
+    if (size(cmd_line_entry%field(i_)%subfield).ge.3) then
+
+      if(.not.is_numeric(cmd_line_entry%field(i_)%subfield(3)%dataname)) then
+        call print_warning(                                              &
+          "not numeric interval "// trim(cmd_line_entry%field(i_)%full), &
+          error=.true.                                                   &
+          )
+      endif
+
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
       case("M", "D", "Y", "H")

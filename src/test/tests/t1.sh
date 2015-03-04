@@ -7,13 +7,14 @@
 #===============================================================================
 
 set -o nounset   
-. definitions.sh 
+. definitions.sh
 
 counter=0
 
 # Testing simple value_check, and parser
 
 for exclamation in "" "-!" ; do
+
   value_check                               \
     ${exclamation}                          \
     -F $SP, $T                              \
@@ -23,8 +24,8 @@ for exclamation in "" "-!" ; do
     -D 20120101 : m : 24 @H                 \
     -o ${0/.sh/.dat}$((counter+0))${suffix} \
     -V ${0/.sh/.dat}$((counter+1))${suffix} \
-    &> ${0/.sh/.dat}$((counter+2))${suffix}
-  wait
+    2> ${0/.sh/.dat.err}$((counter+2))${suffix}
+
 
   let counter=counter+3
 
@@ -35,8 +36,7 @@ for exclamation in "" "-!" ; do
     -D 2011123118 : 2 @M : 12 @H    \
     -o ${0/.sh/.dat}$((counter+0))${suffix} \
     -V ${0/.sh/.dat}$((counter+1))${suffix} \
-     &> ${0/.sh/.dat}$((counter+2))${suffix}
-  wait
+     2> ${0/.sh/.dat.err}$((counter+2))${suffix}
 
   let counter=counter+3
 
@@ -59,7 +59,7 @@ for exclamation in "" "-!" ; do
     20120311@~                                       \
     -o ${0/.sh/.dat}$((counter+0))${suffix}          \
     -V ${0/.sh/.dat}$((counter+1))${suffix}          \
-    &> ${0/.sh/.dat}$((counter+2))${suffix}
+    2> ${0/.sh/.dat.err}$((counter+2))${suffix}
   wait
 
   let counter=counter+3

@@ -1,6 +1,6 @@
 FC  := gfortran
-FC  := ifort
-OPT := -O2
+#  FC  := ifort
+OPT := -O0
 
 #  FC=gfortran
 define colorecho
@@ -53,6 +53,8 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
+aaa: value_check
+	../bin/value_check_$(FC)$(OPT) -F ./test/data/test_data.nc : sp -V  -Dm:m:m
 
 BUG: all
 	exit

@@ -16,11 +16,15 @@ help () {
   cat << EOF
 -h show help
 -d delete bad result
+-w ignore whitsespace
 -V vimdiff
+-u update
+-U update if result do not exist
+-i interactive update
 EOF
 }
 
-while getopts "hbvuidwV" flag ; do
+while getopts "hbvuidwVU" flag ; do
   case $flag in 
     h)
       help
@@ -44,6 +48,9 @@ while getopts "hbvuidwV" flag ; do
     u)
       update=true
       ;;
+    U)
+      updateifnotexist=true
+      ;;
     i)
       interactive="-i"
       ;;
@@ -62,6 +69,7 @@ ok(){
 }
 
 for test in ${test_what[*]} ; do
+  # echo $test !
   [[ ! -f $test ]] && { echo $test not exist..;  continue ; }
   [[ ${test} =~ ".sh" ]]  && results=${test/.sh/.dat}
   [[ ${test} =~ ".f90" ]] && results=${test/.f90/.dat}
@@ -69,10 +77,23 @@ for test in ${test_what[*]} ; do
   for is in ${results}* ; do
 
     should_be=${is/t/r}
+    # echo $is
 
     # if both files are empty skip comparison
     [[ ! -s $is && ! -s ${should_be}  ]] && 
     {
+      continue
+    }
+
+    # if result do not exist
+    [[ -f ${should_be} ]] || 
+    {
+      echo ${should_be} do not exists
+      [[ ${updateifnotexist-} ]] && 
+      {
+        echo updating ${should_be}
+        cp ${is} ${should_be} -v
+      }
       continue
     }
 

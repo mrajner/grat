@@ -12,8 +12,25 @@ set -o nounset                              # Treat unset variables as an error
   echo not sourcing definitions.sh...
 } || {
 
+[[ ! -z ${2:-} ]] && { echo "verbose mode" ; VERBOSE=true ; }
+
+ifdatafileexist(){
+  for co in  file SP T VT GP LS HP H VSH ; do
+    [[ ! -z ${!co-} ]] && 
+    {
+      file=${!co%%@*}
+      file=${file// }
+      [[ -f $file  ]] || {
+      [[ ${VERBOSE-} ]] && echo $file do not exist
+      exit 122
+    }
+    } 
+  done
+}
+
 case ${1:-synthetic_data} in
   real_data|r)
+    [[ ${VERBOSE-} ]] && echo selected real
     file="../data/land.nc"
     SP="../data/pres.sfc.2012.nc  @SP  :pres"
     T="../data/air.sig995.2012.nc @T   :air"
@@ -24,11 +41,14 @@ case ${1:-synthetic_data} in
     H="../data/hgt.sfc.nc         @H   :hgt"
     VSH="../data/shum.2012.nc     @VSH :shum"
     suffix=".r"
+
+    ifdatafileexist
     ;;
 
   synthetic_data|s)
-    file="../data/test_data.nc"
-    VT="../data/test_data.nc @VT : vt "
+    [[ ${VERBOSE-} ]] && echo selected synthetic_data
+    file="  ../data/test_data.nc  "
+    VT="../data/test_data.nc@VT : vt "
     T="../data/test_data.nc @T: t"
     GP="../data/test_data.nc @GP : gp"
     SP="../data/test_data.nc @SP : sp"
@@ -37,6 +57,8 @@ case ${1:-synthetic_data} in
     # H="../data/test_data.nc @H  : hgt"
     # VSH="../data/test_data.nc @VSH: shum"
     suffix=".s"
+
+    ifdatafileexist
     ;;
 
   constant_values|c)

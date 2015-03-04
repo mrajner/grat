@@ -41,7 +41,8 @@ for exclamation in "" "-!" ; do
       -D 20120103               \
       -o : level                \
       -H                        \
-      &>${0/.sh/.dat}$counter$suffix
+      >${0/.sh/.dat}$counter$suffix \
+      2>${0/.sh/.dat.err}$counter$suffix 
     let counter++
   }
 
@@ -51,7 +52,9 @@ for exclamation in "" "-!" ; do
     -S j      \
     -D 2012   \
     -J1000,100 , 11    \
-    -o : level &>${0/.sh/.dat}$counter$suffix
+    -o : level \
+  >${0/.sh/.dat}$counter$suffix \
+  2>${0/.sh/.dat.err}$counter$suffix 
   let counter++
 done
 
