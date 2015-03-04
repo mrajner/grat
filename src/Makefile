@@ -54,7 +54,8 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 aaa: value_check
-	../bin/value_check_$(FC)$(OPT) -F ./test/data/test_data.nc : sp -V  -Dm:m:m
+	../bin/value_check_$(FC)$(OPT) -F ./test/data/test_data.nc : sp -V  -Dm:m
+	../bin/value_check_$(FC)$(OPT) -F10@SP  -V  -D2010@~,2011@~
 
 BUG: all
 	exit

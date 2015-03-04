@@ -59,13 +59,15 @@ subroutine parse_date(cmd_line_entry)
 
   do i_ = 1, ubound(cmd_line_entry%field,1)
 
-    if (any(cmd_line_entry%field(i_)%subfield%name.eq."m")) then
+    if (any(cmd_line_entry%field(i_)%subfield%name.eq."m") &
+      .or. any(cmd_line_entry%field(i_)%subfield%dataname.eq."~") &
+      ) then
       if (.not. allocated (model)) then
-        call print_warning("cannot use m in data specifier (-Dm) if no model file" &
+        call print_warning("cannot use m or ~ in data specifier (-D m ) if no model file" &
           //" with dates given",error=.true.)
-      else
-        ! call print_warning("cannot use m in data specifier if first model file" &
-          ! //" with dates given",error=.true.)
+      elseif (.not.allocated(model(1)%date)) then
+        call print_warning("cannot use m or ~ in data specifier if first model file" &
+          //" do not contains dates",error=.true.)
       endif
     endif
 

@@ -1,26 +1,20 @@
-FC := ifort
+FC := gfortran
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)
 FORTRAN_TESTS := $(wildcard t*.f90)
-BUGS_TESTS     := t_bugs.sh
 
-REAL      := $(subst .sh,.dat.r,$(SHELL_TESTS))
-SYNTHETIC := $(subst .sh,.dat.s,$(SHELL_TESTS))
-CONSTANT  := $(subst .sh,.dat.c,$(SHELL_TESTS))
-FORTRAN   := $(subst .f90,.dat,$(FORTRAN_TESTS))
-BUGS      := $(subst .sh,.dat,$(BUGS_TESTS))
+REAL          := $(subst .sh,.dat.r,$(SHELL_TESTS))
+SYNTHETIC     := $(subst .sh,.dat.s,$(SHELL_TESTS))
+CONSTANT      := $(subst .sh,.dat.c,$(SHELL_TESTS))
+FORTRAN       := $(subst .f90,.dat,$(FORTRAN_TESTS))
 
 RESULTS :=     \
+	$(FORTRAN)   \
 	$(REAL)      \
 	$(SYNTHETIC) \
 	$(CONSTANT)  \
-	#  $(FORTRAN)   \
-	#  $(BUGS)
 
 all: $(RESULTS)
-
-../../libgrat.a:
-	make -C ../../ libgrat.a NODEP="yes" FC=$(FC)
 
 all_s: $(SYNTHETIC) $(CONSTANT)
 
@@ -30,7 +24,7 @@ stat: $(RESULTS)
 %.dat:%.sh
 	-bash $< 
 
-%.dat:%.f90 ../../libgrat.a
+%.dat:%.f90 
 	$(FC) $< -o $(subst .dat,,$@) -L../.. -lgrat -I../../
 	./$(subst .dat,,$@) | tee $@
 
