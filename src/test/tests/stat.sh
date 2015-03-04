@@ -131,4 +131,14 @@ for test in ${test_what[*]} ; do
 done
 
 echo -e "\npassed: $good of total $counter tests"
-[[ $bad -gt 0 ]] && echo failed: $bad || :
+[[ $bad -gt 0 ]] && 
+{
+  tput setaf 1
+  echo failed: $bad 
+  tput sgr0
+} ||
+{
+  tput setaf 2
+  echo "Success"
+  tput sgr0
+}

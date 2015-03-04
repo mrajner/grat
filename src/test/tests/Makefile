@@ -1,3 +1,6 @@
+#  t_barometric_formula: t_barometric_formula.f90
+	#  $(FC) t_barometric_formula.f90 -L ../../ -lgrat -I../.. -o $@
+	
 FC := gfortran
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)
@@ -9,10 +12,10 @@ CONSTANT      := $(subst .sh,.dat.c,$(SHELL_TESTS))
 FORTRAN       := $(subst .f90,.dat,$(FORTRAN_TESTS))
 
 RESULTS :=     \
+	#  $(REAL)      \
+	#  $(SYNTHETIC) \
+	#  $(CONSTANT)  \
 	$(FORTRAN)   \
-	$(REAL)      \
-	$(SYNTHETIC) \
-	$(CONSTANT)  \
 
 all: $(RESULTS)
 

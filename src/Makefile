@@ -53,20 +53,15 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-aaa: value_check
-	../bin/value_check_$(FC)$(OPT) -F ./test/data/test_data.nc : sp -V  -Dm:m
-	../bin/value_check_$(FC)$(OPT) -F10@SP  -V  -D2010@~,2011@~
-
 BUG: all
-	exit
 	-value_check \
 		-Sj \
 		-D2013 \
 		-F ERA@T : t2m , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
-	-value_check \
-		-Sj \
-		-D2013 \
-		-F ERA@T : v2t , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
+	#  -value_check \
+		#  -Sj \
+		#  -D2013 \
+		#  -F ERA@T : v2t , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
 
 xxx:
 #  tm: value_check
