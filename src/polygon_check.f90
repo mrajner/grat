@@ -15,7 +15,7 @@ program polygon_check
   call intro  (                           &
     program_calling   = "polygon_check",  &
     accepted_switches = "VfABLPoShvIiRw", &
-    version           = __VERSION__,      &
+    version           = __GRAT_VERSION__, &
     cdate             = __CDATE__,        &
     fflags            = __FFLAGS__,       &
     compiler          = __COMPILER__,     &

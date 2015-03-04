@@ -1,3 +1,4 @@
+! this program will create data set for unit tests
 program createdata
   use netcdf
   use mod_data, only: nc_error
@@ -22,7 +23,7 @@ program createdata
     nlevel = 5,                          &
     ntime  = 10
 
-  real, parameter ::                                                             &
+  real, parameter ::                                                            &
     lats   (nlat   )  = [ ( -89.75 + ( i-1 ) *resolution , i = 1 , nlat   ) ] , &
     lons   (nlon   )  = [ ( 0.25 +   ( i-1 ) *resolution , i = 1 , nlon   ) ] , &
     levels (nlevel )  = [ ( 1000-    ( i-1 ) *50         , i = 1 , nlevel ) ] , &

@@ -1,4 +1,6 @@
-FC := gfortran
+FC  := gfortran
+FC  := ifort
+OPT := -O2
 
 #  FC=gfortran
 define colorecho
@@ -7,8 +9,6 @@ define colorecho
 @tput sgr0
 endef
 
-#  OPT := -O0
-OPT := -O2
 
 # user definitions
 LIBDIR        := /usr/local/lib
@@ -42,14 +42,14 @@ FFLAGS  := \
 	$(OPT)   \
 	-I/home/mrajner/src/netcdf-gfortran/fortran 
 ENABLE_PREPROCESSING = -cpp
-NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.6.0.1
-LD_LIBRARY_PATH=/home/mrajner/src/netcdf-gfortran/fortran
+NETCDFF   := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.7.0.0
+LD_LIBRARY_PATH := /home/mrajner/src/netcdf-gfortran/fortran
 endif
 
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
 	-D__CDATE__='"$(DATE)"'                          \
-	-D__VERSION__='"$(VERSION)"'                     \
+	-D__GRAT_VERSION__='"$(VERSION)"'                \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
@@ -186,16 +186,13 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 	$(FC) $(FFLAGS) $< -c -o $@  -I ~/src/fortranlib/src $(FPP)
 
 .PHONY: $(PROGS_SHORTCUTS)
-#  $(PROGS_SHORTCUTS):
-	#  make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
-grat: $(addprefix $(PROGS_DIR)/grat,$(@)$(SUFFIX))
-value_check: $(addprefix $(PROGS_DIR)/value_check,$(@)$(SUFFIX))
+$(PROGS_SHORTCUTS):
+	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
 
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
 	$(call colorecho,3,$@)
 	$(FC) $(FFLAGS) $(FPP) \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
-
 
 libgrat$(SUFFIX).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a
 	ln -sf libgrat$(SUFFIX)$(VERSION_MAJOR).a libgrat$(SUFFIX).a
@@ -215,7 +212,7 @@ test: all install
 
 # module dependencies
 ifndef NODEP
-include mod_dep.makefile
+-include mod_dep.makefile
 mod_dep.makefile: mod_dep.awk
 	awk -f $< > $@
 endif
@@ -243,5 +240,3 @@ endif
 	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 #  .EXPORT_ALL_VARIABLES:
 #
-ddd:
-	echo dfsdf

@@ -79,7 +79,7 @@ program grat
   ! gather cmd line option decide where to put output
   call intro (                                            &
     program_calling   = "grat",                           &
-    version           = __VERSION__,                      &
+    version           = __GRAT_VERSION__,                 &
     cdate             = __CDATE__,                        &
     fflags            = __FFLAGS__,                       &
     compiler          = __COMPILER__,                     &
