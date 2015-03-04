@@ -38,13 +38,13 @@ function aggfd ( &
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: delta
   real(dp), intent (in), optional :: dz
-  logical, intent (in), optional :: aggfdh, aggfdz, aggfdt, predefined, rough
+  logical,  intent (in), optional :: aggfdh, aggfdz, aggfdt, predefined, rough
   real(dp) :: aggfd
   real(dp) :: delta_
-  character (len=*), intent(in), optional  :: method, fels_type
+  character (len=*), intent(in), optional :: method, fels_type
 
   delta_ = 10. ! Default value
-  if (present(delta))  delta_ = delta
+  if (present(delta)) delta_ = delta
 
   if(present(aggfdh).and.aggfdh) then
     aggfd = (                &
@@ -110,9 +110,9 @@ end function
 ! ==============================================================================
 function aggf (         &
     psi,                &
-    zmin, &
-    zmax, &
-    dz,     &
+    zmin,               &
+    zmax,               &
+    dz,                 &
     t_zero,             &
     h,                  &
     first_derivative_h, &
@@ -256,7 +256,6 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-19
 !! \warning psi in radian
-!! \todo explanaition ??
 ! ==============================================================================
 function GN_thin_layer (psi)
   use mod_constants, only: dp
@@ -271,8 +270,10 @@ end function
 !> \brief Bouger plate computation
 !!
 ! ==============================================================================
-real(dp) function bouger (h, R )
+function bouger (h, R)
   use mod_constants, only: dp, gravity, pi
+
+  real(dp) :: bouger
   real(dp), intent(in), optional :: R !< height of point above the cylinder
   real(dp), intent(in) ::  h
 
@@ -298,10 +299,15 @@ function simple_def (R)
   real(dp) :: simple_def
 
   delta = 0.22e-11 * R
-  simple_def = earth%gravity%mean / earth%radius *1000 * &
-    delta * ( 2. - 3./2. * earth%density%crust / earth%density%mean &
+
+  simple_def =                                                          &
+    earth%gravity%mean / earth%radius * 1000                            &
+    * delta                                                             &
+    * (                                                                 &
+    2. - 3./2. * earth%density%crust / earth%density%mean               &
     -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) &
-    ) * 1000
+    )                                                                   &
+    * 1000
 end function
 
 end module

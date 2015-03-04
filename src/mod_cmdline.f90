@@ -89,6 +89,7 @@ module mod_cmdline
       if         = .true.,  &
       strict     = .false., &
       time       = .false., &
+      all        = .false., &
       file_exist = .false.
   end type
 
@@ -137,12 +138,13 @@ module mod_cmdline
     logical :: if
     real(dp), allocatable, dimension(:) :: value
   end type
+
   type(admitance_info) :: admitance
 
   logical :: method(3)
 
   character(9), dimension(3), parameter :: &
-    method3dnames=["point", "potential", "cylinder"]
+    method3dnames=[character(9)::"point", "potential", "cylinder"]
   logical :: method3d(3)
   logical :: method3d_compute_reference  = .false.
   real    :: method3d_refinment_distance = 0.1
@@ -151,8 +153,11 @@ module mod_cmdline
   logical ::  &
     result_total     = .false.,  &
     result_total_all = .false.,  &
-    result_component = .true.
+    result_component = .true. ,  &
+    center_data      = .false. 
+  
 contains
+
 ! =============================================================================
 !> This routine collect command line arguments to one matrix depending on
 !! given switches and separators
@@ -226,15 +231,20 @@ subroutine get_command_cleaned(dummy)
   character(*), intent(out) :: dummy
   character(355) :: a, b, arg
   integer :: i
-  dummy=" "
+
+  dummy=""
+  arg=""
+
   do i = 1, iargc()
     call get_command_argument(i,a)
     call get_command_argument(i+1,b)
+
     if (check_if_switch_or_minus(a)) then
       arg = trim(a)
     else
-      arg=trim(arg)//trim(a)
+        arg=trim(arg)//trim(a)
     endif
+
     if(check_if_switch_or_minus(b).or.i.eq.iargc()) then
       if(trim(dummy).eq."") then
         dummy=trim(arg)
@@ -242,6 +252,7 @@ subroutine get_command_cleaned(dummy)
         dummy=trim(dummy)//" "//trim(arg)
       endif
     endif
+
   enddo
 end subroutine
 

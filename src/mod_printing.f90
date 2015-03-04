@@ -47,6 +47,7 @@ module mod_printing
       nan       = .false.
     character(10) :: form="en13.3"
   end type
+
   type(output_info) :: log, output
 
 contains
@@ -55,13 +56,13 @@ contains
 subroutine print_warning (warn, unit, more, error, program_calling)
   use, intrinsic:: iso_fortran_env
   use :: mod_cmdline, only: warnings, method, quiet
+
   integer, dimension(8):: execution_date
   character (len=*)  :: warn
   character (len=*), optional :: more, program_calling
   integer, optional :: unit
   integer :: def_unit
   logical, intent(in), optional :: error
-
 
   if (present(error).and.error.or.warnings%if) then
     def_unit = error_unit
@@ -71,7 +72,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
       write(def_unit,'(a)', advance='no') "error: "
     else
       write(def_unit,'(a)', advance='no') "warning: "
-      if (warnings%strict) write(def_unit,'(a$)') "[strict set]: "
+      if (warnings%strict) write(def_unit,'(a$)') "[strict set] "
     endif
 
     select case(warn)
@@ -117,6 +118,8 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     end select
 
     if (present(more)) write(def_unit, form%i0, advance="no") more
+
+    if(.not.warnings%if) write(def_unit,*)
   endif
 
   if (warnings%time) then
@@ -127,6 +130,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
   endif
 
   if(.not.warnings%time.and.warnings%if) write(def_unit,*)
+
   if ((present(error).and.error).or.warnings%strict) then
     call exit(1)
   endif
@@ -141,16 +145,16 @@ subroutine progress(j, time, cpu, every)
   use iso_fortran_env, only: output_unit
 
   implicit none
-  integer(kind=4)::j, k
+  integer(kind=4) :: j, k
   integer:: ii
-  character(len=27)::bar="???% |                    |"
+  character(len=27) :: bar="???% |                    |"
   real :: time, cpu
   integer, optional :: every
   integer :: every_
-  integer,save :: step=0
+  integer, save :: step=0
   character(len=1) :: timeunit
   logical :: logprinted
-
+  character(2) :: format
 
   if (present(every)) then
     every_=every
@@ -163,12 +167,12 @@ subroutine progress(j, time, cpu, every)
   if ((every_.eq.0).and.j.ne.100) then
     return
   else if (every_.eq.0.and.j.eq.100) then
-  else if (                     &
+  else if (                  &
     modulo(step,every_).ne.0 &
     .and.j.ne.every_         &
     .and.j.ne.100            &
     .and.step.ne.1           &
-    ) then 
+    ) then
     return
   endif
 
@@ -178,46 +182,49 @@ subroutine progress(j, time, cpu, every)
   enddo
 
   if (time.gt.60000) then
-    time = time/3600
-    cpu  = cpu/3600
+    time     = time/3600
+    cpu      = cpu/3600
     timeunit = "h"
   else if (time.gt.1000) then
-    time = time/60
-    cpu  = cpu/60
+    time     = time/60
+    cpu      = cpu/60
     timeunit = "m"
   else
-    timeunit="s"
+    timeunit = "s"
   endif
 
+  write(format,'(i0)') size(moreverbose)+1
 
   if (.not.(quiet.or.output%unit.eq.output_unit)) then
-    open (unit=output_unit, carriagecontrol='fortran')
-    write(                                                &
-      unit=output_unit,                                   &
-      fmt="(a1,a1,a27,                                    &
-      f5.1,a1,1x,a,f5.1,a,1x,                             &
-      a,f5.1,x,                                           &
-      a,f5.1,a1,                                          &
-      x,a,<size(moreverbose)+1>(x,a)$)"                   &
-      )                                                   &
-      '+',char(13), bar,                                  &
-      time, timeunit, "[eta", 100.*time/j,"]",            &
-      "(proc:",cpu,                                       &
-      "| %:",cpu/time*100,")",                            &
-      trim(output%name),                                  &
-      (                                                   &
-      trim(moreverbose(ii)%name), ii=1, size(moreverbose) &
+
+    write(                                                    &
+      unit=output_unit,                                       &
+      fmt="(a1,a27,                                           &
+      f5.1,a1,1x,a,f5.1,a,1x,                                 &
+      a,f5.1,x,                                               &
+      a,f5.1,a1,                                              &
+      *(x,a))",                                               &
+      advance="no"                                            &
+      )                                                       &
+      char(13), bar,                                          &
+      time, timeunit, "[eta", 100.*time/j,"]",                &
+      "(proc:",cpu,                                           &
+      "| %:",cpu/time*100,")",                                &
+      trim(output%name),                                      &
+      (                                                       &
+      trim(moreverbose(ii)%name), ii=1, ubound(moreverbose,1) &
       )
+    flush(output_unit)
+    if(j.eq.100) write(output_unit,*)
   endif
 
   if (j.eq.100.and..not.logprinted) then
-    close(output_unit)
     write(log%unit,                                 &
       '("Execution time:",1x,f5.1,a,                &
       &" (proc time:",1x,f5.1,1x,"|%", f5.1,")")') &
       time, timeunit,                               &
       cpu,                                          &
-      cpu/time*100                                                                      
+      cpu/time*100
     logprinted=.true.
   endif
   return
@@ -242,24 +249,31 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
-subroutine print_version (program_calling, version)
+subroutine print_version ( &
+    program_calling,       &
+    version,               &
+    cdate,                 &
+    fflags,                &
+    compiler               &
+    )
   character(*) :: program_calling
-  character(*), optional :: version
+  character(*), optional :: version, cdate, fflags, compiler
   character(10) :: host
+
   call hostnm(host)
 
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), trim(program_calling)
-  write(log%unit, form_inheader ), version
-  write(log%unit, form_inheader_n ), &
-    "ifort", __INTEL_COMPILER/100, __INTEL_COMPILER_BUILD_DATE
-  write(log%unit, form_inheader ), "compiled on "//trim(host)//" "//__C_DATE__
-  write(log%unit, form_inheader ), 'FFLAGS = '//__FFLAGS__
-  write(log%unit, form_header )
-  write(log%unit, form_inheader ), 'Copyright 2013, 2014 by Marcin Rajner'
-  write(log%unit, form_inheader ), 'Warsaw University of Technology'
-  write(log%unit, form_inheader ), 'License: GPL v3 or later'
-  write(log%unit, form_header )
+  write(log%unit, form_header)
+  write(log%unit, form_inheader), trim(program_calling)
+  write(log%unit, form_inheader), version
+  write(log%unit, form_header)
+  write(log%unit, form_inheader), "compiler: "// trim(compiler)
+  write(log%unit, form_inheader), 'FFLAGS = '//fflags
+  write(log%unit, form_inheader), "compiled on "//trim(host)//" "//cdate
+  write(log%unit, form_inheader), ""
+  write(log%unit, form_inheader), 'Copyright 2013-2015 by Marcin Rajner'
+  write(log%unit, form_inheader), 'Warsaw University of Technology'
+  write(log%unit, form_inheader), 'License: GPLv3 or later'
+  write(log%unit, form_header)
 end subroutine
 
 end module mod_printing

@@ -1,1 +1,8 @@
+# you can pass the site list to -S switch using filename (here e.g. -S sites)
+# the format is free: name lat lon [height]
 ________________WARSZAWA-OKECIE_123750-99999           52.170          20.970         106.000  5817
+
+# every line starting with hash is a comment
+some_examples_station 10 20 100
+north_pole 90 0 0
+

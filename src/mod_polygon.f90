@@ -11,6 +11,7 @@ module mod_polygon
   use mod_constants, only : dp
 
   implicit none
+
   !----------------------------------------------------
   ! polygons
   !----------------------------------------------------
@@ -21,16 +22,19 @@ module mod_polygon
 
   type polygon_info
     integer :: unit
-    character(:), allocatable  :: name
+    character(len=200) :: name
     character(len=25) :: dataname
     type(polygon_data), dimension (:), allocatable :: polygon
     logical :: if
-    ! global setting (+|-) which override this in polygon file
+
+    ! global setting (+|-) which override the one specified in polygon file
     character(1):: pm
   end type
+
   type(polygon_info) , allocatable, dimension (:) :: polygon
 
 contains
+
 ! =============================================================================
 !> This subroutine parse polygon information from command line entry
 !!
@@ -41,6 +45,7 @@ subroutine parse_polygon (cmd_line_entry)
   use mod_printing
   use mod_cmdline
   use mod_utilities, only: file_exists
+
   type(cmd_line_arg),intent(in):: cmd_line_entry
   integer :: i
 
@@ -50,33 +55,40 @@ subroutine parse_polygon (cmd_line_entry)
   endif
 
   allocate(polygon(size(cmd_line_entry%field)))
+
   do i=1, size(cmd_line_entry%field)
-  polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
-  if(i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
-    polygon(i)%name= polygon(i-1)%name
-  endif
-  polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
-  write(log%unit, form%i2), 'polygon file:' , polygon(i)%name
-  if (file_exists((polygon(i)%name))) then
-    polygon(i)%if=.true.
-    if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
-      .or.cmd_line_entry%field(i)%subfield(2)%name.eq."-" ) then
-      polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
-      write(log%unit, form%i3) , "global override:", polygon(i)%pm
+    polygon(i)%name=cmd_line_entry%field(i)%subfield(1)%name
+
+    if(i.gt.1.and.cmd_line_entry%field(i)%subfield(1)%name.eq."") then
+      polygon(i)%name= polygon(i-1)%name
     endif
-    call read_polygon (polygon(i))
-  else
-    stop 'file do not exist. Polygon file PROBLEM'
-  endif
-enddo
+
+    polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
+    write(log%unit, form%i2), 'polygon file:' , trim(polygon(i)%name)
+
+    if (file_exists((polygon(i)%name))) then
+
+      polygon(i)%if=.true.
+
+      if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
+        .or.cmd_line_entry%field(i)%subfield(2)%name.eq."-" ) then
+        polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
+        write(log%unit, form%i3) , "global override:", polygon(i)%pm
+      endif
+      call read_polygon (polygon(i))
+
+    else
+      stop 'file do not exist. Polygon file PROBLEM'
+    endif
+  enddo
 
 end subroutine
+
 ! ==============================================================================
 !> Reads polygon data
 !!
 !! inspired by spotl \cite Agnew97
 ! ==============================================================================
-
 subroutine read_polygon (polygon)
 
   use, intrinsic :: iso_fortran_env
@@ -84,12 +96,12 @@ subroutine read_polygon (polygon)
   use mod_printing
 
   type(polygon_info) :: polygon
-  integer :: i , j , number_of_polygons , nvertex
-  character (1)  :: pm
+  integer :: i, j, number_of_polygons, nvertex
+  character (1) :: pm
 
   if (polygon%if) then
     ! polygon file
-    open (newunit = polygon%unit , action="read", file=polygon%name )
+    open (newunit = polygon%unit , action = "read", file = polygon%name )
 
     ! first get the number of polygon
     call skip_header(polygon%unit)
@@ -98,36 +110,45 @@ subroutine read_polygon (polygon)
 
     ! loop over all polygons in file
     do  i=1, number_of_polygons
+
       call skip_header(polygon%unit)
       read (polygon%unit, * ) nvertex
       allocate (polygon%polygon(i)%coords(nvertex, 2 ))
+
       call skip_header(polygon%unit)
       read (polygon%unit, * ) pm
+
       if (pm.eq."+") polygon%polygon(i)%use=.true.
       if (pm.eq."-") polygon%polygon(i)%use=.false.
+
       ! override file +|- with global given with command line
       if (polygon%pm.eq."+") polygon%polygon(i)%use=.true.
       if (polygon%pm.eq."-") polygon%polygon(i)%use=.false.
+
       do j = 1 , nvertex
         call skip_header(polygon%unit)
         ! lon lat , checks while reading
         read (polygon%unit, * ) polygon%polygon(i)%coords(j,1:2)
-        if ( polygon%polygon(i)%coords(j,1).lt.-180. &
-          .or.polygon%polygon(i)%coords(j,1).gt.360.  &
-          .or.polygon%polygon(i)%coords(j,2).lt.-90.  &
+        if ( polygon%polygon(i)%coords(j,1).lt.-180.        &
+          .or.polygon%polygon(i)%coords(j,1).gt.360.        &
+          .or.polygon%polygon(i)%coords(j,2).lt.-90.        &
           .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then
           write (error_unit , form_63) "Somethings wrong with coords in polygon file"
           polygon%if=.false.
           return
-          elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
+
+        elseif ( polygon%polygon(i)%coords(j,1).lt.0. ) then
           polygon%polygon(i)%coords(j,1) = polygon%polygon(i)%coords(j,1) + 360.
         endif
+
       enddo
     enddo
     close (polygon%unit)
+
     ! print summary to log file
     write (log%unit, form_63) "name:", trim(polygon%name)
     write (log%unit, form_63) "number of polygons:" , size (polygon%polygon)
+
     do i = 1 , size (polygon%polygon)
       if (polygon%pm.eq."+".or.polygon%pm.eq."-") write (log%unit, form_63) &
         "Usage overwritten with command line option", polygon%pm
@@ -160,6 +181,8 @@ end subroutine
 !! The ilustration explain exclusion idea\n
 !! \image latex /home/mrajner/src/grat/doc/figures/polygon_ilustration.pdf "capt" width=\textwidth
 !! \image html /home/mrajner/src/grat/doc/figures/polygon_ilustration.png
+
+!! all values in decimal degrees
 ! ==============================================================================
 subroutine chkgon (rlong , rlat , polygon , iok)
   real(dp),intent (in) :: rlong, rlat
@@ -180,25 +203,27 @@ subroutine chkgon (rlong , rlat , polygon , iok)
     ! loop twice for elastic and newtonian
     ! polygon is one we should not be in
     if(.not.polygon%polygon(i)%use) then
-      if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0 &
-        .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) then
-      iok=0
-      return
+      if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0   &
+        .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) &
+        then
+        iok=0
+        return
+      endif
     endif
-  endif
-enddo
-ianyok=0
-! polygon is one we should be in; test to see if we are, and if so set
-! iok to 1 and return
-do i=1,size(polygon%polygon)
-  if(polygon%polygon(i)%use) then
-    ianyok = ianyok+1
-    if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0 &
-      .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) then
-    iok=1
-    return
-  endif
-endif
+  enddo
+  ianyok=0
+  ! polygon is one we should be in; test to see if we are, and if so set
+  ! iok to 1 and return
+  do i=1,size(polygon%polygon)
+    if(polygon%polygon(i)%use) then
+      ianyok = ianyok+1
+      if (  if_inpoly(rlong  ,rlat,polygon%polygon(i)%coords).ne.0   &
+        .or.if_inpoly(rlong2 ,rlat,polygon%polygon(i)%coords).ne.0 ) &
+        then
+        iok=1
+        return
+      endif
+    endif
   enddo
   ! not inside any polygon%polygons; set iok to 0 if there are any we should have
   ! been in
@@ -293,10 +318,10 @@ integer function ncross(x1,y1,x2,y2)
   endif
 
   ! touches +x axis; crosses +x axis; lies entirely on -x axis
-  if(   (y1.eq.0.and.x1.gt.0)    &
-    .or.(y2.eq.0.and.x2.gt.0) &
-    .or.((y1.lt.0).and.(c12.gt.c21)) &
-    .or.((y1.gt.0).and.(c12.lt.c21)) &
+  if(   (y1.eq.0.and.x1.gt.0)                          &
+    .or.(y2.eq.0.and.x2.gt.0)                          &
+    .or.((y1.lt.0).and.(c12.gt.c21))                   &
+    .or.((y1.gt.0).and.(c12.lt.c21))                   &
     .or.(y1.eq.0.and.y2.eq.0.and.x1.lt.0.and.x2.lt.0)) &
     then
     ncross = 0
@@ -309,6 +334,7 @@ integer function ncross(x1,y1,x2,y2)
     if(y1.gt.0) ncross = -2
     return
   endif
+
   ! one end touches -x axis - goes which way?
   if(y1.eq.0) then
     if(y2.lt.0) ncross = -1
@@ -318,6 +344,7 @@ integer function ncross(x1,y1,x2,y2)
     if(y1.lt.0) ncross = 1
     if(y1.gt.0) ncross = -1
   endif
+
   return
 end function
 

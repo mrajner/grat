@@ -5,6 +5,8 @@
 module mod_mjd
   use mod_constants, only: dp
 
+  implicit none
+
 contains
 ! ==============================================================================
 !> Compute date from given Julian Day
@@ -19,31 +21,34 @@ subroutine invmjd (mjd, date)
   integer :: t1, t4, h, t2, t3, ih1, ih2
   real(dp) :: dayfrac
 
-  date =0
+  date = 0
 
-  t1 = 1+ int(mjd) + 2400000
-  t4 = mjd - int (mjd);
-  h = int ((t1 - 1867216.25)/36524.25);
-  t2 = t1 + 1 + h - int (h/4)
-  t3 = t2 - 1720995
-  ih1 = int ((t3 -122.1)/365.25)
-  t1 = int (365.25 * ih1)
-  ih2 = int ((t3 - t1)/30.6001);
-  date(3) = (t3 - t1 - int (30.6001 * ih2)) + t4;
-  date(2) = ih2 - 1;
+  t1      = 1+ int(mjd) + 2400000
+  t4      = mjd - int (mjd);
+  h       = int ((t1 - 1867216.25)/36524.25)
+  t2      = t1 + 1 + h - int (h/4)
+  t3      = t2 - 1720995
+  ih1     = int ((t3 -122.1)/365.25)
+  t1      = int (365.25 * ih1)
+  ih2     = int ((t3 - t1)/30.6001);
+  date(3) = (t3 - t1 - int (30.6001 * ih2)) + t4
+  date(2) = ih2 - 1
+
   if (ih2 .gt. 13) date(2) = ih2 - 13
   date(1) = ih1
   if (date(2).le. 2) date(1) = date(1) + 1
 
   dayfrac = mjd - int(mjd) + 1./ (60*60*1000)
-  date(4) = int (dayfrac * 24. )
-  date(5) = ( dayfrac - date (4) / 24. ) * 60 * 24
-  date(6) = ( dayfrac - date (4) / 24. - date(5)/(24.*60.)  ) * 60 * 24 *60
+  date(4) = int (dayfrac * 24.)
+  date(5) = (dayfrac - date (4) / 24.) * 60 * 24
+  date(6) = (dayfrac - date (4) / 24. - date(5)/(24.*60.)  ) * 60 * 24 *60
+
   if (date (6) .eq. 60 ) then
-    date (6)=0
-    date (5)=date(5) + 1
+    date (6) = 0
+    date (5) = date(5) + 1
   endif
 end subroutine
+
 ! ==============================================================================
 !> Compute Julian date for given date.
 !!
@@ -58,11 +63,14 @@ function jd (year,month,day, hh,mm,ss)
   integer :: i, j, k
   real(dp) :: jd
 
-  i= year
-  j= month
-  k= day
-  jd= k-32075+1461*(i+4800+(j-14)/12)/4+367*(j-2-(j-14)/12*12)/12-3*((i+4900+(j-14)/12)/100)/4  + (hh/24.) &
-    + mm/(24.*60.) +ss/(24.*60.*60.) ! - 2400000.5
+  i  = year
+  j  = month
+  k  = day
+  jd = &
+    k-32075 &
+    +1461*(i+4800+(j-14)/12)/4+367*(j-2-(j-14)/12*12)/12-3*((i+4900+(j-14)/12)/100)/4  &
+    + (hh/24.) &
+    + mm/(24.*60.) +ss/(24.*60.*60.)
   return
 end function
 
@@ -75,20 +83,22 @@ end function
 ! ==============================================================================
 function mjd (date)
   integer, intent(in) :: date (6)
-  integer :: aux (6)
-  integer :: i, k
+  integer  :: aux (6)
+  integer  :: i, k
   real(dp) :: dayfrac, mjd
 
-  aux=date
-  if ( aux(2) .le.  2) then
-    aux(1)  = date(1) -  1
+  aux = date
+
+  if (aux(2).le.2) then
+    aux(1) = date(1) -  1
     aux(2) = date(2) +  12
   endif
-  i = aux(1)/100
-  k = 2 - i + int(i/4);
-  mjd = int(365.25 * aux(1) ) - 679006
-  dayfrac =  aux (4) / 24. + date(5)/(24. * 60. ) + date (6)/(24. * 3600. )
-  mjd = mjd + int(30.6001*( aux(2) + 1)) + date(3) + k + dayfrac
+
+  i       = aux(1)/100
+  k       = 2 - i + int(i/4);
+  mjd     = int(365.25 * aux(1) ) - 679006
+  dayfrac = aux (4) / 24. + date(5)/(24. * 60. ) + date (6)/(24. * 3600. )
+  mjd     = mjd + int(30.6001*( aux(2) + 1)) + date(3) + k + dayfrac
 end function
 
 end module mod_mjd

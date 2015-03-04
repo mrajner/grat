@@ -56,20 +56,33 @@ subroutine parse_date(cmd_line_entry)
     return
   endif
 
-  do i_ = 1, size(cmd_line_entry%field)
+
+  do i_ = 1, ubound(cmd_line_entry%field,1)
+
+    if (any(cmd_line_entry%field(i_)%subfield%name.eq."m") &
+      .or. any(cmd_line_entry%field(i_)%subfield%dataname.eq."~") &
+      ) then
+      if (.not. allocated (model)) then
+        call print_warning("cannot use m or ~ in data specifier (-D m ) if no model file" &
+          //" with dates given",error=.true.)
+      elseif (.not.allocated(model(1)%date)) then
+        call print_warning("cannot use m or ~ in data specifier if first model file" &
+          //" do not contains dates",error=.true.)
+      endif
+    endif
 
     if (trim(cmd_line_entry%field(i_)%full).eq."") then
       call print_warning("bad date " //trim(cmd_line_entry%field(i_)%full))
       cycle
     endif
 
-    do i_aux=1, min(size(cmd_line_entry%field(i_)%subfield),2)
+    do i_aux=1, min(ubound(cmd_line_entry%field(i_)%subfield,1),2)
       if(index(cmd_line_entry%field(i_)%subfield(i_aux)%name,'-').gt.1) then
         call strip_hyphen_date_iso(cmd_line_entry%field(i_)%subfield(i_aux)%name)
       endif
     enddo
 
-    if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"  &
+    if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"         &
       .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
       call print_warning( &
@@ -79,12 +92,14 @@ subroutine parse_date(cmd_line_entry)
       cycle
     endif
 
-    if (any( [( &
-      is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name) &
+    if (any( [(                                                            &
+      is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name)            &
       .and.index(cmd_line_entry%field(i_)%subfield(i_aux)%name,".").ne.0 , &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
+
       call print_warning("decimal date not supported "// trim(cmd_line_entry%field(i_)%full))
       cycle
+
     endif
 
     interval_unit = "h"
@@ -93,8 +108,8 @@ subroutine parse_date(cmd_line_entry)
       write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
-      if (size(model(1)%date).eq.0) then
-        call print_warning("NO dates in first model. -Dm is forbidden (or -D before -F)", error=.true.)
+      if (ubound(model(1)%date,1).eq.0) then
+        call print_warning("no dates in first model: -Dm is forbidden (or -D before -F)", error=.true.)
       else
         start = model(1)%date(lbound(model(1)%date, 1), 1:6)
       endif
@@ -106,21 +121,28 @@ subroutine parse_date(cmd_line_entry)
     stop = start
 
     ! tilde
-    if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~") then
-      swap = model(1)%date(1, :)
-      do i=2, size(model(1)%date(:, :), 1)
-        if (abs(mjd(model(1)%date(i, :))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
-          swap = model(1)%date(i, :)
-        endif
-      enddo
-      start = swap
+    if (cmd_line_entry%field(i_)%subfield(1)%dataname=="~".and. allocated(model)) then
+      if ((ubound(model(1)%date,1).gt.0)) then
+        swap = model(1)%date(1, :)
+        do i=2, size(model(1)%date(:, :), 1)
+          if (abs(mjd(model(1)%date(i, :))-mjd(start)).lt.abs(mjd(swap)-mjd(start)))  then
+            swap = model(1)%date(i, :)
+          endif
+        enddo
+        start = swap
+      endif
     endif
 
-    if (size(cmd_line_entry%field(i_)%subfield).ge.2  &
-      .and. cmd_line_entry%field(i_)%subfield(2)%name.ne.""  &
+    if (size(cmd_line_entry%field(i_)%subfield).ge.2        &
+      .and. cmd_line_entry%field(i_)%subfield(2)%name.ne."" &
       ) then
+
       if (cmd_line_entry%field(i_)%subfield(2)%name.eq."m") then
-        stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
+        if (size(model(1)%date).eq.0) then
+          call print_warning("no dates in first model: -Dm is forbidden (or -D before -F)", error=.true.)
+        else
+          stop = model(1)%date(ubound(model(1)%date, 1), 1:6)
+        endif
       else if (cmd_line_entry%field(i_)%subfield(2)%dataname.ne."") then
         read (cmd_line_entry%field(i_)%subfield(2)%name,*) stop(1)
         select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
@@ -154,7 +176,15 @@ subroutine parse_date(cmd_line_entry)
       stop = start
     endif
 
-    if (size(cmd_line_entry%field(i_)%subfield).ge.3)then
+    if (size(cmd_line_entry%field(i_)%subfield).ge.3) then
+
+      if(.not.is_numeric(cmd_line_entry%field(i_)%subfield(3)%dataname)) then
+        call print_warning(                                              &
+          "not numeric interval "// trim(cmd_line_entry%field(i_)%full), &
+          error=.true.                                                   &
+          )
+      endif
+
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
       case("M", "D", "Y", "H")
@@ -187,21 +217,26 @@ subroutine parse_date(cmd_line_entry)
     endif
 
     if (interval_unit.eq."M".or.interval_unit.eq."Y") then
+
       if (interval_unit.eq."Y") then
         step=step*12
         interval_unit="M"
       endif
+
       if (interval_unit.eq."M") then
         call more_dates &
           (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
         date(start_index)%date=start
         date(start_index)%mjd=mjd(date(start_index)%date)
-        do i= start_index+1, size(date)
+
+        do i = start_index+1, size(date)
           date(i)%date=date(i-1)%date
           date(i)%date(2)=date(i-1)%date(2)+step
+
           if (date(i)%date(2).gt.12) then
             date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
             date(i)%date(2) =modulo(date(i)%date(2), 12)
+
           else if (date(i)%date(2).lt.1) then
             date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
             date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
@@ -210,19 +245,23 @@ subroutine parse_date(cmd_line_entry)
           call invmjd(date(i)%mjd, date(i)%date)
         enddo
       endif
+
     else
-      if (cmd_line_entry%field(i_)%subfield(1)%name=="m" &
-        .and. cmd_line_entry%field(i_)%subfield(2)%name=="m" &
-        .and. ( &
-        size(cmd_line_entry%field(i_)%subfield).lt.3 .or. &
-        cmd_line_entry%field(i_)%subfield(3)%dataname=="" &
-        ) &
+      if (cmd_line_entry%field(i_)%subfield(1)%name=="m"      &
+        .and. cmd_line_entry%field(i_)%subfield(2)%name=="m"  &
+        .and. (                                               &
+        ubound(cmd_line_entry%field(i_)%subfield,1).lt.3 .or. &
+        cmd_line_entry%field(i_)%subfield(3)%dataname==""     &
+        )                                                     &
         ) then
-        if (size(cmd_line_entry%field(i_)%subfield).lt.3) step=1
-        if (step.gt.size(model(1)%time)) step=size(model(1)%time)
+
+        if (ubound(cmd_line_entry%field(i_)%subfield,1).lt.3) step=1
+
+        if (step.gt.ubound(model(1)%time,1)) step=ubound(model(1)%time,1)
         call more_dates (ceiling(size(model(1)%time)/step), start_index)
         i_aux=0
-        do i = 1, size(model(1)%time), int(step)
+
+        do i = 1, ubound(model(1)%time,1), int(step)
           i_aux=i_aux+1
           date(i_aux)%date = model(1)%date(i, :)
           date(i_aux)%mjd =mjd (date(i_aux)%date)
@@ -233,19 +272,21 @@ subroutine parse_date(cmd_line_entry)
         if (interval_unit.eq."s") step = step/60./60.
 
         call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index)
-        do i = start_index, size(date)
+        do i = start_index, ubound(date,1)
           date(i)%mjd = mjd(start) + (i-start_index)*step/24.
           call invmjd (date(i)%mjd, date(i)%date)
         enddo
       endif
     endif
   enddo
-  if (.not.log%sparse) &
-    write (log%unit, form%i3) "dates total:", size(date)
 
+  if (.not.log%sparse) then
+    write (log%unit, form%i3) "dates total:", size(date)
+  endif
 end subroutine
 
 ! =============================================================================
+!> Expand the array with date input
 ! =============================================================================
 subroutine more_dates (number, start_index)
   integer, intent(in)  :: number
@@ -253,16 +294,26 @@ subroutine more_dates (number, start_index)
   type(dateandmjd), allocatable, dimension(:) :: tmpdate
 
   if (allocated(date)) then
+
     write(log%unit, form%i3), "added date(s):", number
-    start_index=size(date) + 1
+    start_index=ubound(date,1) + 1
+
     call move_alloc(date, tmpdate)
-    allocate(date(size(tmpdate)+number))
-    date=tmpdate
+
+    allocate(date(ubound(tmpdate,1)+number))
+
+    date(lbound(tmpdate,1):ubound(tmpdate,1))=tmpdate
+
     deallocate(tmpdate)
   else
     allocate(date(number))
     start_index=1
   endif
+
+  ! print *, date%mjd, "mjd"
+  ! print '(*(i6))', date%date(6)
+  ! print * , size(date(1)%date) , "SDD"
+  ! PRINT *, start_index, "SI", size(date), ubound(date,1)
 end subroutine
 
 ! =============================================================================

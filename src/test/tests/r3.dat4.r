@@ -1,0 +1,2 @@
+warning: level not found (no warning again) hgt.2012.nc                                                                                                                                                                                              
+ 25% |*****               |  0.0s [eta  0.0] (proc:  0.0 | %:101.1) t3.dat3.r100% |********************|  0.0s [eta  0.0] (proc:  0.0 | %: 97.8) t3.dat3.r 

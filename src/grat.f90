@@ -1,9 +1,10 @@
-!> \file
 !! \mainpage grat overview
 !! \section Purpose
 !! This program was created to make computation of atmospheric gravity
 !! correction easier. Still developing. Consider visiting later...
 !!
+!! \version beta
+!! \date 2014-06-30
 !! \version pre-alpha
 !! \date 2013-01-12
 !! \author Marcin Rajner\n
@@ -56,7 +57,6 @@
 !! \example grat_usage.sh
 ! ==============================================================================
 program grat
-  ! use omp_lib parallel computation not yet enabled
   use mod_parser,    only: intro
   use mod_data
   use mod_date
@@ -64,7 +64,7 @@ program grat
   use mod_site,      only: print_site_summary, site
   use mod_cmdline
   use mod_admit,     only: admit
-  use mod_utilities, only: Bubble_Sort
+  use mod_utilities, only: Bubble_Sort, mean, stdev
 
   implicit none
   real    :: cpu(2)
@@ -77,11 +77,14 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                         &
-    program_calling   = "grat",                        &
-    version           = "pre-alpha",                   &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-", &
-    cmdlineargs       = .true.                         &
+  call intro (                                            &
+    program_calling   = "grat",                           &
+    version           = __GRAT_VERSION__,                 &
+    cdate             = __CDATE__,                        &
+    fflags            = __FFLAGS__,                       &
+    compiler          = __COMPILER__,                     &
+    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-mC", &
+    cmdlineargs       = .true.                            &
     )
 
   start = 0
@@ -91,26 +94,29 @@ program grat
     call exit (0)
   endif
 
-  if (size(date).gt.0) then
+  if (ubound(date,1).gt.0) then
+
     if(output%header) then
-      write (output%unit, '(a12,x,a14,x)', advance = "no" ) "mjd", "date"
+      write (output%unit, '(a9,x,a14,x)', advance = "no" ) "mjd", "date"
     endif
+
     start = 1
   endif
 
   if(output%header) then
-    write (output%unit, '(a8,3(x,a9$))') "name", "lat", "lon", "h"
+    write (output%unit, '(a8,3(x,a9)$)') "name", "lat", "lon", "h"
   endif
 
   if(output%header) then
 
     if (method(1)) then
-      do i=1, max(1,size(admitance%value))
+      do i=1, max(1,ubound(admitance%value,1))
         if (i.gt.1) then
           write (output%unit,'(a11,"_",i1)', advance='no'), "G1D", i
         else
           write (output%unit,'(a13)', advance='no'), "G1D"
         endif
+
       enddo
     endif
 
@@ -129,16 +135,16 @@ program grat
           endif
         enddo
 
-        if (inverted_barometer.and.non_inverted_barometer) then
-          write (output%unit,'(a13$)'), "GE_NIB"
+        if (inverted_barometer.and.non_inverted_barometer.and.any(green%dataname.eq."GE")) then
+          write (output%unit,'(a13)' , advance = "no"), "GE_NIB"
         endif
       endif
 
       if (result_total) then
         if (method(2)) then
-          if ( &
+          if (                                                &
             all([inverted_barometer, non_inverted_barometer]) &
-            .and. result_total_all &
+            .and. result_total_all                            &
             ) then
             write (output%unit,'(a13)',advance='no'), "G2D_t_IB"
             write (output%unit,'(a13)',advance='no'), "G2D_t_NIB"
@@ -179,17 +185,19 @@ program grat
   endif
 
   if (inverted_landsea_mask.and.ind%model%ls.ne.0) then
+    stop "CHECK HERE"
+    ! czy tu rzeczywiście .and.ind%model%ls.ne.0 ma sens
     model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
   endif
 
-  do idate=start, size (date)
+  do idate=start, ubound(date,1)
     if (idate.ge.1) then
       if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
 
         if (first_waning) then
           call print_warning (                           &
             "hours not matching model dates (0,6,12,18)" &
-            //"are rejecting and not shown in output"    &
+            //" are rejecting and not shown in output"   &
             )
         endif
 
@@ -198,17 +206,19 @@ program grat
       endif
     endif
 
-    do i = 1, size(model)
+    do i = 1, ubound(model,1)
       if(model(i)%if) then
 
         select case (model(i)%dataname)
         case ("SP", "T", "GP", "VT", "VSH")
           if (                                                   &
             model(i)%autoload                                    &
-            .and.                                                &
-            .not.(                                               &
+            .and..not.                                           &
+            (                                                    &
             model(i)%autoloadname(1:3).eq."ERA"                  &
-            .and.(any(model(i)%dataname.eq.["GP","VT","VSH"])))) &
+            .and.(any(model(i)%dataname.eq.["GP ","VT ","VSH"])) &
+            )                                                    &
+            )                                                    &
             then
 
             if (                                                      &
@@ -233,8 +243,7 @@ program grat
             endif
           endif
 
-          if (size(date).eq.0.and.model(i)%exist) then
-            stop "temporary"
+          if (ubound(date,1).eq.0.and.model(i)%exist) then
             call get_variable (model(i))
           elseif (model(i)%exist) then
             call get_variable (model(i), date = date(idate)%date)
@@ -244,7 +253,7 @@ program grat
       endif
     enddo
 
-    if (any(.not.model%exist).and..not.output%nan) cycle
+    if (any(.not.model(1:ubound(model,1))%exist).and..not.output%nan) cycle
 
     if (level%all.and..not.allocated(level%level)) then
       allocate(level%level(size(model(ind%model%gp)%level)))
@@ -279,44 +288,48 @@ program grat
     endif
 
     lprogress = max(size(date),1)*max(size(site),1)
-    do isite = 1, size(site)
+    do isite = 1, ubound(site,1)
       iprogress = iprogress + 1
 
       if (idate.gt.0) then
-        write(output%unit, '(f12.3,x,i4.4,5(i2.2),x$)', advance="no") &
+        write(output%unit, '(f9.3,x,i4.4,5(i2.2),x$)', advance="no") &
           date(idate)%mjd, date(idate)%date
       endif
 
       write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)'), &
-        site(isite)%name,                             &
+        trim(site(isite)%name),                       &
         site(isite)%lat,                              &
         site(isite)%lon,                              &
         site(isite)%height
 
       if (method(1)) then
-        do j=1, max(1,size(admitance%value(:)))
-          write (output%unit, "("// output%form // '$)'), &
-            admit(                                        &
-            site(isite),                                  &
-            date   = date(idate)%date,                    &
-            number = j                                    &
+        do j=1, max(1,ubound(admitance%value(:),1))
+
+          write (output%unit, "("// output%form // ')' , advance = "no"), &
+            admit(                                                        &
+            site(isite),                                                  &
+            date   = date(idate)%date,                                    &
+            number = j                                                    &
             )
+
         enddo
       endif
 
       if (method(2).or.method(3)) then
-        ! perform convolution
-        call convolve (site(isite), date = date(idate))
+        call convolve (      &
+          site(isite),       &
+          date = date(idate) &
+          )
       endif
 
-      write(output%unit,*)
+      write(output%unit, *) ""
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))
         call system_clock(execution_time(2),execution_time(3))
 
         call progress(                                      &
-          100*iprogress/lprogress ,                         &
+          100 * iprogress/lprogress ,                       &
           time  = real(execution_time(2)-execution_time(1)) &
           /execution_time(3),                               &
           cpu   = cpu(2)-cpu(1),                            &

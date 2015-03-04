@@ -1,0 +1,15 @@
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+Image              PC                Routine            Line        Source             
+value_check        0000000000514229  Unknown               Unknown  Unknown
+value_check        0000000000512AFE  Unknown               Unknown  Unknown
+value_check        00000000004C5072  Unknown               Unknown  Unknown
+value_check        000000000047B523  Unknown               Unknown  Unknown
+value_check        0000000000482B2B  Unknown               Unknown  Unknown
+libpthread.so.0    00002B844F722720  Unknown               Unknown  Unknown
+value_check        0000000000429F7A  Unknown               Unknown  Unknown
+value_check        000000000043C04B  Unknown               Unknown  Unknown
+value_check        0000000000443E68  Unknown               Unknown  Unknown
+value_check        000000000040AA00  Unknown               Unknown  Unknown
+value_check        000000000040A8E6  Unknown               Unknown  Unknown
+libc.so.6          00002B844F951D65  Unknown               Unknown  Unknown
+value_check        000000000040A7D9  Unknown               Unknown  Unknown

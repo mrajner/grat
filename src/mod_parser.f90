@@ -6,10 +6,11 @@ module mod_parser
   implicit none
 
 contains
+
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry, accepted_switches)
+subroutine parse_option (cmd_line_entry, accepted_switches, version)
   use mod_cmdline
   use mod_site,      only: parse_site
   use mod_date,      only: parse_date
@@ -21,7 +22,9 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
+  character(len=*), optional :: version
   integer(2) :: i
+  logical :: file_already_opened
 
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
@@ -33,7 +36,10 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   select case (cmd_line_entry%switch)
 
   case ('-V')
-    if (.not.log%sparse) write(log%unit, form%i2) 'verbose mode'
+    if (.not.log%sparse) then
+      write(log%unit, form%i2) 'verbose mode'
+    endif
+
     if (len(trim(cmd_line_entry%field(1)%subfield(1)%name)).gt.0) then
       if (.not.log%sparse) write(log%unit, form_62) 'the log file was set', trim(basename(trim(log%name)))
     endif
@@ -41,7 +47,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-r')
     do i=1, size(cmd_line_entry%field)
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t" )) result_total     = .true.
-      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then 
+      if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then
         result_total_all = .true.
         result_total     = .true.
       endif
@@ -66,7 +72,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     inverted_barometer=.false.
     do i = 1, size(cmd_line_entry%field)
       select case(cmd_line_entry%field(i)%subfield(1)%name)
-      case ("N","n","nib")
+      case ("N","n","nib","NIB")
         non_inverted_barometer = .true.
       case default
         inverted_barometer=.true.
@@ -100,10 +106,13 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-F')
     call parse_model(cmd_line_entry)
 
+  case ('-C')
+    center_data=.true.
+
   case ('-!')
     all_huge=.true.
     write(log%unit, form%i2), 'all model as huge'
-    if (size(model).ge.1) call print_warning("put -! before -F")
+    if (ubound(model,1).ge.1) call print_warning("put -! before -F")
 
   case ("-G")
     call parse_green(cmd_line_entry)
@@ -144,10 +153,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
           method3d_compute_reference=.true.
 
         case default
-          call print_warning (                            &
-            "no explicit ref for 3d given" //             &
-            " - using @GN[...] if any or put -M3 : : ref" &
-            )
+          if (warnings%all) then
+            call print_warning (                            &
+              "no explicit ref for 3d given" //             &
+              " - using @GN[...] if any or put -M3 : : ref" &
+              )
+          endif
         endselect
 
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%dataname)) then
@@ -163,7 +174,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       write(log%unit, form_62, advance="no"), 'method was set:'
 
       do i=1,size(method)
-        if (method(i)) write(log%unit, '(i1,"D ",$)') i
+        if (method(i)) write(log%unit, '(i1,"D ")' , advance = "no") i
       enddo
       write(log%unit, *)
     endif
@@ -171,7 +182,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (method(3)) then
       write(log%unit, form_62, advance="no"), "method refinment for near area using 3D"
       write(log%unit,'(a$)') pack(method3dnames,method3d)
-      write(log%unit,*) method3d_refinment_distance
+      write(log%unit, '(g10.3)') method3d_refinment_distance
     endif
 
     if (.not.any(method).and..not.dryrun) then
@@ -181,10 +192,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ('-o')
     output%if=.true.
     output%name=cmd_line_entry%field(1)%subfield(1)%name
+
     if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
       output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) &
         // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
     endif
+
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
       output%tee=.true.
     endif
@@ -206,9 +219,11 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nan")) then
       output%nan=.true.
     endif
+
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."prune")) then
       output%prune=.true.
     endif
+
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."level")) then
       output%level=.true.
     endif
@@ -223,7 +238,14 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
     endif
 
     if (len(output%name).gt.0.and. output%name.ne."") then
-      open (newunit = output%unit, file = output%name, action = "write" )
+
+      inquire(file = output%name, opened = file_already_opened, number = i)
+
+      if (file_already_opened) then
+        output%unit = i
+      else
+        open (newunit = output%unit, file = output%name, action = "write" )
+      endif
     endif
 
   case ('-P')
@@ -241,8 +263,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
       quiet_step=0
     endif
 
-    write(log%unit,form%i3) &
-      "quiet step", quiet_step
+    write(log%unit,form%i3) "quiet step", quiet_step
 
   case ('-U')
     select case (cmd_line_entry%field(1)%subfield(1)%name)
@@ -266,8 +287,12 @@ subroutine parse_option (cmd_line_entry, accepted_switches)
   case ("-J")
     call parse_level(cmd_line_entry)
 
+  case ("-n")
+    write(log%unit, form%i2) "dryrun"
+    dryrun=.true.
+
   case ("--")
-    call parse_long_option(cmd_line_entry)
+    call parse_long_option(cmd_line_entry, version)
 
   case default
     if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
@@ -291,16 +316,27 @@ end subroutine
 !!    (-S -11... was previously treated as two cmmand line entries, now only -?
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
+subroutine intro (     &
+    program_calling,   &
+    accepted_switches, &
+    cmdlineargs,       &
+    version,           &
+    cdate,             &
+    fflags,            &
+    compiler           &
+    )
   use mod_cmdline
   use mod_utilities, only: file_exists
+
   character(len=*), intent(in) :: program_calling
   character(len=*), intent (in), optional :: accepted_switches
   logical, intent (in), optional :: cmdlineargs
-  character(*), intent (in), optional :: version
-  integer :: i
+  character(*), intent (in), optional :: version, cdate, fflags, compiler
+  integer :: i, j
   character(len=355) :: dummy
   integer,dimension(8):: execution_date
+
+  logical :: file_already_opened
 
   if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
     call print_warning("args", program_calling=program_calling, error=.true.)
@@ -318,11 +354,16 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     call exit
   endif
 
-  if (any(cmd_line%switch.eq.'-v') &
+  if (any(cmd_line%switch.eq.'-v')                   &
     .and.if_accepted_switch("-v",accepted_switches)) &
     then
-    call print_version &
-      (program_calling=program_calling, version=version)
+    call print_version (                 &
+      program_calling = program_calling, &
+      version         = version,         &
+      cdate           = cdate,           &
+      fflags          = fflags ,         &
+      compiler        = compiler         &
+      )
     call exit
   endif
 
@@ -331,7 +372,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
     then
 
     do i=1,size(cmd_line)
-      if (cmd_line(i).switch.eq."-w") then
+      if (cmd_line(i)%switch.eq."-w") then
         if ( &
           any(cmd_line(i)%field(1)%subfield(1:)%name.eq."n") &
           ) then
@@ -342,6 +383,12 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
           any(cmd_line(i)%field(1)%subfield(1:)%name.eq."t") &
           ) then
           warnings%time=.true.
+        endif
+
+        if ( &
+          any(cmd_line(i)%field(1)%subfield(1:)%name.eq."a") &
+          ) then
+          warnings%all=.true.
         endif
 
         ! -ws -- strict warning
@@ -368,7 +415,7 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
 
   if (any(cmd_line%switch.eq.'-V')) then
     do i=1,size(cmd_line)
-      if (cmd_line(i).switch.eq."-V") then
+      if (cmd_line(i)%switch.eq."-V") then
         if ( &
           any(cmd_line(i)%field(1)%subfield(2:)%name.eq."s") &
           .or. &
@@ -388,29 +435,47 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
         if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
           log%if = .true.
           log%name=cmd_line(i)%field(1)%subfield(1)%name
+
           if(cmd_line(i)%field(1)%subfield(1)%dataname.ne."") then
             log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
           endif
+
           if (file_exists(log%name).and.log%noclobber) then
             if (.not.quiet) &
               call print_warning ("nc", more=trim(log%name), error=.true.)
           endif
-          open (newunit=log%unit, file = log%name, action='write')
+
+          inquire(file = log%name, opened = file_already_opened, number = j)
+
+          if (file_already_opened) then
+            log%unit = j
+          else
+            open (newunit = log%unit, file = log%name, action = "write" )
+          endif
         else
           log%unit=output_unit
         endif
       endif
     enddo
+
   else
     ! if you don't specify log file, or not switch on verbose mode
     ! all additional information will go to trash
     ! Change /dev/null accordingly if your file system does not
     ! support this name
-    open (newunit=log%unit, file = "/dev/null", action = "write" )
+    ! inquire(file = "/dev/null", opened = file_already_opened, number = j)
+    open (newunit = log%unit, file = "/dev/null", action = "write" )
+
   endif
 
   if (.not. log%sparse) then
-    call print_version(program_calling=program_calling, version=version)
+    call print_version (                 &
+      program_calling = program_calling, &
+      version         = version,         &
+      cdate           = cdate,           &
+      fflags          = fflags ,         &
+      compiler        = compiler         &
+      )
   endif
 
   call date_and_time (values = execution_date)
@@ -422,15 +487,16 @@ subroutine intro (program_calling, accepted_switches, cmdlineargs, version)
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
+
   do i = 1, int(len(trim(dummy))/72)+1
     write (log%unit, '(a72)') trim(dummy(72*(i-1)+1:))
   enddo
+
   write(log%unit, form%separator)
   write (log%unit, form%i0) "Command parsing:"
 
   do i=1, size(cmd_line)
-    call parse_option(cmd_line(i), accepted_switches)
-
+    call parse_option(cmd_line(i), accepted_switches, version=version)
   enddo
 
   call get_index()
@@ -493,7 +559,7 @@ subroutine check_arguments (program_calling)
 
   endif
 
-  do i=1, size(model)
+  do i=1, ubound(model,1)
     if (model(i)%autoload) then
       if (.not. allocated(date)) then
         call print_warning("alias_without_date", error=.true.)
@@ -518,9 +584,9 @@ subroutine check_arguments (program_calling)
     endif
   endif
 
-    if (.not.any(cmd_line%switch.eq.'-S')) then
-      call print_warning("-S not given")
-    endif
+  if (.not.any(cmd_line%switch.eq.'-S')) then
+    call print_warning("-S not given")
+  endif
 end subroutine
 
 ! =============================================================================
@@ -558,7 +624,7 @@ end function
 subroutine parse_moreverbose (cmd_line_entry)
   use mod_cmdline
   use mod_utilities, only: file_exists
-  type (cmd_line_arg)  :: cmd_line_entry
+  type (cmd_line_arg) :: cmd_line_entry
   integer :: i
 
   if(allocated(moreverbose)) then
@@ -593,12 +659,12 @@ subroutine parse_moreverbose (cmd_line_entry)
       endif
     endif
 
-    write (log%unit, form_62), trim(moreverbose(i)%name), &
-      "<-", dataname(moreverbose(i)%dataname)
-
     if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
-      moreverbose(i)%sparse=.true.
+      moreverbose(i)%sparse = .true.
     endif
+
+    write (log%unit, form_62), trim(moreverbose(i)%name), &
+      "<-", trim(dataname(moreverbose(i)%dataname)), "|sparse: ", moreverbose(i)%sparse
 
   enddo
 end subroutine
@@ -626,6 +692,7 @@ subroutine parse_info (cmd_line_entry)
     do i = 1, size(cmd_line_entry%field)
       write(log%unit, form%i2), "Range:", i
       call info_defaults(info(i))
+
       do j = 1, size(cmd_line_entry%field(i)%subfield)
         if (is_numeric(cmd_line_entry%field(i)%subfield(j)%name)) then
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
@@ -690,6 +757,7 @@ subroutine parse_info (cmd_line_entry)
       enddo
 
       if (info(i)%distance%denser.eq.0) info(i)%distance%denser = 1
+
       write(log%unit,                  &
         "("//form%t3//"                &
         'DB:',     f7.2,               &
@@ -700,11 +768,6 @@ subroutine parse_info (cmd_line_entry)
         '|HB:',    f8.1,               &
         '|HE:',    f8.1,               &
         '|HS:',    f7.2,               &
-        '|HSP:',   l,                  &
-        '|3D:',    f7.2,               &
-        '|3D:',    a,                  &
-        '|3:@DE',  f7.2,               &
-        '|3::ref', l,                  &
         '|'                            &
         )"),                           &
         info(i)%distance%start,        &
@@ -714,12 +777,25 @@ subroutine parse_info (cmd_line_entry)
         info(i)%distance%step,         &
         info(i)%height%start,          &
         info(i)%height%stop,           &
-        info(i)%height%step,           &
-        info(i)%height_progressive,    &
-        info(i)%distance%stop_3d,      &
-        pack(method3dnames,method3d) , &
-        method3d_refinment_distance,   &
-        method3d_compute_reference
+        info(i)%height%step
+
+
+      if (method(3)) then
+        write(log%unit,                  &
+          "("//form%t3//"                &
+          'HSP:',   l,                   &
+          '|3D:',    f7.2,               &
+          '|3D:',    a,                  &
+          '|3:@DE',  f7.2,               &
+          '|3::ref', l,                  &
+          '|'                            &
+          )"),                           &
+          info(i)%height_progressive,    &
+          info(i)%distance%stop_3d,      &
+          pack(method3dnames,method3d) , &
+          method3d_refinment_distance,   &
+          method3d_compute_reference
+      endif
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop.and.method(3)) then
         call print_warning( &
@@ -888,7 +964,7 @@ subroutine get_index()
 
   integer :: i
 
-  do i = 1, size(model)
+  do i = 1, ubound(model,1)
     select case (model(i)%dataname)
     case ("SP")
       ind%model%sp = i
@@ -914,7 +990,8 @@ subroutine get_index()
       ind%model%vsh = i
     endselect
   enddo
-  do i = 1, size(moreverbose)
+
+  do i = 1, ubound(moreverbose,1)
     select case (moreverbose(i)%dataname)
     case ("p")
       ind%moreverbose%p = i
@@ -936,13 +1013,16 @@ subroutine get_index()
       ind%moreverbose%b = i
     case ("n")
       ind%moreverbose%n = i
+    case ("l")
+      ind%moreverbose%l = i
     case ("j")
       ind%moreverbose%j = i
     case ("v")
       ind%moreverbose%v = i
     end select
   enddo
-  do i = 1, size(green)
+
+  do i = 1, ubound(green,1)
     select case (green(i)%dataname)
     case ("GE")
       ind%green%ge    = i
@@ -970,7 +1050,8 @@ subroutine get_index()
       ind%green%gndz2 = i
     endselect
   enddo
-  do i = 1, size(polygon)
+
+  do i = 1, ubound(polygon,1)
     select case (polygon(i)%dataname)
     case ("E","")
       ! assume polygon is for elastic part
@@ -979,17 +1060,21 @@ subroutine get_index()
       ind%polygon%n = i
     endselect
   enddo
+
 end subroutine
 
 ! =============================================================================
 ! only for debugging during developement
 ! =============================================================================
-subroutine parse_long_option(cmd_line_entry)
+subroutine parse_long_option(cmd_line_entry, version)
   use mod_cmdline
+  use mod_utilities, only: version_split
+
   type(cmd_line_arg) :: cmd_line_entry
+  character(len=*), optional :: version
 
   if (trim(cmd_line_entry%full)=="--version") then
-    print '(a)', "1"
+    print '(a)', version_split(version,"major")
     call exit(0)
   endif
 end subroutine

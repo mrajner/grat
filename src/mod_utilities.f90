@@ -34,6 +34,7 @@ end subroutine
 !> Compute coefficients for spline interpolation.
 !!
 !! From web sources \todo find url
+!!
 !! Original description below:
 !! ==============================================================================
 !!  Calculate the coefficients b(i), c(i), and d(i), i=1,2,...,n
@@ -206,7 +207,7 @@ end function ispline
 function ntokens(line, separator)
   character,intent(in) :: line*(*)
   character(1), intent(in), optional :: separator
-  integer:: i, n, toks
+  integer:: i, n
   character(1) :: separator_
   integer  :: ntokens
 
@@ -218,15 +219,13 @@ function ntokens(line, separator)
 
   i = 1
   n = len_trim(line)
-  toks = 0
   ntokens = 0
   do while(i <= n)
     do while(line(i:i) == separator_)
       i = i + 1
       if (n < i) return
     enddo
-    toks = toks + 1
-    ntokens = toks
+    ntokens = ntokens + 1
     do
       i = i + 1
       if (n < i) return
@@ -269,23 +268,30 @@ end subroutine
 !! \date 2013-03-19
 !!
 !! \date 2013.07.16 added exception e.g /home/...
+!! \date 2014.08.27 added exception e.g comma ,
 ! =============================================================================
 function is_numeric(string)
   logical :: is_numeric
   character(len=*), intent(in) :: string
   real :: x
   integer :: e
+
   if (string(1:1).eq."/") then
     is_numeric=.false.
-    ! minus sign not on the first postion but allow 1e-5
-  else if (index(string,"-").gt.1 &
-    .and..not.index(string,"e").eq.index(string,"-")-1) then
+  else if (index(string,",").gt.0) then
     is_numeric=.false.
+
+    ! minus sign not on the first postion but allow 1e-5
+  else if (                                              &
+    index(string,"-").gt.1                               &
+    .and.(.not.index(string,"e").eq.index(string,"-")-1) &
+    ) then
+    is_numeric=.false.
+
   else
     read(string, *, iostat=e) x
     is_numeric = e == 0
   endif
-
 end function
 
 ! =============================================================================
@@ -298,11 +304,8 @@ end function
 function file_exists(string, double_check, verbose)
   character(len=*), intent(in) :: string
   logical, intent(in), optional :: double_check, verbose
-  logical :: verbose_, double_check_
   real :: randomnumber
   logical :: file_exists
-
-  verbose_=.false.
 
   if (string =="") then
     file_exists=.false.
@@ -310,22 +313,27 @@ function file_exists(string, double_check, verbose)
   endif
   inquire(file=string, exist=file_exists)
 
-  if (present(verbose))      verbose_      = verbose
-  if (present(double_check)) double_check_ = double_check
-  if (verbose_) then
+
+  if (present(verbose).and.verbose) then
     if (file_exists) then
-      print '(a,a)', trim(string), " exists"
+      write (*, '(a,a)') trim(string), " exists"
     else
       print '(a,a)', trim(string), " not exists"
     endif
   endif
-  if (double_check_.and..not.file_exists) then
+
+  if (present(double_check).and.double_check.and..not.file_exists) then
     call random_number(randomnumber)
-    if (verbose_) print '(a,a,i3,"s...")', &
-      trim(string), " not exists, slepping", int(randomnumber*5+1)
+
+    if (present(verbose).and.verbose) then
+      print '(a,a,i3,"s...")', &
+        trim(string), " not exists, slepping", int(randomnumber*5+1)
+    endif
+
     call sleep(int(randomnumber*5+1))
     inquire(file=string, exist=file_exists)
-    if (verbose_) then
+
+    if (present(verbose).and.verbose) then
       if (file_exists) then
         print '(a,a)', trim(string), " exists (indeed)"
       else
@@ -346,7 +354,8 @@ end function
 function d2r (degree)
   real(dp), intent (in) :: degree
   real(dp) :: d2r
-  d2r= pi / 180.0 * degree
+
+  d2r= pi / 180. * degree
 end function
 
 ! =============================================================================
@@ -359,6 +368,7 @@ end function
 function r2d ( radian )
   real(dp) :: r2d
   real(dp), intent (in) :: radian
+
   r2d= 180. / pi * radian
 end function
 
@@ -383,22 +393,26 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
   n_columns = 0
 
   if (present(comment_char)) then
-    comment_char_=comment_char
+    comment_char_ = comment_char
   else
-    comment_char_='#'
+    ! default comment_char
+    comment_char_ = '#'
   endif
 
-  open (newunit = file_unit,  file=file_name, status = "old", action ="read")
+  open (newunit = file_unit,  file = file_name, status = "old", action ="read")
   do
-    call skip_header (file_unit, comment_char_)
+    ! call skip_header (file_unit, comment_char_)
     read (file_unit, '(a)', iostat=io_stat) line
     if (io_stat == iostat_end) exit
+
     n_columns = max (n_columns, ntokens(line))
-    n_rows = n_rows + 1
+    n_rows    = n_rows + 1
   enddo
 
   if (present(rows))    rows    = n_rows
   if (present(columns)) columns = n_columns
+
+  close (file_unit)
 end subroutine
 
 ! ==============================================================================
@@ -415,23 +429,41 @@ end function
 
 ! =============================================================================
 !> Counts occurence of character (separator, default comma) in string
+!!
+!! added Marcin Rajner 2014.07.14
 ! =============================================================================
-integer function count_separator (dummy, separator)
-  character(*), intent(in) ::dummy
-  character(1), intent(in), optional  :: separator
-  character(1)  :: sep
+integer function count_separator (dummy, separator, consecutive_as_one)
+  character(*), intent(in) :: dummy
+  character(1), intent(in), optional :: separator
+  logical, intent(in), optional :: consecutive_as_one
+  character(1) :: sep
   character(:), allocatable :: dummy2
   integer :: i
 
-  dummy2=dummy
-  sep = ","
-  if (present(separator)) sep = separator
-  count_separator=0
+  dummy2 = dummy
+
+  if (present(separator)) then
+    sep = separator
+  else
+    sep = ","
+  endif
+
+  count_separator = 0
+
   do
     i = index (dummy2, sep)
     if (i.eq.0) exit
     dummy2 = dummy2(i+1:)
-    count_separator=count_separator+1
+    count_separator = count_separator + 1
+
+    if (present(consecutive_as_one).and.consecutive_as_one) then
+      ! print *, index(dummy, dummy2)
+      ! stop "TODO"
+      ! if (dummy(i-1:i-1) == sep) then
+      ! count_separator = count_separator -1
+      ! endif
+    endif
+
   enddo
 end function
 
@@ -451,16 +483,16 @@ function datanameunit (dataname, datanames, count)
 end function
 
 ! ==============================================================================
-!  p = rho h g
+!>  p = rho h g
 ! converts mm of EWT to Pascal
 ! inverted: converts Pascal to mm EWT
 ! ==============================================================================
 function mmwater2pascal(mmwater, inverted)
   use mod_constants, only: density, earth
+
   real(dp) :: mmwater2pascal
   real(dp), intent(in) :: mmwater
   logical, optional, intent(in) :: inverted
-
 
   if (present(inverted).and.inverted) then
     mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water)
@@ -469,18 +501,21 @@ function mmwater2pascal(mmwater, inverted)
   endif
 end function
 
+! ==============================================================================
+! ==============================================================================
 function linspace(xmin, xmax, n)
   real(dp), intent(in) :: xmin, xmax
   real(dp), dimension(:), allocatable :: linspace
   integer, intent(in), optional :: n
   integer :: i
+
   if (present(n)) then
     allocate(linspace(n))
   else
     allocate(linspace(10))
   endif
-  do i=1,size(linspace)
-    linspace(i) = xmin + (xmax-xmin)  * real(i-1,dp)/ real(size(linspace)-1,dp)
+  do i = 1, size(linspace)
+    linspace(i) = xmin + (xmax-xmin) * real(i-1,dp) / real(size(linspace)-1,dp)
   end do
 end function
 
@@ -505,13 +540,17 @@ end function
 ! consecutive number with optional digits (default=3), start is optional
 ! start number
 ! ==============================================================================
-subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
-  character(*), intent(in), optional :: prefix, suffix
+subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename, ifcreate)
+  character(*), intent(in),  optional :: prefix, suffix
   character(*), intent(out), optional :: filename
   integer, intent (in), optional :: digits, start
-  integer :: counter, digit
+  logical, intent (in), optional :: ifcreate 
+  integer :: counter
   integer, intent(out) :: unit
-  character(200) :: name=" "
+  character(200) :: name
+  character(6) :: output_format
+  
+  name=""
 
   if (present(start)) then
     counter = start
@@ -520,38 +559,47 @@ subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename)
   endif
 
   if (present(digits)) then
-    digit = digits
+    write(output_format,'("i",i0,".",i0)') digits, digits
   else
-    digit = 3
+    output_format="i3.3"
   endif
 
-  do while (file_exists(name) .or. name =="")
-    write (name, '("tmp",i<digit>.<digit>,a)')  counter
+  do while (file_exists(name) .or. name == "" )
+    write (name, '("tmp",'//output_format//',a)')  counter
     if (present(prefix)) name = prefix//name(4:)
     if (present(suffix)) name = trim(name)//suffix
     counter = counter + 1
   enddo
 
-  open (newunit = unit, file=name, action="write")
+  if(.not.present(ifcreate).or.ifcreate) then
+    open (newunit = unit, file=name, action="write")
+  endif
+
   if (present(filename)) filename = name
 end subroutine
 
 ! ==============================================================================
 ! ==============================================================================
 real function mean (vec, i, nan)
+
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
+
   if (present(nan).and.nan) then
     mean = sum(vec, mask = .not.(isnan(vec))) / real(count(.not.isnan(vec)))
   else
     mean = sum(vec) / real(i)
   endif
 end function
+
+! ==============================================================================
+! ==============================================================================
 real function stdev (vec,i, nan)
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
+
   if (present(nan).and.nan) then
     stdev = sqrt(sum((vec - mean(vec,i,nan=nan))**2,mask=.not.isnan(vec))/real(size(vec)))
   else
@@ -601,4 +649,111 @@ SUBROUTINE Bubble_Sort(a)
     if (.not. swapped) exit
   end do
 END SUBROUTINE Bubble_Sort
+
+! =============================================================================
+!> Performs bilinear interpolation
+!! \author Marcin Rajner
+!! \date 2013-05-07
+! =============================================================================
+function bilinear (x, y, aux)
+  real(dp) :: bilinear
+  real(dp) :: x, y, aux(4,3)
+  real(dp) :: a, b, c
+
+  a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
+  b = a * (aux(3,3) - aux(1,3)) + aux(1,3)
+  c = a * (aux(4,3) - aux(2,3)) + aux(2,3)
+  bilinear = (y-aux(1,2))/(aux(4,2)-aux(1,2)) * (c-b) + b
+end function
+
+! =============================================================================
+!> Convert celcius degree to kelvin
+!! and kelvin to celcius (if optional inverted parameter is set to true)
+!! \author Marcin Rajner
+!! \date 2014-06-07
+! =============================================================================
+function celcius_to_kelvin (celcius, inverted)
+  real(dp) :: celcius_to_kelvin
+  real(dp), intent(in) :: celcius
+  logical, intent(in), optional :: inverted
+
+  if (present(inverted).and.inverted) then
+    celcius_to_kelvin = celcius - 273.15
+  else
+    celcius_to_kelvin = celcius + 273.15
+  end if
+
+end function
+
+! =============================================================================
+! parse version number
+! version  major minor  default
+! v1.2-abc     1     2 v1.2-abc 
+!
+! =============================================================================
+function version_split(version, which) 
+  character(10) :: version_split
+  character(*), intent(in) :: version
+  character(*), intent(in), optional :: which
+  integer :: i, j
+
+  select case (which)
+
+  case("major","MAJOR")
+    outer: do i = 1, len(version)
+
+      if(version(i:i)==".") then
+        version_split=version(1:i-1)
+        return
+      endif
+
+      if (is_numeric(version(i:i))) then
+        do j = i+1, len(version)
+          if (.not.is_numeric(version(j:j))) exit outer
+        enddo
+        exit outer
+      endif
+
+    enddo outer
+
+    if(i.gt.len(version)) then
+      version_split=version
+      return
+    endif
+
+    version_split = version(i:j-1)
+    return
+
+  case("minor","MINOR")
+
+    i=index(version,".")
+
+    if (i.gt.0) then
+      do j=i+1, len(version)
+        if (.not.is_numeric(version(j:j))) exit 
+      enddo
+      version_split = version (i+1:j-1)
+      return
+    endif
+
+  case default
+    version_split = version
+  end select
+end function
+
+function length_pl(string)
+  character(*), intent(in) :: string
+  character(2) :: polish_letters(18)= &
+    ["Ą","ą","Ć","ć","Ł","ł", "Ś","ś", "Ż","ż","Ź","ź", "Ó","ó", "Ę","ę", "Ń","ń"]
+  integer :: length_pl, i
+
+  length_pl = 0
+
+  do i = 1, size(polish_letters)
+    length_pl = length_pl - countsubstring(string,polish_letters(i))
+  enddo
+
+  length_pl = length_pl + len_trim(string)
+end function
+
 end module

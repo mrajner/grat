@@ -14,6 +14,7 @@ module mod_green
     real(dp), allocatable,dimension(:) :: distance
     real(dp), allocatable,dimension(:) :: data
   end type
+
   type(green_functions), allocatable, dimension(:) :: green
 
   real(dp), allocatable, dimension(:) :: result
@@ -26,9 +27,10 @@ module mod_green
     character (len=25), allocatable, dimension(:) :: dataname
     logical, allocatable, dimension(:) :: elastic
   end type
+
   type(green_common_info), allocatable, dimension(:) :: green_common
 
-  integer :: gnc_looseness=1
+  integer :: gnc_looseness = 1
 
 contains
 ! =============================================================================
@@ -207,16 +209,20 @@ subroutine read_green (green, print)
     allocate(tmp(max(green%column(1), green%column(2))))
     lines = 0
     open (newunit =fileunit, file=green%name, action="read", status="old")
+
     do
       call skip_header (fileunit)
       read (fileunit, *, iostat = io_status) tmp
+
+
       if (io_status == iostat_end) exit
-      lines = lines + 1
+      if (io_status == 0) lines = lines + 1
     enddo
 
     allocate (green%distance(lines))
     allocate (green%data(lines))
     rewind(fileunit)
+
     lines = 0
     do
       call skip_header (fileunit)
@@ -226,8 +232,10 @@ subroutine read_green (green, print)
         close(fileunit)
         exit
       endif
-      green%distance(lines) = tmp (green%column(1))
-      green%data(lines)     = tmp (green%column(2))
+      if (io_status==0) then
+        green%distance(lines) = tmp (green%column(1))
+        green%data(lines)     = tmp (green%column(2))
+      endif
     enddo
     deallocate(tmp)
   endif
@@ -241,10 +249,10 @@ subroutine read_green (green, print)
   endif
 
   if (.not.present(print)) then
-    if (.not.log%sparse) &
-      write(log%unit, form%i3) &
+    if (.not.log%sparse)                                      &
+      write(log%unit, form%i3)                                &
       trim(basename(trim(green%name))), trim(green%dataname), &
-      "columns:", green%column, &
+      "columns:", green%column,                               &
       "lines:", size(green%distance)
 
     if (green%dataname.eq."GNc") then
@@ -256,10 +264,12 @@ subroutine read_green (green, print)
     green%distance=(/ (r2d(green%distance(i)), i=1, size(green%distance)) /)
     write(log%unit, form_63) "conversion: radians --> to degrees"
   endif
+
   if (green%columndataname(2).eq."a2f") then
     green%data=green%data  / (earth%radius)*1e12 * earth%gravity%mean
     write(log%unit, form_63) "conversion: aplo --> to farrell"
   endif
+
   if (green%columndataname(2).eq."f2m") then
     green%data= &
       -green%data * green_normalization("f2m")
@@ -281,9 +291,9 @@ subroutine green_unification ()
   integer :: i, iinfo, imin, imax, j, ii
   integer, allocatable, dimension(:):: which_green, tmp
 
-  allocate (green_common(size(info)))
-  allocate (which_green(size(info)))
-  allocate (tmp(size(green)))
+  allocate (green_common(ubound(info,1)))
+  allocate (which_green(ubound(info,1)))
+  allocate (tmp(ubound(green,1)))
 
   do iinfo=1, size(info)
 
@@ -324,9 +334,10 @@ subroutine green_unification ()
 
       else
         ! if @DD is negative make distance sparse
-        allocate(tmpgreen%distance((imax-imin)/-info(iinfo)%distance%denser &
+        allocate(tmpgreen%distance((imax-imin)/(-info(iinfo)%distance%denser) &
           +1+min(1,modulo(imax-imin,-info(iinfo)%distance%denser))))
         ii=0
+
         do j=1,imax-imin+1
           if (j.eq.imax-imin+1.or.modulo(j-1,info(iinfo)%distance%denser).eq.0) then
             ii=ii+1
@@ -339,31 +350,28 @@ subroutine green_unification ()
         green(which_green(iinfo))%distance(imax)
 
       imin = count(tmpgreen%distance.le.info(iinfo)%distance%start)
-      imax = size(tmpgreen%distance) - &
-        count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
+      imax = size(tmpgreen%distance) - count(tmpgreen%distance.ge.info(iinfo)%distance%stop ) + 1
 
       allocate(green_common(iinfo)%distance(imax-imin+1))
-      green_common(iinfo)%distance =       &
-        tmpgreen%distance(imin:imax)
+      green_common(iinfo)%distance = tmpgreen%distance(imin:imax)
 
       green_common(iinfo)%distance(1) =                                  &
         (3/4.*info(iinfo)%distance%start+                                &
         green_common(iinfo)%distance(2)/4)
 
       green_common(iinfo)%distance(size(green_common(iinfo)%distance)) = &
-        (3/4.*info(iinfo)%distance%stop+                                 &
-
-        green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
+        (3/4.*info(iinfo)%distance%stop                                 &
+        +green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
 
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
 
       green_common(iinfo)%start=(green_common(iinfo)%distance)
 
-      do i =1, size(green_common(iinfo)%distance)
+      do i = 1, ubound(green_common(iinfo)%distance,1)
 
         green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) &
-         + green_common(iinfo)%distance(i-1) ) / 2.
+          + green_common(iinfo)%distance(i-1) ) / 2.
 
         green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) &
           + green_common(iinfo)%distance(i+1) ) / 2.
@@ -375,12 +383,12 @@ subroutine green_unification ()
         info(iinfo)%distance%stop
       deallocate(tmpgreen%distance)
 
-      !@DS =/ 0
     else
-      allocate(green_common(iinfo)%distance( &
-        ceiling( &
+      !@DS =/ 0
+      allocate(green_common(iinfo)%distance(                     &
+        ceiling(                                                 &
         (info(iinfo)%distance%stop - info(iinfo)%distance%start) &
-        /info(iinfo)%distance%step) &
+        /info(iinfo)%distance%step)                              &
         ))
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
@@ -403,18 +411,18 @@ subroutine green_unification ()
     allocate(green_common(iinfo)%dataname(size(green)))
 
     do i = 1,  size(green_common(iinfo)%data, 2)
-      call spline_interpolation(           &
-        green(i)%distance,                 &
-        green(i)%data,                     &
-        size(green(i)%distance),           &
-        green_common(iinfo)%distance,      &
-        green_common(iinfo)%data(:, i),    &
-        size(green_common(iinfo)%distance) &
+      call spline_interpolation(                       &
+        x = green(i)%distance,                           &
+        y = green(i)%data,                               &
+        n = size(green(i)%distance),                     &
+        x_interpolated = green_common(iinfo)%distance,   &
+        y_interpolated = green_common(iinfo)%data(:, i), &
+        n2 = size(green_common(iinfo)%distance)          &
         )
 
-      where( &
-          green_common(iinfo)%distance.gt.green(i)%distance(size(green(i)%distance)) &
-          .or.green_common(iinfo)%distance.lt.green(i)%distance(1) &
+      where(                                                                         &
+          green_common(iinfo)%distance.gt.green(i)%distance(ubound(green(i)%distance,1)) &
+          .or.green_common(iinfo)%distance.lt.green(i)%distance(1)                   &
           )
         green_common(iinfo)%data(:, i)=0
       end where
@@ -422,6 +430,7 @@ subroutine green_unification ()
       green_common(iinfo)%dataname(i) = green(i)%dataname
 
       if(green_common(iinfo)%dataname(i) == "G3D") then
+
         if (method3d_compute_reference) then
           do ii=1,size(green_common(iinfo)%data(:,i))
             green_common(iinfo)%data(ii,i) =                  &
@@ -441,21 +450,18 @@ subroutine green_unification ()
 
 end subroutine
 
-
 ! =============================================================================
 !> Perform convolution
 !!
 !! \date 2013-03-15
 !! \author M. Rajner
 ! =============================================================================
-subroutine convolve(site, date)
+subroutine convolve(site, date, results)
+  use, intrinsic :: iso_fortran_env
   use mod_constants
-  use iso_fortran_env
-  use mod_site, &
-    only : site_info, local_pressure_distance
+  use mod_site, only : site_info, local_pressure_distance
   use mod_cmdline
-  use mod_utilities, &
-    only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace
+  use mod_utilities, only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace
   use mod_spherical
   use mod_data
   use mod_date, only : dateandmjd
@@ -463,32 +469,35 @@ subroutine convolve(site, date)
   use mod_printing
   use mod_normalization, only: green_normalization
   use mod_aggf, only: aggf
-  use mod_atmosphere, only: &
-    standard_pressure, standard_temperature, virtual_temperature
+  use mod_atmosphere, only: standard_pressure, standard_temperature, virtual_temperature
   use mod_3d
 
   type(site_info),  intent(in) :: site
   type(dateandmjd), intent(in), optional :: date
 
-  integer  :: igreen, idist, iazimuth, nazimuth
-  real(dp) :: azimuth, dazimuth
-  real(dp) :: lat, lon, area, tot_area, tot_area_used
-  real(dp) :: val(size(model)), old_val_sp, old_val_rsp
-  integer  :: i, j, npoints, iheight, nheight
+  integer    :: igreen, idist, iazimuth, nazimuth
+  real(dp)   :: azimuth, dazimuth
+  real(dp)   :: lat, lon, area, tot_area, tot_area_used
+  real(dp)   :: val(size(model)), old_val_sp, old_val_rsp
+  integer    :: i, j, npoints, iheight, nheight
   integer(2) :: iok(size(polygon))
 
   real(dp) :: normalize, aux
-  real(dp), allocatable, dimension(:) :: azimuths, &
-    heights, pressures, temperatures
+  real(dp), allocatable, dimension(:) :: &
+    azimuths, heights, pressures, temperatures
   logical :: header_p = .true.
 
-  ! real(dp) :: h1,h2, v1,v2, p_int !temporary
+  ! real(dp) :: h1, h2, v1, v2, p_int !temporary
   real(dp) :: rsp
   real(dp), dimension(:), allocatable :: result_partial
 
   logical :: first_reduction
-  first_reduction=.true.
+  logical, save :: first_call = .true.
+  real(dp), dimension(:), allocatable, save :: reference_results
 
+  real(dp), intent(out), optional, dimension(:), allocatable :: results
+
+  first_reduction=.true.
 
   if (transfer_sp%if) then
     if (ind%model%hp.eq.0) call print_warning("no @HP with -U", error=.true.)
@@ -509,7 +518,7 @@ subroutine convolve(site, date)
         exit
       endif
 
-      val(ind%model%sp) = sqrt(-1.)
+      val(ind%model%sp) = setnan()
       if(i.eq.size(site%lp%date)) &
         call print_warning("date not found in @LP")
     enddo
@@ -523,6 +532,7 @@ subroutine convolve(site, date)
       allocate(result(size(green)))
     endif
   endif
+
   if(.not.allocated(result_partial)) allocate(result_partial(size(result)))
 
   npoints       = 0
@@ -533,8 +543,9 @@ subroutine convolve(site, date)
   result = 0
   rsp    = 0
 
-  do igreen = 1, size(green_common)
-    do idist = 1, size(green_common(igreen)%distance)
+  do igreen = 1, ubound(green_common,1)
+    do idist = 1, ubound(green_common(igreen)%distance,1)
+
       if (allocated(azimuths)) deallocate (azimuths)
 
       if (info(igreen)%azimuth%step.eq.0) then
@@ -543,10 +554,10 @@ subroutine convolve(site, date)
           max(int(360*sin(d2r(green_common(igreen)%distance(idist)))), 100) * &
           info(igreen)%azimuth%denser
         if (nazimuth.eq.0) nazimuth=1
-        dazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
+        dazimuth = (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
       else
         dazimuth = info(igreen)%azimuth%step
-        nazimuth= (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
+        nazimuth = (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
       endif
 
       ! calculate area using spherical formulae
@@ -618,30 +629,45 @@ subroutine convolve(site, date)
             if (.not.(site%lp%if                        &
               .and.green_common(igreen)%distance(idist) &
               .lt.local_pressure_distance)) then
-              call get_value (                                              &
-                model(ind%model%sp), r2d(lat), r2d(lon), val(ind%model%sp), &
-                level=1,                                                    &
-                method = info(igreen)%interpolation,                        &
-                date=date%date)
+              call get_value (                          &
+                model(ind%model%sp),                    &
+                r2d(lat),                               &
+                r2d(lon),                               &
+                val(ind%model%sp),                      &
+                level     = 1,                          &
+                method    = info(igreen)%interpolation, &
+                date      = date%date                   &
+                )
             endif
+
             old_val_sp=val(ind%model%sp)
 
             if (.not.isnan(val(ind%model%sp))) then
 
               ! get RSP if given
               if (ind%model%rsp.ne.0) then
-                call get_value (                                                &
-                  model(ind%model%rsp), r2d(lat), r2d(lon), val(ind%model%rsp), &
-                  level=1, method = info(igreen)%interpolation)
+                call get_value (                       &
+                  model(ind%model%rsp),                &
+                  r2d(lat),                            &
+                  r2d(lon),                            &
+                  val(ind%model%rsp),                  &
+                  level=1,                             &
+                  method = info(igreen)%interpolation  &
+                  )
               endif
               old_val_rsp=val(ind%model%rsp)
 
               if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                 call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
               else
-                call get_value ( &
-                  model(ind%model%hrsp), r2d(lat), r2d(lon), val(ind%model%hrsp), &
-                  level=1, method = info(igreen)%interpolation)
+                call get_value (                      &
+                  model(ind%model%hrsp),              &
+                  r2d(lat),                           &
+                  r2d(lon),                           &
+                  val(ind%model%hrsp),                &
+                  level  = 1,                         &
+                  method = info(igreen)%interpolation &
+                  ) 
               endif
 
               ! get T
@@ -656,9 +682,17 @@ subroutine convolve(site, date)
                 ]).ne.0)           &
                 )                  &
                 ) then
-                call get_value (                                            &
-                  model(ind%model%t), r2d(lat), r2d(lon), val(ind%model%t), &
-                  level=1, method=info(igreen)%interpolation, date=date%date)
+
+                call get_value (                       &
+                  model(ind%model%t),                  &
+                  r2d(lat),                            &
+                  r2d(lon),                            &
+                  val(ind%model%t),                    &
+                  level  = 1,                          &
+                  method = info(igreen)%interpolation, &
+                  date   = date%date                   &
+                  )
+
               endif
 
               ! get HP
@@ -692,13 +726,14 @@ subroutine convolve(site, date)
                 if (optimize.and.green_common(igreen)%distance(idist).gt.3) then
                   val(ind%model%h)=val(ind%model%hp)
                 else
-                  call get_value (               &
-                    model  = model(ind%model%h), &
-                    lat    = r2d(lat),           &
-                    lon    = r2d(lon),           &
-                    val    = val(ind%model%h),   &
-                    level  = 1,                  &
-                    method = info(igreen)%interpolation)
+                  call get_value (                       &
+                    model  = model(ind%model%h),         &
+                    lat    = r2d(lat),                   &
+                    lon    = r2d(lon),                   &
+                    val    = val(ind%model%h),           &
+                    level  = 1,                          &
+                    method = info(igreen)%interpolation  &
+                    )
                 endif
               endif
 
@@ -861,21 +896,21 @@ subroutine convolve(site, date)
                               ),                         &
                               i                          &
                               )                          &
-                              +2*site%height 
+                              +2*site%height
                           endif
 
                           heights(i+1:)=logspace(     &
                             site%height ,             &
                             info(igreen)%height%stop, &
                             nheight-i                 &
-                            ) 
+                            )
 
                         else
-                          heights=logspace(                                        &
+                          heights=logspace(                                   &
                             max(info(igreen)%height%start, val(ind%model%h)), &
-                            info(igreen)%height%stop,                              &
-                            nheight                                                &
-                            ) 
+                            info(igreen)%height%stop,                         &
+                            nheight                                           &
+                            )
                         endif
 
                       else
@@ -1098,14 +1133,18 @@ subroutine convolve(site, date)
                       * area * normalize
 
                     if (.not.quiet) then
-                      open(unit=output_unit, carriagecontrol='fortran')
-                      call progress(                                               &
-                        100*igreen*idist                                           &
-                        /(size(green_common(igreen)%distance)*size(green_common)), &
-                        time  = 0.,                                                &
-                        cpu   = 0.,                                                &
-                        every = 1                                                  &
-                        )
+                      if(                                                         &
+                        100*igreen*idist                                          &
+                        /(size(green_common(igreen)%distance)*size(green_common)) &
+                        .lt.100) then
+                        call progress(                                               &
+                          100*igreen*idist                                           &
+                          /(size(green_common(igreen)%distance)*size(green_common)), &
+                          time  = 0.,                                                &
+                          cpu   = 0.,                                                &
+                          every = 1                                                  &
+                          )
+                      endif
                     endif
                   endif
 
@@ -1205,7 +1244,6 @@ subroutine convolve(site, date)
                       result_partial(ind%green%gndz)
                   endif
 
-
                   ! GNdz2
                   if (ind%green%gndz2.ne.0) then
                     if (any(                                                &
@@ -1263,9 +1301,11 @@ subroutine convolve(site, date)
 
                 endif
               endif
+
             else
-              result=sqrt(-1.)
+              result=setnan()
             endif
+
           elseif(ind%model%ewt.eq.0) then
             call print_warning("@SP is required with -M2D -G", error=.true.)
           endif
@@ -1311,9 +1351,11 @@ subroutine convolve(site, date)
 
         ! moreverbose point: -L@p
         if(ind%moreverbose%p.ne.0) then
-          if (header_p.and. output%header) then
-            if(size(green_common).gt.1) &
+          if (header_p.and.output%header) then
+
+            if(size(green_common).gt.1) then
               write(moreverbose(ind%moreverbose%p)%unit, "(a2, x$)") "i"
+            endif
 
             write(moreverbose(ind%moreverbose%p)%unit, &
               '(a8, 8a13, $)')                         &
@@ -1333,31 +1375,35 @@ subroutine convolve(site, date)
             endif
 
             if (result_total) then
+
               if (method(2)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(a13, $)') "G2D_t"
               endif
+
               if (method(3)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(a13, $)') "G3D_t"
               endif
+
             endif
 
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
               write(moreverbose(ind%moreverbose%p)%unit,         &
-                '(<size(model)>a12)', advance='no' )             &
+                '(*(a12))', advance='no' )             &
                 (trim(model(i)%dataname), i=lbound(model, 1), ubound(model, 1))
             endif
 
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(<size(iok)>(a3, i1))'),                &
+                '(*(a3, i1))'),                          &
                 ("ok", i, i =1, ubound(iok, 1))
             else
               write(moreverbose(ind%moreverbose%p)%unit, *)
             endif
             header_p=.false.
           endif
+
           if (                                            &
             .not.moreverbose(ind%moreverbose%p)%sparse    &
             .or.                                          &
@@ -1371,14 +1417,15 @@ subroutine convolve(site, date)
 
             write(moreverbose(ind%moreverbose%p)%unit,       &
               '(a8, 6' // output%form //',2 en13.3, $)'),    &
-              site%name, site%lat, site%lon,                 &
+              trim(site%name), site%lat, site%lon,                 &
               green_common(igreen)%distance(idist), azimuth, &
               r2d(lat), r2d(lon), area, tot_area
 
-            if (result_component)                        &
+            if (result_component) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-              '(' // output%form //'$)'),                &
-              (result(i), i =1, size(result))
+                '(' // output%form //'$)'),              &
+                (result(i), i =1, size(result))
+            endif
 
             if (result_total) then
               if (method(2)) then
@@ -1393,18 +1440,19 @@ subroutine convolve(site, date)
                   .or.green%dataname.eq."GNdz2"            &
                   .or.green%dataname.eq."GNdh"             &
                   ))
-                write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(' // output%form //'$)'),              &
-                  sum(result,                              &
-                  mask=(                                   &
-                  green%dataname.eq."GN"                   &
-                  .or.green%dataname.eq."GE"               &
-                  .or.green%dataname.eq."GNdt"             &
-                  .or.green%dataname.eq."GNdz"             &
-                  .or.green%dataname.eq."GNdz2"            &
-                  .or.green%dataname.eq."GNdh"             &
-                  ))
+                ! write(moreverbose(ind%moreverbose%p)%unit, &
+                  ! '(' // output%form //'$)'),              &
+                  ! sum(result,                              &
+                  ! mask=(                                   &
+                  ! green%dataname.eq."GN"                   &
+                  ! .or.green%dataname.eq."GE"               &
+                  ! .or.green%dataname.eq."GNdt"             &
+                  ! .or.green%dataname.eq."GNdz"             &
+                  ! .or.green%dataname.eq."GNdz2"            &
+                  ! .or.green%dataname.eq."GNdh"             &
+                  ! ))
               endif
+
               if (method(3)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(' // output%form //'$)'),              &
@@ -1416,20 +1464,27 @@ subroutine convolve(site, date)
               endif
 
             endif
+
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
+
               do i=1, size(val)
-                call get_value (                          &
-                  model(i), r2d(lat), r2d(lon), val(i), &
-                  level=1,                              &
-                  method = info(igreen)%interpolation,  &
+                call get_value (                       &
+                  model(i),                            &
+                  r2d(lat),                            &
+                  r2d(lon),                            &
+                  val(i),                              &
+                  level=1,                             &
+                  method = info(igreen)%interpolation, &
                   date=date%date)
               enddo
+
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(<size(model)>en12.2, $)') val
+                '(*(en12.2))', advance='no') val
             endif
+
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(<size(iok)>(i4))'), iok
+                '(*(i4))'), iok
             else
               write(moreverbose(ind%moreverbose%p)%unit, * )
             endif
@@ -1444,87 +1499,137 @@ subroutine convolve(site, date)
             d2r(green_common(igreen)%stop(idist))                      &
             )
         endif
-      enddo
-    enddo
-  enddo
 
+      enddo ! iazimuth
+    enddo ! idist
+  enddo ! igreen
 
-  if (ind%green%g3d.ne.0) &
-    result(ind%green%g3d)=result(ind%green%g3d) - rsp
+  if (ind%green%g3d.ne.0) then
+    result(ind%green%g3d) = result(ind%green%g3d) - rsp
+  endif
+
+  if (center_data) then
+    if(first_call) then
+      first_call=.false.
+      allocate(reference_results(size(result)))
+      reference_results=result
+    endif
+
+    result = result - reference_results
+  endif
+
 
   ! results to output
-  if (result_component) write (output%unit, "(" // output%form // '$)') result
-  if (result_total) then
-    if (method(2)) then
-      write(output%unit, &
-        '(' // output%form //'$)'), &
-        sum(result, &
-        mask=( &
-        green%dataname.eq."GN" &
-        .or.green%dataname.eq."GE" &
-        .or.green%dataname.eq."GNdt" &
-        .or.green%dataname.eq."GNdz" &
+  if (result_component.and..not.present(results)) then
+    write (output%unit, "(*("// output%form //'))', advance = "no") result
+  endif
+
+  if (present(results)) then
+
+    if(result_total.and.result_component) then
+      allocate(results(size(result)+1))
+    elseif(.not.result_total.and.result_component) then
+      allocate(results(size(result)))
+    elseif(result_total.and..not.result_component) then
+      allocate(results(1))
+    elseif(.not.result_total.and..not.result_component) then
+      allocate(results(0))
+    endif
+
+    results(1:size(result))=result 
+  endif
+
+if (result_total) then
+  if (method(2)) then
+
+    if (present(results)) then
+
+      results(size(results)) =        &
+        sum(result,                   &
+        mask=(                        &
+        green%dataname.eq."GN"        &
+        .or.green%dataname.eq."GE"    &
+        .or.green%dataname.eq."GNdt"  &
+        .or.green%dataname.eq."GNdz"  &
         .or.green%dataname.eq."GNdz2" &
-        .or.green%dataname.eq."GNdh" &
+        .or.green%dataname.eq."GNdh"  &
         ))
-
-      if (result_total_all) then
-        write(output%unit, &
-          '(' // output%form //'$)'), &
-          sum(result, &
-          mask=( &
-          green%dataname.eq."GN" &
-          .or.green%dataname.eq."GNdt" &
-          .or.green%dataname.eq."GNdz" &
-          .or.green%dataname.eq."GNdz2" &
-          .or.green%dataname.eq."GNdh" &
-          )) + result(size(green)+1)
-      endif
-
+    else
+      write(output%unit,              &
+        '(' // output%form //'$)'),   &
+        sum(result,                   &
+        mask=(                        &
+        green%dataname.eq."GN"        &
+        .or.green%dataname.eq."GE"    &
+        .or.green%dataname.eq."GNdt"  &
+        .or.green%dataname.eq."GNdz"  &
+        .or.green%dataname.eq."GNdz2" &
+        .or.green%dataname.eq."GNdh"  &
+        ))
     endif
-    if (method(3)) then
-      write(output%unit, &
+
+    if (result_total_all) then
+      write(output%unit,              &
+        '(' // output%form //'$)'),   &
+        sum(result,                   &
+        mask=(                        &
+        green%dataname.eq."GN"        &
+        .or.green%dataname.eq."GNdt"  &
+        .or.green%dataname.eq."GNdz"  &
+        .or.green%dataname.eq."GNdz2" &
+        .or.green%dataname.eq."GNdh"  &
+        )) + result(size(green)+1)
+    endif
+
+  endif
+
+  if (method(3)) then
+
+    write(output%unit,            &
+      '(' // output%form //'$)'), &
+      sum(result,                 &
+      mask=(                      &
+      green%dataname.eq."G3D"     &
+      .or.green%dataname.eq."GE"  &
+      ))
+
+    if (result_total_all) then
+      write(output%unit,            &
         '(' // output%form //'$)'), &
-        sum(result, &
-        mask=( &
-        green%dataname.eq."G3D" &
-        .or.green%dataname.eq."GE" &
-        ))
-      if (result_total_all) then
-        write(output%unit, &
-          '(' // output%form //'$)'), &
-          sum(result, &
-          mask=( &
-          green%dataname.eq."G3D" &
-          )) + result(size(green)+1)
-      endif
+        sum(result,                 &
+        mask=(                      &
+        green%dataname.eq."G3D"     &
+        )) + result(size(green)+1)
     endif
   endif
+endif
 
-  ! summary: -L@s
-  if (ind%moreverbose%s.ne.0) then
-    if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
-      "station", "npoints", "area", "area/R2", "t_area_used"
-    write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)') &
-      site%name, npoints, tot_area, tot_area/earth%radius**2, tot_area_used
-  endif
+! summary: -L@s
+if (ind%moreverbose%s.ne.0) then
+  if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
+    "station", "npoints", "area", "area/R2", "t_area_used"
+  write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)')               &
+    trim(site%name), npoints, tot_area, tot_area/earth%radius**2, tot_area_used
+endif
 
-  ! green values : -L@g
-  if(ind%moreverbose%g.ne.0) then
-    do i = 1, size(green_common)
-      if (output%header) &
-        write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
-        "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
-      do j=1,size(green_common(i)%distance)
-        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, 100f14.7)'), &
-          j, green_common(i)%distance(j), &
-          green_common(i)%start(j), &
-          green_common(i)%stop(j), &
-          green_common(i)%data(j,:), &
-          green_common(i)%distance(j)-green_common(i)%distance(j-1)
-      enddo
+! green values : -L@g
+if(ind%moreverbose%g.ne.0) then
+  do i = 1, size(green_common)
+    if (output%header)                                          &
+      write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
+      "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
+
+    do j = 1, size(green_common(i)%distance)
+      write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, *(f14.7))'), &
+        j, green_common(i)%distance(j),                                   &
+        green_common(i)%start(j),                                         &
+        green_common(i)%stop(j),                                          &
+        green_common(i)%data(j,:),                                        &
+        green_common(i)%distance(j)-green_common(i)%distance(j-1)
     enddo
-  endif
+
+  enddo
+endif
 end subroutine
 
 ! =============================================================================

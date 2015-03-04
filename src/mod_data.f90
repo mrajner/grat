@@ -10,15 +10,16 @@
 !! \date 2013-03-04
 ! =============================================================================
 module mod_data
-  use mod_constants, only: dp
+  use mod_constants, only: dp, setnan
 
   implicit none
 
   type file
     character(90) :: name
+
     ! varname,lonname,latname,levelname,timename
     character(len=50) :: names(5) = &
-      ["z", "lon", "lat", "level", "time"]
+      [character (len=50) :: "z", "lon", "lat", "level", "time"]
 
     character(len=100) :: datanames(5)=" "
 
@@ -31,14 +32,14 @@ module mod_data
     integer , allocatable, dimension(:)   :: level
     integer , allocatable, dimension(:,:) :: date
 
-    real (dp), dimension(2) :: latrange, lonrange
+    real (dp), dimension(2) :: latrange, lonrange, varrange
 
-    logical :: if_constant_value
+    logical :: if_constant_value = .false.
     real(dp):: constant_value
 
     real(dp), allocatable, dimension(:,:,:) :: data
 
-    integer :: ncid
+    integer :: ncid = 0
     logical :: huge     = .false.
     logical :: autoload = .false.
     logical :: exist    = .false.
@@ -68,7 +69,7 @@ contains
 !! \author M. Rajner
 !! \date 2013.05.20
 ! =============================================================================
-subroutine parse_model (cmd_line_entry)
+subroutine parse_model(cmd_line_entry)
   use mod_cmdline
   use mod_printing
   use mod_utilities, only: file_exists, is_numeric
@@ -83,27 +84,27 @@ subroutine parse_model (cmd_line_entry)
   allocate(model(size(cmd_line_entry%field)))
 
   do i = 1, size(cmd_line_entry%field)
+
     model(i)%exist=.true.
-    if (.not.log%sparse) &
+
+    if (.not.log%sparse) then
       write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
+    endif
 
     model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
     model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
 
     if (model(i)%dataname.eq."") then
       model(i)%dataname="NN"
-    else
-      if ( &
-        index(model(i)%dataname,"!").ne.0 &
-      ) then
+
+    elseif (index(model(i)%dataname,"!").ne.0) then
 
         model(i)%huge=.true.
         model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
 
-        if (.not.log%sparse) &
-          write(log%unit, form%i3) "!:huge"
-      endif
+        if (.not.log%sparse) write(log%unit, form%i3) "!:huge"
     endif
+
     if (all_huge) model(i)%huge=.true.
 
     if (model(i)%name.eq."") then
@@ -176,13 +177,13 @@ subroutine parse_model (cmd_line_entry)
 
     else
       !check autoload
-      call model_aliases(model(i), dryrun=.true.)
+      call model_aliases(model(i), dryrun=.true., fieldname="t2m")
 
       if (.not.model(i)%if) then
-        call print_warning (                                                &
-          "model",                                                          &
-          more  = trim(model(i)%name)//" : file do not exist (or trail ,)", &
-          error = .false.                                                   &
+        call print_warning (                                   &
+          "model",                                             &
+          more  = trim(model(i)%name)//" : file do not exist", &
+          error = .false.                                      &
           )
       endif
 
@@ -192,7 +193,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine model_aliases(model, dryrun, year, month)
+subroutine model_aliases(model, dryrun, year, month, fieldname)
   use mod_printing
   use mod_utilities, only: file_exists
   use mod_cmdline,   only: warnings
@@ -200,6 +201,7 @@ subroutine model_aliases(model, dryrun, year, month)
   type(file) :: model
   logical, intent(in), optional :: dryrun
   integer, intent(in), optional :: year, month
+  character(*), intent(in), optional :: fieldname
   character(150) :: prefix
   integer :: year_, month_
 
@@ -288,9 +290,9 @@ subroutine model_aliases(model, dryrun, year, month)
       endif
 
     case ("LS")
-      model%names(1:3)=["z", "x", "y"]
-      model%name="/home/mrajner/dat/landsea/ncep_closed_seas_caspian.nc"
-      model%autoload=.false.
+      model%names(1) = "land"
+      model%name     = "/home/mrajner/dat/landsea/ncep_ls.nc"
+      model%autoload = .false.
 
     case default
       model%autoload=.false.
@@ -323,6 +325,7 @@ subroutine model_aliases(model, dryrun, year, month)
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"sh_l.",year_,month_,".nc"
     case ("T")
       model%names(1)="v2t"
+      model%names(1)="t2m"
       write(model%name,'(a,a,i4,a)') trim(prefix),"t.",year_,".nc"
     case ("HP","H")
       model%names(1)="z"
@@ -336,63 +339,70 @@ subroutine model_aliases(model, dryrun, year, month)
         endif
       endif
     case ("LS")
-      model%names(1:3)=["z", "x", "y"]
-      model%name="/home/mrajner/dat/landsea/era_closed_seas_caspian.nc"
+      model%names(1)="lsm"
+      model%name="/home/mrajner/dat/landsea/era_ls.nc"
       model%autoload=.false.
     case default
       model%autoload=.false.
       model%if=.false.
     endselect
-    
+
     if (model%autoloadname=="ERAq") then
-     model%name(index(model%name,".nc"):)="_j.nc"
+      model%name(index(model%name,".nc"):)="_j.nc"
     endif
 
   case ("VIENNA")
     prefix="/home/mrajner/dat/refpres/"
+
     select case (model%dataname)
+
     case ("RSP", "SP")
       model%names(1)="rp"
       write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
+
     case ("H", "HRSP", "HP")
       model%names(1)="height"
       write(model%name,'(a,a)') trim(prefix),"refpres0p5.nc"
+
     case default
       model%if=.false.
+
     endselect
+
   case ("ETOPO")
     prefix="/home/mrajner/dat/etopo/"
+    model%huge=.true.
+
     select case (model%dataname)
+
     case ("LS")
-      model%names(1:3)=["z", "x", "y"]
-      write(model%name,'(a,a)') trim(prefix),"ETOPO_LANDSEA.grd"
+      model%names(1)= "z"
+      write(model%name,'(a,a)') trim(prefix),"ETOPO_ls.nc"
+
     case ("H")
       model%names(1)="z"
       write(model%name,'(a,a)') trim(prefix),"ETOPO_zero_ocean.grd"
+
+
     case default
       model%if=.false.
     endselect
-  case ("LANDSEA")
-    call print_warning(                              &
-      "use ERA or NCEP @LS"//                        &
-      "or ETOPO@LS (not corrected for closed seas)", &
-      error=.true.                                   &
-      )
-    prefix="/home/mrajner/dat/landsea/"
-    select case (model%dataname)
-    case ("LS")
-      model%names(1:3)=["z", "x", "y"]
-      write(model%name,'(a,a)') trim(prefix), "LANDSEA_closed_seas.grd"
-    case default
-      model%if=.false.
-    endselect
+
   case default
-    model%if=.false.
-    model%autoload=.false.
+    model%if       = .false.
+    model%autoload = .false.
   endselect
 
+  if(present(fieldname)) then
+    ! stop "TODO"
+    ! print*, model%names
+    ! model%names(1)=fieldname
+    ! print*, model%names
+    ! stop "XXX"
+  endif
+
   ! listing in log
-  model%constant_value=          &
+  model%constant_value =         &
     variable_modifier(           &
     model%constant_value,        &
     model%datanames(1),          &
@@ -407,9 +417,10 @@ subroutine model_aliases(model, dryrun, year, month)
   if(present(dryrun).and.dryrun) return
 
   if (.not.file_exists(model%name)) then
-    call print_warning (                                      &
-      "model", more=trim(model%name)//" : file do not exist", &
-      error=warnings%file_exist                               &
+    call print_warning (                                &
+      "model",                                          &
+      more  = trim(model%name)//" : file do not exist", &
+      error = warnings%file_exist                       &
       )
     model%exist=.false.
     return
@@ -436,7 +447,6 @@ function variable_modifier (val, modifier, verbose, list_only)
   real(dp) :: numerickeyval
   integer :: i
   logical, optional, intent(in) :: verbose, list_only
-
 
   variable_modifier = val
   modifier_=modifier
@@ -521,18 +531,20 @@ subroutine read_netCDF (model, print, force)
     error=.true.)
 
   if (model%ncid.ne.0) then
-    call check (nf90_close (model%ncid))
+    call nc_error  (nf90_close (model%ncid))
     write (log%unit, form%i4) &
       "closing file:", trim(basename(trim(model%name)))
   endif
 
   if (.not. (present(print).and. .not. print)) then
-    write (log%unit, form%i3) &
-      "Opening file:", trim(basename(trim(model%name))), &
-      ", huge [T/F]:", model%huge
+    write (log%unit, form%i3)           &
+      "Opening file:",                  &
+      trim(basename(trim(model%name))), &
+      ", huge [T/F]:",                  &
+      model%huge
   endif
 
-  call check (nf90_open (model%name, nf90_nowrite, model%ncid))
+  call nc_error  (nf90_open (model%name, nf90_nowrite, model%ncid))
 
   do i = 2,5
     call get_dimension (model, i, print=.not.log%sparse)
@@ -601,15 +613,15 @@ subroutine get_dimension (model, i, print)
       write (log%unit, '(a6,1x,a)') "ok"
     endif
 
-    call check(nf90_inquire_dimension(model%ncid, dimid, len=length))
+    call nc_error (nf90_inquire_dimension(model%ncid, dimid, len=length))
 
-    call check(nf90_inq_varid(model%ncid, model%names(i), varid))
+    call nc_error (nf90_inq_varid(model%ncid, model%names(i), varid))
 
   endif
 
   if (i.eq.3 ) then
     allocate(model%lat(length))
-    call check(nf90_get_var (model%ncid, varid, model%lat))
+    call nc_error (nf90_get_var (model%ncid, varid, model%lat))
 
     status = nf90_get_att(model%ncid, varid, &
       "actual_range", model%latrange)
@@ -618,21 +630,21 @@ subroutine get_dimension (model, i, print)
       model%latrange =[model%lat(1), model%lat(size(model%lat)) ]
     endif
 
-  else if (i.eq.2 ) then
+  else if (i.eq.2) then
     allocate(model%lon(length))
-    call check(nf90_get_var (model%ncid,  varid, model%lon))
+    call nc_error (nf90_get_var (model%ncid,  varid, model%lon))
 
     status = nf90_get_att ( model%ncid, varid, &
       "actual_range", model%lonrange)
 
-    if (status /= nf90_noerr ) model%lonrange &
-      =[model%lon(1), model%lon(size(model%lon)) ]
+    if (status /= nf90_noerr ) &
+      model%lonrange = [model%lon(1), model%lon(size(model%lon))]
 
     where (model%lonrange.ge.357.5)
-      model%lonrange=360
+      model%lonrange = 360
     end where
 
-  else if (i.eq.4 ) then
+  else if (i.eq.4) then
     allocate(model%level(length))
     status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
 
@@ -643,8 +655,8 @@ subroutine get_dimension (model, i, print)
       status = nf90_get_var (model%ncid, varid, model%level)
     endif
 
-  elseif (i.eq.5 ) then
-    allocate(model%time (length) )
+  elseif (i.eq.5) then
+    allocate(model%time(length))
     status = nf90_get_var (model%ncid, varid, model%time)
   endif
 end subroutine
@@ -658,18 +670,26 @@ end subroutine
 subroutine nctime2date (model, print)
   use netcdf
   use mod_printing
-  use mod_constants, only: dp
   use mod_mjd,      only: mjd, invmjd
+
   type (file)        :: model
   real(dp)           :: mjd_start, mjd_
-  integer            :: varid,i, ind(2), date (6), status
-  character (len=66) :: dummy
+  integer            :: varid, i, ind(2), date(6), status, length
+  character(:), allocatable :: dummy
   logical, optional :: print
 
   status = nf90_inq_varid (model%ncid, model%names(5), varid)
-  if (status /=nf90_noerr) return
+  if (status /= nf90_noerr) return
 
-  call check (nf90_get_att (model%ncid, varid, "units", dummy))
+  call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
+
+  ! not working with old gfortran
+  allocate(character(len=length):: dummy)
+
+  ! working 
+  ! dummy=repeat(" ",length)
+
+  call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
   allocate (model%date(size(model%time), 6))
 
@@ -682,19 +702,26 @@ subroutine nctime2date (model, print)
     ! this may need (?) change for other data fields
     ! be carefull
     mjd_start =  mjd([1,1,1,0,0,0]) - 2
+
   else if (index(dummy,"hours since").eq.1) then
-    do i=1,2
-      dummy = dummy(index(dummy, ' ')+1:)
-    enddo
+    dummy = trim (dummy(len("hours since")+1:))
+
     do
       ind=[index(dummy,'-'), index(dummy,':')]
       do i=1,2
-        if (ind(i).ne.0) dummy = dummy(1:ind(i)-1)//" "//dummy(ind(i)+i:)
+        if (ind(i).ne.0) dummy = trim(dummy(1:ind(i)-1))//" "//trim(dummy(ind(i)+i:))
       enddo
       if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0) exit
     enddo
+
+    if (dummy(len(dummy)-1:) == ".0") then
+      dummy = dummy(1:len(dummy)-2)//" 0"
+    endif
+
     read(dummy,*) date
+
     mjd_start = mjd (date)
+
   else if (index(dummy,"Days since").eq.1) then
     ! this option for gldas from grace tellus
     do i=1,2
@@ -714,13 +741,13 @@ subroutine nctime2date (model, print)
   else
     write (log%unit, form%i4 ) "unknown time begining"
   endif
+
   do i = 1, size(model%time)
     mjd_= model%time(i) / 24 + mjd_start
     call invmjd(mjd_,date)
     model%date(i,:) = date
   enddo
 end subroutine
-
 
 ! =============================================================================
 !> get time index
@@ -748,6 +775,7 @@ end function
 ! =============================================================================
 function get_level_index(model, level, sucess)
   use mod_printing, only: print_warning, basename
+  use netcdf
 
   integer :: get_level_index
   type (file), intent(in) :: model
@@ -758,9 +786,13 @@ function get_level_index(model, level, sucess)
 
   get_level_index=1
 
-  if (.not.present(level).or.size(model%level).le.1) then
-    get_level_index=1
+  if (.not.present(level).or.ubound(model%level,1).le.1) then
     if (present(sucess)) sucess=.true.
+    return
+  endif
+
+  if (.not.if_variable_use_dimension(model, ivarname=1, idimname=4)) then
+    sucess = .true.
     return
   endif
 
@@ -789,14 +821,14 @@ subroutine nc_info(model)
   integer, allocatable, dimension(:) :: varids
   character(20), allocatable, dimension(:) :: name
 
-  call check (nf90_inquire(model%ncid, ndims, nvars))
+  call nc_error  (nf90_inquire(model%ncid, ndims, nvars))
   allocate(varids(nvars))
   allocate(name(nvars))
 
-  call check (nf90_inq_varids(model%ncid, nvars, varids))
+  call nc_error  (nf90_inq_varids(model%ncid, nvars, varids))
 
   do i=1, nvars
-    call check(nf90_inquire_variable(model%ncid, varids(i), name(i)))
+    call nc_error (nf90_inquire_variable(model%ncid, varids(i), name(i)))
   enddo
 
   write(log%unit, form%i5 ) (trim(name(i))//",", i =1,nvars)
@@ -837,13 +869,23 @@ subroutine get_variable(model, date, print, level)
 
   if (allocated(model%data)) deallocate(model%data)
 
-  allocate (          &
-    model%data (      &
-    size(model%lon),  &
-    size(model%lat),  &
-    size(model%level) &
-    )                 &
-    )
+  if (if_variable_use_dimension(model, 1 , 4)) then
+    allocate (          &
+      model%data (      &
+      size(model%lon),  &
+      size(model%lat),  &
+      size(model%level) &
+      )                 &
+      )
+  else
+    allocate (          &
+      model%data (      &
+      size(model%lon),  &
+      size(model%lat),  &
+      1 &
+      )                 &
+      )
+  endif
 
   if (size(date).gt.0 .and. present(date)) then
     index_time = get_time_index(model, date)
@@ -858,7 +900,7 @@ subroutine get_variable(model, date, print, level)
         endif
       endif
 
-      model%data= sqrt(-1.)
+      model%data= setnan()
       return
 
     endif
@@ -869,9 +911,8 @@ subroutine get_variable(model, date, print, level)
 
   if(present(level)) stop '!?! look into source -- strange (not probable) execution!'
 
-  ! is level in nc file?
-  status = nf90_inq_dimid(model%ncid,model%names(4),i)
-  if (status == nf90_noerr)  then
+
+  if (if_variable_use_dimension(model,1,4))  then
     start = [1,1,1,index_time]
     if (first_warning) then
       call print_warning('reading whole file with levels into memory could slow down computation')
@@ -881,7 +922,7 @@ subroutine get_variable(model, date, print, level)
     start = [1,1,index_time,1]
   endif
 
-  call check (nf90_get_var ( &
+  call nc_error  (nf90_get_var ( &
     ncid   = model%ncid,     &
     varid  = varid,          &
     values = model%data,     &
@@ -889,8 +930,18 @@ subroutine get_variable(model, date, print, level)
     )                        &
     )
 
+
+
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
   model%data = model%data * scale_factor + add_offset
+
+  status = nf90_get_att(model%ncid, varid, "actual_range", model%varrange)
+
+  if (status == 0) then
+    where(model%data.gt.model%varrange(2).or.model%data.lt.model%varrange(1))
+      model%data=setnan()
+    end where
+  end if
 
   if (trim(model%datanames(1)).ne."") then
     do i =1, size(model%data,1)
@@ -901,6 +952,8 @@ subroutine get_variable(model, date, print, level)
       enddo
     enddo
   endif
+
+  return
 end subroutine
 
 ! =============================================================================
@@ -917,7 +970,7 @@ subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
   integer, intent(out) :: status
   real(dp), intent(out) :: scale_factor, add_offset
 
-  call check(nf90_inq_varid(ncid, varname, varid))
+  call nc_error (nf90_inq_varid(ncid, varname, varid))
   status = nf90_get_att (ncid, varid, "scale_factor", scale_factor)
   if (status /=nf90_noerr) scale_factor=1
 
@@ -926,15 +979,16 @@ subroutine get_scale_and_offset(ncid, varname, scale_factor, add_offset, status)
 end subroutine
 
 ! =============================================================================
-!> Check the return code from netCDF manipulation
+!> nc_error check the return code from netCDF manipulation
 !!
 !! \author From netcdf website \cite netcdf
 !! \date 2013-03-04
 ! =============================================================================
-subroutine check(status, success)
+subroutine nc_error (status, success)
   use netcdf
   use mod_printing
   use iso_fortran_env
+
   integer, intent (in) :: status
   logical, intent(out), optional :: success
 
@@ -952,7 +1006,7 @@ subroutine check(status, success)
     endif
     return
   end if
-end subroutine check
+end subroutine
 
 ! =============================================================================
 !> \brief Returns the value from model file
@@ -969,25 +1023,27 @@ end subroutine check
 !! lat and lon in decimal degree
 ! =============================================================================
 subroutine get_value(model, lat, lon, val, level, method, date)
-  use mod_constants, only: dp
-  use mod_cmdline
-  use mod_utilities, only: r2d
+  use mod_cmdline, only: moreverbose, ind
+  use mod_utilities, only: r2d, bilinear
   use netcdf
-  use :: mod_printing, only: print_warning
+  use mod_printing, only: print_warning, basename
+  use iso_fortran_env, only: error_unit
 
   type(file), intent (in) :: model
-  real(dp)  &
-    !, intent (in) &
-  :: lat, lon
+  real(dp) :: lat, lon
   real(dp), intent(out) ::  val
   character(1), optional, intent(in) :: method
   integer, optional, intent(in) :: level
   integer :: j, ilevel = 1
-  integer  :: ilon, ilat, ilon2, ilat2, varid, status
+  integer :: ilon, ilat, ilon2, ilat2, varid, status
   real(dp), dimension(4,3) :: array_aux
   real(dp) :: scale_factor, add_offset
   integer, intent(in), optional::date(6)
-  logical :: success, success2
+  logical :: success, success2, warning=.true.
+
+  if (model%ncid==0 .and. .not. model%if_constant_value) return
+
+  val=setnan()
 
   if (model%if_constant_value) then
     val = model%constant_value
@@ -995,7 +1051,6 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   end if
 
   if (.not.model%exist.or..not.model%if) then
-    val = sqrt(-1.)
     return
   endif
 
@@ -1005,15 +1060,35 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     if (lat.lt.-89.9999) lat=-89.99999
   endif
 
+
   ! check if inside model range
   if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360
   if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
-  if (  lat.lt.min(model%latrange(1), model%latrange(2))  &
+
+  if (  lat.lt.min(model%latrange(1), model%latrange(2)) &
     .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
     .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
     .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
     ) then
-    val = sqrt(-1.)
+
+    if (warning) then
+
+      write(error_unit,                                                         &
+        '(/,"lon, lat", 2f10.3,/, "latrange", 2f10.3,/, "lonrange", 2f10.3,/)') &
+        lon , lat, model%latrange, model%lonrange
+
+      call print_warning(                                 &
+        "outside lon|lat range "                          &
+        // "maybe actual range not specified in nc file:" &
+        // basename(model%name)                           &
+        )
+
+      warning = .false.
+
+    endif
+
+    val = setnan()
+    val =0
     return
   endif
 
@@ -1022,12 +1097,11 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   ! do not look into data array - get value directly
   if (model%huge) then
-    status=nf90_inq_varid (model%ncid, model%names(4), varid)
 
-    call check (nf90_inq_varid (model%ncid, model%names(1), varid))
+    call nc_error (nf90_inq_varid (model%ncid, model%names(1), varid))
 
-    if (status.eq.nf90_noerr) then
-      call check (                                &
+    if (if_variable_use_dimension (model, 1, 4)) then
+      call nc_error (                             &
         nf90_get_var(                             &
         model%ncid,                               &
         varid,                                    &
@@ -1038,11 +1112,11 @@ subroutine get_value(model, lat, lon, val, level, method, date)
         get_level_index(model, ilevel, success2), &
         get_time_index(model,date=date)           &
         ]),                                       &
-        success=success)
-      if(.not.success2) val =sqrt(-1.)
+        success = success)
+      if(.not.success2) val = setnan()
 
     else
-      call check (nf90_get_var(         &
+      call nc_error (nf90_get_var(      &
         model%ncid,                     &
         varid,                          &
         val,                            &
@@ -1051,23 +1125,27 @@ subroutine get_value(model, lat, lon, val, level, method, date)
         ilat,                           &
         get_time_index(model,date=date) &
         ]),                             &
-        success=success)
+        success = success)
     endif
 
     if(.not. success) then
       call print_warning ("skipping get_value")
-      val = sqrt(-1.)
+      val = setnan()
       return
     endif
 
-    call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset,status)
-    if (status==nf90_noerr) val = val *scale_factor + add_offset
+    call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset, status)
+
+    if (status==nf90_noerr) then
+      val = val * scale_factor + add_offset
+    endif
+
     if (trim(model%datanames(1)).ne."") then
       val = variable_modifier (val, model%datanames(1))
     endif
-    return
 
-  endif
+  return
+endif
 
   if (present(method) .and. method .eq."l") then
     ilon2 = minloc(abs(model%lon-lon), 1, model%lon/=model%lon(ilon))
@@ -1105,25 +1183,9 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   endif
 
   val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
-  if (.not.success2) val=sqrt(-1.)
 
+  if (.not.success2) val = setnan()
 end subroutine
-
-! =============================================================================
-!> Performs bilinear interpolation
-!! \author Marcin Rajner
-!! \date 2013-05-07
-! =============================================================================
-function bilinear (x, y, aux )
-  use mod_constants, only: dp
-  real(dp) :: bilinear
-  real(dp) :: x, y, aux(4,3)
-  real(dp) :: a, b, c
-  a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
-  b = a * (aux(3,3) - aux(1,3)) + aux(1,3)
-  c = a * (aux(4,3) - aux(2,3)) + aux(2,3)
-  bilinear = (y-aux(1,2))/(aux(4,2) -aux(1,2)) * (c-b) + b
-end function
 
 ! =============================================================================
 !> Attach full dataname by abbreviation
@@ -1161,41 +1223,6 @@ function dataname(abbreviation)
   end select
 end function
 
-!! =============================================================================
-!!> Put netCDF COARDS compliant
-!!!
-!!! for GMT drawing
-!! =============================================================================
-!subroutine put_grd (model, time, level, filename_opt )
-!  use netcdf
-!  use mod_cmdline, only : file, form_separator, log
-!  type (file) :: model
-!  integer  :: time, level, ncid
-!  integer :: londimid, latdimid, dimids(2), varid, latvarid,lonvarid
-!  character (*), intent (in), optional :: filename_opt
-!  character(60) :: filename = "tmp_.grd"
-!
-!  if (present(filename_opt)) filename = filename_opt
-!  write(log%unit, form_separator)
-!  call check ( nf90_create ( filename, 0, ncid ))
-!
-!  ! Define the dimensions. NetCDF will hand back an ID for each.
-!  call check( nf90_def_dim(ncid, "lon", size(model%lon), londimid) )
-!  call check( nf90_def_dim(ncid, "lat", size(model%lat), latdimid) )
-!
-!  dimids =  (/ londimid, latdimid /)
-!
-!  call check( nf90_def_var(ncid, "lat", NF90_float, latdimid, latvarid) )
-!  call check( nf90_def_var(ncid, "lon", NF90_float, londimid, lonvarid) )
-!  call check( nf90_def_var(ncid, "data", NF90_float, dimids, varid) )
-!  call check( nf90_enddef(ncid) )
-!
-!  call check( nf90_put_var(ncid, latvarid, model%lat ))
-!  call check( nf90_put_var(ncid, lonvarid, model%lon ))
-!  call check( nf90_put_var(ncid, varid, model%data(:,:,1)) )
-!  call check( nf90_close(ncid) )
-!end subroutine
-!
 
 ! =============================================================================
 !> If inverted barometer is set then averaga all pressure above the oceans
@@ -1216,9 +1243,9 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   integer, intent(in), optional :: date(6)
   integer(1) :: ivalls
 
-  total_area = 0
-  ocean_area = 0
-  valoceanarea    = 0
+  total_area   = 0
+  ocean_area   = 0
+  valoceanarea = 0
 
   do ilat = 1, size(model%lat)
     do ilon = 1, size(model%lon)
@@ -1290,7 +1317,7 @@ subroutine total_mass (model, date)
     do ilon =1,size(model%lon)
       totalarea = totalarea + cos(d2r(model%lat(ilat)))
       call get_value(model, model%lat(ilat), model%lon(ilon), val)
-      valarea    = valarea + val * cos(d2r(model%lat(ilat)))
+      valarea = valarea + val * cos(d2r(model%lat(ilat)))
     enddo
   enddo
 
@@ -1334,14 +1361,16 @@ subroutine parse_level (cmd_line_entry)
       level%all=.true.
     else
       allocate (level%level(size(cmd_line_entry%field)))
+
       do i =1,  size(level%level)
-        read(cmd_line_entry%field(i)%subfield(1)%name, '(i)') level%level(i)
+        read(cmd_line_entry%field(i)%subfield(1)%name, *) level%level(i)
       enddo
+
     endif
 
     write(log%unit, form%i2, advance="no") "level pressure:"
     if (allocated(level%level)) then
-      write (log%unit, '(<size(level%level)>i4)'), level%level
+      write (log%unit, '(*(i4))'), level%level
     else if (level%all) then
       write (log%unit, '(a)'), "all"
     endif
@@ -1360,6 +1389,7 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
     standard_temperature,   &
     virtual_temperature
   use mod_constants, only: R_air
+
   character(*), intent(in) :: what
   real(dp), intent(in), optional :: sp,t, hp, sh, gp, vsh, vt
   integer,  intent(in), optional :: level
@@ -1420,4 +1450,29 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   endif
 
 end subroutine
+
+! =============================================================================
+! =============================================================================
+function if_variable_use_dimension (model, ivarname, idimname)
+  use netcdf
+
+  logical :: if_variable_use_dimension
+
+  type(file), intent(in) :: model
+  integer, intent(in) :: ivarname, idimname
+  integer :: i, dimids(4), status
+
+  dimids = 0
+
+  call nc_error (nf90_inq_varid(model%ncid, model%names(ivarname),i))
+  call nc_error (nf90_inquire_variable(model%ncid,i,dimids=dimids))
+  status = nf90_inq_varid(model%ncid, model%names(idimname), i)
+
+  if(any(dimids == i)) then
+    if_variable_use_dimension = .true.
+  else
+    if_variable_use_dimension = .false.
+  endif
+end function
+
 end module

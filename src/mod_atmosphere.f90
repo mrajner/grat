@@ -2,46 +2,21 @@ module mod_atmosphere
   implicit none
 
 contains
-! ==============================================================================
-!> Compute air density for given altitude for standard atmosphere
-!!
-!! using formulae 12 in \cite Huang05
-!! \date 2013-03-18
-!! \author M. Rajner
-!! height in meter
-! ==============================================================================
-function standard_density (height, temperature, fels_type, method)
-  use mod_constants, only: dp, R_air
-  real(dp), intent(in) :: height
-  real(dp), intent(in), optional :: temperature
-  character(len=22), optional :: fels_type
-  character(len=*), optional :: method
-  real(dp) :: standard_density
-  real(dp) :: t
 
-  if (present(temperature)) then
-    t = temperature
-  else
-    t = standard_temperature (height, fels_type=fels_type)
-  endif
-
-  standard_density = standard_pressure(                                  &
-    height, temperature=t, method=method, fels_type=fels_type)/(R_air*t)
-  stop "TODO routine standard density should not be used anymore"
-end function
 ! =============================================================================
 !> \brief Compute gravity acceleration of the Earth
 !! for the specific height using formula
 !!
 !! see \cite US1976
-!! height in meters
+!! \warning all units in SI
 ! =============================================================================
 function standard_gravity (height)
   use mod_constants, only: dp, earth
-  real(dp), intent(in)  :: height
+  real(dp), intent(in) :: height
   real(dp) :: standard_gravity
 
-  standard_gravity = earth%gravity%mean * (earth%radius/(earth%radius + height))**2
+  standard_gravity = &
+    earth%gravity%mean * (earth%radius/(earth%radius + height))**2
 end function
 
 ! =============================================================================
@@ -74,6 +49,7 @@ function standard_pressure (  &
   real(dp) :: sfc_height, sfc_temperature, sfc_gravity, alpha, sfc_pressure
   real(dp) :: z_, dz_, t_
   logical, intent(in), optional :: use_standard_temperature, nan_as_zero
+  integer :: i
 
   sfc_temperature = atmosphere%temperature%standard
   sfc_pressure    = atmosphere%pressure%standard
@@ -99,6 +75,7 @@ function standard_pressure (  &
   alpha = -6.5e-3
 
   if (present (method)) then
+
     select case (method)
     case("berg")
       standard_pressure = sfc_pressure *(1-2.26e-5*(height-sfc_height))**(5.225)
@@ -108,14 +85,17 @@ function standard_pressure (  &
         *exp(-(height-sfc_height)*standard_gravity(height)/sfc_temperature/R_air)
 
     case ("full")
+
       if (.not.present(use_standard_temperature)) then
-        call print_warning(                    &
-          "error: you have to specify        &
-          use_standard_temperature with      &
-          full method in standard_pressure", &
+        call print_warning(                     &
+          "error: you have to specify "         &
+          //"use_standard_temperature with "    &
+          //"full method in standard_pressure", &
           error=.true.)
       endif
-      standard_pressure=0.
+
+      standard_pressure = 0.
+
       if (present(dz)) then
         dz_ = dz
       else
@@ -123,38 +103,46 @@ function standard_pressure (  &
       endif
 
       if (sfc_height.gt.height) dz_=-dz_
-      do z_=sfc_height+dz_/2, height, dz_
+
+      z_=sfc_height-dz_/2
+
+      do i = 1, int((- sfc_height+dz_/2 + height)/ dz_)
+        z_=z_+ dz_
+
         if (present(use_standard_temperature) .and. use_standard_temperature) then
           if (present(temperature).and.(abs(z_-sfc_height).lt.5000).and.temperature.gt.100.) then
-            t_=sfc_temperature+alpha*(z_-sfc_height)
+            t_ = sfc_temperature+alpha*(z_-sfc_height)
           else
-            t_=standard_temperature(z_,fels_type=fels_type)
+            t_ = standard_temperature(z_,fels_type=fels_type)
           endif
+        else
+          t_ = sfc_temperature+alpha*(z_-sfc_height)
         endif
-        standard_pressure = standard_pressure &
-          + standard_gravity(sfc_height)/(R_air*t_)*dz_
+
+        standard_pressure = standard_pressure + standard_gravity(sfc_height)/(R_air*t_)*dz_
       enddo
+
       standard_pressure = sfc_pressure*exp(-standard_pressure)
 
     case ("standard")
       !http://en.wikipedia.org/wiki/Barometric_formula
-      standard_pressure= sfc_pressure &
+      standard_pressure= sfc_pressure                                      &
         * (sfc_temperature /(sfc_temperature + alpha*(height-sfc_height))) &
         **(earth%gravity%mean /R_air/alpha)
 
     case default
-      call print_warning ("standard pressure: Method not known", error=.true.)
+      call print_warning ("standard pressure: method not known", error=.true.)
 
     endselect
+
   else
     call print_warning("standard_pressure: set method explicitly",error=.true.)
   endif
+
   if (present(nan_as_zero).and.nan_as_zero) then
     if (isnan(standard_pressure)) standard_pressure=0
   endif
-  !  if (sfc_height.gt.height) standard_pressure=-standard_pressure
 end function
-
 
 ! =============================================================================
 !> \brief Compute standard temperature [K] for specific height [km]
@@ -174,9 +162,9 @@ end function
 function standard_temperature (height, fels_type, t_zero)
   use mod_constants, only: dp, earth, atmosphere
 
-  real(dp), intent(in)  :: height
-  real(dp)  :: standard_temperature
-  character (len=*), intent(in), optional  :: fels_type
+  real(dp), intent(in) :: height
+  real(dp) :: standard_temperature
+  character (len=*), intent(in), optional :: fels_type
   real(dp), intent(in), optional :: t_zero
   real(dp) :: aux, cn, t
   integer :: i,indeks
@@ -235,9 +223,13 @@ function standard_temperature (height, fels_type, t_zero)
     else
       cn = c(i+1)
     endif
-    aux = aux + d(i) * (cn - c(i))  * log (cosh ((height/1000. - z(i)) / d(i)) / cosh (z(i)/d(i)))
+    aux = aux                                                        &
+      + d(i) * (cn - c(i))                                           &
+      * log (cosh ((height/1000. - z(i)) / d(i)) / cosh (z(i)/d(i)))
   enddo
+
   standard_temperature = t + c(1) * (height/1000.)/2. + aux/2.
+
   if(present(t_zero)) then
     standard_temperature = t_zero + c(1) * (height/1000.)/2. + aux/2.
   endif
@@ -249,18 +241,19 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-19
 ! =============================================================================
-real(dp) function geop2geom (geopotential_height, inverse)
+function geop2geom (geopotential_height, inverse)
   use mod_constants, only: dp, earth
-  real (dp) :: geopotential_height
+  real(dp) :: geopotential_height
   logical, intent(in), optional:: inverse
+  real(dp) :: geop2geom
 
   if (present(inverse).and.inverse) then
     !conversion from geometric to geopotential height
-    geop2geom = geopotential_height &
+    geop2geom = geopotential_height                        &
       *(earth%radius/(earth%radius + geopotential_height))
   else
     !conversion from  geopotential to geometric height
-    geop2geom = geopotential_height &
+    geop2geom = geopotential_height          &
       * (earth%radius + geopotential_height) &
       /(earth%radius)
   endif
