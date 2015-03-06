@@ -12,10 +12,10 @@ CONSTANT      := $(subst .sh,.dat.c,$(SHELL_TESTS))
 FORTRAN       := $(subst .f90,.dat,$(FORTRAN_TESTS))
 
 RESULTS :=     \
-	#  $(REAL)      \
-	#  $(SYNTHETIC) \
-	#  $(CONSTANT)  \
 	$(FORTRAN)   \
+	$(REAL)      \
+	$(SYNTHETIC) \
+	$(CONSTANT)  \
 
 all: $(RESULTS)
 
