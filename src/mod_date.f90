@@ -186,6 +186,7 @@ subroutine parse_date(cmd_line_entry)
       endif
 
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
+
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
       case("M", "D", "Y", "H")
         read (cmd_line_entry%field(i_)%subfield(3)%dataname, * ) interval_unit
@@ -209,6 +210,7 @@ subroutine parse_date(cmd_line_entry)
     ! allow that stop is previous than start and list in reverse order
     ! chage the sign of step in dates if necessery
     if(mjd(stop).lt.mjd(start).and. step.gt.0) step = -step
+
     ! or if step is negative
     if(mjd(stop).gt.mjd(start).and. step.lt.0) then
       swap=start
