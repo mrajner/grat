@@ -167,16 +167,18 @@ contains
 ! =============================================================================
 subroutine collect_args (dummy)
   use mod_utilities, only: ntokens, count_separator
+
   character(*) :: dummy
   character(455) :: dummy_aux, dummy_aux2
   integer :: i, j, n
   integer :: indeks_space, indeks_comma, indeks_at, indeks_colon
 
   allocate(cmd_line(ntokens(dummy)))
+
   do i=1, ntokens(dummy)
-    indeks_space = index(dummy," ")
-    cmd_line(i)%full= dummy(1:indeks_space-1)
-    cmd_line(i)%switch=cmd_line(i)%full(1:2)
+    indeks_space       = index(dummy," ")
+    cmd_line(i)%full   = dummy(1:indeks_space-1)
+    cmd_line(i)%switch = cmd_line(i)%full(1:2)
     allocate(cmd_line(i)%field (count_separator (cmd_line(i)%full,",") + 1))
 
     dummy_aux = cmd_line(i)%full(3:)

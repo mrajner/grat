@@ -11,10 +11,10 @@ module mod_date
     real(dp) :: mjd
     integer, dimension(6) :: date
   end type
-  real(dp) :: cpu_start, cpu_finish
-  type(dateandmjd), allocatable, dimension (:) :: date
 
-  ! private
+  real(dp) :: cpu_start, cpu_finish
+
+  type(dateandmjd), allocatable, dimension (:) :: date
 
 contains
 
@@ -26,11 +26,11 @@ subroutine strip_hyphen_date_iso(string)
   character(*), intent(inout) :: string
   integer :: i
 
-  do i=1, count_separator(string,'-')
-    string=string(1:index(string,'-')-1)//'0'//string(index(string,'-')+1:)
+  do i = 1, count_separator(string,'-')
+    string = string(1:index(string,'-')-1)//'0'//string(index(string,'-')+1:)
   enddo
 
-  call print_warning('iso_date not supported for parser yet', error=.true.)
+  call print_warning('iso_date not supported in parser yet', error=.true.)
 end subroutine
 
 ! =============================================================================
@@ -64,10 +64,10 @@ subroutine parse_date(cmd_line_entry)
       ) then
       if (.not. allocated (model)) then
         call print_warning("cannot use m or ~ in data specifier (-D m ) if no model file" &
-          //" with dates given",error=.true.)
+          // " with dates given",error=.true.)
       elseif (.not.allocated(model(1)%date)) then
         call print_warning("cannot use m or ~ in data specifier if first model file" &
-          //" do not contains dates",error=.true.)
+          // " do not contains dates",error=.true.)
       endif
     endif
 
@@ -85,9 +85,9 @@ subroutine parse_date(cmd_line_entry)
     if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"         &
       .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
-      call print_warning( &
+      call print_warning(                                          &
         "date not numeric "// trim(cmd_line_entry%field(i_)%full), &
-        error=.true. &
+        error=.true.                                               &
         )
       cycle
     endif
@@ -311,11 +311,6 @@ subroutine more_dates (number, start_index)
     allocate(date(number))
     start_index=1
   endif
-
-  ! print *, date%mjd, "mjd"
-  ! print '(*(i6))', date%date(6)
-  ! print * , size(date(1)%date) , "SDD"
-  ! PRINT *, start_index, "SI", size(date), ubound(date,1)
 end subroutine
 
 ! =============================================================================

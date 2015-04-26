@@ -67,16 +67,16 @@ module mod_constants
   type earth_data
     real(dp) :: mass
     real(dp) :: radius
-    real(dp) :: gm
+    ! real(dp) :: gm
     type(earth_gravity) :: gravity
     type(earth_density) :: density
   end type
 
+    ! gm          = 398600.4419_dp, & !m3 s-2
   type(earth_data), parameter ::  &
     earth       = earth_data (    &
     mass        = 5.97219e24_dp,  & !kg
     radius      = 6371000.,       & !m
-    gm          = 398600.4419_dp, & !m3 s-2
     gravity     = earth_gravity(  &
     mean        = 9.80665         & !m s-2
     ),                            &
