@@ -885,7 +885,7 @@ subroutine print_help (program_calling, accepted_switches)
   enddo
   rewind(help_unit)
 
-  write(log%unit, form_60), 'Summary of available options for program '// program_calling
+  write(log%unit, form_60), 'Summary of available options for program '//program_calling
   ! second loop - print informations
   do
     read (help_unit, '(a)', iostat=io_stat) line

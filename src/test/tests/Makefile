@@ -10,7 +10,7 @@ endif
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)
 #temporary
-SHELL_TESTS   := $(wildcard t[0-3].sh)
+SHELL_TESTS   := $(wildcard t[0-5].sh)
 
 FORTRAN_TESTS := $(wildcard t*.f90)
 
