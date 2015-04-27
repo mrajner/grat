@@ -14,6 +14,9 @@ module mod_constants
     pi     = 4.*atan(dble(1.)), & ! 3.1415...
     t_zero = -273.15              ! 0 kelvin in Celcius
 
+  real(dp), parameter :: speed_of_light = 299792458 ! [m/s]
+  
+
   !---------------------------------------
   ! gravity
   !---------------------------------------
