@@ -65,25 +65,24 @@ module mod_constants
   end type
 
   type earth_data
-    real(dp) :: mass
-    real(dp) :: radius
-    ! real(dp) :: gm
+    real(dp) :: mass, radius, gm, angular_velocity
     type(earth_gravity) :: gravity
     type(earth_density) :: density
   end type
 
-    ! gm          = 398600.4419_dp, & !m3 s-2
-  type(earth_data), parameter ::  &
-    earth       = earth_data (    &
-    mass        = 5.97219e24_dp,  & !kg
-    radius      = 6371000.,       & !m
-    gravity     = earth_gravity(  &
-    mean        = 9.80665         & !m s-2
-    ),                            &
-    density     = earth_density(  &
-    crust       = 2670.,          & !kg m-3
-    mean        = 5500.           & !kg m-3
-    )                             &
+  type(earth_data), parameter ::        & 
+    earth            = earth_data (     & 
+    mass             = 5.97219e24_dp,   & !kg
+    radius           = 6371000.,        & !m
+    gm               = 3.986004419e14,  & ! ^3/s^2
+    angular_velocity = 7.2921151467e-5, & ! rad/s
+    gravity          = earth_gravity(   & 
+    mean             = 9.80665          & !m s-2
+    ),                                  & 
+    density          = earth_density(   & 
+    crust            = 2670.,           & !kg m-3
+    mean             = 5500.            & !kg m-3
+    )                                   & 
     )
 
   !---------------------------------------
