@@ -352,4 +352,5 @@ subroutine string2date (string, date, success)
   enddo
 end subroutine
 
+
 end module mod_date
