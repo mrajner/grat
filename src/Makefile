@@ -172,12 +172,12 @@ $(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat$(SUFFIX).a
 	ln -sf $< $@
 $(LIBDIR)/libgrat$(SUFFIX).a: libgrat$(SUFFIX).a
-	cp -uv $< $@
+	cp -v $< $@
 
 $(INCDIR)/%.mod: %.mod
-	cp -uv $< $@
+	cp -v $< $@
 $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
-	cp -uv $< $@
+	cp -v $< $@
 
 %$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
