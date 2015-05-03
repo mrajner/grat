@@ -1,6 +1,3 @@
-#  t_barometric_formula: t_barometric_formula.f90
-	#  $(FC) t_barometric_formula.f90 -L ../../ -lgrat -I../.. -o $@
-	
 FC := gfortran
 OPT:= -O2
 
@@ -10,7 +7,7 @@ endif
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)
 #temporary
-SHELL_TESTS   := $(wildcard t[0-5].sh)
+SHELL_TESTS   := $(wildcard t[0-2].sh)
 
 FORTRAN_TESTS := $(wildcard t*.f90)
 

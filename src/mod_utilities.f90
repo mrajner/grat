@@ -351,7 +351,7 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-04
 ! =============================================================================
-function d2r (degree)
+elemental function d2r (degree)
   real(dp), intent (in) :: degree
   real(dp) :: d2r
 
@@ -365,7 +365,7 @@ end function
 !! \author Marcin Rajner
 !! \date 2013-03-04
 ! =============================================================================
-function r2d ( radian )
+elemental function r2d ( radian )
   real(dp) :: r2d
   real(dp), intent (in) :: radian
 
