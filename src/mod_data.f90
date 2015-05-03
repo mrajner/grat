@@ -48,7 +48,7 @@ module mod_data
 
   type(file), allocatable, dimension(:) :: model
 
-  logical :: all_huge=.false.
+  logical :: all_huge = .false.
 
   private :: dataname
 

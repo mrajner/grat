@@ -4,7 +4,6 @@ module mod_parser
   use mod_printing
 
   implicit none
-  public
 
 contains
 
