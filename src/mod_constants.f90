@@ -11,8 +11,9 @@ module mod_constants
 
   real(dp), parameter ::        &
     R_air  = 287.05,            & ! dry air constant  [J/kg/K]
-    pi     = 4.*atan(dble(1.)), & ! 3.1415...
-    t_zero_deleteifnotnes = -273.15_dp           ! 0 kelvin in Celcius
+    pi     = 4.*atan(dble(1.))  & ! 3.1415...
+
+    ! t_zero_deleteifnotnes = -273.15_dp ! 0 kelvin in Celcius
 
   real(dp), parameter :: speed_of_light = 299792458 ! [m/s]
   

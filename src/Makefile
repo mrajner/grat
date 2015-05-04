@@ -1,5 +1,5 @@
 FC  := gfortran
-#  FC  := ifort
+FC  := ifort
 OPT := -O0
 
 #  FC=gfortran
