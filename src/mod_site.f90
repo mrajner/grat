@@ -110,9 +110,9 @@ subroutine parse_site(cmd_line_entry)
         ! this is shortcut for Józefosław -Sj
         call more_sites (1,start_index)
         site(start_index)%name   = "joze_a"
-        site(start_index)%lat    = 52.
-        site(start_index)%lon    = 21.
-        site(start_index)%height = 110.
+        site(start_index)%lat    = 52._dp
+        site(start_index)%lon    = 21._dp
+        site(start_index)%height = 110._dp
         continue
 
       case("b")
