@@ -24,6 +24,10 @@ VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
+ifeq ($(shell hostname),lidka)
+	FC := gfortran
+endif
+
 # ifort settings
 ifeq ($(FC),ifort)
 FFLAGS :=          \
