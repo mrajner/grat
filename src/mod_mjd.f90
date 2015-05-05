@@ -25,25 +25,29 @@ subroutine invmjd (mjd, date)
 
   t1      = 1+ int(mjd) + 2400000
   t4      = mjd - int (mjd);
-  h       = int ((t1 - 1867216.25)/36524.25)
+
+  if(t4.ne.0) stop "invmjd"
+
+  h       = int ((t1 - 1867216.25_dp)/36524.25_dp)
   t2      = t1 + 1 + h - int (h/4)
   t3      = t2 - 1720995
-  ih1     = int ((t3 -122.1)/365.25)
-  t1      = int (365.25 * ih1)
-  ih2     = int ((t3 - t1)/30.6001);
-  date(3) = (t3 - t1 - int (30.6001 * ih2)) + t4
+  ih1     = int ((t3 -122.1_dp)/365.25_dp)
+  t1      = int (365.25_dp * ih1)
+  ih2     = int ((t3 - t1)/30.6001_dp);
+  date(3) = (t3 - t1 - int (30.6001_dp * ih2)) + t4
   date(2) = ih2 - 1
 
   if (ih2 .gt. 13) date(2) = ih2 - 13
   date(1) = ih1
   if (date(2).le. 2) date(1) = date(1) + 1
 
-  dayfrac = mjd - int(mjd) + 1./ (60*60*1000)
-  date(4) = int (dayfrac * 24.)
-  date(5) = (dayfrac - date (4) / 24.) * 60 * 24
-  date(6) = (dayfrac - date (4) / 24. - date(5)/(24.*60.)  ) * 60 * 24 *60
+  dayfrac = mjd - int(mjd) + 1._dp/ (60*60*1000)
+  date(4) = int (dayfrac * 24._dp)
+  date(5) = (dayfrac - date (4) / 24._dp) * 60 * 24
+  date(6) = (dayfrac - date (4) / 24._dp - date(5)/(24._dp*60._dp)  ) * 60 * 24 *60
 
   if (date (6) .eq. 60 ) then
+    stop "routine invmjd"
     date (6) = 0
     date (5) = date(5) + 1
   endif
@@ -96,9 +100,9 @@ function mjd (date)
 
   i       = aux(1)/100
   k       = 2 - i + int(i/4);
-  mjd     = int(365.25 * aux(1) ) - 679006
-  dayfrac = aux (4) / 24. + date(5)/(24. * 60. ) + date (6)/(24. * 3600. )
-  mjd     = mjd + int(30.6001*( aux(2) + 1)) + date(3) + k + dayfrac
+  mjd     = int(365.25_dp * aux(1) ) - 679006
+  dayfrac = aux (4) / 24._dp + date(5)/(24._dp * 60._dp ) + date (6)/(24._dp * 3600._dp )
+  mjd     = mjd + int(30.6001_dp*( aux(2) + 1)) + date(3) + k + dayfrac
 end function
 
 end module mod_mjd

@@ -9,13 +9,13 @@ module mod_constants
   integer, parameter :: dp = selected_real_kind(15)
   integer, parameter :: sp = selected_real_kind(6)
 
-  real(dp), parameter ::        &
-    R_air  = 287.05,            & ! dry air constant  [J/kg/K]
-    pi     = 4.*atan(dble(1.))  & ! 3.1415...
+  real(dp), parameter ::             & 
+    R_air  = 287.05,                 & ! dry air constant  [J/kg/K]
+    pi     = 4._dp*atan(dble(1._dp))   ! 3.1415...
 
     ! t_zero_deleteifnotnes = -273.15_dp ! 0 kelvin in Celcius
 
-  real(dp), parameter :: speed_of_light = 299792458 ! [m/s]
+  real(dp), parameter :: speed_of_light = 299792458._dp ! [m/s]
   
 
   !---------------------------------------

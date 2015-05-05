@@ -270,7 +270,7 @@ end subroutine
 !! \date 2013.07.16 added exception e.g /home/...
 !! \date 2014.08.27 added exception e.g comma ,
 ! =============================================================================
-function is_numeric(string)
+pure function is_numeric(string)
   logical :: is_numeric
   character(len=*), intent(in) :: string
   real :: x

@@ -269,10 +269,11 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-19
 ! ==============================================================================
-function check_if_switch_or_minus(dummy)
+pure function check_if_switch_or_minus(dummy)
   use mod_utilities, only: is_numeric
+
   logical:: check_if_switch_or_minus
-  character(*) :: dummy
+  character(*), intent(in) :: dummy
 
   check_if_switch_or_minus = .false.
   if (dummy(1:1).eq."-") check_if_switch_or_minus = .true.
