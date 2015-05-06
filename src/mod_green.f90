@@ -466,6 +466,10 @@ end subroutine
 !!
 !! \date 2013-03-15
 !! \author M. Rajner
+!! 
+!! TODO after complete unit test developement
+!! change philosophy to prepera template matrix first
+!! get all values and then perform appropriate splot or splots
 ! =============================================================================
 subroutine convolve(site, date, results)
   use, intrinsic :: iso_fortran_env
@@ -572,12 +576,13 @@ subroutine convolve(site, date, results)
       endif
 
       ! calculate area using spherical formulae
-      area = spher_area(                        &
-        d2r(green_common(igreen)%start(idist)), &
-        d2r(green_common(igreen)%stop(idist)),  &
-        d2r(dazimuth),                          &
-        radius=earth%radius,                    &
-        alternative_method=.true.)
+      area = spher_area(                                             &
+        distance           = d2r(green_common(igreen)%start(idist)), &
+        ddistance          = d2r(green_common(igreen)%stop(idist)),  &
+        azstp              = d2r(dazimuth),                          &
+        radius             = earth%radius,                           &
+        alternative_method = .true.                                  &
+        )
 
       ! normalization according to Merriam (1992)
       normalize= 1e8 / &

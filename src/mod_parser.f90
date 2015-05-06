@@ -849,18 +849,28 @@ subroutine print_help (program_calling, accepted_switches)
 
   if_print_line=.false.
 
+  ! TODO make appropriate man documentation using 
+  ! include for common switches
+
   ! change this path according to your settings
-  open(newunit=help_unit, file="/home/mrajner/src/grat/dat/help.hlp", action="read",status="old")
+  open(                                         &
+    newunit=help_unit,                          &
+    file="/home/mrajner/src/grat/dat/help.hlp", &
+    action="read",                              &
+    status="old"                                &
+    )
 
   write (log%unit, "(a)", advance="no" ) program_calling
   ! first loop - print only syntax with squre brackets if parameter is optional
   do
     read (help_unit, '(a)', iostat=io_stat) line
+
     if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
       if (if_optional) write(log%unit, '(a)', advance="no") " ["
       if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
       if (if_optional) write(log%unit, '(a)', advance="no") "]"
     endif
+
     if (io_stat==iostat_end) then
       write(log%unit, *) " "
       if_print_line = .false.
@@ -874,7 +884,9 @@ subroutine print_help (program_calling, accepted_switches)
       endif
     endif
 
-    if (line(5:13) == "optional " .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) then
+    if (line(5:13) == "optional " &
+      .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) &
+      then
       if_optional=.true.
     else if (line(5:13) == "mandatory") then
       if_optional=.false.

@@ -144,7 +144,6 @@ subroutine progress(j, time, cpu, every)
   use mod_cmdline,     only: moreverbose, quiet, quiet_step
   use iso_fortran_env, only: output_unit
 
-  implicit none
   integer(kind=4) :: j, k
   integer:: ii
   character(len=27) :: bar="???% |                    |"

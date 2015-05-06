@@ -142,12 +142,12 @@ subroutine parse_model(cmd_line_entry)
       endif
 
       ! listing in log
-      model(i)%constant_value=   &
-        variable_modifier(       &
-        model(i)%constant_value, &
-        model(i)%datanames(1),   &
-        verbose=.not.log%sparse, &
-        list_only=.true.         &
+      model(i)%constant_value =      &
+        variable_modifier(           &
+        model(i)%constant_value,     &
+        model(i)%datanames(1),       &
+        verbose   = .not.log%sparse, &
+        list_only = .true.           &
         )
 
     else if (is_numeric(model(i)%name)) then
@@ -432,6 +432,8 @@ subroutine model_aliases(model, dryrun, year, month, fieldname)
 end subroutine
 
 ! =============================================================================
+! TODO do not modify all matrices, only values used in output or computation
+! or convert this routine as `elemental`
 ! =============================================================================
 function variable_modifier (val, modifier, verbose, list_only)
   use mod_atmosphere, only: geop2geom
@@ -470,34 +472,43 @@ function variable_modifier (val, modifier, verbose, list_only)
     endif
 
     select case (key)
+
     case ("gh2h") ! g2h is obsolete
       variable_modifier=geop2geom(variable_modifier)
       ! case ("gp2gh")
       ! variable_modifier=variable_modifier/earth%gravity%mean
+      call print_warning("gh2h is obsolete noop")
+
     case ("gp2h")
       variable_modifier=geop2geom(variable_modifier)/earth%gravity%mean
+
     case ("nan")
       read(keyval,*) numerickeyval
       if (isnan(variable_modifier)) variable_modifier=numerickeyval
+
     case ("scale")
       read(keyval,*) numerickeyval
       variable_modifier=numerickeyval*variable_modifier
+
     case ("invscale")
       read(keyval,*) numerickeyval
       variable_modifier=1./numerickeyval*variable_modifier
+
     case ("offset")
       read(keyval,*) numerickeyval
       variable_modifier=numerickeyval+variable_modifier
+
     case default
       call print_warning ("variable modifier not found " // key, error=.true.)
+
     endselect
 
     if (.not.present(list_only)) then
-      if(present(verbose).and.verbose) &
+      if(present(verbose).and.verbose) then
         write (log%unit, '('// output%form // ')') variable_modifier
+      endif
     else
-      if(present(verbose).and.verbose) &
-        write (log%unit, *)
+      if(present(verbose).and.verbose) write (log%unit, *)
     endif
 
     modifier_ = modifier_(index(modifier_, "@")+1:)
@@ -1235,6 +1246,7 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   use mod_printing
   use mod_polygon
   use mod_mjd
+
   type (file) :: model, landseamask
   logical, intent(in):: inverted_landsea_mask
   real(dp) ::  val, total_area, ocean_area, valoceanarea, valls

@@ -2,6 +2,7 @@ module mod_spherical
   use mod_constants, only: dp, pi
 
   implicit none
+
 contains
 ! =============================================================================
 !> Calculate area of spherical segment
