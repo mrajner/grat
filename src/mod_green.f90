@@ -55,6 +55,7 @@ subroutine parse_green (cmd_line_entry)
   endif
 
   if (method(3)) then
+
     if (present(cmd_line_entry)) then
       allocate (green (size(cmd_line_entry%field)+1))
     else
@@ -66,9 +67,13 @@ subroutine parse_green (cmd_line_entry)
     green(ind%green%g3d)%column   = [1,2]
     green(ind%green%g3d)%dataname = "G3D"
     call read_green(green(ind%green%g3d))
+
   else
     allocate (green (size(cmd_line_entry%field)))
+
   endif
+
+  green%dataname ="NN"
 
   if (present(cmd_line_entry)) then
     do i = 1, size(cmd_line_entry%field)
@@ -83,22 +88,27 @@ subroutine parse_green (cmd_line_entry)
         green(i)%name = green(i-1)%name
       endif
 
-      if (any(green%dataname.eq.cmd_line_entry%field(i)%subfield(1)%dataname )) then
-        call print_warning("repeated dataname for Green")
-        continue
+      if (any(green%dataname.eq.cmd_line_entry%field(i)%subfield(1)%dataname)) then
+        call print_warning("repeated dataname for Green here")
+        ! cycle
+
       else
         green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
+        if(green(i)%dataname == "") green(i)%dataname = "NN"
+
       endif
 
       do ii=1, 2
         green(i)%column(ii) = green(i-1)%column(ii)
         green(i)%columndataname(ii) = green(i-1)%columndataname(ii)
+
         if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
           read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
           green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
         endif
 
       enddo
+
       if (green(i)%dataname.eq."GNc") then
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%name)) then
           read(cmd_line_entry%field(i)%subfield(2)%name, *) gnc_looseness
@@ -145,6 +155,7 @@ subroutine read_green (green, print)
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
 
     select case (green%dataname)
+
     case("GN")
       green%column=[1,2]
 
