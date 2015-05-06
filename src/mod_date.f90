@@ -188,7 +188,7 @@ subroutine parse_date(cmd_line_entry)
 
     if (size(cmd_line_entry%field(i_)%subfield).ge.3) then
 
-      if(.not.is_numeric(cmd_line_entry%field(i_)%subfield(3)%dataname)) then
+      if(.not.is_numeric(cmd_line_entry%field(i_)%subfield(3)%name)) then
         call print_warning(                                              &
           "not numeric interval "// trim(cmd_line_entry%field(i_)%full), &
           error=.true.                                                   &
