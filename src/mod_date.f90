@@ -23,8 +23,9 @@ contains
 ! =============================================================================
 subroutine strip_hyphen_date_iso(string)
   use mod_utilities, only: count_separator
+
   character(*), intent(inout) :: string
-  integer :: i
+  integer                     :: i
 
   do i = 1, count_separator(string,'-')
     string = string(1:index(string,'-')-1)//'0'//string(index(string,'-')+1:)
@@ -37,37 +38,42 @@ end subroutine
 !> Parse date given as 20110503020103  to yy mm dd hh mm ss and mjd
 !!
 !! \warning decimal seconds are not allowed
+
+!! TODO remove mod_data model from use statemant and turn it to function
+!! returning dates. for m option pass array of model dates in optional dummy arg
 ! =============================================================================
 subroutine parse_date(cmd_line_entry)
   use mod_cmdline
-  use mod_mjd, only: mjd, invmjd
+  use mod_mjd,       only: mjd, invmjd
   use mod_utilities, only: is_numeric
-  use mod_data, only: model
+  use mod_data,      only: model
 
   integer, dimension(6) :: start, stop, swap
-  real (dp) :: step
-  integer :: i_, i, start_index, i_aux
-  character(1) :: interval_unit
-  type(cmd_line_arg) :: cmd_line_entry
-  logical :: success
+  real (dp)             :: step
+  integer               :: i_, i, start_index, i_aux
+  character(1)          :: interval_unit
+  type(cmd_line_arg)    :: cmd_line_entry
+  logical               :: success
 
   if (allocated(date)) then
     call print_warning ("repeated")
     return
   endif
 
-
   do i_ = 1, ubound(cmd_line_entry%field,1)
 
-    if (any(cmd_line_entry%field(i_)%subfield%name.eq."m") &
+    if (any(cmd_line_entry%field(i_)%subfield%name.eq."m")        &
       .or. any(cmd_line_entry%field(i_)%subfield%dataname.eq."~") &
       ) then
+
       if (.not. allocated (model)) then
         call print_warning("cannot use m or ~ in data specifier (-D m ) if no model file" &
-          // " with dates given",error=.true.)
+          // " with dates given", error = .true.)
+
       elseif (.not.allocated(model(1)%date)) then
         call print_warning("cannot use m or ~ in data specifier if first model file" &
-          // " do not contains dates",error=.true.)
+          // " do not contains dates" ,error = .true.)
+
       endif
     endif
 
@@ -85,11 +91,13 @@ subroutine parse_date(cmd_line_entry)
     if (any([(cmd_line_entry%field(i_)%subfield(i_aux)%name.ne."m"         &
       .and..not.is_numeric(cmd_line_entry%field(i_)%subfield(i_aux)%name), &
       i_aux=1, size(cmd_line_entry%field(i_)%subfield))])) then
+
       call print_warning(                                          &
         "date not numeric "// trim(cmd_line_entry%field(i_)%full), &
         error=.true.                                               &
         )
       cycle
+
     endif
 
     if (any( [(                                                            &
@@ -145,20 +153,22 @@ subroutine parse_date(cmd_line_entry)
         endif
       else if (cmd_line_entry%field(i_)%subfield(2)%dataname.ne."") then
         read (cmd_line_entry%field(i_)%subfield(2)%name,*) stop(1)
+
         select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
         case('Y')
-          stop(1)=start(1)+stop(1)
-          stop(2:)=start(2:)
+          stop(1)  = start(1)+stop(1)
+          stop(2:) = start(2:)
         case('M')
-          stop(2)=start(2)+stop(1)
-          stop(1)=start(1)
-          stop(3:)=start(3:)
+          stop(2)  = start(2)+stop(1)
+          stop(1)  = start(1)
+          stop(3:) = start(3:)
+
           if (stop(2).gt.12) then
             stop(1) = stop(1)+int(stop(2)/12)
             stop(2) = modulo(stop(2), 12)
           else if (stop(2).lt.1) then
-            stop(1)=stop(1)-int(-stop(2)/12+1)
-            stop(2)=stop(2)+12*(1+int(-stop(2)/12))
+            stop(1) = stop(1)-int(-stop(2)/12+1)
+            stop(2) = stop(2)+12*(1+int(-stop(2)/12))
           endif
         case('D')
           call invmjd (mjd(start)+stop(1), stop)
@@ -340,6 +350,7 @@ subroutine string2date (string, date, success)
     else
       end_char=min(len(string), start_char+1)
     endif
+
     if (is_numeric(string(start_char : end_char) )) then
       read(string(start_char : end_char), *) date(j)
     else
@@ -347,9 +358,11 @@ subroutine string2date (string, date, success)
       if (present(success)) success=.false.
       return
     endif
+
     start_char=end_char+1
     if (end_char.eq.len(trim(string))) exit
   enddo
 end subroutine
+
 
 end module mod_date
