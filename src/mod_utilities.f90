@@ -238,26 +238,30 @@ end function
 !> This routine skips the lines with comment chars (default '#')
 !! from opened files (unit) to read
 ! ==============================================================================
-subroutine skip_header (unit, comment_char_optional )
+subroutine skip_header (unit, comment_char)
   integer, intent (in) :: unit
-  character (len = 1), optional :: comment_char_optional
+  character (len = 1), optional :: comment_char
   character (len = 60 ) :: dummy
-  character (len = 1)  :: comment_char
+  character (len = 1)  :: comment_char_
   integer :: io_stat
 
-  if (present ( comment_char_optional ) ) then
-    comment_char = comment_char_optional
+  if (present ( comment_char) ) then
+    comment_char_ = comment_char
   else
-    comment_char = '#'
+    comment_char_ = '#'
   endif
 
-  read ( unit, *, iostat = io_stat) dummy
+  read (unit, '(a)', iostat = io_stat) dummy
   if(io_stat == iostat_end) return
 
-  do while ( dummy(1:1) .eq. comment_char )
-    read ( unit, *, iostat = io_stat ) dummy
-    if(io_stat == iostat_end) return
+  do while (dummy(1:1).eq.comment_char_)
+    read (unit, *, iostat = io_stat) dummy
+    if (io_stat == iostat_end) then
+      backspace(unit)
+      return
+    endif
   enddo
+
   backspace(unit)
 end subroutine
 
@@ -401,7 +405,7 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
 
   open (newunit = file_unit,  file = file_name, status = "old", action ="read")
   do
-    ! call skip_header (file_unit, comment_char_)
+    call skip_header (file_unit, comment_char_)
     read (file_unit, '(a)', iostat=io_stat) line
     if (io_stat == iostat_end) exit
 

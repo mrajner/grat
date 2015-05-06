@@ -1,6 +1,9 @@
 FC  := gfortran
 FC  := ifort
 OPT := -O0
+ifeq ($(shell hostname),lidka)
+	FC := gfortran
+endif
 
 #  FC=gfortran
 define colorecho
@@ -24,9 +27,6 @@ VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
-ifeq ($(shell hostname),lidka)
-	FC := gfortran
-endif
 
 # ifort settings
 ifeq ($(FC),ifort)
