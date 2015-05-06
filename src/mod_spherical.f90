@@ -7,8 +7,9 @@ contains
 ! =============================================================================
 !> Calculate area of spherical segment
 !!
-!! Computes spherical area on unit (default if optional argument \c radius is
-!! not given) sphere given by:
+!! Computes spherical area on unit sphere
+!! (default if optional argument \c radius is !! not given)
+!! given by:
 !!   - method 1 (\c alternative_method not given or \c alternative_method .false.)
 !!    - distance from station, segment size in spher distance and angle
 !!   - method 2 (\c alternative_method .true.)
