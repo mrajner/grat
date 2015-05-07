@@ -1,4 +1,4 @@
-FC := gfortran
+FC := ifort
 OPT:= -O2
 
 ifeq ($(FC),gfortran)
@@ -7,7 +7,7 @@ endif
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)
 #temporary
-SHELL_TESTS   := $(wildcard t[0-2].sh)
+SHELL_TESTS   := $(wildcard t[0-1].sh)
 
 FORTRAN_TESTS := $(wildcard t*.f90)
 
