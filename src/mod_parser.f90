@@ -1079,7 +1079,7 @@ end subroutine
 ! only for debugging during developement
 ! =============================================================================
 subroutine parse_long_option(cmd_line_entry, version)
-  use mod_cmdline
+  use mod_cmdline, only: cmd_line_arg
   use mod_utilities, only: version_split
 
   type(cmd_line_arg) :: cmd_line_entry
