@@ -954,6 +954,8 @@ subroutine get_variable(model, date, print, level)
     end where
   end if
 
+  ! TODO make elemental function variable_modifier and use without loop
+  ! test if any speed
   if (trim(model%datanames(1)).ne."") then
     do i =1, size(model%data,1)
       do j =1, size(model%data,2)
