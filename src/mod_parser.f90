@@ -10,7 +10,7 @@ contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry, accepted_switches, version)
+subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate)
   use mod_cmdline
   use mod_site,      only: parse_site
   use mod_date,      only: parse_date
@@ -22,7 +22,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
-  character(len=*), optional :: version
+  character(len=*), optional :: version, cdate
   integer(2) :: i
   logical :: file_already_opened
 
@@ -292,7 +292,11 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version)
     dryrun=.true.
 
   case ("--")
-    call parse_long_option(cmd_line_entry, version)
+    call parse_long_option( &
+      cmd_line_entry,       &
+      version = version,    &
+      cdate   = cdate       &
+      )
 
   case default
     if (.not.log%sparse) call print_warning("unknown argument "// cmd_line_entry%switch)
@@ -496,7 +500,12 @@ subroutine intro (     &
   write (log%unit, form%i0) "Command parsing:"
 
   do i=1, size(cmd_line)
-    call parse_option(cmd_line(i), accepted_switches, version=version)
+    call parse_option(   &
+      cmd_line(i),       &
+      accepted_switches, &
+      version = version, &
+      cdate   = cdate    &
+      )
   enddo
 
   call get_index()
@@ -1078,16 +1087,26 @@ end subroutine
 ! =============================================================================
 ! only for debugging during developement
 ! =============================================================================
-subroutine parse_long_option(cmd_line_entry, version)
+subroutine parse_long_option(cmd_line_entry, version, cdate)
   use mod_cmdline, only: cmd_line_arg
   use mod_utilities, only: version_split
 
   type(cmd_line_arg) :: cmd_line_entry
   character(len=*), optional :: version
+  character(len=*), optional :: cdate
 
-  if (trim(cmd_line_entry%full)=="--version") then
-    print '(a)', version_split(version,"major")
-    call exit(0)
-  endif
+  select case (trim(cmd_line_entry%full))
+
+  case ("--version")
+    write(output%unit, '(a)') version_split(version,"major")
+
+  case ("--date")
+    if (present(cdate)) then
+      write(output%unit, '(a)') cdate(1:4)//cdate(6:7)//cdate(9:10)
+    endif
+
+  end select
+
+  call exit(0)
 end subroutine
 end module
