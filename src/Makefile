@@ -58,6 +58,9 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: all
+	grat --version
+	grat --date
+exit:
 	-value_check \
 		-Sj \
 		-D2013 \
