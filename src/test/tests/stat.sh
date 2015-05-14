@@ -119,8 +119,11 @@ for test in ${test_what[*]} ; do
           echo is: $is , should_be: $should_be
           colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
 
-          ${vimdiff:-false} && vimdiff $is $should_be
-          read
+          ${vimdiff:-false} && 
+          {
+            vimdiff $is $should_be
+            read
+          }
         }
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be

@@ -40,19 +40,24 @@ contains
 subroutine parse_site(cmd_line_entry)
   use mod_cmdline
   use mod_utilities, only: file_exists, is_numeric
+
   type(cmd_line_arg),intent(in):: cmd_line_entry
   integer :: start_index
-
   integer :: i
+
   if (allocated(site)) then
     call print_warning ("repeated")
     return
   endif
 
   do i = 1, ubound(cmd_line_entry%field,1)
-    if (.not.log%sparse) write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
+
+    if (.not.log%sparse) then
+      write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
+    endif
 
     if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
+
       write(log%unit, form%i3) 'reading from file:', &
         cmd_line_entry%field(i)%subfield(1)%name
 
@@ -63,19 +68,21 @@ subroutine parse_site(cmd_line_entry)
         end if
         call read_local_pressure(cmd_line_entry%field(i)%subfield(1)%name)
         return
+
       else
         call read_site_file (cmd_line_entry%field(i)%subfield(1)%name)
       endif
+
       continue
 
     else if(index(cmd_line_entry%field(i)%subfield(1)%name, "/" ).ne.0 &
-      ) &
+      )                                                                &
       then
       call parse_GMT_like_boundaries (cmd_line_entry%field(i))
       continue
 
-    else if ( &
-      size(cmd_line_entry%field(i)%subfield).ge.3 &
+    else if (                                                    &
+      size(cmd_line_entry%field(i)%subfield).ge.3                &
       .and. is_numeric(cmd_line_entry%field(i)%subfield(2)%name) &
       .and. is_numeric(cmd_line_entry%field(i)%subfield(3)%name) &
       ) then
