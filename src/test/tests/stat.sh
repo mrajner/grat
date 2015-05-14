@@ -120,6 +120,7 @@ for test in ${test_what[*]} ; do
           colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
 
           ${vimdiff:-false} && vimdiff $is $should_be
+          read
         }
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be
