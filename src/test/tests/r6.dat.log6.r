@@ -1,28 +1,28 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.2-12-g020dd5b #
+#                                                     v1.2-20-g9ef2c82 #
 ########################################################################
 #         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
 #                                                         FFLAGS = -O0 #
-#                                compiled on lidka 2015-05-15 12:37:23 #
+#                                compiled on lidka 2015-05-15 15:46:44 #
 #                                                                      #
 #                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-05-15 13:01:25 (+02h UTC)
+Program started: 2015-05-15 15:48:57 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -H -F ../data/pres.sfc.2012.nc @SP :pres -M1,2 -G rajner @GN -S 
-joze:52:21:100 -D2012:20@H : 3@H -I 10 @DE : 2@3D -o ./t6.dat.out6.r : f
-                                                  ree -V ./t6.dat.log6.r
+joze:52:21:100 -D2012:20@H : 3@H -I 10 @DE : 2@3D -o t6.dat.out6.r : fre
+                                                      e -V t6.dat.log6.r
 #-----------------------------------------------------------------------
 Command parsing:
   -! { -! }
     all model as huge
   -H { -H }
       header
-  -F { pres.sfc.2012.nc@SP:pres }
+  -F { -F../data/pres.sfc.2012.nc@SP:pres }
     ../data/pres.sfc.2012.nc@SP:pres
       Surface pressure (SP) pres lon lat level time 
       Opening file: pres.sfc.2012.nc , huge [T/F]: T
@@ -48,9 +48,9 @@ Command parsing:
   -I { -I10@DE:2@3D }
     Range: 1
       DB:   0.00|DE:  10.000|I:n|DD: 1|DS:   0.00|HB:     0.0|HE: 60000.0|HS:  25.00|
-  -o { t6.dat.out6.r:free }
+  -o { -ot6.dat.out6.r:free }
     output file was set: t6.dat.out6.r
-  -V { t6.dat.log6.r }
+  -V { -Vt6.dat.log6.r }
     verbose mode
     the log file was set t6.dat.log6.r
 #-----------------------------------------------------------------------

@@ -1,26 +1,26 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.2-12-g020dd5b #
+#                                                     v1.2-20-g9ef2c82 #
 ########################################################################
 #         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
 #                                                         FFLAGS = -O0 #
-#                                compiled on lidka 2015-05-15 12:37:23 #
+#                                compiled on lidka 2015-05-15 15:46:44 #
 #                                                                      #
 #                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-05-15 13:01:25 (+02h UTC)
+Program started: 2015-05-15 15:48:56 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F ../data/pres.sfc.2012.nc @SP :pres -M1,2 -G rajner @GN -S joz
-e:52:21:100 -D2012:20@H : 3@H -I 0 @DE : 2@3D -o ./t6.dat.out0.r : free 
-                                                      -V ./t6.dat.log0.r
+e:52:21:100 -D2012:20@H : 3@H -I 0 @DE : 2@3D -o t6.dat.out0.r : free -V
+                                                           t6.dat.log0.r
 #-----------------------------------------------------------------------
 Command parsing:
   -H { -H }
       header
-  -F { pres.sfc.2012.nc@SP:pres }
+  -F { -F../data/pres.sfc.2012.nc@SP:pres }
     ../data/pres.sfc.2012.nc@SP:pres
       Surface pressure (SP) pres lon lat level time 
       Opening file: pres.sfc.2012.nc , huge [T/F]: F
@@ -46,9 +46,9 @@ Command parsing:
   -I { -I0@DE:2@3D }
     Range: 1
       DB:   0.00|DE:   0.000|I:n|DD: 1|DS:   0.00|HB:     0.0|HE: 60000.0|HS:  25.00|
-  -o { t6.dat.out0.r:free }
+  -o { -ot6.dat.out0.r:free }
     output file was set: t6.dat.out0.r
-  -V { t6.dat.log0.r }
+  -V { -Vt6.dat.log0.r }
     verbose mode
     the log file was set t6.dat.log0.r
 #-----------------------------------------------------------------------
