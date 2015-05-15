@@ -309,10 +309,10 @@ program grat
         do j=1, max(1,ubound(admitance%value(:),1))
 
           write (output%unit, "("// output%form // ')' , advance = "no"), &
-            admit(                                                        &
-            site(isite),                                                  &
-            date   = date(idate)%date,                                    &
-            number = j                                                    &
+            admit(                                                         &
+            site(isite),                                                   &
+            date   = date(idate)%date,                                     &
+            number = j                                                     &
             )
 
         enddo
@@ -325,7 +325,7 @@ program grat
           )
       endif
 
-      write(output%unit, *) ''
+      write(output%unit, '(a)') ''
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))
