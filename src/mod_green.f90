@@ -1333,37 +1333,39 @@ subroutine convolve(site, date, results)
         endif
 
         ! surface loads from EWT
-        if (                                                                                          &
-          ind%green%gr.ne.0                                                                         &
-          .or.ind%green%ghn.ne.0                                                                    &
-          .or.ind%green%ghe.ne.0                                                                    &
+        if (                     &
+          ind%green%gr.ne.0      &
+          .or.ind%green%ghn.ne.0 &
+          .or.ind%green%ghe.ne.0 &
           ) then
+
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
             if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
+
               call get_value (                                                &
                 model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), &
                 level=1, method = info(igreen)%interpolation, date=date%date)
 
-              aux = (val(ind%model%ewt))  *                      &
-                area/d2r(green_common(igreen)%distance(idist)) * &
-                1./earth%radius/1e12* 1e3 ! m -> mm
+              aux = (val(ind%model%ewt))                         &
+               * area/d2r(green_common(igreen)%distance(idist))  &
+               * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
               if (isnan(aux)) aux = 0
 
               if (ind%green%gr.ne.0) then
 
-                result(ind%green%gr) = result(ind%green%gr) +    &
-                  green_common(igreen)%data(idist, ind%green%gr) &
+                result(ind%green%gr) = result(ind%green%gr)        &
+                  + green_common(igreen)%data(idist, ind%green%gr) &
                   * aux
 
                 if (ind%green%ghn.ne.0) then
-                  result(ind%green%ghn) = result(ind%green%ghn) +     &
-                    green_common(igreen)%data(idist, ind%green%ghn) * &
-                    aux * (-cos(d2r(azimuth)))
+                  result(ind%green%ghn) = result(ind%green%ghn)       &
+                    + green_common(igreen)%data(idist, ind%green%ghn) &
+                    * aux * (-cos(d2r(azimuth)))
                 endif
                 if (ind%green%ghe.ne.0) then
-                  result(ind%green%ghe) = result(ind%green%ghe) +     &
-                    green_common(igreen)%data(idist, ind%green%ghe) * &
-                    aux * (-sin(d2r(azimuth)))
+                  result(ind%green%ghe) = result(ind%green%ghe)       &
+                    + green_common(igreen)%data(idist, ind%green%ghe) &
+                    * aux * (-sin(d2r(azimuth)))
                 endif
               endif
             endif
@@ -1420,7 +1422,7 @@ subroutine convolve(site, date, results)
                 '(*(a3, i1))'),                          &
                 ("ok", i, i =1, ubound(iok, 1))
             else
-              write(moreverbose(ind%moreverbose%p)%unit, *)
+              write(moreverbose(ind%moreverbose%p)%unit, '(a)') 
             endif
             header_p=.false.
           endif
@@ -1439,7 +1441,7 @@ subroutine convolve(site, date, results)
 
             write(moreverbose(ind%moreverbose%p)%unit,       &
               '(a8, 6' // output%form //',2 en13.3, $)'),    &
-              trim(site%name), site%lat, site%lon,                 &
+              trim(site%name), site%lat, site%lon,           &
               green_common(igreen)%distance(idist), azimuth, &
               r2d(lat), r2d(lon), area, tot_area
 
@@ -1505,10 +1507,9 @@ subroutine convolve(site, date, results)
             endif
 
             if (size(iok).gt.0) then
-              write(moreverbose(ind%moreverbose%p)%unit, &
-                '(*(i4))'), iok
+              write(moreverbose(ind%moreverbose%p)%unit, '(*(i4))'), iok
             else
-              write(moreverbose(ind%moreverbose%p)%unit, * )
+              write(moreverbose(ind%moreverbose%p)%unit, '(a)' ) ''
             endif
           endif
         endif

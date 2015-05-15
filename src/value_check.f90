@@ -83,7 +83,7 @@ program value_check
     endif
   enddo
 
-  if(output%header) write(output%unit, *)
+  if(output%header) write(output%unit, '(a)')
 
   do j = start, ubound(date,1)
     do i = 1 , ubound(model,1)

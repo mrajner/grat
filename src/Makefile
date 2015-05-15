@@ -1,6 +1,6 @@
 FC  := gfortran
-#  FC  := ifort
-OPT := -Ofast
+FC  := ifort
+#  OPT := -Ofast
 ifeq ($(shell hostname),lidka)
 	FC := gfortran
 endif
@@ -216,12 +216,7 @@ libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
 
 .PHONY: install 
 test: all install
-	make -C test
-
-#  shared_libraries: $(OBJS)
-	#  $(FC) -shared $(OBJS) -o libgrat$(VERSION_MAJOR).so
-#  install_shared)library:
-	#  cp -uv libgrat.so /usr/local/lib
+	make -C test FC=$(FC) OPT=$(OPT)
 
 # module dependencies
 ifndef NODEP

@@ -176,7 +176,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate)
       do i=1,size(method)
         if (method(i)) write(log%unit, '(i1,"D ")' , advance = "no") i
       enddo
-      write(log%unit, *)
+      write(log%unit, '(a)')
     endif
 
     if (method(3)) then
@@ -893,7 +893,7 @@ subroutine parse_info (cmd_line_entry)
       endif
 
       if (io_stat==iostat_end) then
-        write(log%unit, *) " "
+        write(log%unit, '(a)') " "
         if_print_line = .false.
         exit
       endif

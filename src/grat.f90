@@ -171,7 +171,7 @@ program grat
   endif
 
   if(output%header) then
-    write (output%unit, *)
+    write (output%unit, '(a)')
   endif
 
   ! read only once Land-sea, reference surface pressure

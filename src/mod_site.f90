@@ -237,7 +237,7 @@ subroutine print_site_summary(site_parsing)
           write(log%unit, "(a10)", advance ="no") "--"
         endif
 
-        write(log%unit,*)
+        write(log%unit,'(a)')
       enddo
     endif
   endif
