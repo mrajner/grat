@@ -1,27 +1,27 @@
 ########################################################################
 #                                                          value_check #
-#                                                     v1.0-68-g666e38e #
+#                                                     v1.2-20-g9ef2c82 #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.1 20131008 #
-#                                   compiled on pw 2014-09-10 15:09:38 #
-# FFLAGS = -fpic -O0 -xHost -warn all -I/home/mrajner/src/netcdf-fortr #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 15:46:44 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-10 15:10:29 (+02h UTC)
+Program started: 2015-05-15 15:56:34 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -S j -o /dev/null -L/dev/null@p, /tmp/f1@s , /tmp/f2@u , /tm
-              p/f3@c, /dev/null@p, /tmp/f1@s , /tmp/f2@u , /tmp/fff@c -V
+           p/f3@c, /dev/null@p, /tmp/f1@s , /tmp/f2@u , /tmp/fff@c -V -q
 #-----------------------------------------------------------------------
 Command parsing:
   -S { -Sj }
     j
-  -o { null }
+  -o { -o/dev/null }
     output file was set: null
-  -L { fff@c }
+  -L { -L/dev/null@p,/tmp/f1@s,/tmp/f2@u,/tmp/f3@c,/dev/null@p,/tmp/f1@s,/tmp/f2@u,/tmp/fff@c }
     /dev/null <- points |sparse:  F
     /tmp/f1 <- summary |sparse:  F
     /tmp/f2 <- unknown |sparse:  F
@@ -32,13 +32,14 @@ Command parsing:
     /tmp/fff <- unknown |sparse:  F
   -V { -V }
     verbose mode
+  -q { -q }
+      quiet step 0
 #-----------------------------------------------------------------------
     Processing: 1 site(s)
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
     joze_a   52.0000   21.0000  110.0000        --        --        --
 #-----------------------------------------------------------------------
- /dev/null /dev/null /tmp/f1 /tmp/f2 /tmp/f3 /dev/null /tmp/f1 /tmp/f2 /tmp/fff 
-
+Execution time:   0.0s (proc time:   0.0 |%  Inf)
 #-----------------------------------------------------------------------
   joze_a   52.000E+00   21.000E+00    2.500E-06    0.000E+00   52.000E+00   21.000E+00  382.243E-03  382.243E-03    0.000E+00  101.32E+03
   joze_a   52.000E+00   21.000E+00    2.500E-06   90.000E+00   52.000E+00   21.000E+00  382.243E-03  764.485E-03    0.000E+00  101.32E+03
@@ -52,4 +53,3 @@ Command parsing:
   joze_a   52.000E+00   21.000E+00    3.750E+00   90.000E+00   51.843E+00   27.077E+00  208.482E+09  553.512E+09   -1.008E+09  101.32E+03
   joze_a   52.000E+00   21.000E+00    3.750E+00  180.000E+00   48.250E+00   21.000E+00  208.482E+09  761.993E+09   -1.008E+09  101.32E+03
   joze_a   52.000E+00   21.000E+00    3.750E+00  270.000E+00   51.843E+00   14.923E+00  208.482E+09  970.475E+09   -1.008E+09  101.32E+03
-100% |********************|  0.0s [eta  0.0] (proc:  0.0 | %:111.1) /dev/null  

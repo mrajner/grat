@@ -16,9 +16,9 @@ SHELL_TESTS   := $(wildcard t[0-9]*.sh)
 FORTRAN_TESTS := $(wildcard t*.f90)
 
 REAL          := $(subst .sh,.dat.r,$(SHELL_TESTS))
-#  SYNTHETIC     := $(subst .sh,.dat.s,$(SHELL_TESTS))
-#  CONSTANT      := $(subst .sh,.dat.c,$(SHELL_TESTS))
-#  FORTRAN       := $(subst .f90,.dat,$(FORTRAN_TESTS))
+SYNTHETIC     := $(subst .sh,.dat.s,$(SHELL_TESTS))
+CONSTANT      := $(subst .sh,.dat.c,$(SHELL_TESTS))
+FORTRAN       := $(subst .f90,.dat,$(FORTRAN_TESTS))
 
 RESULTS :=     \
 	$(FORTRAN)   \

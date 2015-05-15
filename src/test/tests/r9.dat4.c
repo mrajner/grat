@@ -1,4 +1,4 @@
-Program started: 2015-05-15 09:55:31 (+02h UTC)
+Program started: 2015-05-15 15:56:34 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -M 1,2,3 -G rajner@GN , merriam @GE -F 1013.25 @ SP:@scale=100, 
@@ -18,30 +18,22 @@ Command parsing:
       constant value was re-set:  101.325E+03
       geopotential or geop. height (GP)
       constant value was set:     100.000E+03
-      constant value was re-set:  100.000E+03
       Land-sea mask (LS)
       constant value was set:       0.000E+00
-      constant value was re-set:    0.000E+00
       Model height (HP)
       constant value was set:       0.000E+00
-      constant value was re-set:    0.000E+00
       Surface height (H)
       constant value was set:       0.000E+00
-      constant value was re-set:    0.000E+00
       unknown (VT)
       constant value was set:       0.000E+00
-      constant value was re-set:    0.000E+00
       Surface temperature (T)
       constant value was set:      15.000E+00
       constant value was re-set:  288.150E+00
       unknown (VSH)
       constant value was set:       0.000E+00
-      constant value was re-set:    0.000E+00
       Reference surface pressure (RSP)
       constant value was set:     101.300E+03
-      constant value was re-set:  101.300E+03
       Height of reference surface pressure (HRSP)
       constant value was set:       0.000E+00
-      constant value was re-set:    0.000E+00
   -U { -U }
   -D { -Dm:m:210@D }
