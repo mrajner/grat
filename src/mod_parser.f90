@@ -26,7 +26,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate)
   integer(2) :: i
   logical :: file_already_opened
 
-  write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(basename(trim(cmd_line_entry%full))), "}"
+  write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(cmd_line_entry%full), "}"
   if(.not.if_accepted_switch(cmd_line_entry%switch, accepted_switches=accepted_switches)) &
     then
     call print_warning ("not accepted switch "//cmd_line_entry%switch)

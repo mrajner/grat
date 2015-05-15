@@ -58,7 +58,7 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: all link
-	grat -M3 -H -F10@GP
+	value_check  -F10@GP , /home/mrajner/dat/erainterim/gp.nc , 33 ,rRA@H  -V -Sj
 
 exit:
 	-value_check \
