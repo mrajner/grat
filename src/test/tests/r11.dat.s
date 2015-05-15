@@ -1,23 +1,23 @@
 ########################################################################
 #                                                          value_check #
-#                                                     v1.1-45-g5a582b0 #
+#                                                     v1.2-15-g4392bc1 #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-16 20:34:12 #
-#               FFLAGS = -fpic -O3 -xHost -warn all -DWITH_MONTE_CARLO #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 13:12:17 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-16 20:35:06 (+02h UTC)
+Program started: 2015-05-15 13:23:03 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F ../data/test_data.nc @GP : gp -S 10,j , r -J 1000,100, 66
                                                                       -V
 #-----------------------------------------------------------------------
 Command parsing:
-  -F { test_data.nc@GP:gp }
+  -F { -F../data/test_data.nc@GP:gp }
     ../data/test_data.nc@GP:gp
       geopotential or geop. height (GP) gp lon lat level time 
       Opening file: test_data.nc , huge [T/F]: F
@@ -47,7 +47,7 @@ Command parsing:
   rysy_a   49.1794   20.0883          NaN
   joze_a   52.0000   21.0000          NaN
   rysy_a   49.1794   20.0883          NaN
-Execution time:   0.0s (proc time:   0.0 |% 87.0)
+Execution time:   0.0s (proc time:   0.0 |% 87.7)
 #-----------------------------------------------------------------------
      out   90.0000  200.0000  100.623E+03
      out   90.0000   -5.0000          NaN

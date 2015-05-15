@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                      v1.2-9-g2dcf143 #
+#                                                     v1.2-15-g4392bc1 #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                                  FFLAGS = -fpic -O0 -xHost -warn all #
-#                               compiled on lenovo 2015-05-15 08:41:48 #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 13:12:17 #
 #                                                                      #
 #                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-05-15 09:01:58 (+02h UTC)
+Program started: 2015-05-15 13:12:26 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -! -F ../data/test_data.nc @SP : sp, ../data/test_data.nc @T
@@ -20,7 +20,7 @@ value_check -! -F ../data/test_data.nc @SP : sp, ../data/test_data.nc @T
 Command parsing:
   -! { -! }
     all model as huge
-  -F { test_data.nc@T:t }
+  -F { -F../data/test_data.nc@SP:sp,../data/test_data.nc@T:t }
     ../data/test_data.nc@SP:sp
       Surface pressure (SP) sp lon lat level time 
       Opening file: test_data.nc , huge [T/F]: T
@@ -59,4 +59,5 @@ Command parsing:
 jozefoslaw   52.0000   21.0000  110.0000        --        --        --
        tmp  -33.0000    1.0000 -110.0000        --        --        --
 #-----------------------------------------------------------------------
+Execution time:   0.0s (proc time:   0.0 |% 99.6)
 #-----------------------------------------------------------------------

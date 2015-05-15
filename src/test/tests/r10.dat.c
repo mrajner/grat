@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                      v1.1-9-gd6dc7fe #
+#                                                     v1.2-15-g4392bc1 #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 4.8.3 20140624 (Red Hat 4.8.3-1) #
-#                               compiled on lenovo 2014-09-09 16:52:47 #
-#                                                    FFLAGS = (FFLAGS) #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 13:12:17 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-09 17:06:16 (+02h UTC)
+Program started: 2015-05-15 13:18:44 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -Sg:75,j,b -F1013.25 @ SP:@scale=100 -P ../../../polygon/bal
@@ -29,7 +29,7 @@ Command parsing:
       constant value was set:       1.013E+03
       var modifier: scale 100  101.325E+03
       constant value was re-set:  101.325E+03
-  -P { baltyk.poly }
+  -P { -P../../../polygon/baltyk.poly }
     polygon file: ../../../polygon/baltyk.poly
        name: ../../../polygon/baltyk.poly
        number of polygons: 1
@@ -60,21 +60,21 @@ Command parsing:
     auto   60.0000  300.0000    0.000E+00
   joze_a   52.0000   21.0000    0.000E+00
   balt_a   57.0000   21.0000  101.325E+03
-Execution time:   0.0s (proc time:   0.0 |%100.0)
+Execution time:   0.0s (proc time:   0.0 |% 96.2)
 #-----------------------------------------------------------------------
 ########################################################################
 #                                                                 grat #
-#                                                      v1.1-9-gd6dc7fe #
+#                                                     v1.2-15-g4392bc1 #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 4.8.3 20140624 (Red Hat 4.8.3-1) #
-#                               compiled on lenovo 2014-09-09 16:52:47 #
-#                                                    FFLAGS = (FFLAGS) #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 13:12:17 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-09 17:06:16 (+02h UTC)
+Program started: 2015-05-15 13:18:44 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -Sg:75,j,b -F1013.25 @ SP:@scale=100 -P ../../../polygon/baltyk.pol
@@ -93,7 +93,7 @@ Command parsing:
       constant value was set:       1.013E+03
       var modifier: scale 100  101.325E+03
       constant value was re-set:  101.325E+03
-  -P { baltyk.poly }
+  -P { -P../../../polygon/baltyk.poly }
     polygon file: ../../../polygon/baltyk.poly
        name: ../../../polygon/baltyk.poly
        number of polygons: 1
@@ -125,20 +125,20 @@ warning: -M no method was set assuming 1D
     auto   60.0000  300.0000     0.000 -303.975E+00
   joze_a   52.0000   21.0000   110.000 -303.975E+00
   balt_a   57.0000   21.0000     0.000 -303.975E+00
-Execution time:   0.0s (proc time:   0.0 |%100.0)
+Execution time:   0.0s (proc time:   0.0 |% 91.8)
 ########################################################################
 #                                                        polygon_check #
-#                                                      v1.1-9-gd6dc7fe #
+#                                                     v1.2-15-g4392bc1 #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 4.8.3 20140624 (Red Hat 4.8.3-1) #
-#                               compiled on lenovo 2014-09-09 16:52:47 #
-#                                                    FFLAGS = (FFLAGS) #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 13:12:17 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-09 17:06:16 (+02h UTC)
+Program started: 2015-05-15 13:18:44 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
       polygon_check -Sj,b,o,:57:22 -P ../../../polygon/baltyk.poly -V -H
@@ -152,7 +152,7 @@ Command parsing:
       added site(s): 1
     :57:22
       added site(s): 1
-  -P { baltyk.poly }
+  -P { -P../../../polygon/baltyk.poly }
     polygon file: ../../../polygon/baltyk.poly
        name: ../../../polygon/baltyk.poly
        number of polygons: 1

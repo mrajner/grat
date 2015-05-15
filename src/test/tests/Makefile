@@ -1,6 +1,10 @@
 FC := ifort
 OPT:= -O2
 
+ifeq ($(shell hostname),lidka)
+	FC := gfortran
+endif
+
 ifeq ($(FC),gfortran)
 LD_LIBRARY_PATH := /home/mrajner/src/netcdf-gfortran/fortran
 endif
@@ -14,7 +18,7 @@ FORTRAN_TESTS := $(wildcard t*.f90)
 #  REAL          := $(subst .sh,.dat.r,$(SHELL_TESTS))
 SYNTHETIC     := $(subst .sh,.dat.s,$(SHELL_TESTS))
 #  CONSTANT      := $(subst .sh,.dat.c,$(SHELL_TESTS))
-#  FORTRAN       := $(subst .f90,.dat,$(FORTRAN_TESTS))
+FORTRAN       := $(subst .f90,.dat,$(FORTRAN_TESTS))
 
 RESULTS :=     \
 	$(FORTRAN)   \

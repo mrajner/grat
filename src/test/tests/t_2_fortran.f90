@@ -8,15 +8,15 @@ program test2
     ddistance = d2r(180._dp),   &
     azstp     = d2r(360._dp),   &
     alternative_method = .true. &
-  ) - 4 * pi
+  ) - 4 * pi == 0
 
-  print '(f20.10)' ,             &
+  print* ,                        &
     spher_area(                  &
     distance  = pi/2.,           &
     ddistance = d2r(180._dp),    &
     azstp     = d2r(360._dp),    &
     alternative_method = .false. &
-    ) - 4 * pi
+    ) - 4 * pi == 0.
 
 
   dtot  = 0
@@ -49,7 +49,7 @@ program test2
     enddo
   enddo
 
-  print '(f10.7)', dtot  - 4*pi , dtot2 - 4*pi
+  print '(f20.12)', dtot  - 4*pi , dtot2 - 4*pi
 
 
 end program
