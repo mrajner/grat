@@ -1,14 +1,14 @@
-Program started: 2014-09-10 09:05:05 (+02h UTC)
+Program started: 2015-05-15 09:55:31 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -M 1,2,3 -G rajner@GN , merriam @GE -F 1013.25 @ SP:@scale=100, 1e5
- @GP , 0@LS , 0@HP , 0@H , 0@VT , 15 @ T :@offset=273.15 , 0@VSH , 10130
-0 @ RSP , 0 @HRSP -U -D m:m:210@D -Sj -BI -H -I -10@DD : 5500@HS -o t9.d
-                                          at0.c :c -V t9.dat1.c : sparse
+ @GP , 0@LS, 0@HP, 0@H, 0@VT, 15 @ T :@offset=273.15, 0@VSH, 101300 @ RS
+P, 0 @HRSP -U -D m:m:210@D -Sj -BI -H -I -10@DD : 5500@HS -o t9.dat0.c :
+                                                 c -V t9.dat1.c : sparse
 #-----------------------------------------------------------------------
 Command parsing:
   -M { -M1,2,3 }
-    method refinment for near area using 3D point      0.1000000    
+    method refinment for near area using 3D point     0.100    
   -G { -Grajner@GN,merriam@GE }
   -F { -F1013.25@SP:@scale=100,1e5@GP,0@LS,0@HP,0@H,0@VT,15@T:@offset=273.15,0@VSH,101300@RSP,0@HRSP }
       Surface pressure (SP)

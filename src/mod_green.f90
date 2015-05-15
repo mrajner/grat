@@ -73,7 +73,9 @@ subroutine parse_green (cmd_line_entry)
 
   endif
 
-  green%dataname ="NN"
+  where (green%dataname.eq.'')
+    green%dataname="NN"
+  endwhere
 
   if (present(cmd_line_entry)) then
     do i = 1, size(cmd_line_entry%field)
@@ -772,7 +774,8 @@ subroutine convolve(site, date, results)
                     method                   = transfer_sp%method, &
                     temperature              = val(ind%model%t),   &
                     use_standard_temperature = ind%model%t.eq.0,   &
-                    nan_as_zero              = .false.)
+                    nan_as_zero              = .false.             &
+                    )
 
                   if(all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                     val(ind%model%rsp) = standard_pressure(           &
@@ -782,7 +785,8 @@ subroutine convolve(site, date, results)
                       method                   = transfer_sp%method,  &
                       temperature              = val(ind%model%t),    &
                       use_standard_temperature = ind%model%t.eq.0,    &
-                      nan_as_zero              = .false.)
+                      nan_as_zero              = .false.              &
+                      )
                   endif
                 endif
 
@@ -1166,55 +1170,56 @@ subroutine convolve(site, date, results)
 
                   ! transfer SP if necessary on site level
                   if (transfer_sp%if &
-                    .and.any ([ &
-                    ind%green%gn, &
-                    ind%green%gndt, &
-                    ind%green%gndz, &
+                    .and.any ([      &
+                    ind%green%gn,    &
+                    ind%green%gndt,  &
+                    ind%green%gndz,  &
                     ind%green%gndz2, &
-                    ind%green%gndh &
-                    ].ne.0) &
+                    ind%green%gndh   &
+                    ].ne.0)          &
                     ) then
-                    val(ind%model%sp) = standard_pressure( &
-                      height=site%height,                  &
-                      h_zero=val(ind%model%hp),            &
-                      p_zero=old_val_sp,                   &
-                      method=transfer_sp%method,           &
-                      temperature=val(ind%model%t),        &
-                      use_standard_temperature             &
-                      = ind%model%t.eq.0,                  &
-                      nan_as_zero=.false.)
+                    val(ind%model%sp) = standard_pressure(         &
+                      height=site%height,                          &
+                      h_zero=val(ind%model%hp),                    &
+                      p_zero=old_val_sp,                           &
+                      method=transfer_sp%method,                   &
+                      temperature=val(ind%model%t),                &
+                      use_standard_temperature = ind%model%t.eq.0, &
+                      nan_as_zero=.false.                          &
+                      )
 
                     if (all([ind%model%rsp, ind%model%hrsp].ne.0)) then
-                      val(ind%model%rsp) = standard_pressure(          &
-                        height=site%height,                            &
-                        h_zero=val(ind%model%hrsp),                    &
-                        p_zero=old_val_rsp,                            &
-                        method=transfer_sp%method,                     &
-                        temperature=val(ind%model%t),                  &
-                        use_standard_temperature                       &
-                        = ind%model%t.eq.0,                            &
-                        nan_as_zero=.false.)
+                      val(ind%model%rsp) = standard_pressure(        &
+                        height=site%height,                          &
+                        h_zero=val(ind%model%hrsp),                  &
+                        p_zero=old_val_rsp,                          &
+                        method=transfer_sp%method,                   &
+                        temperature=val(ind%model%t),                &
+                        use_standard_temperature = ind%model%t.eq.0, &
+                        nan_as_zero=.false.                          &
+                        )
                     endif
 
-                    if (ind%model%rsp.ne.0) val(ind%model%sp) &
-                      = val(ind%model%sp) - val(ind%model%rsp)
+                    if (ind%model%rsp.ne.0) then
+                      val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+                    endif
                   endif
 
                   ! GN
                   if (ind%green%gn.ne.0) then
-                    result_partial(ind%green%gn) = &
-                      val(ind%model%sp) *                              &
-                      green_common(igreen)%data(idist, ind%green%gn) * &
-                      area * normalize
+                    result_partial(ind%green%gn) =                     &
+                      val(ind%model%sp)                                &
+                      * green_common(igreen)%data(idist, ind%green%gn) &
+                      * area * normalize
                     result(ind%green%gn) = &
                       result(ind%green%gn) + result_partial(ind%green%gn)
                   endif
 
                   ! GNdt
                   if (ind%green%gndt.ne.0) then
-                    if (any(                                                &
-                      [ind%model%sp, ind%model%t, ind%model%rsp           &
-                      ].eq.0)) &
+                    if (any(                                               &
+                      [ind%model%sp, ind%model%t, ind%model%rsp            &
+                      ].eq.0))                                             &
                       call print_warning("not enough data model for GNdt", &
                       error=.true.)
                     result_partial(ind%green%gndt) =       &
@@ -1228,10 +1233,10 @@ subroutine convolve(site, date, results)
 
                   ! GNdh
                   if (ind%green%gndh.ne.0) then
-                    if (any(                                                &
-                      [ &
-                      ind%model%sp, ind%model%h, ind%model%rsp           &
-                      ].eq.0)) &
+                    if (any(                                               &
+                      [                                                    &
+                      ind%model%sp, ind%model%h, ind%model%rsp             &
+                      ].eq.0))                                             &
                       call print_warning("not enough data model for GNdh", &
                       error=.true.)
                     result_partial(ind%green%gndh) = &
@@ -1251,13 +1256,13 @@ subroutine convolve(site, date, results)
                       ].eq.0)) &
                       call print_warning("not enough data model for GNdz", &
                       error=.true.)
-                    result_partial(ind%green%gndz) =  +       &
-                      val(ind%model%sp)                                    &
-                      * green_common(igreen)%data(idist, ind%green%gndz)   &
-                      * (val(ind%model%h)-site%height) &
+                    result_partial(ind%green%gndz) =                     &
+                      + val(ind%model%sp)                                &
+                      * green_common(igreen)%data(idist, ind%green%gndz) &
+                      * (val(ind%model%h)-site%height)                   &
                       *  area * normalize
-                    result(ind%green%gndz) = result(ind%green%gndz) +       &
-                      result_partial(ind%green%gndz)
+                    result(ind%green%gndz) = &
+                      result(ind%green%gndz) + result_partial(ind%green%gndz)
                   endif
 
                   ! GNdz2

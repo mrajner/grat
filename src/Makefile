@@ -58,7 +58,7 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: all link
-	grat -Sj,b -F10@SP:@scale=100 -P /home/mrajner_slow/src/grat/polygon/baltyk.poly | sed 's/$$/|/'
+	grat -M3 -H -F10@GP
 
 exit:
 	-value_check \

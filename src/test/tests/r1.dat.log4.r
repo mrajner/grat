@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                    v1.1-119-g918951e #
+#                                                     v1.2-11-g168849e #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
 #                                  FFLAGS = -fpic -O0 -xHost -warn all #
-#                               compiled on lenovo 2015-03-06 08:19:15 #
+#                               compiled on lenovo 2015-05-15 09:25:38 #
 #                                                                      #
 #                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-03-06 08:19:56 (+01h UTC)
+Program started: 2015-05-15 09:48:52 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -! -F ../data/pres.sfc.2012.nc @SP :pres, ../data/air.sig995
@@ -46,3 +46,19 @@ Command parsing:
     
   -D { -D20120101:m:24@H }
     20120101:m:24@H
+      start date: 2012 01 01 00 00 00
+      stop  date: 2012 12 31 18 00 00
+      interval: 24.0H
+      dates total: 366
+  -o { -ot1.dat.out4.r }
+    output file was set: t1.dat.out4.r
+  -V { -Vt1.dat.log4.r }
+    verbose mode
+    the log file was set t1.dat.log4.r
+#-----------------------------------------------------------------------
+    Processing: 2 site(s)
+      Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
+jozefoslaw   52.0000   21.0000  110.0000        --        --        --
+       tmp  -33.0000    1.0000 -110.0000        --        --        --
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------

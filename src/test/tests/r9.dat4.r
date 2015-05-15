@@ -1,17 +1,17 @@
-Program started: 2014-09-10 09:04:59 (+02h UTC)
+Program started: 2015-05-15 09:55:23 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -M 1,2,3 -G rajner@GN , merriam @GE -F ../data/pres.sfc.2012.nc 
-@SP :pres, ../data/hgt.2012.nc @GP :hgt , ../data/land.nc @LS :land , ..
-/data/hgt.sfc.nc @HP :hgt , ../data/hgt.sfc.nc @H :hgt , ../data/air.201
-2.nc @VT :air , ../data/air.sig995.2012.nc @T :air , ../data/shum.2012.n
-     c @VSH :shum , 101300 @ RSP , 0 @HRSP -U -D m:m:210@D -Sj -BI -H -I
+@SP :pres, ../data/hgt.2012.nc @GP :hgt, ../data/land.nc @LS :land, ../d
+ata/hgt.sfc.nc @HP :hgt, ../data/hgt.sfc.nc @H :hgt, ../data/air.2012.nc
+ @VT :air , ../data/air.sig995.2012.nc @T :air, ../data/shum.2012.nc @VS
+     H :shum, 101300 @ RSP, 0 @HRSP -U -D m:m:210@D -Sj -BI -H -I -10@DD
 #-----------------------------------------------------------------------
 Command parsing:
   -! { -! }
     all model as huge
   -M { -M1,2,3 }
-    method refinment for near area using 3D point      0.1000000    
+    method refinment for near area using 3D point     0.100    
   -G { -Grajner@GN,merriam@GE }
   -F { shum.2012.nc@VSH:shum,101300@RSP,0@HRSP }
       Reference surface pressure (RSP)

@@ -295,7 +295,7 @@ program grat
       iprogress = iprogress + 1
 
       if (idate.gt.0) then
-        write(output%unit, '(f9.3,x,i4.4,5(i2.2))', advance="no") &
+        write(output%unit, '(f9.3,x,i4.4,5(i2.2),x)', advance="no") &
           date(idate)%mjd, date(idate)%date
       endif
 

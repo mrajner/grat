@@ -1,16 +1,16 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.1-42-gff6fdb2 #
+#                                                     v1.2-11-g168849e #
 ########################################################################
 #                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-16 08:44:26 #
-#               FFLAGS = -fpic -O2 -xHost -warn all -DWITH_MONTE_CARLO #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#                                  FFLAGS = -fpic -O0 -xHost -warn all #
+#                               compiled on lenovo 2015-05-15 09:25:38 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-16 08:47:57 (+02h UTC)
+Program started: 2015-05-15 09:46:58 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:
@@ -56,8 +56,13 @@ Command parsing:
       joze   52.0000   21.0000  100.0000        --        --        --
 #-----------------------------------------------------------------------
       mjd           date     name       lat       lon         h          G1D           GN 
-55927.000 20120101000000     joze   52.0000   21.0000   100.000warning: outside lon|lat range maybe actual range not specified in nc file 
-     -297.771          NaN
+
+lon, lat    -0.227    46.181
+latrange   -90.000    90.000
+lonrange     0.000   340.000
+
+warning: outside lon|lat range maybe actual range not specified in nc file:test_data.nc                                                                                                                                                                                             
+55927.000 20120101000000     joze   52.0000   21.0000   100.000     -297.771          NaN
 warning: hours not matching model dates (0,6,12,18) are rejecting and not shown in output 
 55927.250 20120101060000     joze   52.0000   21.0000   100.000     -297.270          NaN
 55927.500 20120101120000     joze   52.0000   21.0000   100.000     -302.934          NaN

@@ -1,1 +1,2 @@
-error: not numeric interval 2011123118:2@M:12@H 
+warning: cannot find date: 20111231180000      var: pres in file: ../data/pres.sfc.2012.nc 
+warning: cannot find date: 20111231180000      var: air in file: ../data/air.sig995.2012.nc 

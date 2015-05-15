@@ -1101,8 +1101,8 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     endif
 
     val = setnan()
-    val =0
     return
+
   endif
 
   ilat = minloc(abs(model%lat-lat),1)

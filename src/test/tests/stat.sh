@@ -126,6 +126,8 @@ for test in ${test_what[*]} ; do
           ${vimdiff:-false} && 
           {
             vimdiff $is $should_be
+
+            ${onlyonediff:-false} && exit 0
             read
           }
         }
