@@ -99,10 +99,10 @@ subroutine parse_model(cmd_line_entry)
 
     elseif (index(model(i)%dataname,"!").ne.0) then
 
-        model(i)%huge=.true.
-        model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
+      model(i)%huge=.true.
+      model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
 
-        if (.not.log%sparse) write(log%unit, form%i3) "!:huge"
+      if (.not.log%sparse) write(log%unit, form%i3) "!:huge"
     endif
 
     if (all_huge) model(i)%huge=.true.
@@ -138,7 +138,7 @@ subroutine parse_model(cmd_line_entry)
 
       model(i)%if=.true.
       if (model(i)%dataname.ne."ascii") then
-        call read_netCDF(model(i),print=.not.log%sparse)
+        call read_netCDF(model(i), print=.not.log%sparse)
       endif
 
       ! listing in log
@@ -851,7 +851,8 @@ end subroutine
 ! =============================================================================
 subroutine get_variable(model, date, print, level)
   use netcdf
-  use mod_printing
+  use mod_printing, only: log, print_warning
+
   type (file), intent(inout) :: model
   integer, optional, intent(in), dimension(6) ::date
   integer :: varid, status
@@ -874,9 +875,10 @@ subroutine get_variable(model, date, print, level)
 
   if (status /= nf90_noerr) then
     call nc_info(model)
-    call print_warning( &
+    call print_warning(                               &
       "variable not found: " // trim(model%names(1)), &
-      error=.true.)
+      error=.true.                                    &
+      )
   endif
 
   if (allocated(model%data)) deallocate(model%data)
@@ -935,14 +937,12 @@ subroutine get_variable(model, date, print, level)
   endif
 
   call nc_error  (nf90_get_var ( &
-    ncid   = model%ncid,     &
-    varid  = varid,          &
-    values = model%data,     &
-    start  = start           &
-    )                        &
+    ncid   = model%ncid,         &
+    varid  = varid,              &
+    values = model%data,         &
+    start  = start               &
+    )                            &
     )
-
-
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
   model%data = model%data * scale_factor + add_offset

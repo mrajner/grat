@@ -497,7 +497,7 @@ subroutine convolve(site, date, results)
   real(dp)   :: lat, lon, area, tot_area, tot_area_used
   real(dp)   :: val(size(model)), old_val_sp, old_val_rsp
   integer    :: i, j, npoints, iheight, nheight
-  integer(2) :: iok(size(polygon))
+  integer(2) :: iok(ubound(polygon,1))
 
   real(dp) :: normalize, aux
   real(dp), allocatable, dimension(:) :: &
@@ -1433,8 +1433,9 @@ subroutine convolve(site, date, results)
             )                                             &
             ) then
 
-            if(size(green_common).gt.1) &
+            if(size(green_common).gt.1) then
               write(moreverbose(ind%moreverbose%p)%unit, "(i2, x$)") igreen
+            endif
 
             write(moreverbose(ind%moreverbose%p)%unit,       &
               '(a8, 6' // output%form //',2 en13.3, $)'),    &
@@ -1449,6 +1450,7 @@ subroutine convolve(site, date, results)
             endif
 
             if (result_total) then
+
               if (method(2)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(' // output%form //'$)'),              &
@@ -1461,17 +1463,6 @@ subroutine convolve(site, date, results)
                   .or.green%dataname.eq."GNdz2"            &
                   .or.green%dataname.eq."GNdh"             &
                   ))
-                ! write(moreverbose(ind%moreverbose%p)%unit, &
-                  ! '(' // output%form //'$)'),              &
-                  ! sum(result,                              &
-                  ! mask=(                                   &
-                  ! green%dataname.eq."GN"                   &
-                  ! .or.green%dataname.eq."GE"               &
-                  ! .or.green%dataname.eq."GNdt"             &
-                  ! .or.green%dataname.eq."GNdz"             &
-                  ! .or.green%dataname.eq."GNdz2"            &
-                  ! .or.green%dataname.eq."GNdh"             &
-                  ! ))
               endif
 
               if (method(3)) then
@@ -1489,14 +1480,15 @@ subroutine convolve(site, date, results)
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
 
               do i=1, size(val)
-                call get_value (                       &
-                  model(i),                            &
-                  r2d(lat),                            &
-                  r2d(lon),                            &
-                  val(i),                              &
-                  level=1,                             &
-                  method = info(igreen)%interpolation, &
-                  date=date%date)
+                call get_value (                      &
+                 model  = model(i),                   &
+                 lat    = r2d(lat),                   &
+                 lon    = r2d(lon),                   &
+                 val    = val(i),                     &
+                 level  = 1,                          &
+                 method = info(igreen)%interpolation, &
+                 date   = date%date                   &
+                 )
               enddo
 
               write(moreverbose(ind%moreverbose%p)%unit, &
