@@ -320,9 +320,9 @@ function file_exists(string, double_check, verbose)
 
   if (present(verbose).and.verbose) then
     if (file_exists) then
-      write (*, '(a,a)') trim(string), " exists"
+      write (error_unit, '(a,a)') trim(string), " exists"
     else
-      print '(a,a)', trim(string), " not exists"
+      write (error_unit, '(a,a)'), trim(string), " not exists"
     endif
   endif
 

@@ -22,6 +22,6 @@ counter=0
     -o /dev/null \
     -q  \
     -H 
-  # grat -F $SP -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V -L@p:s, @s -o /dev/null -q -H 
-} #| tee ${0/.sh/.dat}${suffix}
+  grat -F $SP -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V -L@p:s, @s -o /dev/null -q -H 
+ } | tee ${0/.sh/.dat}${suffix}
 

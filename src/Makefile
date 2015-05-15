@@ -58,14 +58,10 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: all link
-	grat                                                  \
-		-F /home/mrajner/dat/erainterim/gp.nc , ERA@H, 10@SP \
-		-V -Sj -M2                                          \
-		-G@GN -D2010:2@D -La@p -H
-	#  value_check                                    \
-		#  -F /home/mrajner/dat/erainterim/gp.nc, 10@SP \
-		#  -V -Sj,b,o                                   \
-		#  -G@GN -D2010:0@D -L@p -H
+	value_check                                    \
+		-F /home/mrajner/dat/erainterim/gp.nc, 10@SP \
+		-V -Sj,b,o                                   \
+		-G@GN -D2010:0@D -L@p -H
 
 timeele:
 	value_check                                                  \

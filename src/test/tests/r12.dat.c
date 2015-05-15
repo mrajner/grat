@@ -1,16 +1,16 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.1-11-g274498a #
+#                                                     v1.2-17-ga1f0b4a #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-10 09:13:38 #
-#                                                    FFLAGS = (FFLAGS) #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 14:01:52 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-10 09:14:13 (+02h UTC)
+Program started: 2015-05-15 14:02:01 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F 1013.25 @ SP:@scale=100 -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V 
@@ -40,7 +40,7 @@ Command parsing:
   -L { -L@p,@s }
      <- points |sparse:  F
      <- summary |sparse:  F
-  -o { null }
+  -o { -o/dev/null }
     output file was set: null
   -q { -q }
       quiet step 0
@@ -75,20 +75,20 @@ Command parsing:
   rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -968.285E+09  101.32E+03
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.0s (proc time:   0.0 |%107.1)
+Execution time:   0.0s (proc time:   0.0 |%125.8)
 ########################################################################
 #                                                                 grat #
-#                                                     v1.1-11-g274498a #
+#                                                     v1.2-17-ga1f0b4a #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-10 09:13:38 #
-#                                                    FFLAGS = (FFLAGS) #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 14:01:52 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-10 09:14:13 (+02h UTC)
+Program started: 2015-05-15 14:02:01 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F 1013.25 @ SP:@scale=100 -M2 -G@GN -Sj, r -I-1000@DD : 100@AS -V 
@@ -118,7 +118,7 @@ Command parsing:
   -L { -L@p:s,@s }
      <- points |sparse:  T
      <- summary |sparse:  F
-  -o { null }
+  -o { -o/dev/null }
     output file was set: null
   -q { -q }
       quiet step 0
@@ -130,15 +130,15 @@ Command parsing:
     joze_a   52.0000   21.0000  110.0000        --        --        --
     rysy_a   49.1794   20.0883 2499.0000        --        --        --
 #-----------------------------------------------------------------------
-    name          lat          lon     distance      azimuth          lat          lon         area      totarea           GN 
-  joze_a   52.000E+00   21.000E+00    2.500E-06  200.000E+00   52.000E+00   21.000E+00  424.714E-03    1.274E+00    0.000E+00 
-  joze_a   52.000E+00   21.000E+00   10.000E-06  200.000E+00   52.000E+00   21.000E+00   43.732E+12  131.196E+12 -968.285E+09 
-  joze_a   52.000E+00   21.000E+00  135.000E+00  200.000E+00  -75.081E+00  311.050E+00   97.952E+12  425.054E+12 -968.285E+09 
+    name          lat          lon     distance      azimuth          lat          lon         area      totarea           GN
+  joze_a   52.000E+00   21.000E+00    2.500E-06  200.000E+00   52.000E+00   21.000E+00  424.714E-03    1.274E+00    0.000E+00
+  joze_a   52.000E+00   21.000E+00   10.000E-06  200.000E+00   52.000E+00   21.000E+00   43.732E+12  131.196E+12 -968.285E+09
+  joze_a   52.000E+00   21.000E+00  135.000E+00  200.000E+00  -75.081E+00  311.050E+00   97.952E+12  425.054E+12 -968.285E+09
  station npoints        area     area/R2 t_area_used
   joze_a       9  425.05E+12   10.47E+00    0.00E+00
-  rysy_a   49.179E+00   20.088E+00    2.500E-06  200.000E+00   49.179E+00   20.088E+00  424.714E-03    1.274E+00    0.000E+00 
-  rysy_a   49.179E+00   20.088E+00   10.000E-06  200.000E+00   49.179E+00   20.088E+00   43.732E+12  131.196E+12 -968.285E+09 
-  rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -968.285E+09 
+  rysy_a   49.179E+00   20.088E+00    2.500E-06  200.000E+00   49.179E+00   20.088E+00  424.714E-03    1.274E+00    0.000E+00
+  rysy_a   49.179E+00   20.088E+00   10.000E-06  200.000E+00   49.179E+00   20.088E+00   43.732E+12  131.196E+12 -968.285E+09
+  rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -968.285E+09
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.0s (proc time:   0.0 |%105.3)
+Execution time:   0.0s (proc time:   0.0 |% 98.8)
