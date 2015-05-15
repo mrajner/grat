@@ -153,14 +153,17 @@ program grat
           endif
         endif
         if (method(3)) then
-          if ( &
+          if (                                                &
             all([inverted_barometer, non_inverted_barometer]) &
-            .and. result_total_all &
+            .and. result_total_all                            &
             ) then
+
             write (output%unit,'(a13)',advance='no'), "G3D_t_IB"
             write (output%unit,'(a13)',advance='no'), "G3D_t_NIB"
+
           else
             write (output%unit,'(a13)',advance='no'), "G3D_t"
+
           endif
         endif
       endif
@@ -292,14 +295,14 @@ program grat
       iprogress = iprogress + 1
 
       if (idate.gt.0) then
-        write(output%unit, '(f9.3,x,i4.4,5(i2.2),x$)', advance="no") &
+        write(output%unit, '(f9.3,x,i4.4,5(i2.2))', advance="no") &
           date(idate)%mjd, date(idate)%date
       endif
 
-      write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)'), &
-        trim(site(isite)%name),                       &
-        site(isite)%lat,                              &
-        site(isite)%lon,                              &
+      write (output%unit, '(a8,2(x,f9.4),x,f9.3)' , advance='no'), &
+        trim(site(isite)%name),                                    &
+        site(isite)%lat,                                           &
+        site(isite)%lon,                                           &
         site(isite)%height
 
       if (method(1)) then
@@ -322,7 +325,7 @@ program grat
           )
       endif
 
-      write(output%unit, *) ""
+      write(output%unit, *) ''
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))

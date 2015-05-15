@@ -45,7 +45,7 @@ module mod_printing
       gp2h      = .false.,      &
       prune     = .false.,      &
       nan       = .false.
-    character(10) :: form="en13.3"
+    character(10) :: form = "en13.3"
   end type
 
   type(output_info) :: log, output
