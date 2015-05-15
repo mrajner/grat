@@ -1,5 +1,6 @@
 FC := ifort
-OPT:= -O2
+FC := gfortran
+OPT:= -O0
 
 ifeq ($(shell hostname),lidka)
 	FC := gfortran

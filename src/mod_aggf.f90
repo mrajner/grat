@@ -43,7 +43,7 @@ function aggfd ( &
   real(dp) :: delta_
   character (len=*), intent(in), optional :: method, fels_type
 
-  delta_ = 10. ! Default value
+  delta_ = 10._dp ! Default value
   if (present(delta)) delta_ = delta
 
   if(present(aggfdh).and.aggfdh) then
@@ -62,7 +62,7 @@ function aggfd ( &
       predefined=predefined, &
       fels_type=fels_type,   &
       rough=rough))          &
-      / ( 2. * delta_)
+      / ( 2._dp * delta_)
   else if(present(aggfdz).and.aggfdz) then
     aggfd = (                &
       + aggf (psi,           &
@@ -79,7 +79,7 @@ function aggfd ( &
       predefined=predefined, &
       fels_type=fels_type,   &
       rough=rough))          &
-      / ( 2. * delta_)
+      / ( 2._dp * delta_)
   else if(present(aggfdt).and.aggfdt) then
     aggfd = (                &
       + aggf (psi,           &
@@ -96,7 +96,7 @@ function aggfd ( &
       predefined=predefined, &
       fels_type=fels_type,   &
       rough=rough))          &
-      / ( 2. * delta_)
+      / ( 2._dp * delta_)
   endif
 end function
 
@@ -122,18 +122,18 @@ function aggf (         &
     predefined,         &
     rough)
 
-  use mod_constants, only: dp, pi, earth, gravity, atmosphere, R_air
-  use mod_utilities, only: d2r
-  use mod_atmosphere
+  use mod_constants,     only: dp, pi, earth, gravity, atmosphere, R_air
+  use mod_utilities,     only: d2r
+  use mod_atmosphere,    only: standard_pressure, standard_temperature
   use mod_normalization, only : green_normalization
 
-  real(dp), intent(in)          :: psi ! spherical distance from site [rad]
-  real(dp), intent(in),optional :: &
-    zmin,                          &   ! minimum height, starting point [m]     (default = 0)
-    zmax,                          &   ! maximum height, ending point   [m]     (default = 60000)
-    dz,                            &   ! integration step               [m]     (default = 0.1 -> 10 cm)
-    t_zero,                        &   ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
-    h                                  ! station height                 [m]     (default = 0)
+  real(dp), intent(in)           :: psi ! spherical distance from site [rad]
+  real(dp), intent(in), optional :: &
+    zmin,                           &   ! minimum height, starting point [m]     (default = 0)
+    zmax,                           &   ! maximum height, ending point   [m]     (default = 60000)
+    dz,                             &   ! integration step               [m]     (default = 0.1 -> 10 cm)
+    t_zero,                         &   ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
+    h                                   ! station height                 [m]     (default = 0)
   logical, intent(in), optional :: &
     first_derivative_h, first_derivative_z, predefined, rough
   character (len=*), intent(in), optional  :: fels_type, method
@@ -146,12 +146,12 @@ function aggf (         &
   real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
 
-  zmin_ = 0.
-  zmax_ = 60000.
-  dz_   = 0.1
-  h_    = 0.
+  zmin_ = 0._dp
+  zmax_ = 60000._dp
+  dz_   = 0.1_dp
+  h_    = 0._dp
 
-  aggf=0.
+  aggf=0._dp
 
   if (present(zmin)) zmin_ = zmin
   if (present(zmax)) zmax_ = zmax
@@ -160,22 +160,25 @@ function aggf (         &
   if (present(t_zero)) deltat=t_zero
 
   if(allocated(heights)) then
-    if ( &
-      ((zmin_ +dz_/2).ne.heights(1)) &
+
+    if (                                                         &
+      ((zmin_ +dz_/2).ne.heights(1))                             &
       .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6 &
-      .or.nint((zmax_-zmin_)/dz_).ne.size(heights) &
-      .or. (present(predefined)) &
-      .or. method.ne.old_method &
-      .or. present(t_zero) &
+      .or.nint((zmax_-zmin_)/dz_).ne.size(heights)               &
+      .or. (present(predefined))                                 &
+      .or. method.ne.old_method                                  &
+      .or. present(t_zero)                                       &
       ) then
       deallocate(heights)
       deallocate(pressures)
     endif
+
   endif
 
   if (.not.allocated(heights))  then
     allocate(heights(nint((zmax_-zmin_)/dz_)))
     allocate(pressures(size(heights)))
+
     do i = 1, size(heights)
       heights(i) = zmin_ &
         + dz_/2  &
@@ -192,6 +195,7 @@ function aggf (         &
           use_standard_temperature=.true.  &
           )
       enddo
+
     else
       pressures(1) = standard_pressure(     &
         heights(1),                         &
@@ -203,6 +207,7 @@ function aggf (         &
         temperature = standard_temperature( &
         zmin_, fels_type=fels_type)+deltat  &
         )
+
       do i = 2, size(heights)
         pressures(i) = standard_pressure(                  &
           heights(i),                                      &
@@ -216,14 +221,18 @@ function aggf (         &
           fels_type=fels_type)+deltat                      &
           )
       enddo
+
     endif
   endif
+
   old_method=method
 
   do i = 1, size(heights)
     l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 &
       - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
+
     rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
+
     if (present(first_derivative_h) .and. first_derivative_h) then
       ! first derivative (respective to station height)
       ! micro Gal height / m
@@ -244,7 +253,9 @@ function aggf (         &
         -rho*((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_
     endif
   enddo
+
   aggf = aggf/atmosphere%pressure%standard*gravity%constant*green_normalization("m", psi=psi)
+  
 end function
 
 ! ==============================================================================

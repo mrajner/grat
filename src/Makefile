@@ -1,5 +1,5 @@
 FC  := gfortran
-FC  := ifort
+#  FC  := ifort
 OPT := -O0
 ifeq ($(shell hostname),lidka)
 	FC := gfortran
@@ -58,6 +58,7 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: all link
+	value_check -FERA@H
 	value_check                                    \
 		-F /home/mrajner/dat/erainterim/gp.nc, 10@SP \
 		-V -Sj,b,o                                   \
