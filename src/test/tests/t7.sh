@@ -17,9 +17,8 @@ set -o pipefail
     -o /dev/null                                      \
     -L/dev/null@p, /tmp/f1@s , /tmp/f2@u , /tmp/f3@c, \
     /dev/null@p, /tmp/f1@s , /tmp/f2@u , /tmp/fff@c   \
-    -V                                                \
-    | sed s/.*%.*\)//
+    -V -q
 
-  grat -Sj -F$SP -L @p -M2 -G@GN -o /dev/null -I5@DE: 90@AS :-290 @DD
+  grat -Sj -F$SP -L @p -M2 -G@GN -o /dev/null -I5@DE: 90@AS :-290 @DD -q
 
-} > ${0/.sh/.dat}${suffix}
+} | tee ${0/.sh/.dat}${suffix}
