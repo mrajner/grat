@@ -21,11 +21,15 @@ help () {
 -u update
 -U update if result do not exist
 -i interactive update
+-1 one diff only
 EOF
 }
 
-while getopts "hbvuidwVU" flag ; do
+while getopts "1hbvuidwVU" flag ; do
   case $flag in 
+    1)
+      onlyonediff=true
+      ;;
     h)
       help
       exit 0
@@ -128,9 +132,12 @@ for test in ${test_what[*]} ; do
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be
         ${delete_bad_results:-false} && rm -v ${interactive:-} $is ${is%%.dat*}.dat.?
+
+        ${onlyonediff:-false} && exit 0
       }
     } 
     let counter++
+
   done
 done
 

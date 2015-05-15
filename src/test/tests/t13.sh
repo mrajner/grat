@@ -13,8 +13,8 @@ set -o pipefail
 
 
 {
-grat -F $SP, $LS -M2 -G@GN,@GE -Sj, r -I-1000@DD : 100@AS -H -rt
-grat -F $SP, $LS -M2 -G@GN,@GE -Sj, r -I-1000@DD : 100@AS -H -rt,nc
-grat -F $SP, $LS -M2 -G@GN,@GE -Sj, r -I-1000@DD : 100@AS -H -rnc
+  grat -F $SP, $LS -M2 -G@GN,@GE -Sj, r -I-1000@DD : 100@AS -H -rt
+  grat -F $SP, $LS -M2 -G@GN,@GE -Sj, r -I-1000@DD : 100@AS -H -rt,nc
+  grat -F $SP, $LS -M2 -G@GN,@GE -Sj, r -I-1000@DD : 100@AS -H -rnc
 } | tee ${0/.sh/.dat}${suffix}
 
