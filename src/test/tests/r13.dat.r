@@ -4,6 +4,6 @@
     name       lat       lon         h        G2D_t
   joze_a   52.0000   21.0000   110.000 -941.268E+09
   rysy_a   49.1794   20.0883  2499.000 -925.885E+09
-    name       lat       lon         h 
+    name       lat       lon         h
   joze_a   52.0000   21.0000   110.000
   rysy_a   49.1794   20.0883  2499.000

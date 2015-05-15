@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                    v1.1-119-g918951e #
+#                                                     v1.2-20-g9ef2c82 #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                                  FFLAGS = -fpic -O0 -xHost -warn all #
-#                               compiled on lenovo 2015-03-06 08:19:15 #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 15:46:44 #
 #                                                                      #
 #                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-03-06 08:19:56 (+01h UTC)
+Program started: 2015-05-15 15:48:59 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -! -F ../data/pres.sfc.2012.nc @SP :pres, ../data/air.sig995
@@ -22,7 +22,7 @@ rth_pole : 90 : 0 : 0, out : 0 : 1361 : 0, out : -100 : -1361 : 0 out :
 Command parsing:
   -! { -! }
     all model as huge
-  -F { air.sig995.2012.nc@T:air }
+  -F { -F../data/pres.sfc.2012.nc@SP:pres,../data/air.sig995.2012.nc@T:air }
     ../data/pres.sfc.2012.nc@SP:pres
       Surface pressure (SP) pres lon lat level time 
       Opening file: pres.sfc.2012.nc , huge [T/F]: T
@@ -81,4 +81,5 @@ north_pole   90.0000    0.0000    0.0000        --        --        --
        out    0.0000  281.0000    0.0000        --        --        --
        out  -90.0000   79.0000    0.0000        --        --        --
 #-----------------------------------------------------------------------
+Execution time:   0.0s (proc time:   0.0 |%100.4)
 #-----------------------------------------------------------------------
