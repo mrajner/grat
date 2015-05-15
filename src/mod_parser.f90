@@ -337,7 +337,7 @@ subroutine intro (     &
   logical, intent (in), optional :: cmdlineargs
   character(*), intent (in), optional :: version, cdate, fflags, compiler
   integer :: i, j
-  character(len=355) :: dummy
+  character(len = 855) :: dummy
   integer,dimension(8):: execution_date
 
   logical :: file_already_opened
@@ -489,6 +489,7 @@ subroutine intro (     &
     1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
     execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form%separator)
+
   write (log%unit, form%i0) "Command invoked:"
   call get_command(dummy)
 

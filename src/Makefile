@@ -1,6 +1,6 @@
 FC  := gfortran
 #  FC  := ifort
-OPT := -O0
+OPT := -Ofast
 ifeq ($(shell hostname),lidka)
 	FC := gfortran
 endif
@@ -58,11 +58,9 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: all link
-	value_check -FERA@H
-	value_check                                    \
-		-F /home/mrajner/dat/erainterim/gp.nc, 10@SP \
-		-V -Sj,b,o                                   \
-		-G@GN -D2010:0@D -L@p -H
+	bash test/tests/definitions.sh r
+	echo "S"
+	#  grat -M1,2,3 -Grajner@GN , merriam@GE
 
 timeele:
 	value_check                                                  \

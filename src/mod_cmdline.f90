@@ -67,7 +67,7 @@ module mod_cmdline
   !----------------------------------------------------
   ! general settings
   !----------------------------------------------------
-  logical :: &
+  logical ::                           &
     inverted_barometer     = .true.  , &
     non_inverted_barometer = .false. , &
     ocean_conserve_mass    = .false. , &
@@ -234,8 +234,8 @@ subroutine get_command_cleaned(dummy)
   character(355) :: a, b, arg
   integer :: i
 
-  dummy=""
-  arg=""
+  dummy = ''
+  arg   = ''
 
   do i = 1, iargc()
     call get_command_argument(i,a)

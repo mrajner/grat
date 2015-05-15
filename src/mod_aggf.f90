@@ -181,9 +181,7 @@ function aggf (         &
     allocate(pressures(size(heights)))
 
     do i = 1, size(heights)
-      heights(i) = zmin_ &
-        + dz_/2  &
-        + (i-1) * dz_
+      heights(i) = zmin_ + dz_/2 + (i-1) * dz_
     enddo
 
     if (present(rough).and.rough) then
@@ -198,15 +196,14 @@ function aggf (         &
       enddo
 
     else
-      pressures(1) = standard_pressure(     &
-        heights(1),                         &
-        method = method,                    &
-        h_zero = zmin_,                     &
-        dz = dz,                            &
-        fels_type=fels_type,                &
-        use_standard_temperature=.true.,    &
-        temperature = standard_temperature( &
-        zmin_, fels_type=fels_type)+deltat  &
+      pressures(1) = standard_pressure(                                                       &
+        heights(1),                                                                           &
+        method                   = method,                                                    &
+        h_zero                   = zmin_,                                                     &
+        dz                       = dz,                                                        &
+        fels_type                = fels_type,                                                 &
+        use_standard_temperature = .true.,                                                    &
+        temperature              = standard_temperature( zmin_, fels_type = fels_type)+deltat &
         )
 
       do i = 2, size(heights)
