@@ -796,10 +796,10 @@ function get_level_index(model, level, sucess)
   integer :: i
   logical :: first_fail=.true.
 
-  get_level_index=1
+  get_level_index = 1
 
   if (.not.present(level).or.ubound(model%level,1).le.1) then
-    if (present(sucess)) sucess=.true.
+    if (present(sucess)) sucess = .true.
     return
   endif
 
@@ -816,7 +816,7 @@ function get_level_index(model, level, sucess)
     endif
   enddo
 
-  if (present(sucess)) sucess=.false.
+  if (present(sucess)) sucess = .false.
 
   if (first_fail) call print_warning("level not found (no warning again) " &
     //basename(model%name))
