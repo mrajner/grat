@@ -146,18 +146,19 @@ function aggf (         &
   real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
 
-  zmin_ = 0._dp
-  zmax_ = 60000._dp
-  dz_   = 0.1_dp
-  h_    = 0._dp
+  zmin_  = 0._dp
+  zmax_  = 60000._dp
+  dz_    = 0.1_dp
+  h_     = 0._dp
+  deltat = 0._dp
 
-  aggf=0._dp
+  aggf = 0._dp
 
-  if (present(zmin)) zmin_ = zmin
-  if (present(zmax)) zmax_ = zmax
-  if (present(  dz))   dz_ = dz
-  if (present(   h))    h_ = h
-  if (present(t_zero)) deltat=t_zero
+  if (present(zmin))   zmin_  = zmin
+  if (present(zmax))   zmax_  = zmax
+  if (present(  dz))     dz_  = dz
+  if (present(   h))      h_  = h
+  if (present(t_zero)) deltat = t_zero
 
   if(allocated(heights)) then
 
