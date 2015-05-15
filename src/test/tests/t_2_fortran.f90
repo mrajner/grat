@@ -10,11 +10,11 @@ program test2
     alternative_method = .true. &
   ) - 4 * pi
 
-  print * ,                     &
-    spher_area(                 &
-    distance  = pi/2.,          &
-    ddistance = d2r(180._dp),   &
-    azstp     = d2r(360._dp),   &
+  print '(f20.10)' ,             &
+    spher_area(                  &
+    distance  = pi/2.,           &
+    ddistance = d2r(180._dp),    &
+    azstp     = d2r(360._dp),    &
     alternative_method = .false. &
     ) - 4 * pi
 
