@@ -1160,8 +1160,8 @@ subroutine convolve(site, date, results)
                         call progress(                                               &
                           100*igreen*idist                                           &
                           /(size(green_common(igreen)%distance)*size(green_common)), &
-                          time  = 0.,                                                &
-                          cpu   = 0.,                                                &
+                          time  = 0._sp,                                             &
+                          cpu   = 0._sp,                                             &
                           every = 1                                                  &
                           )
                       endif

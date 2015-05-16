@@ -1,6 +1,31 @@
+FC = ifort
+
+#  aaa:
+	#  @ifort -O0 tmp.f90 -o tmp-O0
+	#  @./tmp-O0
+	#  @ifort -O2 tmp.f90 -o tmp-O2
+	#  @./tmp-O2
+
+tmp: O2 O0
+	-diff a b
+	#  paste a b | awk '{print $$0,$$1-$$2}'
+
+O0:
+	make -C $(GS) libgrat_ifort-$@.a OPT=-$@
+	$(FC) -$@ t_aggf.f90                               \
+		/home/mrajner_slow/src/grat/src/libgrat_ifort-O0.a \
+		-o t_aggf_00
+	time ./t_aggf_00 > a
+O2:
+	make -C $(GS) libgrat_ifort-$@.a OPT=-$@
+	$(FC) -$@ t_aggf.f90                               \
+		/home/mrajner_slow/src/grat/src/libgrat_ifort-O2.a \
+		-o t_aggf_02
+	time ./t_aggf_02 > b
+
 FC := ifort
 #  FC := gfortran
-OPT:= -O0
+OPT:= -O2
 
 ifeq ($(shell hostname),lidka)
 	FC := gfortran

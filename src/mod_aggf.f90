@@ -126,7 +126,8 @@ function aggf (         &
   use mod_constants,     only: dp, pi, earth, gravity, atmosphere, R_air
   use mod_utilities,     only: d2r
   use mod_atmosphere,    only: standard_pressure, standard_temperature
-  use mod_normalization, only : green_normalization
+  use mod_normalization, only: green_normalization
+  use mod_printing,      only: print_warning
 
   real(dp), intent(in)           :: psi ! spherical distance from site [rad]
   real(dp), intent(in), optional :: &
@@ -153,7 +154,7 @@ function aggf (         &
   h_     = 0._dp
   deltat = 0._dp
 
-  aggf = 0._dp
+  aggf   = 0._dp
 
   if (present(zmin))   zmin_  = zmin
   if (present(zmax))   zmax_  = zmax
@@ -163,36 +164,40 @@ function aggf (         &
 
   if(allocated(heights)) then
 
-    if (                                                         &
-      ((zmin_ +dz_/2).ne.heights(1))                             &
-      .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6 &
-      .or.nint((zmax_-zmin_)/dz_).ne.size(heights)               &
-      .or. (present(predefined))                                 &
-      .or. method.ne.old_method                                  &
-      .or. present(t_zero)                                       &
+    if (                                                            &
+      ((zmin_ +dz_/2).ne.heights(1))                                &
+      .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6_dp &
+      .or.nint((zmax_-zmin_)/dz_).ne.size(heights)                  &
+      .or. (present(predefined))                                    &
+      .or. method.ne.old_method                                     &
+      .or. present(t_zero)                                          &
       ) then
+
       deallocate(heights)
       deallocate(pressures)
+
     endif
 
   endif
 
   if (.not.allocated(heights))  then
+
     allocate(heights(nint((zmax_-zmin_)/dz_)))
     allocate(pressures(size(heights)))
 
     do i = 1, size(heights)
-      heights(i) = zmin_ + dz_/2 + (i-1) * dz_
+      heights(i) = zmin_ + dz_/2._dp + (i-1) * dz_
     enddo
 
     if (present(rough).and.rough) then
       ! do not use rough! it is only for testing
+      call print_warning("obsolete rough", error = .true.)
       do i = 1, size(heights)
-        pressures(i) = standard_pressure ( &
-          heights(i),                      &
-          method=method,                   &
-          dz=dz,                           &
-          use_standard_temperature=.true.  &
+        pressures(i) = standard_pressure (   &
+          heights(i),                        &
+          method                   = method, &
+          dz                       = dz,     &
+          use_standard_temperature = .true.  &
           )
       enddo
 
@@ -209,16 +214,16 @@ function aggf (         &
         )
 
       do i = 2, size(heights)
-        pressures(i) = standard_pressure(                  &
-          heights(i),                                      &
-          p_zero = pressures(i-1),                         &
-          h_zero = heights(i-1),                           &
-          method = method,                                 &
-          dz = dz,                                         &
-          fels_type=fels_type,                             &
-          use_standard_temperature=.true.,                 &
-          temperature = standard_temperature(heights(i-1), &
-          fels_type=fels_type)+deltat                      &
+        pressures(i) = standard_pressure(                               &
+          heights(i),                                                   &
+          p_zero                   = pressures(i-1),                    &
+          h_zero                   = heights(i-1),                      &
+          method                   = method,                            &
+          dz                       = dz,                               &
+          fels_type                = fels_type,                         &
+          use_standard_temperature = .true.,                            &
+          temperature              = standard_temperature(heights(i-1), &
+          fels_type = fels_type)+deltat                                 &
           )
       enddo
 
@@ -312,13 +317,13 @@ function simple_def (R)
   delta = 0.22e-11 * R
 
   simple_def =                                                          &
-    earth%gravity%mean / earth%radius * 1000                            &
+    earth%gravity%mean / earth%radius * 1000._dp                        &
     * delta                                                             &
     * (                                                                 &
     2. - 3./2. * earth%density%crust / earth%density%mean               &
     -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) &
     )                                                                   &
-    * 1000
+    * 1000._dp
 end function
 
 end module

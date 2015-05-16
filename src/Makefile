@@ -1,9 +1,10 @@
-FC  := gfortran
+#  FC  := gfortran
 FC  := ifort
 #  OPT := -Ofast
 ifeq ($(shell hostname),lidka)
 	FC := gfortran
 endif
+OPT = -O2
 
 #  FC=gfortran
 define colorecho
@@ -196,7 +197,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 
 %$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@  -I ~/src/fortranlib/src $(FPP)
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) -r8
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):

@@ -2,6 +2,7 @@ program testing_fortran_procedures
   use mod_utilities
   use mod_cmdline
   use mod_aggf
+
   integer :: iunit
   character(30) :: filename, my_method
 
@@ -22,8 +23,8 @@ program testing_fortran_procedures
 
   write (*,10), aggf(psi=0.1_dp, method="simple", dz=2._dp)
 
-  write(*,10), aggf(psi=1e-6_dp, method="full")
-  write(*,10), aggf(psi=1e-6_dp, method="standard")
+  write(*,10), aggf(psi = 1e-6_dp, method = "full")
+  write(*,10), aggf(psi = 1e-6_dp, method = "standard")
 
 
 10 FORMAT (f14.7)
@@ -32,17 +33,17 @@ contains
 subroutine test_standard_atmosphere (method)
   use mod_atmosphere, only: standard_pressure
   character(*),optional,intent(in)  :: method
-  write(*,10) standard_pressure( &
-    height= 6000._dp,  &
-    use_standard_temperature=.true. ,&
-    temperature=480._dp, &
-    method=method &
+  write(*,10) standard_pressure(         &
+    height                   = 6000._dp, &
+    use_standard_temperature = .true. ,  &
+    temperature              = 480._dp,  &
+    method                   = method    &
     )
-  write(*,10) standard_pressure( &
-    height= 6000._dp,  &
-    use_standard_temperature=.false. ,&
-    temperature=480._dp, &
-    method=method &
+  write(*,10) standard_pressure(         &
+    height                   = 6000._dp, &
+    use_standard_temperature = .false. , &
+    temperature              = 480._dp,  &
+    method                   = method    &
     )
   
 10 FORMAT (f14.7)

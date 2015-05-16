@@ -9,9 +9,9 @@ module mod_constants
   integer, parameter :: dp = selected_real_kind(15)
   integer, parameter :: sp = selected_real_kind(6)
 
-  real(dp), parameter ::             & 
-    R_air  = 287.05,                 & ! dry air constant  [J/kg/K]
-    pi     = 4._dp*atan(dble(1._dp))   ! 3.1415...
+  real(dp), parameter ::       & 
+    R_air  = 287.05_dp,        & ! dry air constant  [J/kg/K]
+    pi     = 4._dp*atan(1._dp)   ! 3.1415...
 
     ! t_zero_deleteifnotnes = -273.15_dp ! 0 kelvin in Celcius
 
@@ -125,8 +125,9 @@ contains
 ! ==============================================================================
 !> naive method to force NaN for compilers
 ! ==============================================================================
-real function setnan()
-  real :: minusone=-1
+real(dp) function setnan()
+  real(dp) :: minusone=-1._dp
+
   setnan = sqrt(minusone)
 end function
 
