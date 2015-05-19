@@ -11,13 +11,13 @@ tmp: O2 O0
 	#  paste a b | awk '{print $$0,$$1-$$2}'
 
 O0:
-	make -C $(GS) libgrat_ifort-$@.a OPT=-$@
+	-make -C $(GS) libgrat_ifort-$@.a OPT=-$@
 	$(FC) -$@ t_aggf.f90                               \
 		/home/mrajner_slow/src/grat/src/libgrat_ifort-O0.a \
 		-o t_aggf_00
 	time ./t_aggf_00 > a
 O2:
-	make -C $(GS) libgrat_ifort-$@.a OPT=-$@
+	-make -C $(GS) libgrat_ifort-$@.a OPT=-$@
 	$(FC) -$@ t_aggf.f90                               \
 		/home/mrajner_slow/src/grat/src/libgrat_ifort-O2.a \
 		-o t_aggf_02
