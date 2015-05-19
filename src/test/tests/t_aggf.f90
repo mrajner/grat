@@ -9,9 +9,9 @@ program test_aggf
   ! write (*,10) , aggf(psi = 1e-6_dp, method="standard", fels_type="US1976")
   ! write (*,10) , aggf(psi = 1e-6_dp, method="simple")
   ! write (*,10) , aggf(psi = 1e-6_dp, dz = 0.3_dp, method="full")
-  ! write (*,10) , aggf(psi = 1e-6_dp, dz = 0.3_dp, method="standard")
+  write (*,10) , aggf(psi = 1e-6_dp, dz = 0.3_dp, method="standard")
   write (*,10) , standard_pressure(20000._dp,method='standard', use_standard_temperature=.true.)
-  ! write (*,10) , aggf(psi = 1e-6_dp, dz = 0.3_dp, method="berg")
+  write (*,10) , aggf(psi = 1e-6_dp, dz = 0.3_dp, method="berg")
   ! write (*,10) , aggf(psi = 1e-6_dp, dz = 0.3_dp, method="simple")
   ! write (*,10) , aggf(10._dp, method="full")
 

@@ -32,7 +32,6 @@ LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 # ifort settings
 ifeq ($(FC),ifort)
 FFLAGS :=          \
-				 -fpic     \
 				 $(OPT)    \
 				 -xHost    \
 				 -warn all 
