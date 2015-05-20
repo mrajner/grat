@@ -1,9 +1,9 @@
-FC  := gfortran
-#  FC  := ifort
+#  FC  := gfortran
+FC  := ifort
 ifeq ($(shell hostname),lidka)
 	FC := gfortran
 endif
-OPT = -O0
+OPT = -O3
 #  OPT := -Ofast
 
 #  FC=gfortran
@@ -171,8 +171,9 @@ unlink:
 
 install:                                     \
 	$(LIBDIR)/libgrat.a                        \
-	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
 	$(addprefix $(INCDIR)/,$(MOD))
+	#
+	#  $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
 	
 uninstall: 
 	$(call colorecho,1,$@)
