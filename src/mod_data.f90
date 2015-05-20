@@ -927,7 +927,6 @@ subroutine get_variable(model, date, print, level)
 
   if(present(level)) stop '!?! look into source -- strange (not probable) execution!'
 
-
   if (if_variable_use_dimension(model,1,4))  then
     start = [1,1,1,index_time]
     if (first_warning) then
