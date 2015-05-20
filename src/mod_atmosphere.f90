@@ -99,6 +99,8 @@ function standard_pressure (  &
           error=.true.)
       endif
 
+      standard_pressure = 0.
+
       if (present(dz)) then
         dz_ = dz
       else
