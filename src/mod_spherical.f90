@@ -71,7 +71,7 @@ subroutine spher_trig (latin, lonin, distance, azimuth, latout, lonout, domain)
   cb     = cd*ct + sd*st*caz
   sb     = sqrt(1.-cb**2)
   latout = pi/2. - acos(cb)
-  lonout = lonin + atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb)
+  lonout = lonin + atan2(sd*saz/sb,(st*cd-sd*ct*caz)/sb)
 
   if (present(domain).and.domain) then
     if (lonout.lt.0) then

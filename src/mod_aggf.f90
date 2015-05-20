@@ -148,8 +148,6 @@ function aggf (         &
   real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
 
-  integer, parameter :: xp =16
-
   zmin_  = 0._dp
   zmax_  = 60000._dp
   dz_    = 0.1_dp
