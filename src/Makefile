@@ -58,13 +58,8 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 BUG: grat
-	-rm tmp
-	-grat -\! -H -F test/data/test_data.nc @SP : sp  \
-	-M2 -G @GN -S j -D201201 -I4@DE
-	-cat tmp
-df:
-		#  -D2012:20@H : 3@H -I 10 @DE : 2@3D -o t6.dat.out6.s : free -V  \
-                                                           t6.dat.log6.s
+	grat -! -H -F test/data/test_data.nc @SP : sp \
+		-M2 -G @GN -Sj -D2012:6@H
 
 timeele:
 	value_check                                                  \

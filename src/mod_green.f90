@@ -552,12 +552,12 @@ subroutine convolve(site, date, results)
   if(.not.allocated(result_partial)) allocate(result_partial(size(result)))
 
   npoints       = 0
-  area          = 0
-  tot_area      = 0
-  tot_area_used = 0
+  area          = 0._dp
+  tot_area      = 0._dp
+  tot_area_used = 0._dp
 
-  result = 0
-  rsp    = 0
+  result = 0._dp
+  rsp    = 0._dp
 
   do igreen = 1, ubound(green_common,1)
     do idist = 1, ubound(green_common(igreen)%distance,1)
@@ -625,6 +625,7 @@ subroutine convolve(site, date, results)
             )
         endif
 
+
         if (iok(1).eq.1 .and. int(val(ind%model%ls)).eq.1) then
           tot_area_used = tot_area_used +area
         endif
@@ -679,14 +680,16 @@ subroutine convolve(site, date, results)
               if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                 call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
               else
-                call get_value (                      &
-                  model(ind%model%hrsp),              &
-                  r2d(lat),                           &
-                  r2d(lon),                           &
-                  val(ind%model%hrsp),                &
-                  level  = 1,                         &
-                  method = info(igreen)%interpolation &
-                  ) 
+                if(ind%model%hrsp.ne.0) then
+                  call get_value (                      &
+                    model(ind%model%hrsp),              &
+                    r2d(lat),                           &
+                    r2d(lon),                           &
+                    val(ind%model%hrsp),                &
+                    level  = 1,                         &
+                    method = info(igreen)%interpolation &
+                    ) 
+                endif
               endif
 
               ! get T
