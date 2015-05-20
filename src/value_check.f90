@@ -4,7 +4,7 @@
 !! \author M. Rajner
 ! =============================================================================
 program value_check
-  use mod_constants,  only: dp, R_air, earth, setnan
+  use mod_constants,  only: dp, sp, R_air, earth, setnan
   use mod_cmdline, only: info, quiet_step, ind, dryrun, moreverbose, quiet
   use mod_parser
   use mod_data
@@ -16,7 +16,7 @@ program value_check
 
   implicit none
   real(dp) , allocatable , dimension(:) :: val
-  real :: cpu(2)
+  real(sp) :: cpu(2)
   real(dp)  :: sh
   integer :: execution_time(3)
   integer    :: i, ii, j ,start, imodel, iprogress = 0, lprogress
@@ -249,8 +249,8 @@ program value_check
 
           call progress(                                      &
             100*iprogress/lprogress,                          &
-            time  = real(execution_time(2)-execution_time(1)) &
-            /execution_time(3),                               &
+            time  = real(execution_time(2)-execution_time(1) &
+            /execution_time(3),sp),                               &
             cpu   = cpu(2)-cpu(1),                            &
             every = quiet_step                                &
             )

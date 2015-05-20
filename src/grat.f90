@@ -65,12 +65,13 @@ program grat
   use mod_cmdline
   use mod_admit,     only: admit
   use mod_utilities, only: Bubble_Sort, mean, stdev
+  use mod_constants, only: sp
 
   implicit none
-  real    :: cpu(2)
-  integer :: execution_time(3)
-  integer :: isite, i, idate, start, iprogress = 0, lprogress, j
-  logical :: first_waning = .true.
+  real(sp) :: cpu(2)
+  integer  :: execution_time(3)
+  integer  :: isite, i, idate, start, iprogress = 0, lprogress, j
+  logical  :: first_waning = .true.
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
@@ -331,12 +332,12 @@ program grat
         call cpu_time(cpu(2))
         call system_clock(execution_time(2),execution_time(3))
 
-        call progress(                                      &
-          100 * iprogress/lprogress ,                       &
-          time  = real(execution_time(2)-execution_time(1)) &
-          /execution_time(3),                               &
-          cpu   = cpu(2)-cpu(1),                            &
-          every = quiet_step                                &
+        call progress(                                       &
+          100 * iprogress/lprogress ,                        &
+          time  = real((execution_time(2)-execution_time(1)) &
+          /execution_time(3),sp),                            &
+          cpu   = cpu(2)-cpu(1),                             &
+          every = quiet_step                                 &
           )
       endif
 
