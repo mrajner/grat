@@ -1,10 +1,10 @@
 FC  := gfortran
-FC  := ifort
-#  OPT := -Ofast
+#  FC  := ifort
 ifeq ($(shell hostname),lidka)
 	FC := gfortran
 endif
 OPT = -O0
+#  OPT := -Ofast
 
 #  FC=gfortran
 define colorecho
@@ -57,10 +57,9 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-BUG: all link
-	bash test/tests/definitions.sh r
-	echo "S"
-	#  grat -M1,2,3 -Grajner@GN , merriam@GE
+BUG: grat
+	grat -F test/data/pres.sfc.2012.nc @SP:pres  -M1 -Sj \
+		-D2012:20@H:3@H
 
 timeele:
 	value_check                                                  \

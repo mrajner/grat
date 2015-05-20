@@ -1377,24 +1377,21 @@ subroutine convolve(site, date, results)
           if (header_p.and.output%header) then
 
             if(size(green_common).gt.1) then
-              write(moreverbose(ind%moreverbose%p)%unit, "(a2, x$)") "i"
+              write(moreverbose(ind%moreverbose%p)%unit, "(a2, x)", advance='no') "i"
             endif
 
             write(moreverbose(ind%moreverbose%p)%unit, &
-              '(a8, 8a13, $)')                         &
+              '(a8, 8a13)', advance ='no')                         &
               "name", "lat", "lon",                    &
               "distance", "azimuth",                   &
               "lat", "lon",                            &
               "area", "totarea"
 
             if (result_component) then
-              write(moreverbose(ind%moreverbose%p)%unit, &
-                '(a13, $)')                              &
-                (                                        &
-                trim(green(i)%dataname),                 &
-                i=lbound(green, 1),                      &
-                ubound(green, 1)                         &
-                )
+              do i=lbound(green, 1), ubound(green, 1)
+                write(moreverbose(ind%moreverbose%p)%unit, &
+                  '(a13)', advance='no') trim(green(i)%dataname)
+              enddo
             endif
 
             if (result_total) then
@@ -1446,9 +1443,11 @@ subroutine convolve(site, date, results)
               r2d(lat), r2d(lon), area, tot_area
 
             if (result_component) then
-              write(moreverbose(ind%moreverbose%p)%unit, &
-                '(' // output%form //'$)'),              &
-                (result(i), i =1, size(result))
+              do i =1, size(result)
+                write(moreverbose(ind%moreverbose%p)%unit, &
+                  '(' // output%form //'$)'),              &
+                  (result(i))
+              enddo
             endif
 
             if (result_total) then

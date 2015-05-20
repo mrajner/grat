@@ -3,7 +3,7 @@ program test_aggf
   use mod_aggf, only: aggf
   use mod_atmosphere , only: standard_pressure
 
-  write (*,10) , aggf(0._dp, method="full")
+  write (*,10) , aggf(0._dp, method="full")+epsilon
   write (*,10) , aggf(1e-9_dp, method="full")
   write (*,10) , aggf(1e-11_dp, method="full")
   write (*,10) , aggf(psi = 1e-6_dp, method="full")
