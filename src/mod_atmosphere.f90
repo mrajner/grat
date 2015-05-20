@@ -127,7 +127,6 @@ function standard_pressure (  &
       enddo
 
       standard_pressure = sfc_pressure*exp(-standard_pressure)
-        standard_pressure = 3._dp
 
     case ("standard")
       !http://en.wikipedia.org/wiki/Barometric_formula

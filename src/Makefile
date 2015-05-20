@@ -1,4 +1,3 @@
-noop:
 #  FC  := gfortran
 FC  := ifort
 #  OPT := -Ofast
