@@ -1,10 +1,25 @@
 FC = ifort
+OPT=-O2
 
-#  aaa:
-	#  @ifort -O0 tmp.f90 -o tmp-O0
-	#  @./tmp-O0
-	#  @ifort -O2 tmp.f90 -o tmp-O2
-	#  @./tmp-O2
+MOD = printing cmdline utilities normalization atmosphere
+MODULES = $(addprefix ../../mod_,$(MOD:=_$(FC)$(OPT).o))
+
+aaa: i ii
+	colordiff tmp_*0*dat tmp_*2.dat |head
+ii:
+	@make --no-print-directory ext OPT=-O2
+i:
+	@make --no-print-directory ext OPT=-O0
+
+ext: mod_aggf_$(FC)$(OPT).o
+	$(FC) t_aggf.f90 -o tmp_$(OPT) $(MODULES) mod_aggf_$(FC)$(OPT).o  
+	time ./tmp_$(OPT) > ./tmp_$(OPT).dat 
+
+mod_aggf_$(FC)$(OPT).o: ../../mod_aggf.f90 .FORCE
+	$(FC) $(OPT) $< -c -o $@
+
+
+#################################################################
 
 tmp: O2 O0
 	-diff a b

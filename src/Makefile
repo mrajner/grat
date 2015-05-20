@@ -1,10 +1,11 @@
+noop:
 #  FC  := gfortran
 FC  := ifort
 #  OPT := -Ofast
 ifeq ($(shell hostname),lidka)
 	FC := gfortran
 endif
-OPT = -O2
+OPT = -O0
 
 #  FC=gfortran
 define colorecho
@@ -34,7 +35,7 @@ ifeq ($(FC),ifort)
 FFLAGS :=          \
 				 $(OPT)    \
 				 -xHost    \
-				 -warn all 
+				 -warn all
 
 ENABLE_PREPROCESSING := -fpp
 NETCDFF := -lnetcdff
