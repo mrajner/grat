@@ -54,6 +54,7 @@ ask:
 
 test: 
 	make -C tests/
+	cd tests/ && ./stat.sh
 
 create_data: create_data.f90 data
 	$(FC) $< -o $@ $(FFLAGS) $(NETCDFF) $(GRATLIB)

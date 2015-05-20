@@ -1,4 +1,4 @@
-#  FC  := gfortran
+FC  := gfortran
 FC  := ifort
 #  OPT := -Ofast
 ifeq ($(shell hostname),lidka)

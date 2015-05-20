@@ -28,7 +28,8 @@ counter=0
   # let counter=counter+3
 # done
 
-# touch ${0/.sh/.dat}${suffix}
+touch ${0/.sh/.dat}${suffix}
+exit
 
 # TODO
     time grat                                                                \

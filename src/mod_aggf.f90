@@ -236,7 +236,12 @@ function aggf (         &
   do i = 1, size(heights)
 
     if(psi.lt.1e-5_dp) then
-      l = sqrt((heights(i) - h_)**2._dp + ( earth%radius *psi)**2._dp)
+      l = sqrt(                                      &
+        (                                            &
+        2._dp *( earth%radius+h_) * sin(psi/2._dp)   &
+        + (heights(i)-h_)*sin(psi/2._dp) ) **2._dp   &
+        + ( (heights(i)-h_) *cos(psi/2._dp)) **2._dp &
+        ) 
     else
       l = (                                                            &
         (earth%radius + heights(i))**2._dp                             &
