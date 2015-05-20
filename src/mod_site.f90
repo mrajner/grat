@@ -481,8 +481,10 @@ subroutine gather_site_model_info()
 
   do i = 1 , ubound(site,1)
     if (ind%model%hp.ne.0) then
+
       call get_variable(model(ind%model%hp))
       site(i)%hp%if=.true.
+
       call get_value (                   &
         model=model(ind%model%hp),     &
         lat=site(i)%lat,               &
@@ -495,7 +497,9 @@ subroutine gather_site_model_info()
 
     if(ind%model%h.ne.0) then
       site(i)%h%if=.true.
+
       call get_variable(model(ind%model%h))
+
       call get_value (                 &
         model=model(ind%model%h),      &
         lat=site(i)%lat,               &
@@ -508,7 +512,9 @@ subroutine gather_site_model_info()
 
     if(ind%model%hrsp.ne.0) then
       site(i)%hrsp%if=.true.
+
       call get_variable(model(ind%model%hrsp))
+
       call get_value (                 &
         model=model(ind%model%hrsp),   &
         lat=site(i)%lat,               &
@@ -525,6 +531,7 @@ subroutine gather_site_model_info()
   endif
 
   write(log%unit, form%separator)
+
   if(.not.log%sparse) then
     call print_site_summary()
     write(log%unit, form%separator)

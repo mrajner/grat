@@ -320,9 +320,9 @@ program grat
       endif
 
       if (method(2).or.method(3)) then
-        call convolve (      &
-          site(isite),       &
-          date = date(idate) &
+        call convolve (           &
+          site(isite),            &
+          date = date(idate)%date &
           )
       endif
 

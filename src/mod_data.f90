@@ -103,6 +103,7 @@ subroutine parse_model(cmd_line_entry)
       model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
 
       if (.not.log%sparse) write(log%unit, form%i3) "!:huge"
+
     endif
 
     if (all_huge) model(i)%huge=.true.
@@ -775,6 +776,7 @@ function get_time_index(model,date)
     get_time_index=1
     return
   endif
+
   do i = 1, size(model%date(:,1))
     if (all(model%date(i,1:6) .eq. date(1:6))) then
       get_time_index=i
@@ -1052,7 +1054,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   integer :: ilon, ilat, ilon2, ilat2, varid, status
   real(dp), dimension(4,3) :: array_aux
   real(dp) :: scale_factor, add_offset
-  integer, intent(in), optional::date(6)
+  integer, intent(in), optional :: date(6)
   logical :: success, success2, warning=.true.
 
   if (model%ncid==0 .and. .not. model%if_constant_value) return
@@ -1196,10 +1198,6 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     write(moreverbose(ind%moreverbose%n)%unit,  '(">")')
   endif
 
-  ! print* 
-  ! print*, ilon, ilat, get_level_index(model,ilevel,success2)
-  ! print*, shape(model%data), success2
-  ! stop
   val = model%data(ilon, ilat, get_level_index(model,ilevel,success2))
 
   if (.not.success2) val = setnan()
