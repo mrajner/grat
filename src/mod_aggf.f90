@@ -235,12 +235,15 @@ function aggf (         &
 
   do i = 1, size(heights)
 
-  ! rewrite this formula! -- numerical instability
-    l = (                                                            &
-      (earth%radius + heights(i))**2._dp                             &
-      + (earth%radius + h_)**2._dp                                   &
-      - 2._dp*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi) &
-      )**(0.5_dp)
+    if(psi.lt.1e-5_dp) then
+      l = sqrt((heights(i) - h_)**2._dp + ( earth%radius *psi)**2._dp)
+    else
+      l = (                                                            &
+        (earth%radius + heights(i))**2._dp                             &
+        + (earth%radius + h_)**2._dp                                   &
+        - 2._dp*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi) &
+        )**(0.5_dp)
+    endif
 
     rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
 
