@@ -1,18 +1,4 @@
-#  FC  := gfortran
-FC  := ifort
-ifeq ($(shell hostname),lidka)
-	FC := gfortran
-endif
-OPT = -O3
-#  OPT := -Ofast
-
-#  FC=gfortran
-define colorecho
-@tput setaf $1
-@echo -n "$2: "
-@tput sgr0
-endef
-
+FC  := gfortran
 
 # user definitions
 LIBDIR        := /usr/local/lib
@@ -21,6 +7,7 @@ BINDIR        := /usr/local/bin
 LINKS_DIR     := ~/.local/bin
 SUFFIX        := _$(FC)$(OPT)
 
+# passing compilation info to program
 FC_INFO       := $(shell $(FC) --version | sed -n 1p )
 HOST          := $(shell hostname ; uname -r)
 DATE          := $(shell date "+%Y-%m-%d %H:%M:%S")
@@ -31,25 +18,17 @@ LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
 # ifort settings
 ifeq ($(FC),ifort)
-FFLAGS :=          \
-				 $(OPT)    \
-				 -xHost    \
-				 -warn all
-
-ENABLE_PREPROCESSING := -fpp
-NETCDFF := -lnetcdff
+	FFLAGS               := $(OPT) -xHost -warn all
+	ENABLE_PREPROCESSING := -fpp
 endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
-FFLAGS  := \
-	$(OPT)   \
-	-I/home/mrajner/src/netcdf-gfortran/fortran 
-ENABLE_PREPROCESSING = -cpp
-NETCDFF   := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.7.0.0
-LD_LIBRARY_PATH := /home/mrajner/src/netcdf-gfortran/fortran
+	FFLAGS               := $(OPT)
+	ENABLE_PREPROCESSING := -cpp
 endif
 
+NETCDFF := -lnetcdff
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
 	-D__CDATE__='"$(DATE)"'                          \
@@ -225,7 +204,6 @@ mod_dep.makefile: mod_dep.awk
 	awk -f $< > $@
 endif
 
-
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
 #  HELPS=$(addprefix ../dat/, $(HELP_NAMES))
@@ -248,3 +226,10 @@ endif
 	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 #  .EXPORT_ALL_VARIABLES:
 #
+
+define colorecho
+@tput setaf $1
+@echo -n "$2: "
+@tput sgr0
+endef
+
