@@ -78,14 +78,14 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                            &
-    program_calling   = "grat",                           &
-    version           = __GRAT_VERSION__,                 &
-    cdate             = __CDATE__,                        &
-    fflags            = __FFLAGS__,                       &
-    compiler          = __COMPILER__,                     &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-mC", &
-    cmdlineargs       = .true.                            &
+  call intro (                                           &
+    program_calling   = "grat",                          &
+    version           = __GRAT_VERSION__,                &
+    cdate             = __CDATE__,                       &
+    fflags            = __FFLAGS__,                      &
+    compiler          = __COMPILER__,                    &
+    accepted_switches = 'VSBLGPqoFIDLvhRrMOAHUwJQ!n-mC', &
+    cmdlineargs       = .true.                           &
     )
 
   start = 0

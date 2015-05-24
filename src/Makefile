@@ -15,7 +15,6 @@ VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
-
 # ifort settings
 ifeq ($(FC),ifort)
 	FFLAGS               := $(OPT) -xHost -warn all
@@ -148,11 +147,10 @@ link: $(LINKS)
 unlink: 
 	-rm -f $(LINKS)
 
-install:                                     \
-	$(LIBDIR)/libgrat.a                        \
-	$(addprefix $(INCDIR)/,$(MOD))
-	#
-	#  $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
+install:                         \
+	$(LIBDIR)/libgrat.a            \
+	$(addprefix $(INCDIR)/,$(MOD)) \
+	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) 
 	
 uninstall: 
 	$(call colorecho,1,$@)
@@ -175,13 +173,14 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 
 %$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@ $(FPP)
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) -I/usr/local/include
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
 	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
 
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
+	mkdir -p $(PROGS_DIR)
 	$(call colorecho,3,$@)
 	$(FC) $(FFLAGS) $(FPP) \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
