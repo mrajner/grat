@@ -23,7 +23,7 @@ ifdatafileexist(){
       [[ -f $file  ]] || 
       {
         [[ ${VERBOSE-} ]] && echo $file do not exist
-        exit 122
+        exit 0
       }
     } || : 
   done
