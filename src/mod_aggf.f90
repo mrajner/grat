@@ -43,7 +43,8 @@ function aggfd ( &
   real(dp) :: delta_
   character (len=*), intent(in), optional :: method, fels_type
 
-  delta_ = 10. ! Default value
+  delta_ = 10._dp ! Default value
+
   if (present(delta)) delta_ = delta
 
   if(present(aggfdh).and.aggfdh) then
@@ -62,7 +63,7 @@ function aggfd ( &
       predefined=predefined, &
       fels_type=fels_type,   &
       rough=rough))          &
-      / ( 2. * delta_)
+      / ( 2._dp * delta_)
   else if(present(aggfdz).and.aggfdz) then
     aggfd = (                &
       + aggf (psi,           &
@@ -79,7 +80,7 @@ function aggfd ( &
       predefined=predefined, &
       fels_type=fels_type,   &
       rough=rough))          &
-      / ( 2. * delta_)
+      / ( 2._dp * delta_)
   else if(present(aggfdt).and.aggfdt) then
     aggfd = (                &
       + aggf (psi,           &
@@ -96,7 +97,7 @@ function aggfd ( &
       predefined=predefined, &
       fels_type=fels_type,   &
       rough=rough))          &
-      / ( 2. * delta_)
+      / ( 2._dp * delta_)
   endif
 end function
 
@@ -122,18 +123,19 @@ function aggf (         &
     predefined,         &
     rough)
 
-  use mod_constants, only: dp, pi, earth, gravity, atmosphere, R_air
-  use mod_utilities, only: d2r
-  use mod_atmosphere
-  use mod_normalization, only : green_normalization
+  use mod_constants,     only: dp, pi, earth, gravity, atmosphere, R_air
+  use mod_utilities,     only: d2r
+  use mod_atmosphere,    only: standard_pressure, standard_temperature
+  use mod_normalization, only: green_normalization
+  use mod_printing,      only: print_warning
 
-  real(dp), intent(in)          :: psi ! spherical distance from site [rad]
-  real(dp), intent(in),optional :: &
-    zmin,                          &   ! minimum height, starting point [m]     (default = 0)
-    zmax,                          &   ! maximum height, ending point   [m]     (default = 60000)
-    dz,                            &   ! integration step               [m]     (default = 0.1 -> 10 cm)
-    t_zero,                        &   ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
-    h                                  ! station height                 [m]     (default = 0)
+  real(dp), intent(in)           :: psi ! spherical distance from site [rad]
+  real(dp), intent(in), optional :: &
+    zmin,                           &   ! minimum height, starting point [m]     (default = 0)
+    zmax,                           &   ! maximum height, ending point   [m]     (default = 60000)
+    dz,                             &   ! integration step               [m]     (default = 0.1 -> 10 cm)
+    t_zero,                         &   ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
+    h                                   ! station height                 [m]     (default = 0)
   logical, intent(in), optional :: &
     first_derivative_h, first_derivative_z, predefined, rough
   character (len=*), intent(in), optional  :: fels_type, method
@@ -146,91 +148,112 @@ function aggf (         &
   real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
 
-  zmin_ = 0.
-  zmax_ = 60000.
-  dz_   = 0.1
-  h_    = 0.
+  zmin_  = 0._dp
+  zmax_  = 60000._dp
+  dz_    = 0.1_dp
+  h_     = 0._dp
+  deltat = 0._dp
 
-  aggf=0.
+  aggf   = 0._dp
 
-  if (present(zmin)) zmin_ = zmin
-  if (present(zmax)) zmax_ = zmax
-  if (present(  dz))   dz_ = dz
-  if (present(   h))    h_ = h
-  if (present(t_zero)) deltat=t_zero
+  if (present(zmin))   zmin_  = zmin
+  if (present(zmax))   zmax_  = zmax
+  if (present(  dz))     dz_  = dz
+  if (present(   h))      h_  = h
+  if (present(t_zero)) deltat = t_zero
 
   if(allocated(heights)) then
-    if ( &
-      ((zmin_ +dz_/2).ne.heights(1)) &
-      .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6 &
-      .or.nint((zmax_-zmin_)/dz_).ne.size(heights) &
-      .or. (present(predefined)) &
-      .or. method.ne.old_method &
-      .or. present(t_zero) &
+
+    if (                                                            &
+      ((zmin_ +dz_/2).ne.heights(1))                                &
+      .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6_dp &
+      .or.nint((zmax_-zmin_)/dz_).ne.size(heights)                  &
+      .or. (present(predefined))                                    &
+      .or. method.ne.old_method                                     &
+      .or. present(t_zero)                                          &
       ) then
+
       deallocate(heights)
       deallocate(pressures)
+
     endif
+
   endif
 
   if (.not.allocated(heights))  then
+
     allocate(heights(nint((zmax_-zmin_)/dz_)))
     allocate(pressures(size(heights)))
+
     do i = 1, size(heights)
-      heights(i) = zmin_ &
-        + dz_/2  &
-        + (i-1) * dz_
+      heights(i) = zmin_ + dz_/2._dp + (i-1) * dz_
     enddo
 
     if (present(rough).and.rough) then
       ! do not use rough! it is only for testing
+      call print_warning("obsolete rough", error = .true.)
       do i = 1, size(heights)
-        pressures(i) = standard_pressure ( &
-          heights(i),                      &
-          method=method,                   &
-          dz=dz,                           &
-          use_standard_temperature=.true.  &
+        pressures(i) = standard_pressure (   &
+          heights(i),                        &
+          method                   = method, &
+          dz                       = dz,     &
+          use_standard_temperature = .true.  &
           )
       enddo
+
     else
-      pressures(1) = standard_pressure(     &
-        heights(1),                         &
-        method = method,                    &
-        h_zero = zmin_,                     &
-        dz = dz,                            &
-        fels_type=fels_type,                &
-        use_standard_temperature=.true.,    &
-        temperature = standard_temperature( &
-        zmin_, fels_type=fels_type)+deltat  &
+      pressures(1) = standard_pressure(                  &
+        heights(1),                                      &
+        method                   = method,               &
+        h_zero                   = zmin_,                &
+        dz                       = dz,                   &
+        fels_type                = fels_type,            &
+        use_standard_temperature = .true.,               &
+        temperature              = standard_temperature( &
+        zmin_, fels_type = fels_type) + deltat           &
         )
+
       do i = 2, size(heights)
-        pressures(i) = standard_pressure(                  &
-          heights(i),                                      &
-          p_zero = pressures(i-1),                         &
-          h_zero = heights(i-1),                           &
-          method = method,                                 &
-          dz = dz,                                         &
-          fels_type=fels_type,                             &
-          use_standard_temperature=.true.,                 &
-          temperature = standard_temperature(heights(i-1), &
-          fels_type=fels_type)+deltat                      &
+        pressures(i) = standard_pressure(                               &
+          heights(i),                                                   &
+          p_zero                   = pressures(i-1),                    &
+          h_zero                   = heights(i-1),                      &
+          method                   = method,                            &
+          dz                       = dz,                               &
+          fels_type                = fels_type,                         &
+          use_standard_temperature = .true.,                            &
+          temperature              = standard_temperature(heights(i-1), &
+          fels_type = fels_type)+deltat                                 &
           )
+
       enddo
+
     endif
   endif
+
   old_method=method
 
   do i = 1, size(heights)
-    l = ((earth%radius + heights(i))**2 + (earth%radius + h_)**2 &
-      - 2.*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi))**(0.5)
+
+    if(psi.lt.1e-5_dp) then
+      l = sqrt((heights(i) - h_)**2._dp + ( earth%radius *psi)**2._dp)
+    else
+      l = (                                                            &
+        (earth%radius + heights(i))**2._dp                             &
+        + (earth%radius + h_)**2._dp                                   &
+        - 2._dp*(earth%radius + h_)*(earth%radius+heights(i))*cos(psi) &
+        )**(0.5_dp)
+    endif
+
     rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
+
     if (present(first_derivative_h) .and. first_derivative_h) then
       ! first derivative (respective to station height)
       ! micro Gal height / m
       ! see equation 22, 23 in \cite Huang05
-      J_aux =  ((earth%radius + heights(i) )**2)*(1.-3.*((cos(psi))**2)) -2.*(earth%radius + h_)**2  &
-        + 4.*(earth%radius+h_)*(earth%radius+heights(i))*cos(psi)
-      aggf =  aggf + rho * (  J_aux  /  l**5  ) * dz_
+      J_aux =  ((earth%radius + heights(i) )**2._dp)*(1._dp-3._dp*((cos(psi))**2._dp)) -2._dp*(earth%radius + h_)**2._dp  &
+        + 4._dp*(earth%radius+h_)*(earth%radius+heights(i))*cos(psi)
+      aggf =  aggf + rho * (  J_aux  /  l**5._dp  ) * dz_
 
     else if (present (first_derivative_z) .and. first_derivative_z) then
       ! first derivative (respective to column height)
@@ -244,7 +267,9 @@ function aggf (         &
         -rho*((earth%radius +heights(i))*cos(psi) - (earth%radius + h_)) / (l**3.)  * dz_
     endif
   enddo
+
   aggf = aggf/atmosphere%pressure%standard*gravity%constant*green_normalization("m", psi=psi)
+  
 end function
 
 ! ==============================================================================
@@ -301,13 +326,13 @@ function simple_def (R)
   delta = 0.22e-11 * R
 
   simple_def =                                                          &
-    earth%gravity%mean / earth%radius * 1000                            &
+    earth%gravity%mean / earth%radius * 1000._dp                        &
     * delta                                                             &
     * (                                                                 &
     2. - 3./2. * earth%density%crust / earth%density%mean               &
     -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) &
     )                                                                   &
-    * 1000
+    * 1000._dp
 end function
 
 end module

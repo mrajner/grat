@@ -45,7 +45,7 @@ module mod_printing
       gp2h      = .false.,      &
       prune     = .false.,      &
       nan       = .false.
-    character(10) :: form="en13.3"
+    character(10) :: form = "en13.3"
   end type
 
   type(output_info) :: log, output
@@ -58,7 +58,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
   use :: mod_cmdline, only: warnings, method, quiet
 
   integer, dimension(8):: execution_date
-  character (len=*)  :: warn
+  character (len=*), intent(in)  :: warn
   character (len=*), optional :: more, program_calling
   integer, optional :: unit
   integer :: def_unit
@@ -140,15 +140,14 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine progress(j, time, cpu, every)
-  use mod_constants,   only: dp
+  use mod_constants,   only: sp
   use mod_cmdline,     only: moreverbose, quiet, quiet_step
   use iso_fortran_env, only: output_unit
 
-  implicit none
-  integer(kind=4) :: j, k
-  integer:: ii
+  integer :: j, k
+  integer :: ii
   character(len=27) :: bar="???% |                    |"
-  real :: time, cpu
+  real(sp) :: time, cpu
   integer, optional :: every
   integer :: every_
   integer, save :: step=0

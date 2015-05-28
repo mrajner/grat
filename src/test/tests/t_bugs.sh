@@ -9,13 +9,11 @@ set -o nounset
 
 counter=0
 
-
-exit
+touch t_bugs.dat
 
 # TODO co to
   grat -F 10 @SP -Sj -M1 -wn
 
-  exit
 # set NaN if value cannot be found (previousle 0)
 # FIXED 14eea59d5338d987901cc44bdbd10fc8af6c792d
 {
@@ -72,6 +70,8 @@ let counter++
 value_check -F 10@SP -Sj -D 2010@~ > t_bugs.dat${counter}
 let counter++ 
 
-touch t_bugs.dat
 
-
+# 2015.05.07
+# fixed with 5795c272829b2a7de1a2b1474cb08afca7d8f360
+value_check -D 2010 :2011 : 5@M 2&>1 t_bugs.dat${counter}
+let counter++ 

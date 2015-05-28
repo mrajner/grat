@@ -13,11 +13,12 @@ counter=0
 
 for exclamation in "" "-!" ; do
 
-  grat             \
-    ${exclamation} \
-    -F $SP         \
-    -G merriam @GN \
-    -S pl:5.2 -M2 -Dm  \
+  grat                                  \
+    ${exclamation}                      \
+    -F $SP                              \
+    -G merriam @GN                      \
+    -S pl:5.2                           \
+    -M2 -Dm                             \
     -o ${0/.sh/.dat}${counter}${suffix} \
     &> ${0/.sh/.dat}$((counter+1))${suffix}
   let counter=counter+2

@@ -2,12 +2,14 @@ module mod_spherical
   use mod_constants, only: dp, pi
 
   implicit none
+
 contains
 ! =============================================================================
 !> Calculate area of spherical segment
 !!
-!! Computes spherical area on unit (default if optional argument \c radius is
-!! not given) sphere given by:
+!! Computes spherical area on unit sphere
+!! (default if optional argument \c radius is !! not given)
+!! given by:
 !!   - method 1 (\c alternative_method not given or \c alternative_method .false.)
 !!    - distance from station, segment size in spher distance and angle
 !!   - method 2 (\c alternative_method .true.)
@@ -69,7 +71,7 @@ subroutine spher_trig (latin, lonin, distance, azimuth, latout, lonout, domain)
   cb     = cd*ct + sd*st*caz
   sb     = sqrt(1.-cb**2)
   latout = pi/2. - acos(cb)
-  lonout = lonin + atan2(sd*saz/sb,(st*cd - sd*ct*caz)/sb)
+  lonout = lonin + atan2(sd*saz/sb,(st*cd-sd*ct*caz)/sb)
 
   if (present(domain).and.domain) then
     if (lonout.lt.0) then

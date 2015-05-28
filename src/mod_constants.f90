@@ -9,10 +9,14 @@ module mod_constants
   integer, parameter :: dp = selected_real_kind(15)
   integer, parameter :: sp = selected_real_kind(6)
 
-  real(dp), parameter ::        &
-    R_air  = 287.05,            & ! dry air constant  [J/kg/K]
-    pi     = 4.*atan(dble(1.)), & ! 3.1415...
-    t_zero = -273.15              ! 0 kelvin in Celcius
+  real(dp), parameter ::       & 
+    R_air  = 287.05_dp,        & ! dry air constant  [J/kg/K]
+    pi     = 4._dp*atan(1._dp)   ! 3.1415...
+
+    ! t_zero_deleteifnotnes = -273.15_dp ! 0 kelvin in Celcius
+
+  real(dp), parameter :: speed_of_light = 299792458._dp ! [m/s]
+  
 
   !---------------------------------------
   ! gravity
@@ -65,25 +69,24 @@ module mod_constants
   end type
 
   type earth_data
-    real(dp) :: mass
-    real(dp) :: radius
-    real(dp) :: gm
+    real(dp) :: mass, radius, gm, angular_velocity
     type(earth_gravity) :: gravity
     type(earth_density) :: density
   end type
 
-  type(earth_data), parameter ::  &
-    earth       = earth_data (    &
-    mass        = 5.97219e24_dp,  & !kg
-    radius      = 6371000.,       & !m
-    gm          = 398600.4419_dp, & !m3 s-2
-    gravity     = earth_gravity(  &
-    mean        = 9.80665         & !m s-2
-    ),                            &
-    density     = earth_density(  &
-    crust       = 2670.,          & !kg m-3
-    mean        = 5500.           & !kg m-3
-    )                             &
+  type(earth_data), parameter ::           & 
+    earth            = earth_data (        & 
+    mass             = 5.97219e24_dp,      & !kg
+    radius           = 6371000._dp,        & !m
+    gm               = 3.986004419e14_dp,  & ! ^3/s^2
+    angular_velocity = 7.2921151467e-5_dp, & ! rad/s
+    gravity          = earth_gravity(      & 
+    mean             = 9.80665_dp          & !m s-2
+    ),                                     & 
+    density          = earth_density(      & 
+    crust            = 2670._dp,           & !kg m-3
+    mean             = 5500._dp            & !kg m-3
+    )                                      & 
     )
 
   !---------------------------------------
@@ -122,8 +125,9 @@ contains
 ! ==============================================================================
 !> naive method to force NaN for compilers
 ! ==============================================================================
-real function setnan()
-  real :: minusone=-1
+real(dp) function setnan()
+  real(dp) :: minusone=-1._dp
+
   setnan = sqrt(minusone)
 end function
 

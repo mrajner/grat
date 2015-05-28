@@ -23,9 +23,10 @@ for exclamation in "" "-!" ; do
     $GP @invscale=1e8          \
     \
     -S 10/30/40/90 : 12 : 26   \
-    -H -o ${0/.sh/.dat}$counter$suffix: level \
-    &> ${0/.sh/.dat}$((counter+1))$suffix 
-  let counter=counter+2
+    -H -o ${0/.sh/.dat.out}$counter$suffix: level \
+    2> ${0/.sh/.dat.err}$counter$suffix 
+
+  let counter++
 
   value_check                  \
     ${exclamation} \
@@ -37,7 +38,9 @@ for exclamation in "" "-!" ; do
     \
     -S 10/30/40/90 : 12 : 26   \
     -H -o ${0/.sh/.dat}$counter$suffix : level -J500,200 -wn
+
   let counter++
+
 done
 
 touch ${0/.sh/.dat}${suffix}

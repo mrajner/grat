@@ -267,9 +267,12 @@ subroutine compare_fels_profiles (filename)
 
   if (present (filename)) then
     if (file_exists(filename)) return
-    open ( newunit = file_unit, &
-      file =filename, &
-      action  = 'write' )
+
+    open (                 &
+      newunit = file_unit, &
+      file    = filename,  &
+      action  = 'write'    &
+      )
   else
     file_unit = output_unit
   endif
@@ -278,7 +281,7 @@ subroutine compare_fels_profiles (filename)
 
   ! Print header
   write (file_unit, '(100(a20))' ) &
-    'height', ( trim ( fels_types (i) ), i = 1, size (fels_types) )
+    'height', (trim ( fels_types (i) ), i = 1, size(fels_types))
 
   ! Print results
   do i_height = 0, 70, 1
@@ -541,9 +544,11 @@ subroutine aggf_thin_layer (filename)
 
   write(*,*), "aggf_thin_layer ---> ",filename
   if (present (filename)) then
-    open (newunit = file_unit, &
-      file =filename, &
-      action  = 'write' )
+    open (                 &
+      newunit = file_unit, &
+      file    = filename,  &
+      action  = 'write'
+    )
   else
     file_unit = output_unit
   endif
@@ -569,10 +574,10 @@ subroutine admit_niebauer(filename)
 
   open (newunit=iun, file=filename, action = 'write')
 
-  f=earth%radius/9500
+  f = earth%radius/9500
   do theta=0.5, 180, 0.01
-    b= 2*f*sin(d2r(theta/2))
-    a= 2*pi * gravity%constant / earth%gravity%mean* &
+    b = 2*f*sin(d2r(theta/2))
+    a = 2*pi * gravity%constant / earth%gravity%mean* &
       (1 - b/(2*f) -1/b + 2/f)
     write(iun, *), theta, a *1e10
   enddo
@@ -626,9 +631,9 @@ subroutine get_green_distances()
   use mod_green
   if (allocated(green)) deallocate(green)
   allocate (green(1))
-  green(1)%name="merriam"
-  green(1)%column=[1, 2]
-  green(1)%dataname="GN"
+  green(1)%name     = "merriam"
+  green(1)%column   = [1, 2]
+  green(1)%dataname = "GN"
   call read_green(green(1),print=.false.)
 end subroutine
 

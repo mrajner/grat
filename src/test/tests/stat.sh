@@ -21,11 +21,15 @@ help () {
 -u update
 -U update if result do not exist
 -i interactive update
+-1 one diff only
 EOF
 }
 
-while getopts "hbvuidwVU" flag ; do
+while getopts "1hbvuidwVU" flag ; do
   case $flag in 
+    1)
+      onlyonediff=true
+      ;;
     h)
       help
       exit 0
@@ -119,16 +123,35 @@ for test in ${test_what[*]} ; do
           echo is: $is , should_be: $should_be
           colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
 
-          ${vimdiff:-false} && vimdiff $is $should_be
+          ${vimdiff:-false} && 
+          {
+            vimdiff $is $should_be
+
+            ${onlyonediff:-false} && exit 0
+            ${update:-false} || read
+          }
         }
 
         ${update:-false} && cp -v ${interactive:-} $is $should_be
         ${delete_bad_results:-false} && rm -v ${interactive:-} $is ${is%%.dat*}.dat.?
+
+        ${onlyonediff:-false} && exit 0
       }
     } 
     let counter++
+
   done
 done
 
 echo -e "\npassed: $good of total $counter tests"
-[[ $bad -gt 0 ]] && echo failed: $bad || :
+[[ $bad -gt 0 ]] && 
+{
+  tput setaf 1
+  echo failed: $bad 
+  tput sgr0
+} ||
+{
+  tput setaf 2
+  echo "Success"
+  tput sgr0
+}

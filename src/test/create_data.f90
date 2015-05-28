@@ -8,7 +8,7 @@ program createdata
   implicit none
 
   integer(2) :: i, ilevel, itime, ilat, ilon
-  integer :: ncid, status, &
+  integer :: ncid,                          &
   londimid, latdimid, timedimid,leveldimid, &
   lonvarid, latvarid, timevarid,levelvarid, &
      gpvarid, spvarid, tvarid, lsvarid

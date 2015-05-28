@@ -1,16 +1,16 @@
 ########################################################################
 #                                                          value_check #
-#                                                      v1.1-8-g6bc8c09 #
+#                                                     v1.2-15-g4392bc1 #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-09 15:36:36 #
-#                                                    FFLAGS = (FFLAGS) #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 13:12:17 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-09 15:36:52 (+02h UTC)
+Program started: 2015-05-15 13:12:26 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F 10 , 20:@gh2h , 30:@ scale=10 @ invscale=1000 , 40@name ,
@@ -22,7 +22,6 @@ Command parsing:
     10
       unknown (NN)
       constant value was set:      10.000E+00
-      constant value was re-set:   10.000E+00
     20:@gh2h
       unknown (NN)
       constant value was set:      20.000E+00
@@ -37,7 +36,6 @@ Command parsing:
     40@name
       unknown (name)
       constant value was set:      40.000E+00
-      constant value was re-set:   40.000E+00
     10:@gp2h
       unknown (NN)
       constant value was set:      10.000E+00
@@ -46,7 +44,6 @@ Command parsing:
     30@H
       Surface height (H)
       constant value was set:      30.000E+00
-      constant value was re-set:   30.000E+00
   -S { -Sa:10:20:100,:10,c,g:100 }
     a:10:20:100
     :10
@@ -73,5 +70,5 @@ Command parsing:
       auto  -90.0000  300.0000    0.0000        --   30.0000        --
       auto   10.0000  300.0000    0.0000        --   30.0000        --
 #-----------------------------------------------------------------------
-Execution time:   0.0s (proc time:   0.0 |% 83.3)
+Execution time:   0.0s (proc time:   0.0 |%  Inf)
 #-----------------------------------------------------------------------

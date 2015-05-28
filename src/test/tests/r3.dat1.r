@@ -1,3 +1,9 @@
-warning: reading whole file with levels into memory could slow down computation 
-warning: level not found (no warning again) hgt.2012.nc                                                                                                                                                                                              
- 25% |*****               |  0.2s [eta  1.0] (proc:  0.2 | %: 99.7) t3.dat0.r100% |********************|  0.2s [eta  0.2] (proc:  0.2 | %: 99.6) t3.dat0.r 
+    name       lat       lon level           SP            T           GP
+    auto   40.0000   10.0000   500   10.248E+06    2.872E-06   56.690E-06
+    auto   66.0000   10.0000   500    9.568E+06    2.742E-06   53.010E-06
+    auto   40.0000   22.0000   500    9.570E+06    2.734E-06   54.650E-06
+    auto   66.0000   22.0000   500    9.795E+06    2.641E-06   52.560E-06
+    auto   40.0000   10.0000   200   10.248E+06    2.872E-06  118.010E-06
+    auto   66.0000   10.0000   200    9.568E+06    2.742E-06  112.920E-06
+    auto   40.0000   22.0000   200    9.570E+06    2.734E-06  115.950E-06
+    auto   66.0000   22.0000   200    9.795E+06    2.641E-06  112.290E-06

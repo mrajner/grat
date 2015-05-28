@@ -55,6 +55,7 @@ subroutine parse_green (cmd_line_entry)
   endif
 
   if (method(3)) then
+
     if (present(cmd_line_entry)) then
       allocate (green (size(cmd_line_entry%field)+1))
     else
@@ -66,9 +67,15 @@ subroutine parse_green (cmd_line_entry)
     green(ind%green%g3d)%column   = [1,2]
     green(ind%green%g3d)%dataname = "G3D"
     call read_green(green(ind%green%g3d))
+
   else
     allocate (green (size(cmd_line_entry%field)))
+
   endif
+
+  where (green%dataname.eq.'')
+    green%dataname="NN"
+  endwhere
 
   if (present(cmd_line_entry)) then
     do i = 1, size(cmd_line_entry%field)
@@ -83,22 +90,27 @@ subroutine parse_green (cmd_line_entry)
         green(i)%name = green(i-1)%name
       endif
 
-      if (any(green%dataname.eq.cmd_line_entry%field(i)%subfield(1)%dataname )) then
-        call print_warning("repeated dataname for Green")
-        continue
+      if (any(green%dataname.eq.cmd_line_entry%field(i)%subfield(1)%dataname)) then
+        call print_warning("repeated dataname for Green here")
+        ! cycle
+
       else
         green(i)%dataname = cmd_line_entry%field(i)%subfield(1)%dataname
+        if(green(i)%dataname == "") green(i)%dataname = "NN"
+
       endif
 
       do ii=1, 2
         green(i)%column(ii) = green(i-1)%column(ii)
         green(i)%columndataname(ii) = green(i-1)%columndataname(ii)
+
         if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
           read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
           green(i)%columndataname(ii) = cmd_line_entry%field(i)%subfield(ii+1)%dataname
         endif
 
       enddo
+
       if (green(i)%dataname.eq."GNc") then
         if(is_numeric(cmd_line_entry%field(i)%subfield(2)%name)) then
           read(cmd_line_entry%field(i)%subfield(2)%name, *) gnc_looseness
@@ -145,6 +157,7 @@ subroutine read_green (green, print)
     green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
 
     select case (green%dataname)
+
     case("GN")
       green%column=[1,2]
 
@@ -455,6 +468,10 @@ end subroutine
 !!
 !! \date 2013-03-15
 !! \author M. Rajner
+!! 
+!! TODO after complete unit test developement
+!! change philosophy to prepera template matrix first
+!! get all values and then perform appropriate splot or splots
 ! =============================================================================
 subroutine convolve(site, date, results)
   use, intrinsic :: iso_fortran_env
@@ -480,7 +497,7 @@ subroutine convolve(site, date, results)
   real(dp)   :: lat, lon, area, tot_area, tot_area_used
   real(dp)   :: val(size(model)), old_val_sp, old_val_rsp
   integer    :: i, j, npoints, iheight, nheight
-  integer(2) :: iok(size(polygon))
+  integer(2) :: iok(ubound(polygon,1))
 
   real(dp) :: normalize, aux
   real(dp), allocatable, dimension(:) :: &
@@ -561,12 +578,13 @@ subroutine convolve(site, date, results)
       endif
 
       ! calculate area using spherical formulae
-      area = spher_area(                        &
-        d2r(green_common(igreen)%start(idist)), &
-        d2r(green_common(igreen)%stop(idist)),  &
-        d2r(dazimuth),                          &
-        radius=earth%radius,                    &
-        alternative_method=.true.)
+      area = spher_area(                                             &
+        distance           = d2r(green_common(igreen)%start(idist)), &
+        ddistance          = d2r(green_common(igreen)%stop(idist)),  &
+        azstp              = d2r(dazimuth),                          &
+        radius             = earth%radius,                           &
+        alternative_method = .true.                                  &
+        )
 
       ! normalization according to Merriam (1992)
       normalize= 1e8 / &
@@ -756,7 +774,8 @@ subroutine convolve(site, date, results)
                     method                   = transfer_sp%method, &
                     temperature              = val(ind%model%t),   &
                     use_standard_temperature = ind%model%t.eq.0,   &
-                    nan_as_zero              = .false.)
+                    nan_as_zero              = .false.             &
+                    )
 
                   if(all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                     val(ind%model%rsp) = standard_pressure(           &
@@ -766,7 +785,8 @@ subroutine convolve(site, date, results)
                       method                   = transfer_sp%method,  &
                       temperature              = val(ind%model%t),    &
                       use_standard_temperature = ind%model%t.eq.0,    &
-                      nan_as_zero              = .false.)
+                      nan_as_zero              = .false.              &
+                      )
                   endif
                 endif
 
@@ -1140,8 +1160,8 @@ subroutine convolve(site, date, results)
                         call progress(                                               &
                           100*igreen*idist                                           &
                           /(size(green_common(igreen)%distance)*size(green_common)), &
-                          time  = 0.,                                                &
-                          cpu   = 0.,                                                &
+                          time  = 0._sp,                                             &
+                          cpu   = 0._sp,                                             &
                           every = 1                                                  &
                           )
                       endif
@@ -1150,55 +1170,56 @@ subroutine convolve(site, date, results)
 
                   ! transfer SP if necessary on site level
                   if (transfer_sp%if &
-                    .and.any ([ &
-                    ind%green%gn, &
-                    ind%green%gndt, &
-                    ind%green%gndz, &
+                    .and.any ([      &
+                    ind%green%gn,    &
+                    ind%green%gndt,  &
+                    ind%green%gndz,  &
                     ind%green%gndz2, &
-                    ind%green%gndh &
-                    ].ne.0) &
+                    ind%green%gndh   &
+                    ].ne.0)          &
                     ) then
-                    val(ind%model%sp) = standard_pressure( &
-                      height=site%height,                  &
-                      h_zero=val(ind%model%hp),            &
-                      p_zero=old_val_sp,                   &
-                      method=transfer_sp%method,           &
-                      temperature=val(ind%model%t),        &
-                      use_standard_temperature             &
-                      = ind%model%t.eq.0,                  &
-                      nan_as_zero=.false.)
+                    val(ind%model%sp) = standard_pressure(         &
+                      height=site%height,                          &
+                      h_zero=val(ind%model%hp),                    &
+                      p_zero=old_val_sp,                           &
+                      method=transfer_sp%method,                   &
+                      temperature=val(ind%model%t),                &
+                      use_standard_temperature = ind%model%t.eq.0, &
+                      nan_as_zero=.false.                          &
+                      )
 
                     if (all([ind%model%rsp, ind%model%hrsp].ne.0)) then
-                      val(ind%model%rsp) = standard_pressure(          &
-                        height=site%height,                            &
-                        h_zero=val(ind%model%hrsp),                    &
-                        p_zero=old_val_rsp,                            &
-                        method=transfer_sp%method,                     &
-                        temperature=val(ind%model%t),                  &
-                        use_standard_temperature                       &
-                        = ind%model%t.eq.0,                            &
-                        nan_as_zero=.false.)
+                      val(ind%model%rsp) = standard_pressure(        &
+                        height=site%height,                          &
+                        h_zero=val(ind%model%hrsp),                  &
+                        p_zero=old_val_rsp,                          &
+                        method=transfer_sp%method,                   &
+                        temperature=val(ind%model%t),                &
+                        use_standard_temperature = ind%model%t.eq.0, &
+                        nan_as_zero=.false.                          &
+                        )
                     endif
 
-                    if (ind%model%rsp.ne.0) val(ind%model%sp) &
-                      = val(ind%model%sp) - val(ind%model%rsp)
+                    if (ind%model%rsp.ne.0) then
+                      val(ind%model%sp) = val(ind%model%sp) - val(ind%model%rsp)
+                    endif
                   endif
 
                   ! GN
                   if (ind%green%gn.ne.0) then
-                    result_partial(ind%green%gn) = &
-                      val(ind%model%sp) *                              &
-                      green_common(igreen)%data(idist, ind%green%gn) * &
-                      area * normalize
+                    result_partial(ind%green%gn) =                     &
+                      val(ind%model%sp)                                &
+                      * green_common(igreen)%data(idist, ind%green%gn) &
+                      * area * normalize
                     result(ind%green%gn) = &
                       result(ind%green%gn) + result_partial(ind%green%gn)
                   endif
 
                   ! GNdt
                   if (ind%green%gndt.ne.0) then
-                    if (any(                                                &
-                      [ind%model%sp, ind%model%t, ind%model%rsp           &
-                      ].eq.0)) &
+                    if (any(                                               &
+                      [ind%model%sp, ind%model%t, ind%model%rsp            &
+                      ].eq.0))                                             &
                       call print_warning("not enough data model for GNdt", &
                       error=.true.)
                     result_partial(ind%green%gndt) =       &
@@ -1212,10 +1233,10 @@ subroutine convolve(site, date, results)
 
                   ! GNdh
                   if (ind%green%gndh.ne.0) then
-                    if (any(                                                &
-                      [ &
-                      ind%model%sp, ind%model%h, ind%model%rsp           &
-                      ].eq.0)) &
+                    if (any(                                               &
+                      [                                                    &
+                      ind%model%sp, ind%model%h, ind%model%rsp             &
+                      ].eq.0))                                             &
                       call print_warning("not enough data model for GNdh", &
                       error=.true.)
                     result_partial(ind%green%gndh) = &
@@ -1235,13 +1256,13 @@ subroutine convolve(site, date, results)
                       ].eq.0)) &
                       call print_warning("not enough data model for GNdz", &
                       error=.true.)
-                    result_partial(ind%green%gndz) =  +       &
-                      val(ind%model%sp)                                    &
-                      * green_common(igreen)%data(idist, ind%green%gndz)   &
-                      * (val(ind%model%h)-site%height) &
+                    result_partial(ind%green%gndz) =                     &
+                      + val(ind%model%sp)                                &
+                      * green_common(igreen)%data(idist, ind%green%gndz) &
+                      * (val(ind%model%h)-site%height)                   &
                       *  area * normalize
-                    result(ind%green%gndz) = result(ind%green%gndz) +       &
-                      result_partial(ind%green%gndz)
+                    result(ind%green%gndz) = &
+                      result(ind%green%gndz) + result_partial(ind%green%gndz)
                   endif
 
                   ! GNdz2
@@ -1312,37 +1333,39 @@ subroutine convolve(site, date, results)
         endif
 
         ! surface loads from EWT
-        if (                                                                                          &
-          ind%green%gr.ne.0                                                                         &
-          .or.ind%green%ghn.ne.0                                                                    &
-          .or.ind%green%ghe.ne.0                                                                    &
+        if (                     &
+          ind%green%gr.ne.0      &
+          .or.ind%green%ghn.ne.0 &
+          .or.ind%green%ghe.ne.0 &
           ) then
+
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
             if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
+
               call get_value (                                                &
                 model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), &
                 level=1, method = info(igreen)%interpolation, date=date%date)
 
-              aux = (val(ind%model%ewt))  *                      &
-                area/d2r(green_common(igreen)%distance(idist)) * &
-                1./earth%radius/1e12* 1e3 ! m -> mm
+              aux = (val(ind%model%ewt))                         &
+               * area/d2r(green_common(igreen)%distance(idist))  &
+               * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
               if (isnan(aux)) aux = 0
 
               if (ind%green%gr.ne.0) then
 
-                result(ind%green%gr) = result(ind%green%gr) +    &
-                  green_common(igreen)%data(idist, ind%green%gr) &
+                result(ind%green%gr) = result(ind%green%gr)        &
+                  + green_common(igreen)%data(idist, ind%green%gr) &
                   * aux
 
                 if (ind%green%ghn.ne.0) then
-                  result(ind%green%ghn) = result(ind%green%ghn) +     &
-                    green_common(igreen)%data(idist, ind%green%ghn) * &
-                    aux * (-cos(d2r(azimuth)))
+                  result(ind%green%ghn) = result(ind%green%ghn)       &
+                    + green_common(igreen)%data(idist, ind%green%ghn) &
+                    * aux * (-cos(d2r(azimuth)))
                 endif
                 if (ind%green%ghe.ne.0) then
-                  result(ind%green%ghe) = result(ind%green%ghe) +     &
-                    green_common(igreen)%data(idist, ind%green%ghe) * &
-                    aux * (-sin(d2r(azimuth)))
+                  result(ind%green%ghe) = result(ind%green%ghe)       &
+                    + green_common(igreen)%data(idist, ind%green%ghe) &
+                    * aux * (-sin(d2r(azimuth)))
                 endif
               endif
             endif
@@ -1399,7 +1422,7 @@ subroutine convolve(site, date, results)
                 '(*(a3, i1))'),                          &
                 ("ok", i, i =1, ubound(iok, 1))
             else
-              write(moreverbose(ind%moreverbose%p)%unit, *)
+              write(moreverbose(ind%moreverbose%p)%unit, '(a)') 
             endif
             header_p=.false.
           endif
@@ -1412,12 +1435,13 @@ subroutine convolve(site, date, results)
             )                                             &
             ) then
 
-            if(size(green_common).gt.1) &
+            if(size(green_common).gt.1) then
               write(moreverbose(ind%moreverbose%p)%unit, "(i2, x$)") igreen
+            endif
 
             write(moreverbose(ind%moreverbose%p)%unit,       &
               '(a8, 6' // output%form //',2 en13.3, $)'),    &
-              trim(site%name), site%lat, site%lon,                 &
+              trim(site%name), site%lat, site%lon,           &
               green_common(igreen)%distance(idist), azimuth, &
               r2d(lat), r2d(lon), area, tot_area
 
@@ -1428,6 +1452,7 @@ subroutine convolve(site, date, results)
             endif
 
             if (result_total) then
+
               if (method(2)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
                   '(' // output%form //'$)'),              &
@@ -1440,17 +1465,6 @@ subroutine convolve(site, date, results)
                   .or.green%dataname.eq."GNdz2"            &
                   .or.green%dataname.eq."GNdh"             &
                   ))
-                ! write(moreverbose(ind%moreverbose%p)%unit, &
-                  ! '(' // output%form //'$)'),              &
-                  ! sum(result,                              &
-                  ! mask=(                                   &
-                  ! green%dataname.eq."GN"                   &
-                  ! .or.green%dataname.eq."GE"               &
-                  ! .or.green%dataname.eq."GNdt"             &
-                  ! .or.green%dataname.eq."GNdz"             &
-                  ! .or.green%dataname.eq."GNdz2"            &
-                  ! .or.green%dataname.eq."GNdh"             &
-                  ! ))
               endif
 
               if (method(3)) then
@@ -1468,25 +1482,34 @@ subroutine convolve(site, date, results)
             if (.not.moreverbose(ind%moreverbose%p)%sparse) then
 
               do i=1, size(val)
-                call get_value (                       &
-                  model(i),                            &
-                  r2d(lat),                            &
-                  r2d(lon),                            &
-                  val(i),                              &
-                  level=1,                             &
-                  method = info(igreen)%interpolation, &
-                  date=date%date)
+
+                ! not recognized datafiles are not readed in
+                ! therefore we set their values as nan
+                if (all(ubound(model(i)%data) == 0)           &
+                  .and..not. model(i)%if_constant_value) then
+                  val(i) = setnan()
+                else
+                  call get_value (                       &
+                    model  = model(i),                   &
+                    lat    = r2d(lat),                   &
+                    lon    = r2d(lon),                   &
+                    val    = val(i),                     &
+                    level  = 1,                          &
+                    method = info(igreen)%interpolation, &
+                    date   = date%date                   &
+                    )
+                endif
               enddo
 
               write(moreverbose(ind%moreverbose%p)%unit, &
                 '(*(en12.2))', advance='no') val
+
             endif
 
             if (size(iok).gt.0) then
-              write(moreverbose(ind%moreverbose%p)%unit, &
-                '(*(i4))'), iok
+              write(moreverbose(ind%moreverbose%p)%unit, '(*(i4))'), iok
             else
-              write(moreverbose(ind%moreverbose%p)%unit, * )
+              write(moreverbose(ind%moreverbose%p)%unit, '(a)' ) ''
             endif
           endif
         endif
@@ -1539,97 +1562,97 @@ subroutine convolve(site, date, results)
     results(1:size(result))=result 
   endif
 
-if (result_total) then
-  if (method(2)) then
+  if (result_total) then
+    if (method(2)) then
 
-    if (present(results)) then
+      if (present(results)) then
 
-      results(size(results)) =        &
-        sum(result,                   &
-        mask=(                        &
-        green%dataname.eq."GN"        &
-        .or.green%dataname.eq."GE"    &
-        .or.green%dataname.eq."GNdt"  &
-        .or.green%dataname.eq."GNdz"  &
-        .or.green%dataname.eq."GNdz2" &
-        .or.green%dataname.eq."GNdh"  &
-        ))
-    else
-      write(output%unit,              &
-        '(' // output%form //'$)'),   &
-        sum(result,                   &
-        mask=(                        &
-        green%dataname.eq."GN"        &
-        .or.green%dataname.eq."GE"    &
-        .or.green%dataname.eq."GNdt"  &
-        .or.green%dataname.eq."GNdz"  &
-        .or.green%dataname.eq."GNdz2" &
-        .or.green%dataname.eq."GNdh"  &
-        ))
+        results(size(results)) =        &
+          sum(result,                   &
+          mask=(                        &
+          green%dataname.eq."GN"        &
+          .or.green%dataname.eq."GE"    &
+          .or.green%dataname.eq."GNdt"  &
+          .or.green%dataname.eq."GNdz"  &
+          .or.green%dataname.eq."GNdz2" &
+          .or.green%dataname.eq."GNdh"  &
+          ))
+      else
+        write(output%unit,              &
+          '(' // output%form //'$)'),   &
+          sum(result,                   &
+          mask=(                        &
+          green%dataname.eq."GN"        &
+          .or.green%dataname.eq."GE"    &
+          .or.green%dataname.eq."GNdt"  &
+          .or.green%dataname.eq."GNdz"  &
+          .or.green%dataname.eq."GNdz2" &
+          .or.green%dataname.eq."GNdh"  &
+          ))
+      endif
+
+      if (result_total_all) then
+        write(output%unit,              &
+          '(' // output%form //'$)'),   &
+          sum(result,                   &
+          mask=(                        &
+          green%dataname.eq."GN"        &
+          .or.green%dataname.eq."GNdt"  &
+          .or.green%dataname.eq."GNdz"  &
+          .or.green%dataname.eq."GNdz2" &
+          .or.green%dataname.eq."GNdh"  &
+          )) + result(size(green)+1)
+      endif
+
     endif
 
-    if (result_total_all) then
-      write(output%unit,              &
-        '(' // output%form //'$)'),   &
-        sum(result,                   &
-        mask=(                        &
-        green%dataname.eq."GN"        &
-        .or.green%dataname.eq."GNdt"  &
-        .or.green%dataname.eq."GNdz"  &
-        .or.green%dataname.eq."GNdz2" &
-        .or.green%dataname.eq."GNdh"  &
-        )) + result(size(green)+1)
-    endif
+    if (method(3)) then
 
-  endif
-
-  if (method(3)) then
-
-    write(output%unit,            &
-      '(' // output%form //'$)'), &
-      sum(result,                 &
-      mask=(                      &
-      green%dataname.eq."G3D"     &
-      .or.green%dataname.eq."GE"  &
-      ))
-
-    if (result_total_all) then
       write(output%unit,            &
         '(' // output%form //'$)'), &
         sum(result,                 &
         mask=(                      &
         green%dataname.eq."G3D"     &
-        )) + result(size(green)+1)
+        .or.green%dataname.eq."GE"  &
+        ))
+
+      if (result_total_all) then
+        write(output%unit,            &
+          '(' // output%form //'$)'), &
+          sum(result,                 &
+          mask=(                      &
+          green%dataname.eq."G3D"     &
+          )) + result(size(green)+1)
+      endif
     endif
   endif
-endif
 
-! summary: -L@s
-if (ind%moreverbose%s.ne.0) then
-  if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
-    "station", "npoints", "area", "area/R2", "t_area_used"
-  write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)')               &
-    trim(site%name), npoints, tot_area, tot_area/earth%radius**2, tot_area_used
-endif
+  ! summary: -L@s
+  if (ind%moreverbose%s.ne.0) then
+    if (output%header) write(moreverbose(ind%moreverbose%s)%unit, '(2a8, 3a12)' ) &
+      "station", "npoints", "area", "area/R2", "t_area_used"
+    write(moreverbose(ind%moreverbose%s)%unit, '(a8, i8, 3en12.2)')               &
+      trim(site%name), npoints, tot_area, tot_area/earth%radius**2, tot_area_used
+  endif
 
-! green values : -L@g
-if(ind%moreverbose%g.ne.0) then
-  do i = 1, size(green_common)
-    if (output%header)                                          &
-      write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
-      "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
+  ! green values : -L@g
+  if(ind%moreverbose%g.ne.0) then
+    do i = 1, size(green_common)
+      if (output%header)                                          &
+        write(moreverbose(ind%moreverbose%g)%unit, '(a3,100a14)') &
+        "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
 
-    do j = 1, size(green_common(i)%distance)
-      write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, *(f14.7))'), &
-        j, green_common(i)%distance(j),                                   &
-        green_common(i)%start(j),                                         &
-        green_common(i)%stop(j),                                          &
-        green_common(i)%data(j,:),                                        &
-        green_common(i)%distance(j)-green_common(i)%distance(j-1)
+      do j = 1, size(green_common(i)%distance)
+        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, *(f14.7))'), &
+          j, green_common(i)%distance(j),                                   &
+          green_common(i)%start(j),                                         &
+          green_common(i)%stop(j),                                          &
+          green_common(i)%data(j,:),                                        &
+          green_common(i)%distance(j)-green_common(i)%distance(j-1)
+      enddo
+
     enddo
-
-  enddo
-endif
+  endif
 end subroutine
 
 ! =============================================================================
@@ -1687,34 +1710,34 @@ function green_newtonian (psi, h, z, method)
   endif
   if (present(method) &
     .and. (method.eq."spotl" .or. method.eq."olsson")) then
-    if(method.eq."spotl") then
-      eps = h_/ earth%radius
-      green_newtonian =                                      &
-        1. /earth%radius**2                                  &
-        *(eps + 2. * (sin(psi/2.))**2 )                      &
-        /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) &
-        * gravity%constant                                   &
-        * green_normalization("f",psi=psi)
-      return
-    else if (method.eq."olsson") then
-      t = earth%radius/(earth%radius +h_)
-      green_newtonian =                      &
-        1 / earth%radius**2 * t**2 *         &
-        (1. - t * cos (psi) ) /              &
-        ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) &
-        * gravity%constant                   &
-        * green_normalization("f",psi=psi)
+      if(method.eq."spotl") then
+        eps = h_/ earth%radius
+        green_newtonian =                                      &
+          1. /earth%radius**2                                  &
+          *(eps + 2. * (sin(psi/2.))**2 )                      &
+          /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) &
+          * gravity%constant                                   &
+          * green_normalization("f",psi=psi)
+        return
+      else if (method.eq."olsson") then
+        t = earth%radius/(earth%radius +h_)
+        green_newtonian =                      &
+          1 / earth%radius**2 * t**2 *         &
+          (1. - t * cos (psi) ) /              &
+          ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) &
+          * gravity%constant                   &
+          * green_normalization("f",psi=psi)
+        return
+      endif
+    else
+      green_newtonian =                                               &
+        ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        &
+        / ((earth%radius + h_)**2 + (earth%radius + z_)**2            &
+        -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
+
+      green_newtonian = green_newtonian &
+        * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
       return
     endif
-  else
-    green_newtonian =                                               &
-      ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        &
-      / ((earth%radius + h_)**2 + (earth%radius + z_)**2            &
-      -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
-
-    green_newtonian = green_newtonian &
-      * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
-    return
-  endif
-end function
+  end function
 end module

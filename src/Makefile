@@ -1,6 +1,10 @@
-FC  := gfortran
-#  FC  := ifort
-OPT := -O0
+#  FC  := gfortran
+FC  := ifort
+#  OPT := -Ofast
+ifeq ($(shell hostname),lidka)
+	FC := gfortran
+endif
+OPT = -O0
 
 #  FC=gfortran
 define colorecho
@@ -24,13 +28,13 @@ VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
+
 # ifort settings
 ifeq ($(FC),ifort)
 FFLAGS :=          \
-				 -fpic     \
 				 $(OPT)    \
 				 -xHost    \
-				 -warn all 
+				 -warn all
 
 ENABLE_PREPROCESSING := -fpp
 NETCDFF := -lnetcdff
@@ -53,20 +57,26 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-aaa: value_check
-	../bin/value_check_$(FC)$(OPT) -F ./test/data/test_data.nc : sp -V  -Dm:m
-	../bin/value_check_$(FC)$(OPT) -F10@SP  -V  -D2010@~,2011@~
+BUG: all link
+	bash test/tests/definitions.sh r
+	echo "S"
+	#  grat -M1,2,3 -Grajner@GN , merriam@GE
 
-BUG: all
-	exit
+timeele:
+	value_check                                                  \
+		-F /home/mrajner/dat/erainterim/gp.nc  ,ERA@H ,10@SP \
+		-V -Sj,b,g:10                                           \
+		-G@GN -D2010:4@D -L@p -H
+
+exit:
 	-value_check \
 		-Sj \
 		-D2013 \
 		-F ERA@T : t2m , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
-	-value_check \
-		-Sj \
-		-D2013 \
-		-F ERA@T : v2t , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
+	#  -value_check \
+		#  -Sj \
+		#  -D2013 \
+		#  -F ERA@T : v2t , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
 
 xxx:
 #  tm: value_check
@@ -177,16 +187,16 @@ $(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat$(SUFFIX).a
 	ln -sf $< $@
 $(LIBDIR)/libgrat$(SUFFIX).a: libgrat$(SUFFIX).a
-	cp -uv $< $@
+	cp -v $< $@
 
 $(INCDIR)/%.mod: %.mod
-	cp -uv $< $@
+	cp -v $< $@
 $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
-	cp -uv $< $@
+	cp -v $< $@
 
 %$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@  -I ~/src/fortranlib/src $(FPP)
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP)
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
@@ -206,12 +216,7 @@ libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
 
 .PHONY: install 
 test: all install
-	make -C test
-
-#  shared_libraries: $(OBJS)
-	#  $(FC) -shared $(OBJS) -o libgrat$(VERSION_MAJOR).so
-#  install_shared)library:
-	#  cp -uv libgrat.so /usr/local/lib
+	make -C test FC=$(FC) OPT=$(OPT)
 
 # module dependencies
 ifndef NODEP

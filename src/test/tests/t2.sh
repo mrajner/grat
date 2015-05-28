@@ -29,7 +29,9 @@ for exclamation in "" "-!" ; do
       -F $file : wrong_var_name            \
       -S j                                 \
       -D 2012                              \
-      -J100 &>${0/.sh/.dat}$counter$suffix
+      -J100  \
+      >${0/.sh/.dat}$counter$suffix \
+      2>${0/.sh/.err.dat}$counter$suffix
     let counter++
 
     value_check                 \

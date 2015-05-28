@@ -28,7 +28,13 @@ program barometric_formula
   enddo
   pressures2(1) = standard_pressure(heights(1), h_zero=heights(1), method="full", use_standard_temperature=.true.)
   do i = 2 , nheight
-    pressures2(i) = standard_pressure(heights(i),p_zero=pressures2(i-1),h_zero = heights(i-1),method="full",use_standard_temperature=.true. )
+    pressures2(i) = standard_pressure( & 
+      heights(i), &
+      p_zero=pressures2(i-1), & 
+      h_zero = heights(i-1), & 
+      method="full", & 
+      use_standard_temperature=.true. &
+      )
   enddo
 
    print '(10a18)' , "h", "simple", "berg", "pred", "pred2", "std" , "full"

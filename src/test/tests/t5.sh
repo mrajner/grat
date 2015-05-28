@@ -15,11 +15,14 @@ for exclamation in "" "-!" ; do
 
   [[ $suffix != ".s" ]] && 
   {
-    value_check                           \
-      ${exclamation}                      \
-      -F $VT                              \
-      -S g:20 -J 1000, 400 , 200 -o       \
-     &> ${0/.sh/.dat}${counter}${suffix}
+    value_check                             \
+      ${exclamation}                        \
+      -F $VT                                \
+      -S g:20 -J 1000, 400 , 200            \
+      -o ${0/.sh/.dat.out}$counter${suffix} \
+      -V ${0/.sh/.dat.log}$counter${suffix} \
+      2> ${0/.sh/.dat.err}$counter${suffix}
+
     let counter++
   }
 

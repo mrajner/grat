@@ -238,26 +238,30 @@ end function
 !> This routine skips the lines with comment chars (default '#')
 !! from opened files (unit) to read
 ! ==============================================================================
-subroutine skip_header (unit, comment_char_optional )
+subroutine skip_header (unit, comment_char)
   integer, intent (in) :: unit
-  character (len = 1), optional :: comment_char_optional
+  character (len = 1), optional :: comment_char
   character (len = 60 ) :: dummy
-  character (len = 1)  :: comment_char
+  character (len = 1)  :: comment_char_
   integer :: io_stat
 
-  if (present ( comment_char_optional ) ) then
-    comment_char = comment_char_optional
+  if (present ( comment_char) ) then
+    comment_char_ = comment_char
   else
-    comment_char = '#'
+    comment_char_ = '#'
   endif
 
-  read ( unit, *, iostat = io_stat) dummy
+  read (unit, '(a)', iostat = io_stat) dummy
   if(io_stat == iostat_end) return
 
-  do while ( dummy(1:1) .eq. comment_char )
-    read ( unit, *, iostat = io_stat ) dummy
-    if(io_stat == iostat_end) return
+  do while (dummy(1:1).eq.comment_char_)
+    read (unit, *, iostat = io_stat) dummy
+    if (io_stat == iostat_end) then
+      backspace(unit)
+      return
+    endif
   enddo
+
   backspace(unit)
 end subroutine
 
@@ -270,7 +274,7 @@ end subroutine
 !! \date 2013.07.16 added exception e.g /home/...
 !! \date 2014.08.27 added exception e.g comma ,
 ! =============================================================================
-function is_numeric(string)
+pure function is_numeric(string)
   logical :: is_numeric
   character(len=*), intent(in) :: string
   real :: x
@@ -316,9 +320,9 @@ function file_exists(string, double_check, verbose)
 
   if (present(verbose).and.verbose) then
     if (file_exists) then
-      write (*, '(a,a)') trim(string), " exists"
+      write (error_unit, '(a,a)') trim(string), " exists"
     else
-      print '(a,a)', trim(string), " not exists"
+      write (error_unit, '(a,a)'), trim(string), " not exists"
     endif
   endif
 
@@ -351,7 +355,7 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-04
 ! =============================================================================
-function d2r (degree)
+elemental function d2r (degree)
   real(dp), intent (in) :: degree
   real(dp) :: d2r
 
@@ -365,7 +369,7 @@ end function
 !! \author Marcin Rajner
 !! \date 2013-03-04
 ! =============================================================================
-function r2d ( radian )
+elemental function r2d ( radian )
   real(dp) :: r2d
   real(dp), intent (in) :: radian
 
@@ -401,7 +405,7 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
 
   open (newunit = file_unit,  file = file_name, status = "old", action ="read")
   do
-    ! call skip_header (file_unit, comment_char_)
+    call skip_header (file_unit, comment_char_)
     read (file_unit, '(a)', iostat=io_stat) line
     if (io_stat == iostat_end) exit
 

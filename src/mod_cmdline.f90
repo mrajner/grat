@@ -67,7 +67,7 @@ module mod_cmdline
   !----------------------------------------------------
   ! general settings
   !----------------------------------------------------
-  logical :: &
+  logical ::                           &
     inverted_barometer     = .true.  , &
     non_inverted_barometer = .false. , &
     ocean_conserve_mass    = .false. , &
@@ -167,16 +167,18 @@ contains
 ! =============================================================================
 subroutine collect_args (dummy)
   use mod_utilities, only: ntokens, count_separator
+
   character(*) :: dummy
   character(455) :: dummy_aux, dummy_aux2
   integer :: i, j, n
   integer :: indeks_space, indeks_comma, indeks_at, indeks_colon
 
   allocate(cmd_line(ntokens(dummy)))
+
   do i=1, ntokens(dummy)
-    indeks_space = index(dummy," ")
-    cmd_line(i)%full= dummy(1:indeks_space-1)
-    cmd_line(i)%switch=cmd_line(i)%full(1:2)
+    indeks_space       = index(dummy," ")
+    cmd_line(i)%full   = dummy(1:indeks_space-1)
+    cmd_line(i)%switch = cmd_line(i)%full(1:2)
     allocate(cmd_line(i)%field (count_separator (cmd_line(i)%full,",") + 1))
 
     dummy_aux = cmd_line(i)%full(3:)
@@ -232,8 +234,8 @@ subroutine get_command_cleaned(dummy)
   character(355) :: a, b, arg
   integer :: i
 
-  dummy=""
-  arg=""
+  dummy = ''
+  arg   = ''
 
   do i = 1, iargc()
     call get_command_argument(i,a)
@@ -267,10 +269,11 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-19
 ! ==============================================================================
-function check_if_switch_or_minus(dummy)
+pure function check_if_switch_or_minus(dummy)
   use mod_utilities, only: is_numeric
+
   logical:: check_if_switch_or_minus
-  character(*) :: dummy
+  character(*), intent(in) :: dummy
 
   check_if_switch_or_minus = .false.
   if (dummy(1:1).eq."-") check_if_switch_or_minus = .true.

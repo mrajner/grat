@@ -20,11 +20,12 @@ ifdatafileexist(){
     {
       file=${!co%%@*}
       file=${file// }
-      [[ -f $file  ]] || {
-      [[ ${VERBOSE-} ]] && echo $file do not exist
-      exit 122
-    }
-    } 
+      [[ -f $file  ]] || 
+      {
+        [[ ${VERBOSE-} ]] && echo $file do not exist
+        exit 122
+      }
+    } || : 
   done
 }
 

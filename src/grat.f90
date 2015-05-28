@@ -65,12 +65,13 @@ program grat
   use mod_cmdline
   use mod_admit,     only: admit
   use mod_utilities, only: Bubble_Sort, mean, stdev
+  use mod_constants, only: sp
 
   implicit none
-  real    :: cpu(2)
-  integer :: execution_time(3)
-  integer :: isite, i, idate, start, iprogress = 0, lprogress, j
-  logical :: first_waning = .true.
+  real(sp) :: cpu(2)
+  integer  :: execution_time(3)
+  integer  :: isite, i, idate, start, iprogress = 0, lprogress, j
+  logical  :: first_waning = .true.
 
   ! program starts here with time stamp
   call cpu_time(cpu(1))
@@ -153,14 +154,17 @@ program grat
           endif
         endif
         if (method(3)) then
-          if ( &
+          if (                                                &
             all([inverted_barometer, non_inverted_barometer]) &
-            .and. result_total_all &
+            .and. result_total_all                            &
             ) then
+
             write (output%unit,'(a13)',advance='no'), "G3D_t_IB"
             write (output%unit,'(a13)',advance='no'), "G3D_t_NIB"
+
           else
             write (output%unit,'(a13)',advance='no'), "G3D_t"
+
           endif
         endif
       endif
@@ -168,7 +172,7 @@ program grat
   endif
 
   if(output%header) then
-    write (output%unit, *)
+    write (output%unit, '(a)')
   endif
 
   ! read only once Land-sea, reference surface pressure
@@ -292,24 +296,24 @@ program grat
       iprogress = iprogress + 1
 
       if (idate.gt.0) then
-        write(output%unit, '(f9.3,x,i4.4,5(i2.2),x$)', advance="no") &
+        write(output%unit, '(f9.3,x,i4.4,5(i2.2),x)', advance="no") &
           date(idate)%mjd, date(idate)%date
       endif
 
-      write (output%unit, '(a8,2(x,f9.4),x,f9.3,$)'), &
-        trim(site(isite)%name),                       &
-        site(isite)%lat,                              &
-        site(isite)%lon,                              &
+      write (output%unit, '(a8,2(x,f9.4),x,f9.3)' , advance='no'), &
+        trim(site(isite)%name),                                    &
+        site(isite)%lat,                                           &
+        site(isite)%lon,                                           &
         site(isite)%height
 
       if (method(1)) then
         do j=1, max(1,ubound(admitance%value(:),1))
 
           write (output%unit, "("// output%form // ')' , advance = "no"), &
-            admit(                                                        &
-            site(isite),                                                  &
-            date   = date(idate)%date,                                    &
-            number = j                                                    &
+            admit(                                                         &
+            site(isite),                                                   &
+            date   = date(idate)%date,                                     &
+            number = j                                                     &
             )
 
         enddo
@@ -322,18 +326,18 @@ program grat
           )
       endif
 
-      write(output%unit, *) ""
+      write(output%unit, '(a)') ''
 
       if (.not.(quiet).or.iprogress==lprogress) then
         call cpu_time(cpu(2))
         call system_clock(execution_time(2),execution_time(3))
 
-        call progress(                                      &
-          100 * iprogress/lprogress ,                       &
-          time  = real(execution_time(2)-execution_time(1)) &
-          /execution_time(3),                               &
-          cpu   = cpu(2)-cpu(1),                            &
-          every = quiet_step                                &
+        call progress(                                       &
+          100 * iprogress/lprogress ,                        &
+          time  = real((execution_time(2)-execution_time(1)) &
+          /execution_time(3),sp),                            &
+          cpu   = cpu(2)-cpu(1),                             &
+          every = quiet_step                                 &
           )
       endif
 

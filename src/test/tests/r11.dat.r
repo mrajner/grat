@@ -1,23 +1,23 @@
 ########################################################################
 #                                                          value_check #
-#                                                     v1.1-45-g5a582b0 #
+#                                                     v1.2-20-g9ef2c82 #
 ########################################################################
-#                              compiler: ifort (IFORT) 14.0.2 20140120 #
-#                               compiled on lenovo 2014-09-16 20:34:12 #
-#               FFLAGS = -fpic -O3 -xHost -warn all -DWITH_MONTE_CARLO #
-########################################################################
-#                                Copyright 2013, 2014 by Marcin Rajner #
+#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#                                                         FFLAGS = -O0 #
+#                                compiled on lidka 2015-05-15 15:46:44 #
+#                                                                      #
+#                                 Copyright 2013-2015 by Marcin Rajner #
 #                                      Warsaw University of Technology #
-#                                             License: GPL v3 or later #
+#                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2014-09-16 20:34:56 (+02h UTC)
+Program started: 2015-05-15 15:49:03 (+02h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F ../data/hgt.2012.nc @GP :hgt -S 10,j , r -J 1000,100, 66 
                                                                       -V
 #-----------------------------------------------------------------------
 Command parsing:
-  -F { hgt.2012.nc@GP:hgt }
+  -F { -F../data/hgt.2012.nc@GP:hgt }
     ../data/hgt.2012.nc@GP:hgt
       geopotential or geop. height (GP) hgt lon lat level time 
       Opening file: hgt.2012.nc , huge [T/F]: F
@@ -47,7 +47,7 @@ Command parsing:
   rysy_a   49.1794   20.0883   15.765E+03
   joze_a   52.0000   21.0000          NaN
   rysy_a   49.1794   20.0883          NaN
-Execution time:   0.0s (proc time:   0.0 |%100.0)
+Execution time:   0.0s (proc time:   0.0 |% 97.6)
 #-----------------------------------------------------------------------
      out   90.0000  200.0000   99.970E+03
      out   90.0000  355.0000   99.970E+03
