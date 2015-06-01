@@ -112,7 +112,7 @@ subroutine parse_date(cmd_line_entry)
 
     interval_unit = "h"
 
-    if (.not.log%sparse) &
+    if (.not.log%sparse)                                           &
       write(log%unit, form%i2) trim(cmd_line_entry%field(i_)%full)
 
     if (cmd_line_entry%field(i_)%subfield(1)%name.eq."m") then
@@ -203,11 +203,14 @@ subroutine parse_date(cmd_line_entry)
       read (cmd_line_entry%field(i_)%subfield(3)%name, *) step
 
       select case (cmd_line_entry%field(i_)%subfield(3)%dataname)
-      case("M", "D", "Y", "H")
+
+      case("M", "D", "Y", "H", "s")
         read (cmd_line_entry%field(i_)%subfield(3)%dataname, * ) interval_unit
+
       case default
         call print_warning ("interval unit not valid", error=.true.)
         cycle
+
       endselect
     else
       step=6
@@ -264,6 +267,7 @@ subroutine parse_date(cmd_line_entry)
       endif
 
     else
+
       if (cmd_line_entry%field(i_)%subfield(1)%name=="m"      &
         .and. cmd_line_entry%field(i_)%subfield(2)%name=="m"  &
         .and. (                                               &
@@ -283,6 +287,7 @@ subroutine parse_date(cmd_line_entry)
             date(i_aux)%date = model(1)%date(i, :)
             date(i_aux)%mjd =mjd (date(i_aux)%date)
           enddo
+
         else
           if (interval_unit.eq."D") step = 24. * step
           if (interval_unit.eq."m") step = step/60.

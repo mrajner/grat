@@ -22,16 +22,14 @@ do
     NAME_out=${NAME}2; E=-E200;Z="-I0.01 -Q"
   fi
   grdmath \
-      -F \
+      -r \
       -R${R} -I${I} \
       0 1 RAND \
       = ${NAME}_F.grd
 
   grdsample ${NAME}_F.grd ${Z} -G${NAME}.grd
 
-
   grd2xyz ${NAME}.grd > ${NAME}.dat
-
 
   grd2cpt ${NAME}.grd -E8 > ${NAME}.cpt
   makecpt -Cjet -T-0.7/1.3/.1 > ${NAME}.cpt
