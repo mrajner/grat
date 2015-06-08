@@ -252,14 +252,18 @@ subroutine skip_header (unit, comment_char)
   endif
 
   read (unit, '(a)', iostat = io_stat) dummy
+
   if(io_stat == iostat_end) return
 
   do while (dummy(1:1).eq.comment_char_)
+
     read (unit, *, iostat = io_stat) dummy
+
     if (io_stat == iostat_end) then
       backspace(unit)
       return
     endif
+
   enddo
 
   backspace(unit)
@@ -406,7 +410,7 @@ subroutine count_records_to_read (file_name, rows, columns, comment_char)
   open (newunit = file_unit,  file = file_name, status = "old", action ="read")
   do
     call skip_header (file_unit, comment_char_)
-    read (file_unit, '(a)', iostat=io_stat) line
+    read (file_unit, '(a)', iostat = io_stat) line
     if (io_stat == iostat_end) exit
 
     n_columns = max (n_columns, ntokens(line))

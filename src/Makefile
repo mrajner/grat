@@ -27,7 +27,8 @@ ifeq ($(FC),gfortran)
 	ENABLE_PREPROCESSING := -cpp
 endif
 
-NETCDFF := -lnetcdff
+	NETCDFF := -lnetcdff
+
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
 	-D__CDATE__='"$(DATE)"'                          \
