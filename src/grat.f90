@@ -78,14 +78,14 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                            &
-    program_calling   = "grat",                           &
-    version           = __GRAT_VERSION__,                 &
-    cdate             = __CDATE__,                        &
-    fflags            = __FFLAGS__,                       &
-    compiler          = __COMPILER__,                     &
-    accepted_switches = "VSBLGPqoFIDLvhRrMOAHUwJQ&!n-mC", &
-    cmdlineargs       = .true.                            &
+  call intro (                                           &
+    program_calling   = "grat",                          &
+    version           = __GRAT_VERSION__,                &
+    cdate             = __CDATE__,                       &
+    fflags            = __FFLAGS__,                      &
+    compiler          = __COMPILER__,                    &
+    accepted_switches = 'VSBLGPqoFIDLvhRrMOAHUwJQ!n-mC', &
+    cmdlineargs       = .true.                           &
     )
 
   start = 0
@@ -194,7 +194,7 @@ program grat
     model(ind%model%ls)%data = int(abs(model(ind%model%ls)%data-1))
   endif
 
-  do idate=start, ubound(date,1)
+  do idate = start, ubound(date,1)
     if (idate.ge.1) then
       if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
 
@@ -320,10 +320,16 @@ program grat
       endif
 
       if (method(2).or.method(3)) then
-        call convolve (      &
-          site(isite),       &
-          date = date(idate) &
-          )
+        if (idate.gt.0) then
+          call convolve (           &
+            site(isite),            &
+            date = date(idate)%date &
+            )
+        else
+          call convolve ( &
+            site(isite)   &
+            )
+        endif
       endif
 
       write(output%unit, '(a)') ''

@@ -1,18 +1,4 @@
-#  FC  := gfortran
-FC  := ifort
-#  OPT := -Ofast
-ifeq ($(shell hostname),lidka)
-	FC := gfortran
-endif
-OPT = -O0
-
-#  FC=gfortran
-define colorecho
-@tput setaf $1
-@echo -n "$2: "
-@tput sgr0
-endef
-
+FC  := gfortran
 
 # user definitions
 LIBDIR        := /usr/local/lib
@@ -21,6 +7,7 @@ BINDIR        := /usr/local/bin
 LINKS_DIR     := ~/.local/bin
 SUFFIX        := _$(FC)$(OPT)
 
+# passing compilation info to program
 FC_INFO       := $(shell $(FC) --version | sed -n 1p )
 HOST          := $(shell hostname ; uname -r)
 DATE          := $(shell date "+%Y-%m-%d %H:%M:%S")
@@ -28,27 +15,19 @@ VERSION       := $(shell git describe --match "v*")
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
-
 # ifort settings
 ifeq ($(FC),ifort)
-FFLAGS :=          \
-				 $(OPT)    \
-				 -xHost    \
-				 -warn all
-
-ENABLE_PREPROCESSING := -fpp
-NETCDFF := -lnetcdff
+	FFLAGS               := $(OPT) -xHost -warn all
+	ENABLE_PREPROCESSING := -fpp
 endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
-FFLAGS  := \
-	$(OPT)   \
-	-I/home/mrajner/src/netcdf-gfortran/fortran 
-ENABLE_PREPROCESSING = -cpp
-NETCDFF   := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.7.0.0
-LD_LIBRARY_PATH := /home/mrajner/src/netcdf-gfortran/fortran
+	FFLAGS               := $(OPT)
+	ENABLE_PREPROCESSING := -cpp
 endif
+
+	NETCDFF := -lnetcdff
 
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
@@ -57,10 +36,9 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-BUG: all link
-	bash test/tests/definitions.sh r
-	echo "S"
-	#  grat -M1,2,3 -Grajner@GN , merriam@GE
+BUG: grat
+	grat -! -H -F test/data/test_data.nc @SP : sp \
+		-M2 -G @GN -Sj -D2012:6@H
 
 timeele:
 	value_check                                                  \
@@ -170,10 +148,10 @@ link: $(LINKS)
 unlink: 
 	-rm -f $(LINKS)
 
-install:                                     \
-	$(LIBDIR)/libgrat.a                        \
-	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
-	$(addprefix $(INCDIR)/,$(MOD))
+install:                         \
+	$(LIBDIR)/libgrat.a            \
+	$(addprefix $(INCDIR)/,$(MOD)) \
+	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) 
 	
 uninstall: 
 	$(call colorecho,1,$@)
@@ -196,13 +174,14 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 
 %$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@ $(FPP)
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) -I/usr/local/include
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
 	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
 
 $(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
+	mkdir -p $(PROGS_DIR)
 	$(call colorecho,3,$@)
 	$(FC) $(FFLAGS) $(FPP) \
 	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
@@ -224,7 +203,6 @@ ifndef NODEP
 mod_dep.makefile: mod_dep.awk
 	awk -f $< > $@
 endif
-
 
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
@@ -248,3 +226,10 @@ endif
 	#  cp -vur ../doc/man/man3 /home/mrajner/.local/share/man/ 
 #  .EXPORT_ALL_VARIABLES:
 #
+
+define colorecho
+@tput setaf $1
+@echo -n "$2: "
+@tput sgr0
+endef
+

@@ -28,14 +28,14 @@ program value_check
 
   quiet_step=50000
 
-  call intro (                                 &
-    program_calling   = "value_check",         &
-    accepted_switches = "VFoShvIDLPRqwHMJ&!.", &
-    version           = __GRAT_VERSION__,      &
-    cdate             = __CDATE__,             &
-    fflags            = __FFLAGS__,            &
-    compiler          = __COMPILER__,          &
-    cmdlineargs       = .true.                 &
+  call intro (                                &
+    program_calling   = "value_check",        &
+    accepted_switches = "VFoShvIDLPRqwHMJ!.", &
+    version           = __GRAT_VERSION__,     &
+    cdate             = __CDATE__,            &
+    fflags            = __FFLAGS__,           &
+    compiler          = __COMPILER__,         &
+    cmdlineargs       = .true.                &
     )
 
   allocate (val (ubound(model,1)))

@@ -1,8 +1,6 @@
 FC  := gfortran
 OPT := -O2
 
-FTPDIR = ftp\://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2
-
 GRATLIB := -I/usr/local/include \
 						-L/usr/local/lib     \
 						-lgrat
@@ -16,25 +14,20 @@ FFLAGS :=          \
 				 -warn all 
 
 ENABLE_PREPROCESSING := -fpp
-NETCDFF := -lnetcdff
 endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
-FFLAGS  := \
-	$(OPT)   \
-	-I/home/mrajner/src/netcdf-gfortran/fortran 
-ENABLE_PREPROCESSING = -cpp
-NETCDFF := /home/mrajner/src/netcdf-gfortran/fortran/libnetcdff.so.7.0.0
-LD_LIBRARY_PATH := /home/mrajner/src/netcdf-gfortran/fortran
-	
+	FFLAGS  := \
+		$(OPT)   \
+		-I/home/mrajner/src/netcdf-gfortran/fortran 
+	ENABLE_PREPROCESSING = -cpp
 endif
 
-all: run data test
-	
-df:
-	# ask run runtests
+NETCDFF := -lnetcdff
 
+all: ask run data test
+	
 .PHONY:runtests
 runtests:
 	make -C tests
@@ -54,6 +47,7 @@ ask:
 
 test: 
 	make -C tests/
+	cd tests/ && ./stat.sh
 
 create_data: create_data.f90 data
 	$(FC) $< -o $@ $(FFLAGS) $(NETCDFF) $(GRATLIB)

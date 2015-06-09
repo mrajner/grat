@@ -23,7 +23,7 @@ ifdatafileexist(){
       [[ -f $file  ]] || 
       {
         [[ ${VERBOSE-} ]] && echo $file do not exist
-        exit 122
+        exit 0
       }
     } || : 
   done
@@ -71,9 +71,9 @@ case ${1:-synthetic_data} in
     HP="0@HP"
     H="0@H"
     VSH="0@VSH"
-
     suffix=".c"
     ;;
+
   *)
     echo wrong args in definitions.sh
     exit 1

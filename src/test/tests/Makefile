@@ -1,14 +1,6 @@
-FC := ifort
-#  FC := gfortran
+#  FC := ifort
+FC := gfortran
 OPT:= -O2
-
-ifeq ($(shell hostname),lidka)
-	FC := gfortran
-endif
-
-ifeq ($(FC),gfortran)
-LD_LIBRARY_PATH := /home/mrajner/src/netcdf-gfortran/fortran
-endif
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)
 #temporary

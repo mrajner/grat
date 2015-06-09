@@ -9,7 +9,7 @@ set -o nounset                              # Treat unset variables as an error
 
 counter=0
 
-. definitions.sh
+. definitions.sh 
 
 for exclamation in "" "-!" ; do
 
@@ -24,7 +24,7 @@ for exclamation in "" "-!" ; do
       2> ${0/.sh/.dat.err}$counter${suffix}
 
     let counter++
-  }
+  } || :
 
 done
 

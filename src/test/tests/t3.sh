@@ -11,7 +11,7 @@ set -o nounset                              # Treat unset variables as an error
 
 # test variable modifiers 
 
-  counter=0
+counter=0
 for exclamation in "" "-!" ; do
 
   value_check                  \

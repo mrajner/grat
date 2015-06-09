@@ -121,7 +121,7 @@ for test in ${test_what[*]} ; do
         {
           echo ---
           echo is: $is , should_be: $should_be
-          colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
+          diff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
 
           ${vimdiff:-false} && 
           {

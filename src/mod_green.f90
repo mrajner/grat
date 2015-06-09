@@ -481,7 +481,6 @@ subroutine convolve(site, date, results)
   use mod_utilities, only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace
   use mod_spherical
   use mod_data
-  use mod_date, only : dateandmjd
   use mod_polygon
   use mod_printing
   use mod_normalization, only: green_normalization
@@ -490,7 +489,7 @@ subroutine convolve(site, date, results)
   use mod_3d
 
   type(site_info),  intent(in) :: site
-  type(dateandmjd), intent(in), optional :: date
+  integer, intent(in), optional :: date(6)
 
   integer    :: igreen, idist, iazimuth, nazimuth
   real(dp)   :: azimuth, dazimuth
@@ -530,7 +529,7 @@ subroutine convolve(site, date, results)
   if (site%lp%if) then
     do i=1, size(site%lp%date)
 
-      if(all(site%lp%date(i, 1:6).eq.date%date(1:6))) then
+      if(all(site%lp%date(i, 1:6).eq.date(1:6))) then
         val(ind%model%sp) = site%lp%data(i)
         exit
       endif
@@ -553,12 +552,12 @@ subroutine convolve(site, date, results)
   if(.not.allocated(result_partial)) allocate(result_partial(size(result)))
 
   npoints       = 0
-  area          = 0
-  tot_area      = 0
-  tot_area_used = 0
+  area          = 0._dp
+  tot_area      = 0._dp
+  tot_area_used = 0._dp
 
-  result = 0
-  rsp    = 0
+  result = 0._dp
+  rsp    = 0._dp
 
   do igreen = 1, ubound(green_common,1)
     do idist = 1, ubound(green_common(igreen)%distance,1)
@@ -622,9 +621,10 @@ subroutine convolve(site, date, results)
             val    = val(ind%model%ls),          &
             level  = 1,                          &
             method = info(igreen)%interpolation, &
-            date   = date%date                   &
+            date   = date                        &
             )
         endif
+
 
         if (iok(1).eq.1 .and. int(val(ind%model%ls)).eq.1) then
           tot_area_used = tot_area_used +area
@@ -647,6 +647,7 @@ subroutine convolve(site, date, results)
             if (.not.(site%lp%if                        &
               .and.green_common(igreen)%distance(idist) &
               .lt.local_pressure_distance)) then
+
               call get_value (                          &
                 model(ind%model%sp),                    &
                 r2d(lat),                               &
@@ -654,8 +655,9 @@ subroutine convolve(site, date, results)
                 val(ind%model%sp),                      &
                 level     = 1,                          &
                 method    = info(igreen)%interpolation, &
-                date      = date%date                   &
+                date      = date                        &
                 )
+
             endif
 
             old_val_sp=val(ind%model%sp)
@@ -678,14 +680,16 @@ subroutine convolve(site, date, results)
               if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                 call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
               else
-                call get_value (                      &
-                  model(ind%model%hrsp),              &
-                  r2d(lat),                           &
-                  r2d(lon),                           &
-                  val(ind%model%hrsp),                &
-                  level  = 1,                         &
-                  method = info(igreen)%interpolation &
-                  ) 
+                if(ind%model%hrsp.ne.0) then
+                  call get_value (                      &
+                    model(ind%model%hrsp),              &
+                    r2d(lat),                           &
+                    r2d(lon),                           &
+                    val(ind%model%hrsp),                &
+                    level  = 1,                         &
+                    method = info(igreen)%interpolation &
+                    ) 
+                endif
               endif
 
               ! get T
@@ -708,7 +712,7 @@ subroutine convolve(site, date, results)
                   val(ind%model%t),                    &
                   level  = 1,                          &
                   method = info(igreen)%interpolation, &
-                  date   = date%date                   &
+                  date   = date                        &
                   )
 
               endif
@@ -952,7 +956,7 @@ subroutine convolve(site, date, results)
                           level%height(i),                     &
                           level  = level%level(i),             &
                           method = info(igreen)%interpolation, &
-                          date   = date%date                   &
+                          date   = date                        &
                           )
 
                         if (ind%model%vt.ne.0) then
@@ -961,7 +965,7 @@ subroutine convolve(site, date, results)
                             val    = level%temperature(i),           &
                             level  = level%level(i),                 &
                             method = info(igreen)%interpolation,     &
-                            date   = date%date                       &
+                            date   = date                            &
                             )
                         endif
 
@@ -971,7 +975,7 @@ subroutine convolve(site, date, results)
                             val    = level%humidity(i),               &
                             level  = level%level(i),                  &
                             method = info(igreen)%interpolation,      &
-                            date   = date%date                        &
+                            date   = date                             &
                             )
 
                           if (.not.isnan(level%humidity(i))) then
@@ -1344,7 +1348,7 @@ subroutine convolve(site, date, results)
 
               call get_value (                                                &
                 model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), &
-                level=1, method = info(igreen)%interpolation, date=date%date)
+                level=1, method = info(igreen)%interpolation, date=date)
 
               aux = (val(ind%model%ewt))                         &
                * area/d2r(green_common(igreen)%distance(idist))  &
@@ -1377,24 +1381,21 @@ subroutine convolve(site, date, results)
           if (header_p.and.output%header) then
 
             if(size(green_common).gt.1) then
-              write(moreverbose(ind%moreverbose%p)%unit, "(a2, x$)") "i"
+              write(moreverbose(ind%moreverbose%p)%unit, "(a2, x)", advance='no') "i"
             endif
 
             write(moreverbose(ind%moreverbose%p)%unit, &
-              '(a8, 8a13, $)')                         &
+              '(a8, 8a13)', advance ='no')                         &
               "name", "lat", "lon",                    &
               "distance", "azimuth",                   &
               "lat", "lon",                            &
               "area", "totarea"
 
             if (result_component) then
-              write(moreverbose(ind%moreverbose%p)%unit, &
-                '(a13, $)')                              &
-                (                                        &
-                trim(green(i)%dataname),                 &
-                i=lbound(green, 1),                      &
-                ubound(green, 1)                         &
-                )
+              do i=lbound(green, 1), ubound(green, 1)
+                write(moreverbose(ind%moreverbose%p)%unit, &
+                  '(a13)', advance='no') trim(green(i)%dataname)
+              enddo
             endif
 
             if (result_total) then
@@ -1446,9 +1447,11 @@ subroutine convolve(site, date, results)
               r2d(lat), r2d(lon), area, tot_area
 
             if (result_component) then
-              write(moreverbose(ind%moreverbose%p)%unit, &
-                '(' // output%form //'$)'),              &
-                (result(i), i =1, size(result))
+              do i =1, size(result)
+                write(moreverbose(ind%moreverbose%p)%unit, &
+                  '(' // output%form //'$)'),              &
+                  (result(i))
+              enddo
             endif
 
             if (result_total) then
@@ -1496,7 +1499,7 @@ subroutine convolve(site, date, results)
                     val    = val(i),                     &
                     level  = 1,                          &
                     method = info(igreen)%interpolation, &
-                    date   = date%date                   &
+                    date   = date                        &
                     )
                 endif
               enddo

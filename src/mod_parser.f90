@@ -396,7 +396,7 @@ subroutine intro (     &
         endif
 
         ! -ws -- strict warning
-        if ( &
+        if (                                                 &
           any(cmd_line(i)%field(1)%subfield(1:)%name.eq."s") &
           ) then
           warnings%strict  = .true.
@@ -433,15 +433,18 @@ subroutine intro (     &
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."c")) then
           log%noclobber = .false.
         endif
+
         if (any(cmd_line(i)%field(1)%subfield(2:)%name.eq."full")) then
           log%full = .true.
         endif
+
         if (len(trim(cmd_line(i)%field(1)%subfield(1)%name)).gt.0) then
           log%if = .true.
           log%name=cmd_line(i)%field(1)%subfield(1)%name
 
           if(cmd_line(i)%field(1)%subfield(1)%dataname.ne."") then
-            log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)//"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
+            log%name=trim(cmd_line(i)%field(1)%subfield(1)%name)     &
+              //"@"//trim(cmd_line(i)%field(1)%subfield(1)%dataname)
           endif
 
           if (file_exists(log%name).and.log%noclobber) then
@@ -456,6 +459,7 @@ subroutine intro (     &
           else
             open (newunit = log%unit, file = log%name, action = "write" )
           endif
+
         else
           log%unit=output_unit
         endif
@@ -498,9 +502,10 @@ subroutine intro (     &
   enddo
 
   write(log%unit, form%separator)
+
   write (log%unit, form%i0) "Command parsing:"
 
-  do i=1, size(cmd_line)
+  do i = 1, size(cmd_line)
     call parse_option(   &
       cmd_line(i),       &
       accepted_switches, &
