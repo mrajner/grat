@@ -131,7 +131,7 @@ end subroutine
 ! =============================================================================
 subroutine read_green (green, print)
   use mod_utilities, only: file_exists, skip_header, r2d, d2r
-  use iso_fortran_env
+  use, intrinsic :: iso_fortran_env
   use mod_printing
   use mod_constants, only: earth, pi
   use mod_normalization, only: green_normalization

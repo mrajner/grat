@@ -4,6 +4,7 @@
 !! \date 2013-03-04
 ! ==============================================================================
 module mod_constants
+
   implicit none
 
   integer, parameter :: dp = selected_real_kind(15)
@@ -12,8 +13,6 @@ module mod_constants
   real(dp), parameter ::       & 
     R_air  = 287.05_dp,        & ! dry air constant  [J/kg/K]
     pi     = 4._dp*atan(1._dp)   ! 3.1415...
-
-    ! t_zero_deleteifnotnes = -273.15_dp ! 0 kelvin in Celcius
 
   real(dp), parameter :: speed_of_light = 299792458._dp ! [m/s]
   
@@ -99,11 +98,11 @@ module mod_constants
 
   type(celestial_object_data), parameter :: &
     moon        = celestial_object_data (   &
-    distance    = 384000000._dp,            & !m
+    distance    = 384.e6_dp,                & !m
     mass        = 7.35e22_dp                & !kg
     ),                                      &
     sun         = celestial_object_data (   &
-    distance    = 149600000000._dp ,        & !m
+    distance    = 149.6e9_dp,               & !m
     mass        = 1.99e30_dp                & !kg
     )
 

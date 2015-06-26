@@ -1,5 +1,6 @@
 module mod_printing
-  use iso_fortran_env, only: output_unit
+  use, intrinsic :: iso_fortran_env, only: output_unit
+
   implicit none
 
   !----------------------------------------------------
@@ -142,7 +143,7 @@ end subroutine
 subroutine progress(j, time, cpu, every)
   use mod_constants,   only: sp
   use mod_cmdline,     only: moreverbose, quiet, quiet_step
-  use iso_fortran_env, only: output_unit
+  use, intrinsic :: iso_fortran_env, only: output_unit
 
   integer :: j, k
   integer :: ii
