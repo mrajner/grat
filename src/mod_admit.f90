@@ -28,10 +28,12 @@ real(dp) function admit(site_, date, number)
 
     val=0
     do i=1,size(site_%lp%date)
+
       if(all(site_%lp%date(i,1:6).eq.date(1:6))) then
         val=site_%lp%data(i)
         exit
       endif
+
       if(i.eq.size(site_%lp%date)) then
         if(first_warning) then
           call print_warning("date not found in @LP")
