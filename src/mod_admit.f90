@@ -80,9 +80,6 @@ real(dp) function admit(site_, date, number)
   endif
 
   if (transfer_sp%if) then
-    if (ind%model%h.eq.0 ) then
-      if (first_warning) call print_warning("transfer on topo but no @H")
-    endif
 
     ! get T
     if (ind%model%t.ne.0) then
