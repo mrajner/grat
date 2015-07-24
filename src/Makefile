@@ -1,4 +1,4 @@
-FC  := gfortran
+#  FC  := gfortran
 
 # user definitions
 LIBDIR        := /usr/local/lib
