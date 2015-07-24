@@ -697,10 +697,10 @@ subroutine nctime2date (model, print)
   call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
 
   ! not working with old gfortran
-  allocate(character(len=length):: dummy)
+  ! allocate(character(len=length):: dummy)
 
   ! working 
-  ! dummy=repeat(" ",length)
+  dummy=repeat(" ",length)
 
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
