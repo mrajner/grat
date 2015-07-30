@@ -1,4 +1,6 @@
+#  set fortranc compiler or export system wide $FC
 #  FC  := gfortran
+#  FC  := ifort
 
 # user definitions
 LIBDIR        := /usr/local/lib
