@@ -1,4 +1,4 @@
-FC  := gfortran
+#  FC  := gfortran
 OPT := -O2
 
 GRATLIB := -I/usr/local/include \
