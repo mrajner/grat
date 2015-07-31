@@ -137,7 +137,7 @@ subroutine read_green (green, print)
   use mod_normalization, only: green_normalization
 
   integer :: lines, fileunit, io_status, i
-  real (dp), allocatable, dimension(:) :: tmp
+  real(dp), allocatable, dimension(:) :: tmp
   type(green_functions) :: green
   logical, optional :: print
 
