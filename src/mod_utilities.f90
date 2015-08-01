@@ -254,6 +254,7 @@ subroutine skip_header (unit, comment_char)
   read (unit, '(a)', iostat = io_stat) dummy
 
   if(io_stat == iostat_end) then
+    backspace(unit)
     return
   endif
 
