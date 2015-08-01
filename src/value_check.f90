@@ -264,7 +264,7 @@ program value_check
   if (ind%moreverbose%d.ne.0) then
     do i=1, ubound(model,1)
       do j=1, ubound(model(i)%time,1)
-        write (moreverbose(ind%moreverbose%d)%unit, '(f9.3,1x,i4,5i2.2)') &
+        write (moreverbose(ind%moreverbose%d)%unit, '(f0.3,1x,i4,5i2.2)') &
           model(i)%time(j), model(i)%date(j,:)
       enddo
     enddo
