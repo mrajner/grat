@@ -21,12 +21,14 @@ LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 ifeq ($(FC),ifort)
 	FFLAGS               := $(OPT) -xHost -warn all
 	ENABLE_PREPROCESSING := -fpp
+	#  NETCDFF := -lnetcdf -I /home/mrajner/src/netcdf-fortran/fortran/ -L /home/mrajner/src/netcdf-fortran/fortran/ -lnetcdff
 endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
 	FFLAGS               := $(OPT)
 	ENABLE_PREPROCESSING := -cpp
+	#  NETCDFF := -lnetcdf -I /home/mrajner/src/netcdf-gfortran/fortran/ -L /home/mrajner/src/netcdf-gfortran/fortran/ -lnetcdff
 endif
 
 	NETCDFF := -lnetcdff
