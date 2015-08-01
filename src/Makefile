@@ -22,6 +22,7 @@ ifeq ($(FC),ifort)
 	FFLAGS               := $(OPT) -xHost -warn all
 	ENABLE_PREPROCESSING := -fpp
 	#  NETCDFF := -lnetcdf -I /home/mrajner/src/netcdf-fortran/fortran/ -L /home/mrajner/src/netcdf-fortran/fortran/ -lnetcdff
+	  NETCDFF := -lnetcdff
 endif
 
 # gfortran settings
