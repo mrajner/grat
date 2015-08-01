@@ -1058,7 +1058,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   if (model%ncid==0 .and. .not. model%if_constant_value) return
 
-  val=setnan()
+  val = setnan()
 
   if (model%if_constant_value) then
     val = model%constant_value
@@ -1079,8 +1079,8 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   if(lon.lt.min(model%lonrange(1), model%lonrange(2))) lon = lon + 360
   if(lon.gt.max(model%lonrange(1), model%lonrange(2))) lon = lon - 360
 
-  if ( &
-    lat.lt.min(model%latrange(1), model%latrange(2)) &
+  if (                                                   &
+    lat.lt.min(model%latrange(1), model%latrange(2))     &
     .or.lat.gt.max(model%latrange(1), model%latrange(2)) &
     .or.lon.lt.min(model%lonrange(1), model%lonrange(2)) &
     .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
