@@ -170,7 +170,7 @@ subroutine parse_admit(cmd_line_entry)
 
   allocate(admitance%value(size(cmd_line_entry%field)))
   do i=1,size(cmd_line_entry%field)
-    if (cmd_line_entry%field(i)%subfield(1)%name.ne.'' then
+    if (cmd_line_entry%field(i)%subfield(1)%name.ne.'') then
       read(cmd_line_entry%field(i)%subfield(1)%name, *) admitance%value(i)
     else
       admitance%value(i)=default_admitance_value

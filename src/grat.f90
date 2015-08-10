@@ -25,7 +25,7 @@
 !! \attention
 !! \c grat and value_check needs a \c netCDF library \cite netcdf
 !> \copyright
-!! Copyright 2013 by Marcin Rajner\n
+!! Copyright 2013–2015 by Marcin Rajner\n
 !! This program is free software: you can redistribute it and/or modify
 !! it under the terms of the GNU General Public License as published by
 !! the Free Software Foundation, either version 3 of the License, or
