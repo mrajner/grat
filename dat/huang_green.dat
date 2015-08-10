@@ -1,4 +1,4 @@
-# This file contains the AGGF computed by Huang et al. (1992)  
+# This file contains the AGGF computed by Huang et al. (2005) \cite Huang05  
 #phi[deg]   GN[muGal/mb]   dGN/dT[muGal/mb/degC]   dGN/dh[muGal/mb/m]   dGN/dz[muGal/mb/m]
   0.00001     -4910.0951               17.070873             0.474041            -0.000386
   0.00005     -4897.7677               16.980798             0.472547            -0.000386
