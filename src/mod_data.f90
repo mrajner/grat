@@ -223,7 +223,11 @@ subroutine model_aliases(model, dryrun, year, month, fieldname)
   select case (model%autoloadname)
 
   case ("NCEP", "NCEP2", "NCEP1")
-    if (.not.model%autoload) model%autoload=.true.
+
+    if (.not.model%autoload) then
+      model%autoload=.true.
+    endif
+
     if (model%autoloadname.eq."NCEP1") then
       prefix="/home/mrajner/dat/ncep_reanalysis/reanalysis1/"
     else
@@ -395,14 +399,6 @@ subroutine model_aliases(model, dryrun, year, month, fieldname)
     model%autoload = .false.
   endselect
 
-  if(present(fieldname)) then
-    ! stop "TODO"
-    ! print*, model%names
-    ! model%names(1)=fieldname
-    ! print*, model%names
-    ! stop "XXX"
-  endif
-
   ! listing in log
   model%constant_value =         &
     variable_modifier(           &
@@ -455,7 +451,7 @@ function variable_modifier (val, modifier, verbose, list_only)
   variable_modifier = val
   modifier_=modifier
   do i = 1, ntokens(modifier_,"@")
-    keyval=" "
+    keyval=''
 
     if (ntokens(modifier_,"@").eq.1) then
       key = modifier_

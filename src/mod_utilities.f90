@@ -562,7 +562,7 @@ subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename, ifcrea
   character(200) :: name
   character(6) :: output_format
   
-  name=""
+  name=''
 
   if (present(start)) then
     counter = start
@@ -576,7 +576,7 @@ subroutine uniq_name_unit (prefix, suffix, digits, start, unit, filename, ifcrea
     output_format="i3.3"
   endif
 
-  do while (file_exists(name) .or. name == "" )
+  do while (file_exists(name) .or. name == '' )
     write (name, '("tmp",'//output_format//',a)')  counter
     if (present(prefix)) name = prefix//name(4:)
     if (present(suffix)) name = trim(name)//suffix
