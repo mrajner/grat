@@ -687,6 +687,8 @@ subroutine nctime2date (model, print)
   character(:), allocatable :: dummy
   logical, optional :: print
 
+  date = 0
+
   status = nf90_inq_varid (model%ncid, model%names(5), varid)
   if (status /= nf90_noerr) return
 
@@ -733,9 +735,11 @@ subroutine nctime2date (model, print)
 
   else if (index(dummy,"Days since").eq.1) then
     ! this option for gldas from grace tellus
+
     do i=1,2
       dummy = dummy(index(dummy, ' ')+1:)
     enddo
+
     do
       ind=[index(dummy,'-'), index(dummy,':')]
       do i=1,2
@@ -743,12 +747,16 @@ subroutine nctime2date (model, print)
       enddo
       if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0) exit
     enddo
+
     dummy = dummy//" 0 0 0"
     read(dummy,*) date(1:3)
-    mjd_start = mjd (date)
+
+    mjd_start  = mjd (date)
     model%time = model%time *24
+
   else
     write (log%unit, form%i4 ) "unknown time begining"
+
   endif
 
   do i = 1, size(model%time)
