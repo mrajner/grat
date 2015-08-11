@@ -41,6 +41,10 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
+A: value_check
+	value_check -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
+	
+
 BUG: grat
 	grat -! -H -F test/data/test_data.nc @SP : sp \
 		-M2 -G @GN -Sj -D2012:6@H

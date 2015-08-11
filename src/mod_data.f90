@@ -18,8 +18,8 @@ module mod_data
     character(90) :: name
 
     ! varname,lonname,latname,levelname,timename
-    character(len=50) :: names(5) = &
-      [character (len=50) :: "z", "lon", "lat", "level", "time"]
+    character(len=25) :: names(5) = &
+      [character (len=25) :: "z", "lon", "lat", "level", "time"]
 
     character(len=100) :: datanames(5)=" "
 
@@ -897,6 +897,7 @@ subroutine get_variable(model, date, print, level)
       size(model%level) &
       )                 &
       )
+
   else
     allocate (          &
       model%data (      &
