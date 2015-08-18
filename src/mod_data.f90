@@ -179,7 +179,7 @@ subroutine parse_model(cmd_line_entry)
 
     else
       !check autoload
-      call model_aliases(model(i), dryrun=.true., fieldname="t2m")
+      call model_aliases(model(i), dryrun=.true.)
 
       if (.not.model(i)%if) then
         call print_warning (                                   &
@@ -195,7 +195,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine model_aliases(model, dryrun, year, month, fieldname)
+subroutine model_aliases(model, dryrun, year, month)
   use mod_printing
   use mod_utilities, only: file_exists
   use mod_cmdline,   only: warnings
@@ -203,7 +203,6 @@ subroutine model_aliases(model, dryrun, year, month, fieldname)
   type(file) :: model
   logical, intent(in), optional :: dryrun
   integer, intent(in), optional :: year, month
-  character(*), intent(in), optional :: fieldname
   character(150) :: prefix
   integer :: year_, month_
 
