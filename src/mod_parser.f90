@@ -685,7 +685,10 @@ subroutine parse_moreverbose (cmd_line_entry)
       endif
     endif
 
-    if (any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")) then
+    if (                                                             &
+      any(cmd_line_entry%field(i)%subfield(2:)%name.eq."s")          &
+      .or.any(cmd_line_entry%field(i)%subfield(2:)%name.eq."sparse") &
+      ) then
       moreverbose(i)%sparse = .true.
     endif
 

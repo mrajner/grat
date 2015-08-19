@@ -153,6 +153,7 @@ program grat
             write (output%unit,'(a13)',advance='no'), "G2D_t"
           endif
         endif
+
         if (method(3)) then
           if (                                                &
             all([inverted_barometer, non_inverted_barometer]) &
@@ -195,6 +196,7 @@ program grat
   endif
 
   do idate = start, ubound(date,1)
+
     if (idate.ge.1) then
       if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
 
@@ -325,6 +327,7 @@ program grat
             site(isite),            &
             date = date(idate)%date &
             )
+
         else
           call convolve ( &
             site(isite)   &
@@ -347,8 +350,8 @@ program grat
           )
       endif
 
-    enddo
-  enddo
+    enddo ! isite
+  enddo ! idate
 
   close(output_unit)
 end program
