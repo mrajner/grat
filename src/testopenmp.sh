@@ -9,21 +9,38 @@ set -e
 set -o nounset 
 set -o pipefail
 
-touch grat.f90
-make grat FC=gfortran FFLAGS="-fopenmp"
-grat -v |grep FFLAGS
+# touch grat.f90
+# make grat FC=gfortran FFLAGS="-fopenmp"
+# grat -v |grep FFLAGS
 
 
-for binname in grat_gfortran grat_gfortran_noomp ; do
+# for binname in grat_gfortran grat_gfortran_noomp ; do
+for binname in grat_gfortran_noomp ; do
 
-time            \
-../bin/$binname \
+# time            \
+# ../bin/$binname \
+  # -M2           \
+  # -G @GN        \
+  # -FERA@SP      \
+  # -D 2012, 2013:2@D   \
+  # -Sj -I3@DD:2@AD
+# done 
+
+time {
+  value_check -D 2012, 2013:2@D  | cut -f2 -d' ' | while read D ; do
+echo ../bin/$binname \
   -M2           \
   -G @GN        \
   -FERA@SP      \
-  -D 2012, 2013:2@D   \
+  -D $D \
   -Sj -I3@DD:2@AD
-done | awk '{if (NF>7){print $0,$7+$8+$9+$10}else{print $0}}'
+done | parallel 
+}
+
+
+
+
+done 
 
 # make clean
 # make grat FC=gfortran FFLAGS='-O2 -fopenmp'
