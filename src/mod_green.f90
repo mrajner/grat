@@ -1385,7 +1385,7 @@ subroutine convolve(site, date, results)
             endif
 
             write(moreverbose(ind%moreverbose%p)%unit, &
-              '(a8, 8a13)', advance ='no')                         &
+              '(a8, 8a13)', advance ='no')             &
               "name", "lat", "lon",                    &
               "distance", "azimuth",                   &
               "lat", "lon",                            &
@@ -1393,7 +1393,7 @@ subroutine convolve(site, date, results)
 
             if (result_component) then
               do i=lbound(green, 1), ubound(green, 1)
-                write(moreverbose(ind%moreverbose%p)%unit, &
+                write(moreverbose(ind%moreverbose%p)%unit,       &
                   '(a13)', advance='no') trim(green(i)%dataname)
               enddo
             endif

@@ -17,6 +17,7 @@ real(dp) function geometry (psi, h, z, method)
   character(*), optional :: method
   real(dp) :: l, gamma
 
+  ! TODO
   STOP "DEBUG - check this function for numerical stability"
 
   if(present(method)) then
