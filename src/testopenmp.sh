@@ -26,6 +26,7 @@ for binname in grat_gfortran_noomp ; do
   # -Sj -I3@DD:2@AD
 # done 
 
+for j in "" "-j1" ; do
 time {
   value_check -D 2012, 2013:2@D  | cut -f2 -d' ' | while read D ; do
 echo ../bin/$binname \
@@ -33,9 +34,10 @@ echo ../bin/$binname \
   -G @GN        \
   -FERA@SP      \
   -D $D \
-  -Sj -I3@DD:2@AD
-done | parallel 
+  -Sj -I93@DD:8@AD
+done | parallel $j
 }
+done
 
 
 
