@@ -168,11 +168,29 @@ subroutine parse_site(cmd_line_entry)
         continue
 
       case("jb")
-        ! Bajkal Lakea -Sb
+        ! Bajkal Lakea -Sjb
         call more_sites (1,start_index)
         site(start_index)%name   = "bajk_a"
         site(start_index)%lat    = 53.699959
         site(start_index)%lon    = 108.379898
+        site(start_index)%height = 0.
+        continue
+
+      case("h")
+        ! hornsund
+        call more_sites (1,start_index)
+        site(start_index)%name   = "horn"
+        site(start_index)%lat    = 77.0000
+        site(start_index)%lon    = 15.00
+        site(start_index)%height = 0.
+        continue
+
+      case("a")
+        ! hornsund
+        call more_sites (1,start_index)
+        site(start_index)%name   = "arct"
+        site(start_index)%lat    = -62.16
+        site(start_index)%lon    = -58.471
         site(start_index)%height = 0.
         continue
 
