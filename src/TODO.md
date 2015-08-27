@@ -1,5 +1,6 @@
 BUG? era sp2014 size? and datalisting trough grat
 
+dodać odczytywanie lsdm days since....
 
 
 * -C option to center data files
