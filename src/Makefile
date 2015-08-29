@@ -32,7 +32,7 @@ ifeq ($(FC),gfortran)
 	NETCDFF := -lnetcdf -I/home/mrajner/src/netcdf-gfortran/fortran/ -L/home/mrajner/src/netcdf-gfortran/fortran/ -lnetcdff
 endif
 
-	#  NETCDFF := -lnetcdf -lnetcdff
+	NETCDFF := -lnetcdf -lnetcdff
 
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
@@ -183,7 +183,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 
 %$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) -I/usr/local/include
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) 
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
