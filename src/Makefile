@@ -32,7 +32,7 @@ ifeq ($(FC),gfortran)
 	NETCDFF := -lnetcdf -I/home/mrajner/src/netcdf-gfortran/fortran/ -L/home/mrajner/src/netcdf-gfortran/fortran/ -lnetcdff
 endif
 
-	#  NETCDFF := -lnetcdff
+	NETCDFF := -lnetcdff
 
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
