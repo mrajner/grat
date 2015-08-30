@@ -92,10 +92,10 @@ end subroutine
 !! All arguments in radians
 ! =============================================================================
 subroutine spher_trig_inverse (lat1, lon1, lat2, lon2, distance, azimuth, haversine)
-  real(dp), intent (in)         :: lat1, lon1, lat2, lon2
-  real(dp)                      :: dlat, dlon, a
-  real(dp), intent (out)        :: distance, azimuth
-  logical, intent(in), optional :: haversine
+  real(dp), intent (in)            :: lat1, lon1, lat2, lon2
+  real(dp)                         :: dlat, dlon, a
+  real(dp), intent (out) :: distance, azimuth
+  logical, intent(in), optional    :: haversine
 
   dlon = lon2 - lon1
   dlat = lat2 - lat1

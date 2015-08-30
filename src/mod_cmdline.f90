@@ -176,32 +176,40 @@ subroutine collect_args (dummy)
   allocate(cmd_line(ntokens(dummy)))
 
   do i=1, ntokens(dummy)
+
     indeks_space       = index(dummy," ")
     cmd_line(i)%full   = dummy(1:indeks_space-1)
     cmd_line(i)%switch = cmd_line(i)%full(1:2)
     allocate(cmd_line(i)%field (count_separator (cmd_line(i)%full,",") + 1))
 
     dummy_aux = cmd_line(i)%full(3:)
-    do j=1,size(cmd_line(i)%field)
-      indeks_comma=index(dummy_aux,",")
+
+    do j = 1, size(cmd_line(i)%field)
+
+      indeks_comma = index(dummy_aux,",")
+
       if (indeks_comma.gt.0) then
-        cmd_line(i)%field(j)%full=dummy_aux(1:indeks_comma-1)
+        cmd_line(i)%field(j)%full = dummy_aux(1:indeks_comma-1)
       else
-        cmd_line(i)%field(j)%full=dummy_aux
+        cmd_line(i)%field(j)%full = dummy_aux
       endif
 
-      allocate(cmd_line(i)%field(j)%subfield &
-        (count_separator (cmd_line(i)%field(j)%full,":") + 1))
+      allocate(                                              &
+        cmd_line(i)%field(j)%subfield                        &
+        (count_separator(cmd_line(i)%field(j)%full,":") + 1) &
+      )
+
       dummy_aux2 = cmd_line(i)%field(j)%full
       do n = 1, count_separator(cmd_line(i)%field(j)%full,":")+1
-        indeks_colon=index(dummy_aux2,":")
+
+        indeks_colon = index(dummy_aux2,":")
         if (indeks_colon.gt.0) then
           cmd_line(i)%field(j)%subfield(n)%name=dummy_aux2(1:indeks_colon-1)
         else
           cmd_line(i)%field(j)%subfield(n)%name=dummy_aux2
         endif
-        dummy_aux2=dummy_aux2(indeks_colon+1:)
-        indeks_at=index(cmd_line(i)%field(j)%subfield(n)%name,"@")
+        dummy_aux2 = dummy_aux2(indeks_colon+1:)
+        indeks_at = index(cmd_line(i)%field(j)%subfield(n)%name,"@")
 
         if (indeks_at.gt.0) then
 
@@ -216,7 +224,8 @@ subroutine collect_args (dummy)
       enddo
       dummy_aux=dummy_aux(indeks_comma+1:)
     enddo
-    dummy= dummy(indeks_space+1:)
+
+    dummy = dummy(indeks_space+1:)
   enddo
 end subroutine
 
@@ -248,11 +257,13 @@ subroutine get_command_cleaned(dummy)
     endif
 
     if(check_if_switch_or_minus(b).or.i.eq.iargc()) then
+
       if(trim(dummy).eq."") then
         dummy=trim(arg)
       else
         dummy=trim(dummy)//" "//trim(arg)
       endif
+
     endif
 
   enddo
@@ -276,10 +287,10 @@ pure function check_if_switch_or_minus(dummy)
   character(*), intent(in) :: dummy
 
   check_if_switch_or_minus = .false.
-  if (dummy(1:1).eq."-") check_if_switch_or_minus = .true.
-  if (dummy(2:2).eq." ") check_if_switch_or_minus = .false.
-  if (dummy(2:2).eq.",") check_if_switch_or_minus = .false.
-  if (dummy(2:2).eq.":") check_if_switch_or_minus = .false.
+  if (dummy(1:1).eq."-") check_if_switch_or_minus      = .true.
+  if (dummy(2:2).eq." ") check_if_switch_or_minus      = .false.
+  if (dummy(2:2).eq.",") check_if_switch_or_minus      = .false.
+  if (dummy(2:2).eq.":") check_if_switch_or_minus      = .false.
   if (is_numeric(dummy(2:2))) check_if_switch_or_minus = .false.
 end function
 
