@@ -1,5 +1,6 @@
 #  set fortranc compiler or export system wide $FC
-#  FC  := gfortran
+# if not set use gfortran
+FC  = gfortran
 #  FC  := ifort
 
 # user definitions
@@ -42,7 +43,7 @@ FPP :=                                             \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 A: value_check
-	value_check -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
+	../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
 	
 
 BUG: grat
