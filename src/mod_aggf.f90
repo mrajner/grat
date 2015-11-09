@@ -273,7 +273,9 @@ function aggf (         &
     endif
   enddo
 
-  aggf = aggf/atmosphere%pressure%standard*gravity%constant*green_normalization("m", psi=psi)
+  aggf = aggf/atmosphere%pressure%standard &
+    *gravity%constant                      &
+    *green_normalization("m", psi = psi)
   
 end function
 

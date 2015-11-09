@@ -7,8 +7,7 @@ all: \
 	logo_grat.pdf \
 	logo_gr@.pdf \
 	logo_grat.svg \
-	logo_gr@.svg \
-	favicon.ico
+	logo_gr@.svg 
 
 %.pdf: %.tex
 	pdflatex $<
