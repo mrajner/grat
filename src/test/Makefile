@@ -19,12 +19,11 @@ endif
 # gfortran settings
 ifeq ($(FC),gfortran)
 	FFLAGS  := \
-		$(OPT)   \
-		-I/home/mrajner/src/netcdf-gfortran/fortran 
+		$(OPT)
 	ENABLE_PREPROCESSING = -cpp
 endif
 
-NETCDFF := -lnetcdff
+NETCDFF := -lnetcdf -lnetcdff 
 
 all: ask run data test
 	
@@ -50,7 +49,7 @@ test:
 	cd tests/ && ./stat.sh
 
 create_data: create_data.f90 data
-	$(FC) $< -o $@ $(FFLAGS) $(NETCDFF) $(GRATLIB)
+	$(FC) $< -o $@ $(FFLAGS)  $(GRATLIB) $(NETCDFF)
 
 run: create_data
 	./$< 
