@@ -1,6 +1,6 @@
 #  set fortranc compiler or export system wide $FC
 # if not set use gfortran
-FC  = gfortran
+#  FC  = gfortran
 #  FC  := ifort
 
 # user definitions
