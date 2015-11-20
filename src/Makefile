@@ -2,6 +2,9 @@
 # if not set use gfortran
 #  FC  = gfortran
 #  FC  := ifort
+#
+
+FC ?= gfortran
 
 # user definitions
 LIBDIR        := /usr/local/lib
