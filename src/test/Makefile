@@ -1,4 +1,5 @@
-#  FC  := gfortran
+FC  ?= gfortran
+
 OPT := -O2
 
 GRATLIB := -I/usr/local/include \
@@ -24,6 +25,7 @@ ifeq ($(FC),gfortran)
 endif
 
 NETCDFF := -lnetcdf -lnetcdff 
+NETCDFF := -I/usr/lib64/gfortran/modules/ -L/usr/lib64/ -lnetcdf -lnetcdff
 
 all: ask run data test
 	
