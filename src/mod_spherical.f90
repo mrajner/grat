@@ -1,3 +1,4 @@
+!> \file
 module mod_spherical
   use mod_constants, only: dp, pi
 
