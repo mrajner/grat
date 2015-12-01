@@ -33,10 +33,12 @@ real(dp) function geometry (psi, h, z, method)
     endif
 
   else
-    l = ((earth%radius + h)**2 + (earth%radius + z)**2 &
+    l =                                                       &
+      ((earth%radius + h)**2 + (earth%radius + z)**2          &
       - 2.*(earth%radius+h)*(earth%radius+z)*cos(psi))**(0.5)
 
-    geometry = ((earth%radius +z)*cos(psi) - (earth%radius + h))/l**3.
+    geometry = &
+      ((earth%radius +z)*cos(psi) - (earth%radius + h))/l**3.
   endif
 end function
 
@@ -68,7 +70,7 @@ real(dp) function potential (psi1, psi2, dazimuth, h, z1, z2)
   l3 = log(r1-r*cos(psi1)+s3)*6*r**3*cos(psi2)*(sin(psi2))**2
   l4 = log(r2-r*cos(psi1)+s4)*6*r**3*cos(psi2)*(sin(psi2))**2
 
-  potential= &
+  potential=                &
     s1*n1-s2*n2-s3*n3+s4*n4 &
     -l1+l2+l3-l4
 
@@ -116,9 +118,10 @@ real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, heig
   real(dp) :: theta, lambda, height       ! atmosphere cell
   real(dp) :: r_s, r, aux
 
-  aux=sin(pi/2.-theta_s)*sin(pi/2.-theta)   &
+  aux= &
+    + sin(pi/2.-theta_s)*sin(pi/2.-theta)   &
     * (                                     &
-    cos(pi/2.-lambda_s)*cos(pi/2.-lambda)   &
+    + cos(pi/2.-lambda_s)*cos(pi/2.-lambda) &
     + sin(pi/2.-lambda_s)*sin(pi/2.-lambda) &
     )                                       &
     + cos(pi/2.-theta_s)*cos(pi/2.-theta)
