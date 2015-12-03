@@ -566,12 +566,18 @@ subroutine convolve(site, date, results)
 
       if (info(igreen)%azimuth%step.eq.0) then
         nazimuth =                                                            &
-          (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360 *        &
-          max(int(360*sin(d2r(green_common(igreen)%distance(idist)))), 100) * &
-          info(igreen)%azimuth%denser
-        if (nazimuth.eq.0) nazimuth=1
+          (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/360          &
+          * max(int(360*sin(d2r(green_common(igreen)%distance(idist)))), 100) &
+          * info(igreen)%azimuth%denser
+
+        if (nazimuth.eq.0) then
+          nazimuth=1
+        endif
+
         dazimuth = (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/nazimuth
+
       else
+
         dazimuth = info(igreen)%azimuth%step
         nazimuth = (info(igreen)%azimuth%stop-info(igreen)%azimuth%start)/dazimuth
       endif
@@ -666,19 +672,20 @@ subroutine convolve(site, date, results)
 
               ! get RSP if given
               if (ind%model%rsp.ne.0) then
-                call get_value (                       &
-                  model(ind%model%rsp),                &
-                  r2d(lat),                            &
-                  r2d(lon),                            &
-                  val(ind%model%rsp),                  &
-                  level=1,                             &
-                  method = info(igreen)%interpolation  &
+                call get_value (                      &
+                  model(ind%model%rsp),               &
+                  r2d(lat),                           &
+                  r2d(lon),                           &
+                  val(ind%model%rsp),                 &
+                  level = 1,                          &
+                  method = info(igreen)%interpolation &
                   )
               endif
               old_val_rsp=val(ind%model%rsp)
 
               if(transfer_sp%if.and..not.all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                 call print_warning("@RSP or @HRSP with -U is missing", error=.true.)
+
               else
                 if(ind%model%hrsp.ne.0) then
                   call get_value (                      &
@@ -724,10 +731,16 @@ subroutine convolve(site, date, results)
                 .or. ind%green%g3d.ne.0 &
                 )                       &
                 ) then
-                call get_value (                                              &
-                  model(ind%model%hp), r2d(lat), r2d(lon), val(ind%model%hp), &
-                  level=1, method = info(igreen)%interpolation)
-              endif
+
+                  call get_value (                      &
+                    model(ind%model%hp),                &
+                    r2d(lat),                           &
+                    r2d(lon),                           &
+                    val(ind%model%hp),                  &
+                    level = 1,                          &
+                    method = info(igreen)%interpolation &
+                    )
+                endif
 
               ! get H
               if (ind%model%h.ne.0 &
