@@ -39,9 +39,7 @@ other:
 		interpolation_ilustration.pdf \
 		interpolation_ilustration.png 
 
-polygon_ilustration.pdf: polygon_ilustration.sh
-	bash $<
-
+polygon_ilustration.pdf: polygon_ilustration.sh ./interpn1.dat
 interpolation_ilustration.pdf: interpolation_ilustration.tex
 	bash interpolation_ilustration.sh
 	pdflatex -shell-escape $<
