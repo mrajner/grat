@@ -578,6 +578,9 @@ subroutine get_dimension (model, i, print)
 
   if (.not. (present(print).and..not.print))then
     write (log%unit, form%i4, advance='no') "Getting dim:",trim(model%names(i)), ".."
+    print*, ''
+    print*, ''
+    print*, model%names
   endif
 
   status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
@@ -603,6 +606,7 @@ subroutine get_dimension (model, i, print)
   endif
 
   if(status /= nf90_noerr.and.any(i.eq.[2,3])) then
+
     call print_warning("key variable not found: " &
       // trim(model%names(i)), error=.true.)
 
