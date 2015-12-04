@@ -16,11 +16,11 @@ grdmath -R9/12/9/12 -I1 Y X RAND = $grd
 for co in n l
 do
   value_check                       \
-    -F $grd:z:x:y                   \
+    -F ${grd}:z:x:y                   \
     -S 9/10/9/10:0.04 -I ${co} @ I \
-    -o interp${co}1.dat             \
-    -L interp1.dat@l 
+    # -o interp${co}1.dat             \
+    # -L interp1.dat@l  -V
 done
 
-perl -n -i -e 'print if $. <= 4' interp1.dat
+# perl -n -i -e 'print if $. <= 4' interp1.dat
 
