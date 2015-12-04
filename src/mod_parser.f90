@@ -358,9 +358,20 @@ subroutine intro (     &
     call exit
   endif
 
-  if (any(cmd_line%switch.eq.'-v')                   &
-    .and.if_accepted_switch("-v",accepted_switches)) &
-    then
+  if (                                               &
+    any(cmd_line%switch.eq.'-v')                     &
+    .and.if_accepted_switch("-v",accepted_switches)) then
+
+    if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vv") then
+      write(output_unit,'(a)'), __GRAT_VERSION__
+      call exit
+    endif
+
+    if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vd") then
+      write(output_unit,'(a)'), __CDATE__
+      call exit
+    endif
+
     call print_version (                 &
       program_calling = program_calling, &
       version         = version,         &
@@ -369,11 +380,12 @@ subroutine intro (     &
       compiler        = compiler         &
       )
     call exit
+
   endif
 
-  if (any(cmd_line%switch.eq.'-w')                   &
-    .and.if_accepted_switch("-w",accepted_switches)) &
-    then
+    if (any(cmd_line%switch.eq.'-w')                   &
+      .and.if_accepted_switch("-w",accepted_switches)) &
+      then
 
     do i=1,size(cmd_line)
       if (cmd_line(i)%switch.eq."-w") then

@@ -19,12 +19,12 @@ do
   if [[ $i -eq 1 ]];then
     NAME_out=$NAME;E=""; Z=""
   else
-    NAME_out=${NAME}2; E=-E200;Z="-I0.01 -Q"
+    NAME_out=${NAME}2; E=-E200;Z="-I0.01 -nn"
   fi
-  grdmath \
-      -r \
+  grdmath           \
+      -r            \
       -R${R} -I${I} \
-      0 1 RAND \
+      0 1 RAND      \
       = ${NAME}_F.grd
 
   grdsample ${NAME}_F.grd ${Z} -G${NAME}.grd
@@ -32,7 +32,8 @@ do
   grd2xyz ${NAME}.grd > ${NAME}.dat
 
   grd2cpt ${NAME}.grd -E8 > ${NAME}.cpt
-  makecpt -Cjet -T-0.7/1.3/.1 > ${NAME}.cpt
+
+  makecpt -Chaxby -T-0.7/1.3/.1 > ${NAME}.cpt
 
   grdimage             \
     ${NAME}.grd        \

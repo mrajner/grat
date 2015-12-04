@@ -25,8 +25,7 @@ module mod_cmdline
 
   type cmd_line_arg
     character(2) :: switch
-    type (field_info), allocatable, &
-      dimension(:) :: field
+    type (field_info), allocatable, dimension(:) :: field
     character (len=455) :: full
   end type
 

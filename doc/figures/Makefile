@@ -1,12 +1,14 @@
-all: \
-	spher_area.pdf spher_area.svg \
+all:                                           \
+	spher_area.pdf                                \
+  spher_area.svg                               \
 	convolution_scheme.pdf convolution_scheme.pdf \
-	polygon_ilustration.pdf polygon_ilustration.png\
-	interpolation_ilustration.pdf\
-	interpolation_ilustration.svg \
-	logo_grat.pdf \
-	logo_gr@.pdf \
-	logo_grat.svg \
+	polygon_ilustration.pdf                       \
+	polygon_ilustration.png                       \
+	interpolation_ilustration.pdf                 \
+	interpolation_ilustration.svg                 \
+	logo_grat.pdf                                 \
+	logo_gr@.pdf                                  \
+	logo_grat.svg                                 \
 	logo_gr@.svg 
 
 %.pdf: %.tex
@@ -39,7 +41,10 @@ other:
 		interpolation_ilustration.pdf \
 		interpolation_ilustration.png 
 
-polygon_ilustration.pdf: polygon_ilustration.sh ./interpn1.dat
+polygon_ilustration.pdf: polygon_ilustration.sh interpn1.dat
+	./$<
+interpn1.dat: interpolation_ilustration.sh
+	./$<
 interpolation_ilustration.pdf: interpolation_ilustration.tex
 	bash interpolation_ilustration.sh
 	pdflatex -shell-escape $<
