@@ -1,10 +1,10 @@
 #  set fortranc compiler or export system wide $FC
 # if not set use gfortran
-#  FC ?= gfortran
+FC ?= gfortran
 
 # for 
 ifeq ($(FC),f77)
-	FC:=gfortran
+	FC := gfortran
 endif
 
 #TODO
@@ -168,20 +168,19 @@ clean:
 	rm -fv *{.o,.mod,.a,so} $(FC)/* fort??????
 	
 # local installation of executables
-LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-$(LINKS_DIR)/%: $(PROGS_DIR)/%$(SUFFIX) .FORCE
+LINKS := $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
+$(LINKS_DIR)/%: $(PROGS_DIR)/%_$(FC)$(SUFFIX) .FORCE
 	ln -sf $(realpath $<) $@
 link: $(LINKS)
 unlink: 
 	-rm -f $(LINKS)
 
-INSTALL_FILES := \
+INSTALL_FILES :=                                       \
   $(addprefix $(INCDIR)/,$(patsubst $(FC)/%,%,$(MOD))) \
-  $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
+  $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS))           \
   $(LIBDIR)/libgrat.a             
     
 install: $(INSTALL_FILES)
-	@echo $(INSTALL_FILES)
 
 uninstall: 
 	$(call colorecho,1,$@)
@@ -217,7 +216,7 @@ $(PROGS_DIR)/%_$(FC)$(SUFFIX):%.f90 $(FC)/libgrat$(SUFFIX).a
     $(NETCDFF)
 
 $(FC)/libgrat$(SUFFIX).a: $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a 
-	ln -sf $(addprefix $(PWD)/,$<) $(addprefix $(PWD)/,$@)
+	ln -sf $(realpath $<) $@
 
 $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
 	$(call colorecho,4,$@)
