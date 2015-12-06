@@ -4,7 +4,7 @@ OPT := -O2
 
 GRATLIB := -I/usr/local/include \
 						-L/usr/local/lib     \
-						-lgrat
+							-lgrat
 
 # ifort settings
 ifeq ($(FC),ifort)

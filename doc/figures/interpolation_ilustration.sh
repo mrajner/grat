@@ -20,7 +20,7 @@ for co in n l
 do
   $VC                       \
     -F ${grd}:z:x:y                   \
-    -S 9/10/9/10:0.04 -I ${co} @ I \
+    -S 9/10/9/10:0.04 -I ${co} @ I | tee >(wc -l) >(head) >/dev/null
     # -o interp${co}1.dat             \
     # -L interp1.dat@l  -V
 done
