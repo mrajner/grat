@@ -88,7 +88,9 @@ all: $(DIRS) $(FC)/libgrat$(SUFFIX).a $(PROGS)
 $(DIRS):
 	type $(FC) && mkdir -p $@
 
-B: grat
+B: 
+	make grat FC=gfortran
+	make grat FC=ifort
 	grat -D 2010 : 5@D : 22@H -V
 
 #  A: value_check
@@ -168,10 +170,12 @@ clean:
 	rm -fv *{.o,.mod,.a,so} $(FC)/* fort??????
 	
 # local installation of executables
-LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-$(LINKS_DIR)/%: $(PROGS_DIR)/%$(SUFFIX) .FORCE
+LINKS := $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
+$(LINKS_DIR)/%: $(PROGS_DIR)/%$$(SUFFIX) .FORCE
+	echo aa
 	ln -sf $(realpath $<) $@
-link: $(LINKS)
+link: $(LINKS) 
+	echo $(LINKS)
 unlink: 
 	-rm -f $(LINKS)
 
@@ -227,12 +231,12 @@ $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
 test: all install
 	make -C test FC=$(FC) OPT=$(OPT)
 
-# module dependencies
-#  ifndef NODEP
-#  -include mod_dep.makefile
-#  mod_dep.makefile: mod_dep.awk
-	#  awk -f $< > $@
-#  endif
+#  module dependencies
+ifndef NODEP
+-include mod_dep.makefile
+mod_dep.makefile: mod_dep.awk
+	awk -f $< > $@
+endif
 
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
@@ -243,6 +247,8 @@ test: all install
 	#  $(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
 .FORCE:
+
+OBSOLETE:
 #  # documentation
 #  dochtml: doc
 	#  firefox ../doc/html/index.html &
