@@ -15,7 +15,7 @@ LIBDIR        := /usr/local/lib
 INCDIR        := /usr/local/include
 BINDIR        := /usr/local/bin
 LINKS_DIR     := ~/.local/bin
-SUFFIX        := _$(FC)$(OPT)
+SUFFIX        := $(OPT)
 
 # passing compilation info to program
 FC_INFO       := $(shell $(FC) --version | sed -n 1p )
@@ -29,24 +29,20 @@ LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 ifeq ($(FC),ifort)
 	FFLAGS               := $(OPT) -xHost -warn all
 	ENABLE_PREPROCESSING := -fpp
-		#  NETCDFF := -lnetcdff
-		NETCDFF :=                                   \
-			-I/usr/local/include -L/usr/local/lib64 -lnetcdf \
+	NETCDFF :=                                   \
+		-I/usr/local/include -L/usr/local/lib64 -lnetcdf \
 		-I/home/mrajner/src/netcdf-fortran/fortran/  \
 		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
-		MODULEDIR := -module $(FC)
+	MODULEDIR := -module $(FC)
 endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
 	FFLAGS               := $(OPT)
 	ENABLE_PREPROCESSING := -cpp
-	#  NETCDFF := -lnetcdf -I/home/mrajner/src/netcdf-gfortran/fortran/ -L/home/mrajner/src/netcdf-gfortran/fortran/ -lnetcdff
-	#  NETCDFF := -I/usr/lib64/gfortran/modules/ -L/usr/lib64/ -lnetcdf -lnetcdff
-	NETCDFF := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
-MODULEDIR := -J$(FC)
+	NETCDFF   := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
+	MODULEDIR := -J$(FC)
 endif
-
 
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
@@ -55,12 +51,44 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-B: grat
-	grat -D 2010 : 5@D : 22@H -V
+SRCS      :=                      \
+						mod_constants.f90     \
+						mod_utilities.f90     \
+						mod_cmdline.f90       \
+						mod_printing.f90      \
+						mod_spherical.f90     \
+						mod_mjd.f90           \
+						mod_normalization.f90 \
+						mod_atmosphere.f90    \
+						mod_aggf.f90          \
+						mod_polygon.f90       \
+						mod_data.f90          \
+						mod_date.f90          \
+						mod_site.f90          \
+						mod_3d.f90            \
+						mod_green.f90         \
+						mod_admit.f90         \
+						mod_parser.f90        
 
-A: value_check
-	../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
-	
+PROGSSRCS :=                  \
+						grat.f90          \
+						value_check.f90   \
+						polygon_check.f90
+
+OBJS            := $(addprefix $(FC)/,$(SRCS:.f90=$(SUFFIX).o))
+MOD             := $(addprefix $(FC)/,$(SRCS:.f90=.mod))
+PROGS_DIR       := ../bin
+PROGS           := $(addsuffix $(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
+PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
+
+all: $(FC)/libgrat$(SUFFIX).a $(PROGS)
+
+#  B: grat
+	#  grat -D 2010 : 5@D : 22@H -V
+
+#  A: value_check
+	#  ../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
+	#  
 
 BUG: grat
 	grat -! -H -F test/data/test_data.nc @SP : sp \
@@ -68,15 +96,16 @@ BUG: grat
 
 timeele:
 	value_check                                                  \
-		-F /home/mrajner/dat/erainterim/gp.nc  ,ERA@H ,10@SP \
+		-F /home/mrajner/dat/erainterim/gp.nc, ERA@H, 10@SP \
 		-V -Sj,b,g:10                                           \
 		-G@GN -D2010:4@D -L@p -H
 
 exit:
-	-value_check \
-		-Sj \
-		-D2013 \
-		-F ERA@T : t2m , /home/mrajner/dat/erainterim/sp.2013.nc:sp -V
+	-value_check                                                 \
+		-Sj                                                         \
+		-D2013                                                      \
+		-F ERA@T : t2m , /home/mrajner/dat/erainterim/sp.2013.nc:sp \
+    -V
 	#  -value_check \
 		#  -Sj \
 		#  -D2013 \
@@ -131,40 +160,8 @@ dgrat: grat value_check
 	-o  
 
 
-SRCS      :=                      \
-						mod_constants.f90     \
-						mod_utilities.f90     \
-						mod_cmdline.f90       \
-						mod_printing.f90      \
-						mod_spherical.f90     \
-						mod_mjd.f90           \
-						mod_normalization.f90 \
-						mod_atmosphere.f90    \
-						mod_aggf.f90          \
-						mod_polygon.f90       \
-						mod_data.f90          \
-						mod_date.f90          \
-						mod_site.f90          \
-						mod_3d.f90            \
-						mod_green.f90         \
-						mod_admit.f90         \
-						mod_parser.f90        
-
-PROGSSRCS :=                  \
-						grat.f90          \
-						value_check.f90   \
-						polygon_check.f90
-
-OBJS            := $(SRCS:.f90=$(SUFFIX).o)
-MOD             := $(SRCS:.f90=.mod)
-PROGS_DIR       := ../bin
-PROGS           := $(addsuffix $(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
-PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
-
-all: libgrat$(SUFFIX).a $(PROGS)
-
 clean:
-	rm -fv *$(SUFFIX){.o,.mod,.a,so} fort??????
+	rm -fv *{.o,.mod,.a,so} $(FC)/* fort??????
 	
 # local installation of executables
 LINKS = $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
@@ -198,25 +195,34 @@ $(INCDIR)/%.mod: %.mod
 $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 	cp -v $< $@
 
-%$(SUFFIX).o: %.f90
+$(FC)/%$(SUFFIX).o: %.f90 $(FC)
 	$(call colorecho,2,$@)
-	mkdir -p $(FC)
-	$(FC) $(FFLAGS) $< $(MODULEDIR) -c -o $(FC)/$@ $(FPP) $(NETCDFF) 
+	$(FC) $(FFLAGS) $< $(MODULEDIR) -c -o $@ $(FPP) $(NETCDFF) 
+
+$(FC): 
+	type $(FC)>/dev/null && mkdir -p $(FC)
+
+$(PROGS_DIR):
+	mkdir -p $(PROGS_DIR)
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
 	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
 
-$(PROGS_DIR)/%$(SUFFIX):%.f90 libgrat$(SUFFIX).a 
-	mkdir -p $(PROGS_DIR)
+$(PROGS_DIR)/%$(SUFFIX):%.f90 $(FC)/libgrat$(SUFFIX).a  $(PROGS_DIR)
 	$(call colorecho,3,$@)
-	$(FC) $(FFLAGS) $(FPP) \
-	$< -o $@ -L. -lgrat$(SUFFIX) $(NETCDFF) 
+	$(FC)                            \
+		$(FFLAGS)                       \
+		$(FPP)                          \
+		$<                              \
+		-o $@                           \
+		-I$(FC) -L$(FC) -lgrat$(SUFFIX) \
+    $(NETCDFF)
 
-libgrat$(SUFFIX).a: libgrat$(SUFFIX)$(VERSION_MAJOR).a
-	ln -sf libgrat$(SUFFIX)$(VERSION_MAJOR).a libgrat$(SUFFIX).a
+$(FC)/libgrat$(SUFFIX).a: $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a
+	ln -sf $(addprefix $(PWD)/,$<) $(addprefix $(PWD)/,$@)
 
-libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
+$(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
 	$(call colorecho,4,$@)
 	ar rusv $@ $(OBJS)
 
