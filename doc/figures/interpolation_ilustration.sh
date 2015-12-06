@@ -13,6 +13,7 @@ grd=grdfile.nc
 
 grdmath -R9/12/9/12 -I1 Y X RAND = $grd
 
+value_check -v
 for co in n l
 do
   value_check                       \

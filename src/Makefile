@@ -7,6 +7,9 @@ ifeq ($(FC),f77)
 	FC:=gfortran
 endif
 
+#TODO
+OPT = -O0
+
 # user definitions
 LIBDIR        := /usr/local/lib
 INCDIR        := /usr/local/include
@@ -26,16 +29,22 @@ LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 ifeq ($(FC),ifort)
 	FFLAGS               := $(OPT) -xHost -warn all
 	ENABLE_PREPROCESSING := -fpp
-	  NETCDFF := -lnetcdff
-	NETCDFF := -I /usr/local/include -lnetcdf -I /home/mrajner/src/netcdf-fortran/fortran/ -L /home/mrajner/src/netcdf-fortran/fortran/ -lnetcdff
+		#  NETCDFF := -lnetcdff
+		NETCDFF :=                                   \
+			-I/usr/local/include -L/usr/local/lib64 -lnetcdf \
+		-I/home/mrajner/src/netcdf-fortran/fortran/  \
+		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
+		MODULEDIR := -module $(FC)
 endif
 
-# gfortran settings
+#  gfortran settings
 ifeq ($(FC),gfortran)
 	FFLAGS               := $(OPT)
 	ENABLE_PREPROCESSING := -cpp
-	NETCDFF := -lnetcdf -I/home/mrajner/src/netcdf-gfortran/fortran/ -L/home/mrajner/src/netcdf-gfortran/fortran/ -lnetcdff
-	NETCDFF := -I/usr/lib64/gfortran/modules/ -L/usr/lib64/ -lnetcdf -lnetcdff
+	#  NETCDFF := -lnetcdf -I/home/mrajner/src/netcdf-gfortran/fortran/ -L/home/mrajner/src/netcdf-gfortran/fortran/ -lnetcdff
+	#  NETCDFF := -I/usr/lib64/gfortran/modules/ -L/usr/lib64/ -lnetcdf -lnetcdff
+	NETCDFF := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
+MODULEDIR := -J$(FC)
 endif
 
 
@@ -46,7 +55,7 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-B: ../bin/grat_$(FC) link
+B: grat
 	grat -D 2010 : 5@D : 22@H -V
 
 A: value_check
@@ -191,7 +200,8 @@ $(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
 
 %$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFF)
+	mkdir -p $(FC)
+	$(FC) $(FFLAGS) $< $(MODULEDIR) -c -o $(FC)/$@ $(FPP) $(NETCDFF) 
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
