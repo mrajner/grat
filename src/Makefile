@@ -1,6 +1,6 @@
 #  set fortranc compiler or export system wide $FC
 # if not set use gfortran
-FC ?= gfortran
+#  FC ?= gfortran
 
 # for 
 ifeq ($(FC),f77)
@@ -78,13 +78,18 @@ PROGSSRCS :=                  \
 OBJS            := $(addprefix $(FC)/,$(SRCS:.f90=$(SUFFIX).o))
 MOD             := $(addprefix $(FC)/,$(SRCS:.f90=.mod))
 PROGS_DIR       := ../bin
-PROGS           := $(addsuffix $(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
+PROGS           := $(addsuffix _$(FC)$(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
+DIRS            := ./$(FC) $(PROGS_DIR)
 
-all: $(FC)/libgrat$(SUFFIX).a $(PROGS)
 
-#  B: grat
-	#  grat -D 2010 : 5@D : 22@H -V
+all: $(DIRS) $(FC)/libgrat$(SUFFIX).a $(PROGS)
+
+$(DIRS):
+	type $(FC) && mkdir -p $@
+
+B: grat
+	grat -D 2010 : 5@D : 22@H -V
 
 #  A: value_check
 	#  ../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
@@ -159,7 +164,6 @@ dgrat: grat value_check
 	-H -I-2@DD : 0.21@DB:140@DE  -D2009 \
 	-o  
 
-
 clean:
 	rm -fv *{.o,.mod,.a,so} $(FC)/* fort??????
 	
@@ -171,45 +175,38 @@ link: $(LINKS)
 unlink: 
 	-rm -f $(LINKS)
 
-install:                         \
-	$(LIBDIR)/libgrat.a            \
-	$(addprefix $(INCDIR)/,$(MOD)) \
-	$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) 
-	
+INSTALL_FILES := \
+  $(addprefix $(INCDIR)/,$(patsubst $(FC)/%,%,$(MOD))) \
+  $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
+  $(LIBDIR)/libgrat.a             
+    
+install: $(INSTALL_FILES)
+	@echo $(INSTALL_FILES)
+
 uninstall: 
 	$(call colorecho,1,$@)
-	-rm -f                                       \
-		$(addprefix $(INCDIR)/,$(MOD))             \
-		$(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
-		/usr/local/lib/libgrat.*      
+	rm -f $(INSTALL_FILES)
 
-$(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
-	ln -sf $< $@
+$(LIBDIR)/libgrat.a: $(FC)/libgrat$(SUFFIX).a
+	cp -v $< $@
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat$(SUFFIX).a
 	ln -sf $< $@
-$(LIBDIR)/libgrat$(SUFFIX).a: libgrat$(SUFFIX).a
+
+$(INCDIR)/%.mod: $(FC)/%.mod
 	cp -v $< $@
 
-$(INCDIR)/%.mod: %.mod
-	cp -v $< $@
-$(BINDIR)/%: $(PROGS_DIR)/%$(SUFFIX)
+$(BINDIR)/%: $(PROGS_DIR)/%_$(FC)$(SUFFIX)
 	cp -v $< $@
 
-$(FC)/%$(SUFFIX).o: %.f90 $(FC)
+$(FC)/%$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)
 	$(FC) $(FFLAGS) $< $(MODULEDIR) -c -o $@ $(FPP) $(NETCDFF) 
 
-$(FC): 
-	type $(FC)>/dev/null && mkdir -p $(FC)
-
-$(PROGS_DIR):
-	mkdir -p $(PROGS_DIR)
-
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
-	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)$(SUFFIX))
+	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)_$(FC)$(SUFFIX))
 
-$(PROGS_DIR)/%$(SUFFIX):%.f90 $(FC)/libgrat$(SUFFIX).a  $(PROGS_DIR)
+$(PROGS_DIR)/%_$(FC)$(SUFFIX):%.f90 $(FC)/libgrat$(SUFFIX).a
 	$(call colorecho,3,$@)
 	$(FC)                            \
 		$(FFLAGS)                       \
@@ -219,7 +216,7 @@ $(PROGS_DIR)/%$(SUFFIX):%.f90 $(FC)/libgrat$(SUFFIX).a  $(PROGS_DIR)
 		-I$(FC) -L$(FC) -lgrat$(SUFFIX) \
     $(NETCDFF)
 
-$(FC)/libgrat$(SUFFIX).a: $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a
+$(FC)/libgrat$(SUFFIX).a: $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a 
 	ln -sf $(addprefix $(PWD)/,$<) $(addprefix $(PWD)/,$@)
 
 $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
@@ -231,11 +228,11 @@ test: all install
 	make -C test FC=$(FC) OPT=$(OPT)
 
 # module dependencies
-ifndef NODEP
--include mod_dep.makefile
-mod_dep.makefile: mod_dep.awk
-	awk -f $< > $@
-endif
+#  ifndef NODEP
+#  -include mod_dep.makefile
+#  mod_dep.makefile: mod_dep.awk
+	#  awk -f $< > $@
+#  endif
 
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp

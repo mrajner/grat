@@ -15,17 +15,17 @@ BEGIN{
 
   for (i in MODULES) {
 
-    printf gensub("(.*).f90","\\1$(SUFFIX).o:","g",MODULES[i])
+    printf gensub("(.*).f90","$(FC)/\\1$(SUFFIX).o:","g",MODULES[i])
 
     while(getline < MODULES[i]){
       if (/^[^!]*\<use\>\s+\<mod/){
-        DEPS[MODULES[i]][gensub(/(^.*)(mod_[[:alnum:]]*).*/,"\\2","g",$0)]++
+        DEPS[MODULES[i]][gensub(/(^.*)(mod_[[:alnum:]]*).*/,"$(FC)/\\2","g",$0)]++
       }
     }
 
     if (length(DEPS[MODULES[i]])>0){
       for (dependency in DEPS[MODULES[i]]){
-        printf gensub("(.*)"," \\1$(SUFFIX).o","g",dependency)
+        printf gensub("(.*)"," \\1$(SUFFIX).o","g",dependency) 
       }
     }
     printf "\n"

@@ -1,17 +1,17 @@
-mod_3d$(SUFFIX).o: mod_constants$(SUFFIX).o
-mod_admit$(SUFFIX).o: mod_atmosphere$(SUFFIX).o mod_site$(SUFFIX).o mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_printing$(SUFFIX).o mod_data$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_aggf$(SUFFIX).o: mod_normalization$(SUFFIX).o mod_atmosphere$(SUFFIX).o mod_constants$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_atmosphere$(SUFFIX).o: mod_constants$(SUFFIX).o mod_printing$(SUFFIX).o
-mod_cmdline$(SUFFIX).o: mod_constants$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_constants$(SUFFIX).o:
-mod_data$(SUFFIX).o: mod_mjd$(SUFFIX).o mod_atmosphere$(SUFFIX).o mod_constants$(SUFFIX).o mod_polygon$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_date$(SUFFIX).o: mod_mjd$(SUFFIX).o mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_green$(SUFFIX).o: mod_atmosphere$(SUFFIX).o mod_normalization$(SUFFIX).o mod_site$(SUFFIX).o mod_constants$(SUFFIX).o mod_3d$(SUFFIX).o mod_polygon$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_aggf$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_spherical$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_mjd$(SUFFIX).o: mod_constants$(SUFFIX).o
-mod_normalization$(SUFFIX).o: mod_constants$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_parser$(SUFFIX).o: mod_admit$(SUFFIX).o mod_date$(SUFFIX).o mod_green$(SUFFIX).o mod_site$(SUFFIX).o mod_constants$(SUFFIX).o mod_polygon$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_polygon$(SUFFIX).o: mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_printing$(SUFFIX).o: mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o
-mod_site$(SUFFIX).o: mod_date$(SUFFIX).o mod_constants$(SUFFIX).o mod_cmdline$(SUFFIX).o mod_data$(SUFFIX).o mod_printing$(SUFFIX).o mod_utilities$(SUFFIX).o
-mod_spherical$(SUFFIX).o: mod_constants$(SUFFIX).o
-mod_utilities$(SUFFIX).o: mod_constants$(SUFFIX).o
+$(FC)/mod_3d$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o
+$(FC)/mod_admit$(SUFFIX).o: $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_data$(SUFFIX).o $(FC)/mod_atmosphere$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o $(FC)/mod_site$(SUFFIX).o
+$(FC)/mod_aggf$(SUFFIX).o: $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_normalization$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_atmosphere$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o
+$(FC)/mod_atmosphere$(SUFFIX).o: $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o
+$(FC)/mod_cmdline$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o
+$(FC)/mod_constants$(SUFFIX).o:
+$(FC)/mod_data$(SUFFIX).o: $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_mjd$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_polygon$(SUFFIX).o $(FC)/mod_atmosphere$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o
+$(FC)/mod_date$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_mjd$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_data$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o
+$(FC)/mod_green$(SUFFIX).o: $(FC)/mod_normalization$(SUFFIX).o $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_3d$(SUFFIX).o $(FC)/mod_polygon$(SUFFIX).o $(FC)/mod_aggf$(SUFFIX).o $(FC)/mod_data$(SUFFIX).o $(FC)/mod_atmosphere$(SUFFIX).o $(FC)/mod_spherical$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o $(FC)/mod_site$(SUFFIX).o
+$(FC)/mod_mjd$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o
+$(FC)/mod_normalization$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o
+$(FC)/mod_parser$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_admit$(SUFFIX).o $(FC)/mod_polygon$(SUFFIX).o $(FC)/mod_data$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o $(FC)/mod_green$(SUFFIX).o $(FC)/mod_date$(SUFFIX).o $(FC)/mod_site$(SUFFIX).o
+$(FC)/mod_polygon$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o
+$(FC)/mod_printing$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o
+$(FC)/mod_site$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_data$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o $(FC)/mod_date$(SUFFIX).o
+$(FC)/mod_spherical$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o
+$(FC)/mod_utilities$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o
