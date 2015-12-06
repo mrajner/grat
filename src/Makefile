@@ -1,14 +1,10 @@
 #  set fortranc compiler or export system wide $FC
 # if not set use gfortran
-FC ?= gfortran
+#  FC ?= gfortran
 
-# for 
 ifeq ($(FC),f77)
 	FC := gfortran
 endif
-
-#TODO
-OPT = -O0
 
 # user definitions
 LIBDIR        := /usr/local/lib
@@ -187,18 +183,18 @@ install: $(INSTALL_FILES)
 
 uninstall: 
 	$(call colorecho,1,$@)
-	rm -f $(INSTALL_FILES)
+	sudo rm -f $(INSTALL_FILES)
 
 $(LIBDIR)/libgrat.a: $(FC)/libgrat$(SUFFIX).a
-	cp -v $< $@
+	sudo cp -v $< $@
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat$(SUFFIX).a
 	ln -sf $< $@
 
 $(INCDIR)/%.mod: $(FC)/%.mod
-	cp -v $< $@
+	sudo cp -v $< $@
 
 $(BINDIR)/%: $(PROGS_DIR)/%_$(FC)$(SUFFIX)
-	cp -v $< $@
+	sudo cp -v $< $@
 
 $(FC)/%$(SUFFIX).o: %.f90
 	$(call colorecho,2,$@)

@@ -4,17 +4,20 @@ OPT := -O2
 
 GRATLIB := -I/usr/local/include \
 						-L/usr/local/lib     \
-							-lgrat
+						-lgrat
 
 # ifort settings
 ifeq ($(FC),ifort)
-FFLAGS :=          \
-				 -fpic     \
-				 $(OPT)    \
-				 -xHost    \
-				 -warn all 
-
-ENABLE_PREPROCESSING := -fpp
+	FFLAGS :=      \
+					-fpic  \
+					$(OPT) \
+					-xHost \
+					-warn all 
+	ENABLE_PREPROCESSING := -fpp
+	NETCDFF :=                                         \
+		-I/usr/local/include -L/usr/local/lib64 -lnetcdf \
+		-I/home/mrajner/src/netcdf-fortran/fortran/      \
+		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
 endif
 
 # gfortran settings
@@ -22,10 +25,8 @@ ifeq ($(FC),gfortran)
 	FFLAGS  := \
 		$(OPT)
 	ENABLE_PREPROCESSING = -cpp
+	NETCDFF   := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
 endif
-
-NETCDFF := -lnetcdf -lnetcdff 
-NETCDFF := -I/usr/lib64/gfortran/modules/ -L/usr/lib64/ -lnetcdf -lnetcdff
 
 all: ask run data test
 	
@@ -44,7 +45,6 @@ ask:
 	make ncep ; \
 	;; \
 	esac 
-
 
 test: 
 	make -C tests/
@@ -65,8 +65,9 @@ data:
 	mkdir -p $@
 
 year := 2012
+
 ncep: data
-	@wget  -nH -m -nd -P data/                                             \
+	@wget  -nH -m -nd -P data/                                                      \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/hgt.$(year).nc      \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/air.$(year).nc      \
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/surface/hgt.sfc.nc           \
@@ -76,4 +77,4 @@ ncep: data
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/pressure/shum.$(year).nc 
 
 clean:
-	rm create_data
+	rm create_data data/test_data.nc
