@@ -5,6 +5,7 @@
 ifeq ($(FC),f77)
 	FC := gfortran
 endif
+OPT=-O0
 
 # user definitions
 LIBDIR        := /usr/local/lib
@@ -78,6 +79,9 @@ PROGS           := $(addsuffix _$(FC)$(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGS
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := ./$(FC) $(PROGS_DIR)
 
+
+gfff:
+	cd /home/mrajner/src/grat/doc/figures/ && ./test.sh
 
 all: $(DIRS) $(FC)/libgrat$(SUFFIX).a $(PROGS)
 

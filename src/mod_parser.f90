@@ -20,7 +20,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate)
   use mod_utilities, only: file_exists, is_numeric
   use mod_admit,     only: parse_admit
 
-  type(cmd_line_arg),intent(in):: cmd_line_entry
+  type(cmd_line_arg), intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
   character(len=*), optional :: version, cdate
   integer(2) :: i

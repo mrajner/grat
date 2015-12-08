@@ -81,6 +81,9 @@ subroutine parse_model(cmd_line_entry)
     return
   endif
 
+  !TODO
+  print *, trim(cmd_line_entry%full)
+
   allocate(model(size(cmd_line_entry%field)))
 
   do i = 1, size(cmd_line_entry%field)
@@ -579,9 +582,7 @@ subroutine get_dimension (model, i, print)
   if (.not. (present(print).and..not.print))then
     write (log%unit, form%i4, advance='no') "Getting dim:",trim(model%names(i)), ".."
     !TODO
-    ! print*, ''
-    ! print*, ''
-    ! print*, model%names
+    print*, model%names
   endif
 
   status = nf90_inq_dimid(model%ncid,model%names(i), dimid)

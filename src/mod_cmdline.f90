@@ -48,11 +48,11 @@ module mod_cmdline
   ! info
   !----------------------------------------------------
   type range
-    real(dp):: start
-    real(dp):: stop
-    real(dp):: step
-    integer :: denser
-    real(dp):: stop_3d
+    real(dp) :: start
+    real(dp) :: stop
+    real(dp) :: step
+    integer  :: denser
+    real(dp) :: stop_3d
   end type
 
   type info_info
@@ -174,11 +174,12 @@ subroutine collect_args (dummy)
 
   allocate(cmd_line(ntokens(dummy)))
 
-  do i=1, ntokens(dummy)
+  do i = 1, ntokens(dummy)
 
     indeks_space       = index(dummy," ")
     cmd_line(i)%full   = dummy(1:indeks_space-1)
     cmd_line(i)%switch = cmd_line(i)%full(1:2)
+
     allocate(cmd_line(i)%field (count_separator (cmd_line(i)%full,",") + 1))
 
     dummy_aux = cmd_line(i)%full(3:)
@@ -226,6 +227,14 @@ subroutine collect_args (dummy)
 
     dummy = dummy(indeks_space+1:)
   enddo
+
+  !TODO
+  print*, "0",trim(cmd_line(1)%full)
+  print*, "0",trim(cmd_line(1)%field(1)%full)
+  print*, "1",trim(cmd_line(1)%field(1)%subfield(1)%name)
+  print*, "2",trim(cmd_line(1)%field(1)%subfield(2)%name)
+  print*, "3",trim(cmd_line(1)%field(1)%subfield(3)%name)
+  print*, "4",trim(cmd_line(1)%field(1)%subfield(4)%name)
 end subroutine
 
 ! ==============================================================================
@@ -266,6 +275,8 @@ subroutine get_command_cleaned(dummy)
     endif
 
   enddo
+  !TODO
+  print*, trim(dummy), "dummycleaned"
 end subroutine
 
 ! ==============================================================================
