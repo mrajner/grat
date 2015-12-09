@@ -176,7 +176,7 @@ subroutine collect_args (dummy)
 
   do i = 1, ntokens(dummy)
 
-    indeks_space       = index(dummy," ")
+    indeks_space       = index(dummy,' ')
     cmd_line(i)%full   = dummy(1:indeks_space-1)
     cmd_line(i)%switch = cmd_line(i)%full(1:2)
 
@@ -198,6 +198,9 @@ subroutine collect_args (dummy)
         cmd_line(i)%field(j)%subfield                        &
         (count_separator(cmd_line(i)%field(j)%full,":") + 1) &
       )
+
+   print*,      "{{{",trim(cmd_line(i)%field(j)%full)
+   print*,      "{{{",count_separator(cmd_line(i)%field(j)%full,":")
 
       dummy_aux2 = cmd_line(i)%field(j)%full
       do n = 1, count_separator(cmd_line(i)%field(j)%full,":")+1
