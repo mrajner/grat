@@ -1,10 +1,7 @@
 FC  ?= gfortran
-
 OPT := -O2
 
-GRATLIB := -I/usr/local/include \
-						-L/usr/local/lib     \
-						-lgrat
+GRATLIB := -I../$(FC) -L../$(FC) -lgrat
 
 # ifort settings
 ifeq ($(FC),ifort)
@@ -22,16 +19,16 @@ endif
 
 # gfortran settings
 ifeq ($(FC),gfortran)
-	FFLAGS  := \
-		$(OPT)
-	ENABLE_PREPROCESSING = -cpp
-	NETCDFF   := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
+  FFLAGS  := $(OPT)
+  ENABLE_PREPROCESSING := -cpp
+  NETCDFF := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
 endif
 
-all: ask run data test
-	
-.PHONY:runtests
-runtests:
+ooo: $(NCEP_DATA_FILES)
+#  all: ask run data test
+#  .PHONY:runtests
+
+runtests: 
 	make -C tests
 
 ask:
@@ -53,7 +50,7 @@ test:
 create_data: create_data.f90 data
 	$(FC) $< -o $@ $(FFLAGS)  $(GRATLIB) $(NETCDFF)
 
-run: create_data
+data/test_data.nc: create_data
 	./$< 
 	value_check \
 		-F data/test_data.nc@SP:sp:lon:lat , @T : t , @GP : gp : lon:lat:level, \
@@ -66,15 +63,24 @@ data:
 
 year := 2012
 
+NCEP_DATA_FILES :=           \
+  data.hgt.$(year).nc        \
+  data.air.$(year).nc        \
+  data.hgt.sfc.nc            \
+  data.pres.sfc.$(year).nc   \
+  data.air.sig995.$(year).nc \
+  data.land.nc               \
+  data.shum.$(year).nc
+
 ncep: data
-	@wget  -nH -m -nd -P data/                                                      \
-		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/hgt.$(year).nc      \
-		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/air.$(year).nc      \
-		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/surface/hgt.sfc.nc           \
-		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/surface/pres.sfc.$(year).nc  \
-		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/surface/air.sig995.$(year).nc \
-		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/surface/land.nc               \
-		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/pressure/shum.$(year).nc 
+  @wget  -nH -m -nd -P data/                                                      \
+    ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/hgt.$(year).nc      \
+    ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/pressure/air.$(year).nc      \
+    ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/surface/hgt.sfc.nc           \
+    ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis2/surface/pres.sfc.$(year).nc  \
+    ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/surface/air.sig995.$(year).nc \
+    ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/surface/land.nc               \
+    ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/pressure/shum.$(year).nc 
 
 clean:
 	rm create_data data/test_data.nc
