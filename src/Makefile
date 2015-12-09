@@ -2,6 +2,8 @@
 # if not set use gfortran
 #  FC ?= gfortran
 
+a:
+	make -f tmp.makefile
 ifeq ($(FC),f77)
 	FC := gfortran
 endif
@@ -267,3 +269,4 @@ define colorecho
 @tput sgr0
 endef
 
+%.o: %.mod

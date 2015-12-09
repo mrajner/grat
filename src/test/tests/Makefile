@@ -1,3 +1,5 @@
+deletme:
+	make -C $$GS
 #  FC := ifort
 #  FC := gfortran
 OPT:= -O2
