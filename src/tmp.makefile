@@ -5,3 +5,5 @@ test = ./test/tests/t_3_fortran.f90 mod_utilities.f90
 	$(<) ./test/tests/t_3_fortran.f90 -I$(<) \
 		$(<)/mod_utilities.o -o $@
 	./$@
+
+%.o: %.mod
