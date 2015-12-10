@@ -1,5 +1,8 @@
 grat(3)
 =========
+:include:: mrajner.txt
+:author: Marcin Rajner
+:email: mrajner@gik.pw.edu.pl
 
 NAME
 ----
@@ -9,6 +12,7 @@ grat - program for computing atmospheric gravity corrections using
 SYNOPSIS
 --------
 *grat* <'operation'> ['options'] ['packages']
+{author}
 
 
 
@@ -287,26 +291,17 @@ See  *pacman.conf*(5)  for  more  details on configuring *pacman* using the
 
 BUGS
 ----
-Bugs? You must be kidding, there are no bugs in this software.  But  if
-we happen to be wrong, send us an email with as much detail as possible
-to <pacman-dev@archlinux.org>.
-
-
+Send us an email with as much detail as possible and we will try to fix it as 
+soon as we can.
 
 SEE ALSO
 --------
-*pacman.conf*(5), *makepkg*(8), *libalpm*(3)
-
-
-See the Arch Linux website at <http://www.archlinux.org> for more  cur-
+See the grat website at <http://www.grat.gik.pw.edu.pl/grat> for more  cur-
 rent information on the distribution and the *pacman* family of tools.
 
 
 
 AUTHORS
 -------
-Marcin Rajner <mrajner@gik.pw.edu.pl>
+{author} <{email}>
 Warsaw University of Technology
-
-
-
