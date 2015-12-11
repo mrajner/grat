@@ -1,8 +1,7 @@
 grat(3)
 =========
-:include:: mrajner.txt
-:author: Marcin Rajner
-:email: mrajner@gik.pw.edu.pl
+include::info.dat[]
+:Date: 2010
 
 NAME
 ----
@@ -11,14 +10,15 @@ grat - program for computing atmospheric gravity corrections using
 
 SYNOPSIS
 --------
-*grat* <'operation'> ['options'] ['packages']
-{author}
+*grat* <'operation'> ['options']
+{date} {revision}
 
+{myname}
 
 
 DESCRIPTION
 -----------
-*pacman*  is  a program
+*grat*  is  a program
 
 Since version 3.0.0, *pacman* has been the frontend to *libalpm*, the "Arch
 Linux Package Management"  library.  This  library  allows  alternative
@@ -28,6 +28,23 @@ front ends to be written (for instance, a GUI front end).
 
 OPERATIONS
 ----------
+-h ::
+  shows this help
+
+-v ::
+  prints version header with compiler info, compilation date and others
+
+   -vd ::: 
+   print date
+   
+   --date :::
+   print date in format like {mydateout}
+
+latexmath: [$ E=mc^2 $]
+
+dff
+[latex]
+$e=ab$
 -A, --add (deprecated)::
 	Add  a  package  to the system. Either a URL or file path can be
 	specified. The package will be uncompressed into  the  installa-

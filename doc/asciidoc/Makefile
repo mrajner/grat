@@ -3,7 +3,12 @@ MANPAGES := $(FILES:.txt=)
 
 A2X := a2x --format=manpage
 
-all: $(MANPAGES) install
+all: info.dat $(MANPAGES) 
+	#  install
+
+info.dat:
+	echo ":Revision:" $$(git describe --tags ) > $@
+	echo ":My date out:" $$(grat --date) >> $@
 
 %: %.txt
 	$(A2X) $<

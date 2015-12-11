@@ -21,6 +21,7 @@ FC_INFO       := $(shell $(FC) --version | sed -n 1p )
 HOST          := $(shell hostname ; uname -r)
 DATE          := $(shell date "+%Y-%m-%d %H:%M:%S")
 VERSION       := $(shell git describe --match "v*")
+GIT_DATE      := $(shell git show -s --format=%ci HEAD)
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 
@@ -28,9 +29,9 @@ LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
 ifeq ($(FC),ifort)
 	FFLAGS               := $(OPT) -xHost -warn all
 	ENABLE_PREPROCESSING := -fpp
-	NETCDFF :=                                   \
+	NETCDFF :=                                        \
 		-I/usr/local/include -L/usr/local/lib64 -lnetcdf \
-		-I/home/mrajner/src/netcdf-fortran/fortran/  \
+		-I/home/mrajner/src/netcdf-fortran/fortran/      \
 		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
 	MODULEDIR := -module $(FC)
 endif
@@ -46,6 +47,7 @@ endif
 FPP :=                                             \
 	$(ENABLE_PREPROCESSING)                          \
 	-D__CDATE__='"$(DATE)"'                          \
+	-D__GDATE__='"$(GIT_DATE)"'                          \
 	-D__GRAT_VERSION__='"$(VERSION)"'                \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
