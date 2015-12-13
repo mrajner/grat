@@ -232,12 +232,12 @@ subroutine collect_args (dummy)
   enddo
 
   !TODO
-  print*, "0",trim(cmd_line(1)%full)
-  print*, "0",trim(cmd_line(1)%field(1)%full)
-  print*, "1",trim(cmd_line(1)%field(1)%subfield(1)%name)
-  print*, "2",trim(cmd_line(1)%field(1)%subfield(2)%name)
-  print*, "3",trim(cmd_line(1)%field(1)%subfield(3)%name)
-  print*, "4",trim(cmd_line(1)%field(1)%subfield(4)%name)
+  print*, "0 ",trim(cmd_line(1)%full)
+  print*, "0 ",trim(cmd_line(1)%field(1)%full)
+  print*, "1 ",trim(cmd_line(1)%field(1)%subfield(1)%name)
+  print*, "2 ",trim(cmd_line(1)%field(1)%subfield(2)%name)
+  print*, "3 ",trim(cmd_line(1)%field(1)%subfield(3)%name)
+  print*, "4 ",trim(cmd_line(1)%field(1)%subfield(4)%name)
 end subroutine
 
 ! ==============================================================================

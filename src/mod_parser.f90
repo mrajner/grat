@@ -945,20 +945,27 @@ subroutine parse_info (cmd_line_entry)
         if (io_stat==iostat_end) exit
 
         if(line(1:1)=="-") then
+
           !todo
           if(if_accepted_switch (line(1:2),accepted_switches )) then
             if_print_line = .true.
             write (log%unit, form_61 ) trim(line)
+
           else
             if(line(1:1)=="-") if_print_line=.false.
+
           endif
+
         else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
           if (if_print_line) then
             write (log%unit, form_61 ) "  "//trim(line(3:))
           endif
+
         else if (line(2:2)=="") then
           if (if_print_line) write (log%unit, form_61 ) trim(line)
+
         endif
+
       enddo
       close(help_unit)
     end subroutine
