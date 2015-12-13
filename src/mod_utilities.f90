@@ -489,9 +489,9 @@ integer function count_separator2 (dumb, separator)
 
 
   print*, "HEJ"
-  call tmpwrite("DUMB2 init",dumb2)
 
   dumb2 = dumb
+  call tmpwrite("DUMB2 init",dumb2)
 
   call tmpwrite("sep",sep)
 

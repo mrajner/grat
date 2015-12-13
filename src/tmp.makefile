@@ -9,7 +9,7 @@ OPT = -O0
 	make $(<)/mod_utilities$(OPT).o  FC=$< ; \
 	$(<) ./test/tests/t_3_fortran.f90 -I$(<) \
 		$(<)/mod_utilities$(OPT).o -o $@ ;\
-	./$@  ; \
+	./$@ | tee tmp$(<)  ; \
 	} || :
 
 .PHONY: gfortran ifort
