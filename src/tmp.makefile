@@ -1,4 +1,4 @@
-all: gfortran.out ifort.out
+all: gfortran.out #ifort.out
 
 test = ./test/tests/t_3_fortran.f90 mod_utilities.f90
 OPT = -O0
@@ -16,8 +16,8 @@ OPT = -O0
 
 
 xo:
-	make B FC=ifort
+	#  make B FC=ifort
 	make B FC=gfortran
-	make B FC=ifort > tifort
+	#  make B FC=ifort > tifort
 	make B FC=gfortran >tgfortran
-	vimdiff tgfortran tifort
+	#  vimdiff tgfortran tifort
