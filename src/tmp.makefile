@@ -12,5 +12,4 @@ OPT = -O0
 	./$@  ; \
 	} || :
 
-
 .PHONY: gfortran ifort
