@@ -94,7 +94,6 @@ $(DIRS):
 
 B: 
 	make grat FC=gfortran
-	make grat FC=ifort
 	grat -D 2010 : 5@D : 22@H -V
 
 #  A: value_check
