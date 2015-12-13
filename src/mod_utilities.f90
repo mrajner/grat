@@ -509,7 +509,7 @@ integer function count_separator2 (dumb, separator)
     call tmpwritei("dui", len(dumb2))
     call tmpwrite("du1 ", dumb2(i+1:10))
     call tmpwrite("du1 ", dumb2(i+1:))
-    dumb2 = dumb2(i+1: )
+    dumb2 = dumb2(i+1:)
 
     call tmpwrite("du", dumb2)
 
