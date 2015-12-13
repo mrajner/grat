@@ -517,6 +517,10 @@ integer function count_separator2 (dumb, separator)
     count_separator2 = count_separator2 + 1
   enddo
 
+  print*, ""
+  print*, count_separator2
+  print*, ""
+
 end function
 
 subroutine tmpwrite(k,kk)
