@@ -479,6 +479,57 @@ integer function count_separator (dummy, separator, consecutive_as_one)
   enddo
 end function
 
+!TODO REMOVE
+integer function count_separator2 (dumb, separator)
+  character(*), intent(in) :: dumb
+  character(1), intent(in), optional :: separator
+  character(1) :: sep = ","
+  character(:), allocatable :: dumb2
+  integer :: i
+
+  dumb2 = dumb
+
+  call tmpwrite("sep",sep)
+
+  if (present(separator)) then
+    sep = separator
+  else
+    sep = ","
+  endif
+  call tmpwrite("sep",sep)
+
+  count_separator2 = 0
+
+  do
+    i = index (dumb2, sep)
+    call tmpwritei("i  ",i)
+
+    if (i.eq.0) exit
+
+    call tmpwritei("dui", len(dumb2))
+    call tmpwrite("du1", dumb2(i+1:10))
+    call tmpwrite("du1", dumb2(i+1:))
+    dumb2 = dumb2(i+1:10)
+
+    call tmpwrite("du", dumb2)
+
+    stop "S"
+
+    count_separator2 = count_separator2 + 1
+  enddo
+
+end function
+
+subroutine tmpwrite(k,kk)
+  character(*) :: k,kk
+  print*, k,kk
+end subroutine
+subroutine tmpwritei(k,kk)
+  character(*) :: k
+  integer:: kk
+  print*, k,kk
+end subroutine
+
 ! ==============================================================================
 ! ==============================================================================
 function datanameunit (dataname, datanames, count)

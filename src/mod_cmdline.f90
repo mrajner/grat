@@ -165,7 +165,7 @@ contains
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine collect_args (dummy)
-  use mod_utilities, only: ntokens, count_separator
+  use mod_utilities, only: ntokens, count_separator, count_separator2 !TODO
 
   character(*) :: dummy
   character(455) :: dummy_aux, dummy_aux2
@@ -199,8 +199,10 @@ subroutine collect_args (dummy)
         (count_separator(cmd_line(i)%field(j)%full,":") + 1) &
       )
 
-   print*,      "{{{",trim(cmd_line(i)%field(j)%full)
-   print*,      "{{{",count_separator(cmd_line(i)%field(j)%full,":")
+   n = count_separator2("2010:5@D:22@H",":")
+   print* , "ax", n
+  n  =  count_separator2("2010:5@D:22@H",":")
+   print* , "bx", n
 
       dummy_aux2 = cmd_line(i)%field(j)%full
       do n = 1, count_separator(cmd_line(i)%field(j)%full,":")+1
@@ -234,10 +236,10 @@ subroutine collect_args (dummy)
   !TODO
   print*, "0 ",trim(cmd_line(1)%full)
   print*, "0 ",trim(cmd_line(1)%field(1)%full)
-  print*, "1 ",trim(cmd_line(1)%field(1)%subfield(1)%name)
-  print*, "2 ",trim(cmd_line(1)%field(1)%subfield(2)%name)
-  print*, "3 ",trim(cmd_line(1)%field(1)%subfield(3)%name)
-  print*, "4 ",trim(cmd_line(1)%field(1)%subfield(4)%name)
+
+  do i = 1, size(cmd_line(1)%field(1)%subfield)
+    print*, "1 ",trim(cmd_line(1)%field(1)%subfield(i)%name)
+  enddo
 end subroutine
 
 ! ==============================================================================
@@ -280,6 +282,7 @@ subroutine get_command_cleaned(dummy)
   enddo
   !TODO
   print*, trim(dummy), "dummycleaned"
+  print*, __COMPILER__(1:3)
 end subroutine
 
 ! ==============================================================================
