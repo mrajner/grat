@@ -487,6 +487,10 @@ integer function count_separator2 (dumb, separator)
   character(:), allocatable :: dumb2
   integer :: i
 
+
+  print*, "HEJ"
+  call tmpwrite("DUMB2 init",dumb2)
+
   dumb2 = dumb
 
   call tmpwrite("sep",sep)
