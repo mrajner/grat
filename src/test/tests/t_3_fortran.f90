@@ -6,4 +6,6 @@ program unit_tests
   print*, "count_separator", count_separator("-Fsp@SP:1:2:3:4:5:6",":")
   print*, "count_separator", count_separator("-Fsp@SP:x:y:z:",":")
 
+  print*, "count_separator", count_separator("-Fsp@SP:x:y:z:",":")
+
 end program
