@@ -483,24 +483,17 @@ end function
 integer function count_separator2 (dumb, separator)
   character(*), intent(in) :: dumb
   character(1), intent(in), optional :: separator
-  character(1) :: sep = ","
-  character(:), allocatable :: dumb2
+  character(1) :: sep
+  character(:), allocatable :: dumb2, pp
   integer :: i
 
-
-  print*, "HEJ"
-
   dumb2 = dumb
-  call tmpwrite("DUMB2 init",dumb2)
-
-  call tmpwrite("sep",sep)
 
   if (present(separator)) then
     sep = separator
   else
     sep = ","
   endif
-  call tmpwrite("sep",sep)
 
   count_separator2 = 0
 
@@ -510,16 +503,17 @@ integer function count_separator2 (dumb, separator)
 
     if (i.eq.0) exit
 
-    dumb2 = dumb2(i+1:)
+    pp = dumb2(i+1:len(dumb2))
+    dumb2 = pp
 
     call tmpwrite("du", dumb2)
 
     count_separator2 = count_separator2 + 1
   enddo
 
-  print*, ""
+  print*, ''
   print*, count_separator2
-  print*, ""
+  print*, ''
 
 end function
 
