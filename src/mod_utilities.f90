@@ -204,33 +204,38 @@ end function ispline
 !! or other optional separator
 !! added Marcin Rajner 2013.10.08
 ! ==============================================================================
-function ntokens(line, separator)
-  character,intent(in) :: line*(*)
+pure function ntokens(line, separator)
+  character, intent(in) :: line(*)
   character(1), intent(in), optional :: separator
   integer:: i, n
   character(1) :: separator_
   integer  :: ntokens
 
   if (present(separator)) then
-    separator_=separator
+    separator_ = separator
   else
-    separator_=' '
+    separator_ = ' '
   endif
 
   i = 1
   n = len_trim(line)
   ntokens = 0
+
   do while(i <= n)
+
     do while(line(i:i) == separator_)
       i = i + 1
       if (n < i) return
     enddo
+
     ntokens = ntokens + 1
+
     do
       i = i + 1
       if (n < i) return
       if (line(i:i) == separator_) exit
     enddo
+
   enddo
 end function
 
@@ -452,28 +457,26 @@ integer function count_separator (dummy, separator, consecutive_as_one)
   character(:), allocatable :: dummy2
   integer :: i
 
-  dummy2 = dummy
-
   if (present(separator)) then
     sep = separator
   else
     sep = ","
   endif
 
+  dummy2 = dummy
+
   count_separator = 0
 
   do
     i = index (dummy2, sep)
     if (i.eq.0) exit
-    dummy2 = dummy2(i+1:)
+    dummy2 = trim(adjustl(dummy2(i+1:)))
     count_separator = count_separator + 1
 
     if (present(consecutive_as_one).and.consecutive_as_one) then
-      ! print *, index(dummy, dummy2)
-      ! stop "TODO"
-      ! if (dummy(i-1:i-1) == sep) then
-      ! count_separator = count_separator -1
-      ! endif
+      if (i == 1) then
+        count_separator = count_separator -1
+      endif
     endif
 
   enddo
