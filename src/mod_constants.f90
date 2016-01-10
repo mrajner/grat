@@ -1,7 +1,7 @@
 ! ==============================================================================
 !> This module define some constant values oftenly used.
 !! \author M. Rajner
-!! \date 2013-03-04
+!! \date 2013-03-04 with ongoing changes
 ! ==============================================================================
 module mod_constants
 
