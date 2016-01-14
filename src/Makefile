@@ -84,9 +84,6 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := ./$(FC) $(PROGS_DIR)
 
 
-gfff:
-	cd /home/mrajner/src/grat/doc/figures/ && ./test.sh
-
 all: $(DIRS) $(FC)/libgrat$(SUFFIX).a $(PROGS)
 
 $(DIRS):
