@@ -93,12 +93,12 @@ $(DIRS):
 	type $(FC) && mkdir -p $@
 
 B:  ../bin/grat_$(FC)-O0
-	make grat FC=gfortran OPT=-O0
+	make grat FC=$(FC) OPT=-O0
 	../bin/grat_$(FC)-O0 -D 2010 : 5@D : 22@H 
 
-#  A: value_check
-	#  ../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
-	#  
+A: value_check
+	../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
+  
 
 BUG: grat
 	grat -! -H -F test/data/test_data.nc @SP : sp \

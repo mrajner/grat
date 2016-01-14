@@ -1,7 +1,3 @@
-deletme:
-	make -C $$GS
-#  FC := ifort
-#  FC := gfortran
 OPT:= -O2
 
 SHELL_TESTS   := $(wildcard t[0-9]*.sh)

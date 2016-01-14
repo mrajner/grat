@@ -947,7 +947,7 @@ subroutine parse_info (cmd_line_entry)
         if(line(1:1)=="-") then
 
           !todo
-          if(if_accepted_switch (line(1:2),accepted_switches )) then
+          if(if_accepted_switch (line(1:2), accepted_switches)) then
             if_print_line = .true.
             write (log%unit, form_61 ) trim(line)
 

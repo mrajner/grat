@@ -165,7 +165,7 @@ contains
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine collect_args (dummy)
-  use mod_utilities, only: ntokens, count_separator, count_separator2 !TODO
+  use mod_utilities, only: ntokens, count_separator
 
   character(*) :: dummy
   character(455) :: dummy_aux, dummy_aux2
@@ -199,11 +199,6 @@ subroutine collect_args (dummy)
         (count_separator(cmd_line(i)%field(j)%full,":") + 1) &
       )
 
-   n = count_separator2("2010:5@D:22@H",":")
-   print* , "ax", n
-  n  =  count_separator2("2010:5@D:22@H",":")
-   print* , "bx", n
-
       dummy_aux2 = cmd_line(i)%field(j)%full
       do n = 1, count_separator(cmd_line(i)%field(j)%full,":")+1
 
@@ -233,13 +228,6 @@ subroutine collect_args (dummy)
     dummy = dummy(indeks_space+1:)
   enddo
 
-  !TODO
-  print*, "0 ",trim(cmd_line(1)%full)
-  print*, "0 ",trim(cmd_line(1)%field(1)%full)
-
-  do i = 1, size(cmd_line(1)%field(1)%subfield)
-    print*, "1 ",trim(cmd_line(1)%field(1)%subfield(i)%name)
-  enddo
 end subroutine
 
 ! ==============================================================================
@@ -272,22 +260,19 @@ subroutine get_command_cleaned(dummy)
     if(check_if_switch_or_minus(b).or.i.eq.iargc()) then
 
       if(trim(dummy).eq."") then
-        dummy=trim(arg)
+        dummy = trim(arg)
       else
-        dummy=trim(dummy)//" "//trim(arg)
+        dummy = trim(dummy)//" "//trim(arg)
       endif
 
     endif
 
   enddo
-  !TODO
-  print*, trim(dummy), "dummycleaned"
-  print*, __COMPILER__(1:3)
 end subroutine
 
 ! ==============================================================================
-!> Check if - starts new option in command line or is just a minus in command
-!! line entry
+!> Check if `minus sign` starts new option in command line or is just a minus 
+!! in command line entry
 !!
 !! if after '-' is space or number or ',' or ':' (field separators) do not start
 !! next option for command line
@@ -302,6 +287,7 @@ pure function check_if_switch_or_minus(dummy)
   logical:: check_if_switch_or_minus
   character(*), intent(in) :: dummy
 
+  !TODO make select
   check_if_switch_or_minus = .false.
   if (dummy(1:1).eq."-") check_if_switch_or_minus      = .true.
   if (dummy(2:2).eq." ") check_if_switch_or_minus      = .false.

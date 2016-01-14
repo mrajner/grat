@@ -204,17 +204,17 @@ end function ispline
 !! or other optional separator
 !! added Marcin Rajner 2013.10.08
 ! ==============================================================================
-function ntokens(line, separator)
-  character, intent(in) :: line*(*)
+pure function ntokens(line, separator)
+  character(len=*), intent(in) :: line
   character(1), intent(in), optional :: separator
-  integer:: i, n
+  integer:: i,  n
   character(1) :: separator_
   integer  :: ntokens
 
   if (present(separator)) then
-    separator_=separator
+    separator_ = separator
   else
-    separator_=' '
+    separator_ = ' '
   endif
 
   i = 1
@@ -444,10 +444,10 @@ end function
 !!
 !! added Marcin Rajner 2014.07.14
 ! =============================================================================
-integer function count_separator (dummy, separator, consecutive_as_one)
-  character(*), intent(in) :: dummy
-  character(1), intent(in), optional :: separator
-  logical, intent(in), optional :: consecutive_as_one
+pure integer function count_separator (dummy, separator, consecutive_as_one)
+  character(len=*), intent(in)           :: dummy
+  character(1),     intent(in), optional :: separator
+  logical,          intent(in), optional :: consecutive_as_one
   character(1) :: sep
   character(:), allocatable :: dummy2
   integer :: i
@@ -477,61 +477,13 @@ integer function count_separator (dummy, separator, consecutive_as_one)
   enddo
 end function
 
-!TODO REMOVE
-integer function count_separator2 (dumb, separator)
-  character(*), intent(in) :: dumb
-  character(1), intent(in), optional :: separator
-  character(1) :: sep
-  character(:), allocatable :: dumb2, pp
-  integer :: i
-
-  dumb2 = dumb
-
-  if (present(separator)) then
-    sep = separator
-  else
-    sep = ","
-  endif
-
-  count_separator2 = 0
-
-  do
-    i = index (dumb2, sep)
-    call tmpwritei("i  ",i)
-
-    if (i.eq.0) exit
-
-    pp = dumb2(i+1:len(dumb2))
-    dumb2 = pp
-
-    call tmpwrite("du", dumb2)
-
-    count_separator2 = count_separator2 + 1
-  enddo
-
-  print*, ''
-  print*, count_separator2
-  print*, ''
-
-end function
-
-subroutine tmpwrite(k,kk)
-  character(*) :: k,kk
-  print*, k,kk
-end subroutine
-subroutine tmpwritei(k,kk)
-  character(*) :: k
-  integer:: kk
-  print*, k,kk
-end subroutine
-
 ! ==============================================================================
 ! ==============================================================================
 function datanameunit (dataname, datanames, count)
   integer:: datanameunit
-  character(*), intent(in):: dataname
-  integer, intent (in):: count
-  character(*), intent(in)  :: datanames(count)
+  character(*), intent(in) :: dataname
+  integer,      intent(in) :: count
+  character(*), intent(in) :: datanames(count)
   integer :: i
 
   datanameunit = 0
