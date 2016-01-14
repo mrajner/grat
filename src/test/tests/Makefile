@@ -46,7 +46,7 @@ copy_non_existing_dat_to_benchmark_result:
 		case $${answer:-} in \
 		Y|y) echo yes ; \
 		for i in t*.dat* ; do \
-		[[ -s $$i && ! -f $${i/t/r} ]] && cp -uv $$i $${i/t/r } || : ; done ; \
+		[[ -s $$i && ! -f $${i/t/r} ]] && cp -uv $$i $${i/t/r} || : ; done ; \
 		;; \
 		esac ;
 
