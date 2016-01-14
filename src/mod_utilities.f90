@@ -204,38 +204,33 @@ end function ispline
 !! or other optional separator
 !! added Marcin Rajner 2013.10.08
 ! ==============================================================================
-pure function ntokens(line, separator)
-  character, intent(in) :: line(*)
+function ntokens(line, separator)
+  character, intent(in) :: line*(*)
   character(1), intent(in), optional :: separator
   integer:: i, n
   character(1) :: separator_
   integer  :: ntokens
 
   if (present(separator)) then
-    separator_ = separator
+    separator_=separator
   else
-    separator_ = ' '
+    separator_=' '
   endif
 
   i = 1
   n = len_trim(line)
   ntokens = 0
-
   do while(i <= n)
-
     do while(line(i:i) == separator_)
       i = i + 1
       if (n < i) return
     enddo
-
     ntokens = ntokens + 1
-
     do
       i = i + 1
       if (n < i) return
       if (line(i:i) == separator_) exit
     enddo
-
   enddo
 end function
 
