@@ -16,6 +16,7 @@ help () {
   cat << EOF
 -h show help
 -d delete bad result
+-b show failed diff
 -w ignore whitsespace
 -V vimdiff
 -u update

@@ -85,4 +85,4 @@ ncep: data
 		ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/pressure/shum.$(year).nc 
 
 clean:
-	rm create_data data/test_data.nc
+	rm -vf create_data data/test_data.nc
