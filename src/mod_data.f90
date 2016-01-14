@@ -21,7 +21,7 @@ module mod_data
     character(len=25) :: names(5) = &
       [character (len=25) :: "z", "lon", "lat", "level", "time"]
 
-    character(len=100) :: datanames(5)=" "
+    character(len=100) :: datanames(5) = " "
 
     character(len=15) :: dataname
 
@@ -56,7 +56,7 @@ module mod_data
     integer,  allocatable, dimension(:) :: level
     real(dp), allocatable, dimension(:) :: &
       height, temperature, humidity
-    logical :: all=.false.
+    logical :: all = .false.
   end type
 
   type(level_info) :: level
@@ -77,7 +77,7 @@ subroutine parse_model(cmd_line_entry)
   integer :: i, j
 
   if (allocated(model)) then
-    call print_warning ("repeated", more="-F")
+    call print_warning ("repeated", more = "-F")
     return
   endif
 
@@ -85,7 +85,7 @@ subroutine parse_model(cmd_line_entry)
 
   do i = 1, size(cmd_line_entry%field)
 
-    model(i)%exist=.true.
+    model(i)%exist = .true.
 
     if (.not.log%sparse) then
       write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
@@ -95,42 +95,42 @@ subroutine parse_model(cmd_line_entry)
     model(i)%dataname = trim(cmd_line_entry%field(i)%subfield(1)%dataname)
 
     if (model(i)%dataname.eq."") then
-      model(i)%dataname="NN"
+      model(i)%dataname = "NN"
 
     elseif (index(model(i)%dataname,"!").ne.0) then
 
-      model(i)%huge=.true.
+      model(i)%huge = .true.
       model(i)%dataname = model(i)%dataname (1: index(model(i)%dataname,"!")-1)
 
       if (.not.log%sparse) write(log%unit, form%i3) "!:huge"
 
     endif
 
-    if (all_huge) model(i)%huge=.true.
+    if (all_huge) model(i)%huge = .true.
 
     if (model(i)%name.eq."") then
       if (i.gt.1) then
-        model(i)%name=model(i-1)%name
+        model(i)%name = model(i-1)%name
       else
-        call print_warning ("model", error=.true.)
+        call print_warning ("model", error = .true.)
       endif
     endif
 
     do j = 2, size(cmd_line_entry%field(i)%subfield)
       if (cmd_line_entry%field(i)%subfield(j)%dataname.ne."") then
-        model(i)%datanames(j-1)=cmd_line_entry%field(i)%subfield(j)%dataname
+        model(i)%datanames(j-1) = cmd_line_entry%field(i)%subfield(j)%dataname
       endif
     enddo
 
     if (file_exists (model(i)%name) ) then
       do j =2, size (cmd_line_entry%field(i)%subfield)
         if (cmd_line_entry%field(i)%subfield(j)%name.ne."") then
-          model(i)%names(j-1)=cmd_line_entry%field(i)%subfield(j)%name
+          model(i)%names(j-1) = cmd_line_entry%field(i)%subfield(j)%name
         endif
       enddo
 
       if (.not.log%sparse) then
-        write (log%unit, form%i3,advance='no'), &
+        write (log%unit, form%i3,advance = 'no'), &
           trim (dataname(model(i)%dataname)), &
           "("//trim(model(i)%dataname)//")"
         write(log%unit, '(5(a,x))', advance="no"), (trim(model(i)%names(j)), j=1,5)
@@ -163,15 +163,16 @@ subroutine parse_model(cmd_line_entry)
         'constant value was set:   ', model(i)%constant_value
 
       if (trim(model(i)%datanames(1)).ne."") then
-        model(i)%constant_value=   &
-          variable_modifier(       &
-          model(i)%constant_value, &
-          model(i)%datanames(1),   &
-          verbose=.not.log%sparse  &
+        model(i)%constant_value =   &
+          variable_modifier(        &
+          model(i)%constant_value,  &
+          model(i)%datanames(1),    &
+          verbose = .not.log%sparse &
           )
 
         write(log%unit, '(' // form%t3 // "a," // output%form // ")") &
           'constant value was re-set:', model(i)%constant_value
+
       endif
 
       model(i)%lonrange = [  0,360]
@@ -245,21 +246,21 @@ subroutine model_aliases(model, dryrun, year, month)
         if (model%datanames(1).eq."") then
           model%datanames(1) = "gh2h"
         else
-          model%datanames(1) = "gh2h@"// trim(model%datanames(1))
+          model%datanames(1) = "gh2h@" // trim(model%datanames(1))
         endif
       endif
 
     case ("VT")
-      model%names(1)="air"
+      model%names(1) = "air"
       write(model%name,'(a,a,i4,a)') trim(prefix),"air.",year_,".nc"
 
     case ("VRH")
-      model%names(1)="rhum"
+      model%names(1) = "rhum"
       write(model%name,'(a,a,i4,a)') trim(prefix),"rhum.",year_,".nc"
 
     case ("VSH")
       if (model%autoloadname.eq."NCEP1") then
-        model%names(1)="shum"
+        model%names(1) = "shum"
         write(model%name,'(a,a,i4,a)') trim(prefix),"shum.",year_,".nc"
       else
         call print_warning ("not yet NCEP@VSH", error=.true.)
@@ -267,7 +268,7 @@ subroutine model_aliases(model, dryrun, year, month)
 
     case ("SRH")
       if (model%autoloadname.eq."NCEP1") then
-        model%names(1)="rhum"
+        model%names(1) = "rhum"
         write(model%name,'(a,a,i4,a)') trim(prefix),"rhum.sig995.",year_,".nc"
       else
         call print_warning ("not yet NCEP@SRH", error=.true.)
@@ -275,15 +276,15 @@ subroutine model_aliases(model, dryrun, year, month)
 
     case ("T")
       if (model%autoloadname.eq."NCEP1") then
-        model%names(1)="air"
+        model%names(1) = "air"
         write(model%name,'(a,a,i4,a)') trim(prefix),"air.sig995.",year_,".nc"
       else
-        model%names(1)="temp"
-        call print_warning ("not yet NCEP@T", error=.true.)
+        model%names(1) = "temp"
+        call print_warning ("not yet NCEP@T", error = .true.)
       endif
 
     case ("HP","H")
-      model%names(1)="hgt"
+      model%names(1) = "hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.sfc.nc"
       model%autoload=.false.
       if (present(dryrun) .and. dryrun) then
