@@ -83,7 +83,6 @@ PROGS           := $(addsuffix _$(FC)$(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGS
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := ./$(FC) $(PROGS_DIR)
 
-
 all: $(DIRS) $(FC)/libgrat$(SUFFIX).a $(PROGS)
 
 $(DIRS):
@@ -102,9 +101,9 @@ BUG: grat
 		-M2 -G @GN -Sj -D2012:6@H
 
 timeele:
-	value_check                                                  \
-		-F /home/mrajner/dat/erainterim/gp.nc, ERA@H, 10@SP \
-		-V -Sj,b,g:10                                           \
+	value_check     \
+		-F ERA@H      \
+		-V -Sj,b,g:10 \
 		-G@GN -D2010:4@D -L@p -H
 
 exit:
