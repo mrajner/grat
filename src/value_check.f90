@@ -139,7 +139,7 @@ program value_check
 
     if (level%all.and..not.allocated(level%level)) then
       allocate(level%level(size(model(1)%level)))
-      level%level=model(1)%level
+      level%level = model(1)%level
     endif
 
     if (ubound(level%level,1).lt.1) then
@@ -148,15 +148,16 @@ program value_check
       start_level=1
     endif
 
-    lprogress =max(size(date),1)*max(size(site),1)*max(size(level%level),1)
-    do ilevel=start_level, ubound(level%level,1)
-      do i = 1 , ubound(site,1)
+    lprogress = max(size(date),1)*max(size(site),1)*max(size(level%level),1)
+    do ilevel = start_level, ubound(level%level,1)
+      do i = 1, ubound(site,1)
         iprogress = iprogress + 1
 
         ! add time stamp if -D option was specified
         if (j.gt.0) then
           if (.not.output%prune) then
-            write (output%unit , '(f9.3,1x,i4.4,5(i2.2),1x)' , advance = "no" ) date(j)%mjd , date(j)%date
+            write (output%unit, '(f9.3,1x,i4.4,5(i2.2),1x)', advance = "no" ) &
+              date(j)%mjd, date(j)%date
           endif
         endif
 

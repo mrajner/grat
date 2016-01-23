@@ -11,8 +11,8 @@ counter=0
 
 touch t_bugs.dat
 
-# TODO co to
-  grat -F 10 @SP -Sj -M1 -wn
+# value_check -F ../data/shum.2012.nc@VSH:shum -Ja -o:level -H -Sj,l 
+# exit
 
 # set NaN if value cannot be found (previousle 0)
 # FIXED 14eea59d5338d987901cc44bdbd10fc8af6c792d
@@ -69,7 +69,6 @@ let counter++
 # FIXED 329259ae88ccc8c5b9cb241bf5d43c9a14920308
 value_check -F 10@SP -Sj -D 2010@~ > t_bugs.dat${counter}
 let counter++ 
-
 
 # 2015.05.07
 # fixed with 5795c272829b2a7de1a2b1474cb08afca7d8f360

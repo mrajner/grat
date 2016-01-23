@@ -261,9 +261,11 @@ subroutine model_aliases(model, dryrun, year, month)
     case ("VSH")
       if (model%autoloadname.eq."NCEP1") then
         model%names(1) = "shum"
-        write(model%name,'(a,a,i4,a)') trim(prefix),"shum.",year_,".nc"
+        write(model%name, '(a,a,i4,a)') trim(prefix),"shum.",year_,".nc"
+
       else
         call print_warning ("not yet NCEP@VSH", error=.true.)
+
       endif
 
     case ("SRH")
