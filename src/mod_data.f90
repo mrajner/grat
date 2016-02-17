@@ -435,7 +435,7 @@ end subroutine
 ! TODO do not modify all matrices, only values used in output or computation
 ! or convert this routine as `elemental`
 ! =============================================================================
-function variable_modifier (val, modifier, verbose, list_only)
+elemental function variable_modifier (val, modifier, verbose, list_only)
   use mod_atmosphere, only: geop2geom
   use mod_constants,  only: earth
   use mod_utilities,  only: ntokens
@@ -965,11 +965,11 @@ subroutine get_variable(model, date, print, level)
   end if
 
   ! TODO make elemental function variable_modifier and use without loop
-  ! test if any speed
+  ! test if any speed gain
   if (trim(model%datanames(1)).ne."") then
-    do i =1, size(model%data,1)
-      do j =1, size(model%data,2)
-        do k =1, size(model%data,3)
+    do i = 1, size(model%data,1)
+      do j = 1, size(model%data,2)
+        do k = 1, size(model%data,3)
           model%data(i,j,k) = variable_modifier (model%data(i,j,k), model%datanames(1))
         enddo
       enddo

@@ -4,8 +4,8 @@
 !! \author M. Rajner
 ! =============================================================================
 program value_check
-  use mod_constants,  only: dp, sp, R_air, earth, setnan
-  use mod_cmdline, only: info, quiet_step, ind, dryrun, moreverbose, quiet
+  use mod_constants, only: dp, sp, R_air, earth, setnan
+  use mod_cmdline,   only: info, quiet_step, ind, dryrun, moreverbose, quiet
   use mod_parser
   use mod_data
   use mod_date
@@ -199,8 +199,6 @@ program value_check
               val(imodel) = 0
             endif
 
-            ! stop "BUG"
-            ! if (model(ii)%dataname.eq."LS".and..not.(isnan(val(ii)))) then
             if (model(ii)%dataname.eq."LS") then
               val(ii)=int(val(ii))
             endif
