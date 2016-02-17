@@ -435,7 +435,7 @@ end subroutine
 ! TODO do not modify all matrices, only values used in output or computation
 ! or convert this routine as `elemental`
 ! =============================================================================
-elemental function variable_modifier (val, modifier, verbose, list_only)
+function variable_modifier (val, modifier, verbose, list_only)
   use mod_atmosphere, only: geop2geom
   use mod_constants,  only: earth
   use mod_utilities,  only: ntokens
