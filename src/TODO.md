@@ -1,3 +1,8 @@
+2016.02.17 unnecesary computation, e.g. grat -Sj,l,m -FERA@H liczy wysokość 
+oddzielnie dla każdej stacji z modelu H i przelicza wielokrotnie. 
+
+
+
 BUG? era sp2014 size? and datalisting trough grat
 
 dodać odczytywanie lsdm days since....
