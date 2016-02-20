@@ -7,7 +7,7 @@ module mod_normalization
 contains
 ! =============================================================================
 ! =============================================================================
-function green_normalization(method, psi)
+elemental function green_normalization(method, psi)
   use mod_constants, only: pi, earth, gravity, dp
   use mod_utilities, only: d2r
   real(dp):: green_normalization

@@ -2,8 +2,8 @@
 # if not set use gfortran
 #  FC ?= gfortran
 
-a:
-	make -f tmp.makefile xo
+#  a:
+	#  make -f tmp.makefile xo
 ifeq ($(FC),f77)
 	FC := gfortran
 endif
@@ -260,10 +260,10 @@ OBSOLETE:
 #  .EXPORT_ALL_VARIABLES:
 #
 
-define colorecho
-@tput setaf $1
-@echo -n "$2: "
-@tput sgr0
-endef
+#  define colorecho
+#  @tput setaf $1
+#  @echo -n "$2: "
+#  @tput sgr0
+#  endef
 
 %.o: %.mod
