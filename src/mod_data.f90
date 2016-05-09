@@ -736,7 +736,7 @@ subroutine nctime2date (model, print)
 
     mjd_start = mjd (date)
 
-  else if (index(dummy,"Days since").eq.1) then
+  else if (index(dummy,"Days since").eq.1 .or. index(dummy,"days since").eq.1) then
     ! this option for gldas from grace tellus
 
     do i=1,2
