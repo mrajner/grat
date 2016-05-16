@@ -155,9 +155,11 @@ subroutine parse_date(cmd_line_entry)
         read (cmd_line_entry%field(i_)%subfield(2)%name,*) stop(1)
 
         select case (cmd_line_entry%field(i_)%subfield(2)%dataname)
+
         case('Y')
           stop(1)  = start(1)+stop(1)
           stop(2:) = start(2:)
+
         case('M')
           stop(2)  = start(2)+stop(1)
           stop(1)  = start(1)
@@ -177,6 +179,9 @@ subroutine parse_date(cmd_line_entry)
         case('H')
           call invmjd (mjd(start)+stop(1)/24._dp, stop)
 
+        case('s')
+          call invmjd (mjd(start)+stop(1)/24._dp/3600._dp, stop)
+
         case('')
 
         case default
@@ -187,8 +192,10 @@ subroutine parse_date(cmd_line_entry)
       else
         call string2date(cmd_line_entry%field(i_)%subfield(2)%name, stop)
       endif
+
     else
       stop = start
+
     endif
 
     if (size(cmd_line_entry%field(i_)%subfield).ge.3) then
@@ -227,13 +234,13 @@ subroutine parse_date(cmd_line_entry)
 
     ! allow that stop is previous than start and list in reverse order
     ! chage the sign of step in dates if necessery
-    if(mjd(stop).lt.mjd(start).and. step.gt.0) step = -step
+    if(mjd(stop).lt.mjd(start) .and. step.gt.0) step = -step
 
     ! or if step is negative
-    if(mjd(stop).gt.mjd(start).and. step.lt.0) then
-      swap=start
-      start=stop
-      stop=swap
+    if(mjd(stop).gt.mjd(start) .and. step.lt.0) then
+      swap  = start
+      start = stop
+      stop  = swap
     endif
 
     if (interval_unit.eq."M".or.interval_unit.eq."Y") then
@@ -246,33 +253,39 @@ subroutine parse_date(cmd_line_entry)
       if (interval_unit.eq."M") then
         call more_dates &
           (int((12*(stop(1) - start(1))+stop(2)-start(2))/(step))+1, start_index)
-        date(start_index)%date=start
-        date(start_index)%mjd=mjd(date(start_index)%date)
+
+        date(start_index)%date = start
+        date(start_index)%mjd  = mjd(date(start_index)%date)
 
         do i = start_index+1, size(date)
-          date(i)%date=date(i-1)%date
-          date(i)%date(2)=date(i-1)%date(2)+step
+          date(i)%date    = date(i-1)%date
+          date(i)%date(2) = date(i-1)%date(2)+step
 
           if (date(i)%date(2).gt.12) then
             date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
             date(i)%date(2) =modulo(date(i)%date(2), 12)
 
           else if (date(i)%date(2).lt.1) then
-            date(i)%date(1) =date(i)%date(1)-int(-date(i)%date(2)/12+1)
-            date(i)%date(2) =date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
+            date(i)%date(1) = date(i)%date(1)-int(-date(i)%date(2)/12+1)
+            date(i)%date(2) = date(i)%date(2)+12*(1+int(-date(i)%date(2)/12))
+
           endif
-          date(i)%mjd=mjd(date(i)%date)
+
+          date(i)%mjd = mjd(date(i)%date)
           call invmjd(date(i)%mjd, date(i)%date)
+
         enddo
       endif
 
     else
 
-      if (cmd_line_entry%field(i_)%subfield(1)%name=="m"      &
-        .and. cmd_line_entry%field(i_)%subfield(2)%name=="m"  &
+      if (                                                    &
+        cmd_line_entry%field(i_)%subfield(1)%name     == "m"  &
+        .and.                                                 &
+        cmd_line_entry%field(i_)%subfield(2)%name     == "m"  &
         .and. (                                               &
         ubound(cmd_line_entry%field(i_)%subfield,1).lt.3 .or. &
-        cmd_line_entry%field(i_)%subfield(3)%dataname==""     &
+        cmd_line_entry%field(i_)%subfield(3)%dataname == ""   &
         )                                                     &
         ) then
 
@@ -294,13 +307,20 @@ subroutine parse_date(cmd_line_entry)
           if (interval_unit.eq."s") step = step/60./60.
 
           call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index)
+
           do i = start_index, ubound(date,1)
             date(i)%mjd = mjd(start) + (i-start_index)*step/24.
             call invmjd (date(i)%mjd, date(i)%date)
           enddo
+
         endif
       endif
+
     enddo
+
+    do i = 1, size(date)
+    print*, date(i)
+  enddo
 
     if (.not.log%sparse) then
       write (log%unit, form%i3) "dates total:", size(date)

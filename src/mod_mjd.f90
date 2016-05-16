@@ -49,7 +49,7 @@ subroutine invmjd (mjd, date)
   date(4) = int (dayfrac * 24._dp)
   date(5) = (dayfrac - date (4) / 24._dp) * 60 * 24
   date(6) = (dayfrac - date (4) / 24._dp - date(5)/(24._dp*60._dp)) &
-    *60*24*60
+    * 60 * 24 * 60
 
   if (date(6).ge.60) then
     stop "routine invmjd"
