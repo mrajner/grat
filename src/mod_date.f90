@@ -62,19 +62,21 @@ subroutine parse_date(cmd_line_entry)
 
   do i_ = 1, ubound(cmd_line_entry%field,1)
 
-    if (                                                    &
+    if (                                                     &
       any(cmd_line_entry%field(i_)%subfield%name.eq."m")     &
       .or.                                                   &
       any(cmd_line_entry%field(i_)%subfield%dataname.eq."~") &
       ) then
 
       if (.not. allocated (model)) then
-        call print_warning("cannot use m or ~ in data specifier (-D m ) if no model file" &
+        call print_warning(                                              &
+          "cannot use m or ~ in data specifier (-D m ) if no model file" &
           // " with dates given", error = .true.)
 
       elseif (.not.allocated(model(1)%date)) then
-        call print_warning("cannot use m or ~ in data specifier if first model file" &
-          // " do not contains dates" ,error = .true.)
+        call print_warning(                                         &
+          "cannot use m or ~ in data specifier if first model file" &
+          // " do not contains dates", error = .true.)
 
       endif
     endif
@@ -308,9 +310,8 @@ subroutine parse_date(cmd_line_entry)
         if (interval_unit.eq."m") step = step/60.
         if (interval_unit.eq."s") step = step/60./60.
 
-        print*, step
-        print*, int((mjd(stop)-mjd(start)) / step * 24. + 1)
-        call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index)
+        ! 1e-9 to avoid subsecond instabilities
+        call more_dates (int((mjd(stop)-mjd(start)+1e-9) / step * 24._dp + 1 ), start_index)
 
         do i = start_index, ubound(date,1)
           date(i)%mjd = mjd(start) + (i-start_index)*step/24.
@@ -320,10 +321,6 @@ subroutine parse_date(cmd_line_entry)
       endif
     endif
 
-  enddo
-
-  do i = 1, size(date)
-    print*, date(i)
   enddo
 
   if (.not.log%sparse) then
