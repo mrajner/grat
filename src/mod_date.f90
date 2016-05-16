@@ -49,7 +49,7 @@ subroutine parse_date(cmd_line_entry)
   use mod_data,      only: model
 
   integer, dimension(6) :: start, stop, swap
-  real (dp)             :: step
+  real(dp)              :: step
   integer               :: i_, i, start_index, i_aux
   character(1)          :: interval_unit
   type(cmd_line_arg)    :: cmd_line_entry
@@ -62,8 +62,10 @@ subroutine parse_date(cmd_line_entry)
 
   do i_ = 1, ubound(cmd_line_entry%field,1)
 
-    if (any(cmd_line_entry%field(i_)%subfield%name.eq."m")        &
-      .or. any(cmd_line_entry%field(i_)%subfield%dataname.eq."~") &
+    if (                                                    &
+      any(cmd_line_entry%field(i_)%subfield%name.eq."m")     &
+      .or.                                                   &
+      any(cmd_line_entry%field(i_)%subfield%dataname.eq."~") &
       ) then
 
       if (.not. allocated (model)) then
@@ -246,8 +248,8 @@ subroutine parse_date(cmd_line_entry)
     if (interval_unit.eq."M".or.interval_unit.eq."Y") then
 
       if (interval_unit.eq."Y") then
-        step=step*12
-        interval_unit="M"
+        step          = step*12
+        interval_unit = "M"
       endif
 
       if (interval_unit.eq."M") then
@@ -262,8 +264,8 @@ subroutine parse_date(cmd_line_entry)
           date(i)%date(2) = date(i-1)%date(2)+step
 
           if (date(i)%date(2).gt.12) then
-            date(i)%date(1) =date(i)%date(1)+int(date(i)%date(2)/12)
-            date(i)%date(2) =modulo(date(i)%date(2), 12)
+            date(i)%date(1) = date(i)%date(1)+int(date(i)%date(2)/12)
+            date(i)%date(2) = modulo(date(i)%date(2), 12)
 
           else if (date(i)%date(2).lt.1) then
             date(i)%date(1) = date(i)%date(1)-int(-date(i)%date(2)/12+1)
@@ -289,110 +291,112 @@ subroutine parse_date(cmd_line_entry)
         )                                                     &
         ) then
 
-          if (ubound(cmd_line_entry%field(i_)%subfield,1).lt.3) step=1
+        if (ubound(cmd_line_entry%field(i_)%subfield,1).lt.3) step=1
 
-          if (step.gt.ubound(model(1)%time,1)) step=ubound(model(1)%time,1)
-          call more_dates (ceiling(size(model(1)%time)/step), start_index)
-          i_aux=0
+        if (step.gt.ubound(model(1)%time,1)) step=ubound(model(1)%time,1)
+        call more_dates (ceiling(size(model(1)%time)/step), start_index)
+        i_aux=0
 
-          do i = 1, ubound(model(1)%time,1), int(step)
-            i_aux=i_aux+1
-            date(i_aux)%date = model(1)%date(i, :)
-            date(i_aux)%mjd =mjd (date(i_aux)%date)
-          enddo
+        do i = 1, ubound(model(1)%time,1), int(step)
+          i_aux=i_aux+1
+          date(i_aux)%date = model(1)%date(i, :)
+          date(i_aux)%mjd =mjd (date(i_aux)%date)
+        enddo
 
-        else
-          if (interval_unit.eq."D") step = 24. * step
-          if (interval_unit.eq."m") step = step/60.
-          if (interval_unit.eq."s") step = step/60./60.
+      else
+        if (interval_unit.eq."D") step = 24. * step
+        if (interval_unit.eq."m") step = step/60.
+        if (interval_unit.eq."s") step = step/60./60.
 
-          call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index)
+        print*, step
+        print*, int((mjd(stop)-mjd(start)) / step * 24. + 1)
+        call more_dates (int((mjd(stop)-mjd(start)) / step * 24. + 1 ), start_index)
 
-          do i = start_index, ubound(date,1)
-            date(i)%mjd = mjd(start) + (i-start_index)*step/24.
-            call invmjd (date(i)%mjd, date(i)%date)
-          enddo
+        do i = start_index, ubound(date,1)
+          date(i)%mjd = mjd(start) + (i-start_index)*step/24.
+          call invmjd (date(i)%mjd, date(i)%date)
+        enddo
 
-        endif
       endif
+    endif
 
-    enddo
+  enddo
 
-    do i = 1, size(date)
+  do i = 1, size(date)
     print*, date(i)
   enddo
 
-    if (.not.log%sparse) then
-      write (log%unit, form%i3) "dates total:", size(date)
-    endif
-  end subroutine
+  if (.not.log%sparse) then
+    write (log%unit, form%i3) "dates total:", size(date)
+  endif
+end subroutine
 
-  ! =============================================================================
-  !> Expand the array with date input
-  ! =============================================================================
-  subroutine more_dates (number, start_index)
-    integer, intent(in)  :: number
-    integer, intent(out) :: start_index
-    type(dateandmjd), allocatable, dimension(:) :: tmpdate
+! =============================================================================
+!> Expand the array with date input
+! =============================================================================
+subroutine more_dates (number, start_index)
+  integer, intent(in)  :: number
+  integer, intent(out) :: start_index
+  type(dateandmjd), allocatable, dimension(:) :: tmpdate
 
-    if (allocated(date)) then
+  if (allocated(date)) then
 
-      write(log%unit, form%i3), "added date(s):", number
-      start_index=ubound(date,1) + 1
+    write(log%unit, form%i3), "added date(s):", number
+    start_index=ubound(date,1) + 1
 
-      call move_alloc(date, tmpdate)
+    call move_alloc(date, tmpdate)
 
-      allocate(date(ubound(tmpdate,1)+number))
+    allocate(date(ubound(tmpdate,1)+number))
 
-      date(lbound(tmpdate,1):ubound(tmpdate,1))=tmpdate
+    date(lbound(tmpdate,1):ubound(tmpdate,1))=tmpdate
 
-      deallocate(tmpdate)
+    deallocate(tmpdate)
+  else
+    allocate(date(number))
+    start_index=1
+  endif
+end subroutine
+
+! =============================================================================
+!> Convert dates given as string to integer (6 elements)
+!!
+!! 20110612060302 --> [2011, 6, 12, 6, 3, 2 ]
+!! you can omit
+!! \warning decimal seconds are not allowed
+! =============================================================================
+subroutine string2date (string, date, success)
+  use mod_utilities, only: is_numeric
+
+  character (*), intent(in) :: string
+  integer, dimension(6), intent(out):: date
+  integer :: start_char, end_char, j
+  logical, optional :: success
+
+  if (present(success)) success=.true.
+
+  ! this allow to specify !st Jan of year simple as -Dyyyy
+  date = [2000, 1, 1, 0, 0, 0]
+
+  start_char = 1
+  do j = 1, 6
+    if (j.eq.1) then
+      end_char=min(len(string), start_char+3)
     else
-      allocate(date(number))
-      start_index=1
+      end_char=min(len(string), start_char+1)
     endif
-  end subroutine
 
-  ! =============================================================================
-  !> Convert dates given as string to integer (6 elements)
-  !!
-  !! 20110612060302 --> [2011, 6, 12, 6, 3, 2 ]
-  !! you can omit
-  !! \warning decimal seconds are not allowed
-  ! =============================================================================
-  subroutine string2date (string, date, success)
-    use mod_utilities, only: is_numeric
+    if (is_numeric(string(start_char : end_char) )) then
+      read(string(start_char : end_char), *) date(j)
+    else
+      call print_warning ("bad date " // string)
+      if (present(success)) success=.false.
+      return
+    endif
 
-    character (*), intent(in) :: string
-    integer, dimension(6), intent(out):: date
-    integer :: start_char, end_char, j
-    logical, optional :: success
-
-    if (present(success)) success=.true.
-
-    ! this allow to specify !st Jan of year simple as -Dyyyy
-    date = [2000, 1, 1, 0, 0, 0]
-
-    start_char = 1
-    do j = 1, 6
-      if (j.eq.1) then
-        end_char=min(len(string), start_char+3)
-      else
-        end_char=min(len(string), start_char+1)
-      endif
-
-      if (is_numeric(string(start_char : end_char) )) then
-        read(string(start_char : end_char), *) date(j)
-      else
-        call print_warning ("bad date " // string)
-        if (present(success)) success=.false.
-        return
-      endif
-
-      start_char=end_char+1
-      if (end_char.eq.len(trim(string))) exit
-    enddo
-  end subroutine
+    start_char=end_char+1
+    if (end_char.eq.len(trim(string))) exit
+  enddo
+end subroutine
 
 
 end module mod_date
