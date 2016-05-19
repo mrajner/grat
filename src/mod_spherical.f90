@@ -101,17 +101,20 @@ subroutine spher_trig_inverse (lat1, lon1, lat2, lon2, distance, azimuth, havers
   dlon = lon2 - lon1
   dlat = lat2 - lat1
 
-  if (dlon > pi) dlon=dlon-pi
+  if (dlon > pi) dlon = dlon-pi
 
   if (present(haversine).and.haversine) then
     ! the formula below from Robert Chamberlain
     ! http://www.usenet-replayer.com/faq/comp.infosystems.gis.html
     a = (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2
-    distance = 2 * atan2( sqrt(a), sqrt(1-a) )
+    distance = 2 * atan2(sqrt(a), sqrt(1-a))
+
   else
-    distance = acos ( sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
+    distance = acos (sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(dlon))
+
   endif
 
+  ! todo remove sin(distance) from both atan2 arguments
   azimuth =                                                               &
     atan2(                                                                &
     (sin(dlon)*cos(lat2)/sin(distance)),                                  &
