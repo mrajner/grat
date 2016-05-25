@@ -329,7 +329,7 @@ function file_exists(string, double_check, verbose)
     if (file_exists) then
       write (error_unit, '(a,a)') trim(string), " exists"
     else
-      write (error_unit, '(a,a)'), trim(string), " not exists"
+      write (error_unit, '(a,a)') trim(string), " not exists"
     endif
   endif
 

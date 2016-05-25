@@ -14,8 +14,8 @@ module mod_printing
     form_60         = "(a,100(1x,g0))",                            &
     form_61         = "(2x,a,100(1x,g0))",                         &
     form_62         = "(4x,a,100(1x,g0))",                         &
-    form_63         = "(6x,100(x,g0))",                            &
-    form_64         = "(8x,100(x,g0))"
+    form_63         = "(6x,100(1x,g0))",                           &
+    form_64         = "(8x,100(1x,g0))"
 
   type printing_info
     character(60) :: a,                 &
@@ -84,7 +84,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
     case("site_file_format")
       write(def_unit, form%i0, advance="no") "Some records were rejected"
       write(def_unit, form%i0, advance="no") "you should specify for each &
-        line at least 3[4] parameters in free format:"
+       & line at least 3[4] parameters in free format:"
       write(def_unit, form%i0, advance="no") "name lat lon [height] (rest will be skipped)"
 
     case("boundaries")
@@ -201,7 +201,7 @@ subroutine progress(j, time, cpu, every)
       unit = output_unit,                      &
       fmt="(a1,a27,                            &
       f5.1,a1,1x,a,f5.1,a,1x,                  &
-      a,f5.1,x,                                &
+      a,f5.1,1x,                               &
       a,f5.1,a1,                               &
       *(x,a))",                                &
       advance="no"                             &
@@ -267,16 +267,16 @@ subroutine print_version ( &
   call hostnm(host)
 
   write(log%unit, form_header)
-  write(log%unit, form_inheader), trim(program_calling)
-  write(log%unit, form_inheader), version
+  write(log%unit, form_inheader) trim(program_calling)
+  write(log%unit, form_inheader) version
   write(log%unit, form_header)
-  write(log%unit, form_inheader), "compiler: "// trim(compiler)
-  write(log%unit, form_inheader), 'FFLAGS = '//fflags
-  write(log%unit, form_inheader), "compiled on "//trim(host)//" "//cdate
-  write(log%unit, form_inheader), ""
-  write(log%unit, form_inheader), 'Copyright 2013-2015 by Marcin Rajner'
-  write(log%unit, form_inheader), 'Warsaw University of Technology'
-  write(log%unit, form_inheader), 'License: GPLv3 or later'
+  write(log%unit, form_inheader) "compiler: "// trim(compiler)
+  write(log%unit, form_inheader) 'FFLAGS = '//fflags
+  write(log%unit, form_inheader) "compiled on "//trim(host)//" "//cdate
+  write(log%unit, form_inheader) ""
+  write(log%unit, form_inheader) 'Copyright 2013-2015 by Marcin Rajner'
+  write(log%unit, form_inheader) 'Warsaw University of Technology'
+  write(log%unit, form_inheader) 'License: GPLv3 or later'
   write(log%unit, form_header)
 end subroutine
 

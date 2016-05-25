@@ -1306,7 +1306,7 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   if (ind%moreverbose%o.ne.0) then
     if (output%header)  then
       if (present(date)) then
-        write (moreverbose(ind%moreverbose%o)%unit,'(a12,x,a14)', advance='no'), "mjd", "date"
+        write (moreverbose(ind%moreverbose%o)%unit,'(a12,1x,a14)', advance='no'), "mjd", "date"
       endif
       write (moreverbose(ind%moreverbose%o)%unit,'(2a12)'), "ocean[%]", "mean_val"
     endif
