@@ -38,7 +38,7 @@ endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
-	FFLAGS               := $(OPT)
+	FFLAGS               := $(OPT)  -pedantic
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
 	MODULEDIR := -J$(FC)

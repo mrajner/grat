@@ -1,7 +1,7 @@
 grat(3)
 =========
 include::info.dat[]
-:Date: 2010
+:Date: {My date out}
 
 NAME
 ----
@@ -10,8 +10,10 @@ grat - program for computing atmospheric gravity corrections using
 
 SYNOPSIS
 --------
-*grat* <'operation'> ['options']
+{grat} <'operation'> ['options']
 {date} {revision}
+
+{my date out}
 
 {myname}
 
