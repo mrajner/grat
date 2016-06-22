@@ -149,7 +149,8 @@ subroutine read_green (green, print)
     ! this will be feature added for hydrosphere loading later...
   ! .and.  .not. green%name.eq."GB" &
   )) then
-    green%name="merriam"
+    call print_warning("file "//trim(green%name) &
+    // " do not exists!", error=.true.)
   endif
 
   select case (green%name)
