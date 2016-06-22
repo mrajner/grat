@@ -9,6 +9,8 @@ all: info.dat $(MANPAGES)
 info.dat:
 	echo ":Revision:" $$(git describe --tags ) > $@
 	echo ":My date out:" $$(grat --date) >> $@
+	echo ":Date:" $$(grat --date) >> $@
+	echo ":grat:" $$(grat --date) >> $@
 
 %: %.txt
 	$(A2X) $<
