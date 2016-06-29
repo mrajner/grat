@@ -1144,6 +1144,12 @@ subroutine parse_info (cmd_line_entry)
           write(output%unit, '(a)') cdate(1:4)//cdate(6:7)//cdate(9:10)
         endif
 
+      case ("--help")
+        call print_warning("please refer to `grat` man pages")
+
+      case default
+        call print_warning("not recoginzed long option")
+
       end select
 
       call exit(0)
