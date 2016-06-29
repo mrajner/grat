@@ -10,7 +10,7 @@ contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate)
+subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, program_calling)
   use mod_cmdline
   use mod_site,      only: parse_site
   use mod_date,      only: parse_date
@@ -22,7 +22,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate)
 
   type(cmd_line_arg), intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
-  character(len=*), optional :: version, cdate
+  character(len=*), optional :: version, cdate, program_calling
   integer(2) :: i
   logical :: file_already_opened
 
@@ -292,10 +292,11 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate)
     dryrun=.true.
 
   case ("--")
-    call parse_long_option( &
-      cmd_line_entry,       &
-      version = version,    &
-      cdate   = cdate       &
+    call parse_long_option(             &
+      cmd_line_entry,                   &
+      version         = version,        &
+      cdate           = cdate,          &
+      program_calling = program_calling &
       )
 
   case default
@@ -518,11 +519,12 @@ subroutine intro (     &
   write (log%unit, form%i0) "Command parsing:"
 
   do i = 1, size(cmd_line)
-    call parse_option(   &
-      cmd_line(i),       &
-      accepted_switches, &
-      version = version, &
-      cdate   = cdate    &
+    call parse_option(                  &
+      cmd_line(i),                      &
+      accepted_switches,                &
+      version = version,                &
+      cdate   = cdate,                  &
+      program_calling = program_calling &
       )
   enddo
 
@@ -789,6 +791,7 @@ subroutine parse_info (cmd_line_entry)
           case ("3D")
             read (cmd_line_entry%field(i)%subfield(j)%name,*) info(i)%distance%stop_3d
           endselect
+
         else
           select case (cmd_line_entry%field(i)%subfield(j)%dataname)
           case ("I")
@@ -839,319 +842,319 @@ subroutine parse_info (cmd_line_entry)
       endif
 
       if (info(i)%distance%stop_3d.lt.info(i)%distance%stop.and.method(3)) then
-        call print_warning( &
-          "stop_3d distance is less " // &
-          "then stop distance - distant area filled with 2D result GN[d..] if any")
-        endif
+        call print_warning (                                                       &
+          "stop_3d distance is less " //                                           &
+          "then stop distance - distant area filled with 2D result GN[d..] if any" &
+          )
+      endif
 
-      enddo
-    else
-      allocate(info(1))
-      call info_defaults(info(1))
+    enddo
+  else
+    allocate(info(1))
+    call info_defaults(info(1))
+  endif
+end subroutine
+
+! =============================================================================
+! =============================================================================
+subroutine info_defaults(info)
+  use mod_cmdline, only: info_info
+  type(info_info),intent(inout) :: info
+
+  info%interpolation="n"
+
+  info%distance%start=0.
+  info%distance%stop=180.
+  info%distance%denser=1
+  info%distance%step=0
+
+  info%azimuth%start=0.
+  info%azimuth%stop=360.
+  info%azimuth%step=0
+  info%azimuth%denser=1
+
+  info%height%start=0.
+  info%height%stop=60000.
+  info%height%step=25.
+  info%height%denser=1
+
+  info%distance%stop_3d=10.
+
+end subroutine
+
+!! =============================================================================
+!! =============================================================================
+subroutine print_help (program_calling, accepted_switches)
+  character(*), intent(in) :: program_calling
+  character(*), intent(in),optional :: accepted_switches
+  integer :: help_unit, io_stat
+  character(500)::line
+  character(255)::syntax
+  logical:: if_print_line = .false., if_optional=.true.
+
+  if_print_line=.false.
+
+  ! TODO make appropriate man documentation using 
+  ! include for common switches
+
+  ! change this path according to your settings
+  open(                                         &
+    newunit=help_unit,                          &
+    file="/home/mrajner/src/grat/dat/help.hlp", &
+    action="read",                              &
+    status="old"                                &
+    )
+
+  write (log%unit, "(a)", advance="no" ) program_calling
+  ! first loop - print only syntax with squre brackets if parameter is optional
+  do
+    read (help_unit, '(a)', iostat=io_stat) line
+
+    if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
+      if (if_optional) write(log%unit, '(a)', advance="no") " ["
+      if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
+      if (if_optional) write(log%unit, '(a)', advance="no") "]"
     endif
-  end subroutine
 
-  ! =============================================================================
-  ! =============================================================================
-  subroutine info_defaults(info)
-    use mod_cmdline, only: info_info
-    type(info_info),intent(inout) :: info
+    if (io_stat==iostat_end) then
+      write(log%unit, '(a)') " "
+      if_print_line = .false.
+      exit
+    endif
+    if(line(1:1)=="-") then
+      if(if_accepted_switch (line(1:2),accepted_switches )) then
+        if_print_line = .true.
+      else
+        if(line(1:1)=="-") if_print_line=.false.
+      endif
+    endif
 
-    info%interpolation="n"
+    if (line(5:13) == "optional " &
+      .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) &
+      then
+      if_optional=.true.
+    else if (line(5:13) == "mandatory") then
+      if_optional=.false.
+    endif
+    if (line(2:2)=="s") then
+      syntax = trim(adjustl(line(3:)))
+    endif
+  enddo
+  rewind(help_unit)
 
-    info%distance%start=0.
-    info%distance%stop=180.
-    info%distance%denser=1
-    info%distance%step=0
+  write(log%unit, form_60), 'Summary of available options for program '//program_calling
+  ! second loop - print informations
+  do
+    read (help_unit, '(a)', iostat=io_stat) line
+    if (io_stat==iostat_end) exit
 
-    info%azimuth%start=0.
-    info%azimuth%stop=360.
-    info%azimuth%step=0
-    info%azimuth%denser=1
+    if(line(1:1)=="-") then
 
-    info%height%start=0.
-    info%height%stop=60000.
-    info%height%step=25.
-    info%height%denser=1
+      !todo
+      if(if_accepted_switch (line(1:2), accepted_switches)) then
+        if_print_line = .true.
+        write (log%unit, form_61 ) trim(line)
 
-    info%distance%stop_3d=10.
+      else
+        if(line(1:1)=="-") if_print_line=.false.
 
-  end subroutine
-
-  !! =============================================================================
-  !! =============================================================================
-  subroutine print_help (program_calling, accepted_switches)
-    character(*), intent(in) :: program_calling
-    character(*), intent(in),optional :: accepted_switches
-    integer :: help_unit, io_stat
-    character(500)::line
-    character(255)::syntax
-    logical:: if_print_line = .false., if_optional=.true.
-
-    if_print_line=.false.
-
-    ! TODO make appropriate man documentation using 
-    ! include for common switches
-
-    ! change this path according to your settings
-    open(                                         &
-      newunit=help_unit,                          &
-      file="/home/mrajner/src/grat/dat/help.hlp", &
-      action="read",                              &
-      status="old"                                &
-      )
-
-    write (log%unit, "(a)", advance="no" ) program_calling
-    ! first loop - print only syntax with squre brackets if parameter is optional
-    do
-      read (help_unit, '(a)', iostat=io_stat) line
-
-      if ((io_stat==iostat_end .or. line(1:1) == "-") .and. if_print_line ) then
-        if (if_optional) write(log%unit, '(a)', advance="no") " ["
-        if (if_optional) write(log%unit, '(a)', advance="no") trim(syntax)
-        if (if_optional) write(log%unit, '(a)', advance="no") "]"
       endif
 
-      if (io_stat==iostat_end) then
-        write(log%unit, '(a)') " "
-        if_print_line = .false.
-        exit
-      endif
-      if(line(1:1)=="-") then
-        if(if_accepted_switch (line(1:2),accepted_switches )) then
-          if_print_line = .true.
-        else
-          if(line(1:1)=="-") if_print_line=.false.
-        endif
+    else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
+      if (if_print_line) then
+        write (log%unit, form_61 ) "  "//trim(line(3:))
       endif
 
-      if (line(5:13) == "optional " &
-        .and. (line(2:2) == program_calling(1:1) .or. line(2:2)=="")) &
-        then
-          if_optional=.true.
-        else if (line(5:13) == "mandatory") then
-          if_optional=.false.
-        endif
-        if (line(2:2)=="s") then
-          syntax = trim(adjustl(line(3:)))
-        endif
-      enddo
-      rewind(help_unit)
+    else if (line(2:2)=="") then
+      if (if_print_line) write (log%unit, form_61 ) trim(line)
 
-      write(log%unit, form_60), 'Summary of available options for program '//program_calling
-      ! second loop - print informations
-      do
-        read (help_unit, '(a)', iostat=io_stat) line
-        if (io_stat==iostat_end) exit
+    endif
 
-        if(line(1:1)=="-") then
+  enddo
+  close(help_unit)
+end subroutine
 
-          !todo
-          if(if_accepted_switch (line(1:2), accepted_switches)) then
-            if_print_line = .true.
-            write (log%unit, form_61 ) trim(line)
+! =============================================================================
+!> Attach full dataname by abbreviation
+!!
+!! \date 2013-03-21
+!! \author M. Rajner
+! =============================================================================
+! todo split to appropriate modules and call
+function dataname(abbreviation)
+  character(len=2), intent(in) :: abbreviation
+  character(len=40) :: dataname
 
-          else
-            if(line(1:1)=="-") if_print_line=.false.
-
-          endif
-
-        else if (line(2:2)==program_calling(1:1) .or. line(2:2)=="s") then
-          if (if_print_line) then
-            write (log%unit, form_61 ) "  "//trim(line(3:))
-          endif
-
-        else if (line(2:2)=="") then
-          if (if_print_line) write (log%unit, form_61 ) trim(line)
-
-        endif
-
-      enddo
-      close(help_unit)
-    end subroutine
-
-    ! =============================================================================
-    !> Attach full dataname by abbreviation
-    !!
-    !! \date 2013-03-21
-    !! \author M. Rajner
-    ! =============================================================================
-    ! todo split to appropriate modules and call
-    function dataname(abbreviation)
-      character(len=2), intent(in) :: abbreviation
-      character(len=40) :: dataname
-
-      select case(abbreviation)
-      case("n")
-        dataname = "nearest"
-      case("l")
-        dataname = "bilinear"
-      case("g")
-        dataname = "green function used"
-      case("p")
-        dataname = "points"
-      case("r")
-        dataname = "results"
-      case("a")
-        dataname = "auxiliary"
-      case("d")
-        dataname = "dates"
-      case("s")
-        dataname = "summary"
-      case("o")
-        dataname = "ocean conserve mass"
-      case("t")
-        dataname = "total mass"
-      case("b")
-        dataname = "progress bar"
-      case("j")
-        dataname = "level"
-      case default
-        dataname="unknown"
-      end select
-    end function
+  select case(abbreviation)
+  case("n")
+    dataname = "nearest"
+  case("l")
+    dataname = "bilinear"
+  case("g")
+    dataname = "green function used"
+  case("p")
+    dataname = "points"
+  case("r")
+    dataname = "results"
+  case("a")
+    dataname = "auxiliary"
+  case("d")
+    dataname = "dates"
+  case("s")
+    dataname = "summary"
+  case("o")
+    dataname = "ocean conserve mass"
+  case("t")
+    dataname = "total mass"
+  case("b")
+    dataname = "progress bar"
+  case("j")
+    dataname = "level"
+  case default
+    dataname="unknown"
+  end select
+end function
 
 
-    ! =============================================================================
-    !> This soubroutine stores indexes of specific dataname for data, green
-    !! functions, polygon etc.
-    ! =============================================================================
-    subroutine get_index()
-      use mod_polygon, only: polygon
-      use mod_data,    only: model
-      use mod_green,   only: green
-      use mod_cmdline, only: ind, moreverbose
+! =============================================================================
+!> This soubroutine stores indexes of specific dataname for data, green
+!! functions, polygon etc.
+! =============================================================================
+subroutine get_index()
+  use mod_polygon, only: polygon
+  use mod_data,    only: model
+  use mod_green,   only: green
+  use mod_cmdline, only: ind, moreverbose
 
-      integer :: i
+  integer :: i
 
-      do i = 1, ubound(model,1)
-        select case (model(i)%dataname)
-        case ("SP")
-          ind%model%sp = i
-        case ("EWT")
-          ind%model%ewt = i
-        case ("T")
-          ind%model%t = i
-        case ("RSP")
-          ind%model%rsp = i
-        case ("HRSP")
-          ind%model%hrsp = i
-        case ("LS")
-          ind%model%ls = i
-        case ("H")
-          ind%model%h = i
-        case ("HP")
-          ind%model%hp = i
-        case ("GP")
-          ind%model%gp = i
-        case ("VT")
-          ind%model%vt = i
-        case ("VSH")
-          ind%model%vsh = i
-        endselect
-      enddo
+  do i = 1, ubound(model,1)
+    select case (model(i)%dataname)
+    case ("SP")
+      ind%model%sp = i
+    case ("EWT")
+      ind%model%ewt = i
+    case ("T")
+      ind%model%t = i
+    case ("RSP")
+      ind%model%rsp = i
+    case ("HRSP")
+      ind%model%hrsp = i
+    case ("LS")
+      ind%model%ls = i
+    case ("H")
+      ind%model%h = i
+    case ("HP")
+      ind%model%hp = i
+    case ("GP")
+      ind%model%gp = i
+    case ("VT")
+      ind%model%vt = i
+    case ("VSH")
+      ind%model%vsh = i
+    endselect
+  enddo
 
-      do i = 1, ubound(moreverbose,1)
-        select case (moreverbose(i)%dataname)
-        case ("p")
-          ind%moreverbose%p = i
-        case ("g")
-          ind%moreverbose%g = i
-        case ("a")
-          ind%moreverbose%a = i
-        case ("d")
-          ind%moreverbose%d = i
-        case ("r")
-          ind%moreverbose%r = i
-        case ("s")
-          ind%moreverbose%s = i
-        case ("o")
-          ind%moreverbose%o = i
-        case ("t")
-          ind%moreverbose%t = i
-        case ("b")
-          ind%moreverbose%b = i
-        case ("n")
-          ind%moreverbose%n = i
-        case ("l")
-          ind%moreverbose%l = i
-        case ("j")
-          ind%moreverbose%j = i
-        case ("v")
-          ind%moreverbose%v = i
-        end select
-      enddo
+  do i = 1, ubound(moreverbose,1)
+    select case (moreverbose(i)%dataname)
+    case ("p")
+      ind%moreverbose%p = i
+    case ("g")
+      ind%moreverbose%g = i
+    case ("a")
+      ind%moreverbose%a = i
+    case ("d")
+      ind%moreverbose%d = i
+    case ("r")
+      ind%moreverbose%r = i
+    case ("s")
+      ind%moreverbose%s = i
+    case ("o")
+      ind%moreverbose%o = i
+    case ("t")
+      ind%moreverbose%t = i
+    case ("b")
+      ind%moreverbose%b = i
+    case ("n")
+      ind%moreverbose%n = i
+    case ("l")
+      ind%moreverbose%l = i
+    case ("j")
+      ind%moreverbose%j = i
+    case ("v")
+      ind%moreverbose%v = i
+    end select
+  enddo
 
-      do i = 1, ubound(green,1)
-        select case (green(i)%dataname)
-        case ("GE")
-          ind%green%ge    = i
-        case ("GEGdt")
-          ind%green%gegdt = i
-        case ("GN")
-          ind%green%gn    = i
-        case ("GNc")
-          ind%green%gnc   = i
-        case ("GR")
-          ind%green%gr    = i
-        case ("GHN")
-          ind%green%ghn   = i
-        case ("GHE")
-          ind%green%ghe   = i
-        case ("GG")
-          ind%green%gg    = i
-        case ("GNdt")
-          ind%green%gndt  = i
-        case ("GNdh")
-          ind%green%gndh  = i
-        case ("GNdz")
-          ind%green%gndz  = i
-        case ("GNdz2")
-          ind%green%gndz2 = i
-        endselect
-      enddo
+  do i = 1, ubound(green,1)
+    select case (green(i)%dataname)
+    case ("GE")
+      ind%green%ge    = i
+    case ("GEGdt")
+      ind%green%gegdt = i
+    case ("GN")
+      ind%green%gn    = i
+    case ("GNc")
+      ind%green%gnc   = i
+    case ("GR")
+      ind%green%gr    = i
+    case ("GHN")
+      ind%green%ghn   = i
+    case ("GHE")
+      ind%green%ghe   = i
+    case ("GG")
+      ind%green%gg    = i
+    case ("GNdt")
+      ind%green%gndt  = i
+    case ("GNdh")
+      ind%green%gndh  = i
+    case ("GNdz")
+      ind%green%gndz  = i
+    case ("GNdz2")
+      ind%green%gndz2 = i
+    endselect
+  enddo
 
-      do i = 1, ubound(polygon,1)
-        select case (polygon(i)%dataname)
-        case ("E","")
-          ! assume polygon is for elastic part
-          ind%polygon%e = i
-        case ("N")
-          ind%polygon%n = i
-        endselect
-      enddo
+  do i = 1, ubound(polygon,1)
+    select case (polygon(i)%dataname)
+    case ("E","")
+      ! assume polygon is for elastic part
+      ind%polygon%e = i
+    case ("N")
+      ind%polygon%n = i
+    endselect
+  enddo
 
-    end subroutine
+end subroutine
 
-    ! =============================================================================
-    ! only for debugging during developement
-    ! =============================================================================
-    subroutine parse_long_option(cmd_line_entry, version, cdate)
-      use mod_cmdline, only: cmd_line_arg
-      use mod_utilities, only: version_split
+! =============================================================================
+! only for debugging during developement
+! =============================================================================
+subroutine parse_long_option(cmd_line_entry, version, cdate, program_calling)
+  use mod_cmdline, only: cmd_line_arg
+  use mod_utilities, only: version_split
 
-      type(cmd_line_arg) :: cmd_line_entry
-      character(len=*), optional :: version
-      character(len=*), optional :: cdate
+  type(cmd_line_arg) :: cmd_line_entry
+  character(len=*), optional :: version, cdate, program_calling
 
-      select case (trim(cmd_line_entry%full))
+  select case (trim(cmd_line_entry%full))
 
-      case ("--version")
-        write(output%unit, '(a)') version_split(version,"major")
+  case ("--version")
+    write(output%unit, '(a)') version_split(version,"major")
 
-      case ("--date")
-        if (present(cdate)) then
-          write(output%unit, '(a)') cdate(1:4)//cdate(6:7)//cdate(9:10)
-        endif
+  case ("--date")
+    if (present(cdate)) then
+      write(output%unit, '(a)') cdate(1:4)//cdate(6:7)//cdate(9:10)
+    endif
 
-      case ("--help")
-        call print_warning("please refer to `grat` man pages")
+  case ("--help")
+    call print_warning("please refer to `"// program_calling // "` man pages")
 
-      case default
-        call print_warning("not recoginzed long option")
+  case default
+    call print_warning("not recoginzed long option")
 
-      end select
+  end select
 
-      call exit(0)
-    end subroutine
-  end module
+  call exit(0)
+end subroutine
+end module
