@@ -82,6 +82,7 @@ program grat
     program_calling   = "grat",                          &
     version           = __GRAT_VERSION__,                &
     cdate             = __CDATE__,                       &
+    gdate             = __GDATE__,                       &
     fflags            = __FFLAGS__,                      &
     compiler          = __COMPILER__,                    &
     accepted_switches = 'VSBLGPqoFIDLvhRrMOAHUwJQ!n-mC', &

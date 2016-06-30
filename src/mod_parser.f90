@@ -10,7 +10,7 @@ contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, program_calling)
+subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdate, program_calling)
   use mod_cmdline
   use mod_site,      only: parse_site
   use mod_date,      only: parse_date
@@ -22,7 +22,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, prog
 
   type(cmd_line_arg), intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
-  character(len=*), optional :: version, cdate, program_calling
+  character(len=*), optional :: version, cdate, gdate, program_calling
   integer(2) :: i
   logical :: file_already_opened
 
@@ -296,6 +296,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, prog
       cmd_line_entry,                   &
       version         = version,        &
       cdate           = cdate,          &
+      gdate           = gdate,          &
       program_calling = program_calling &
       )
 
@@ -327,6 +328,7 @@ subroutine intro (     &
     cmdlineargs,       &
     version,           &
     cdate,             &
+    gdate,             &
     fflags,            &
     compiler           &
     )
@@ -336,7 +338,7 @@ subroutine intro (     &
   character(len=*), intent(in) :: program_calling
   character(len=*), intent (in), optional :: accepted_switches
   logical, intent (in), optional :: cmdlineargs
-  character(*), intent (in), optional :: version, cdate, fflags, compiler
+  character(*), intent (in), optional :: version, cdate, gdate, fflags, compiler
   integer :: i, j
   character(len = 855) :: dummy
   integer,dimension(8):: execution_date
@@ -524,6 +526,7 @@ subroutine intro (     &
       accepted_switches,                &
       version = version,                &
       cdate   = cdate,                  &
+      gdate   = gdate,                  &
       program_calling = program_calling &
       )
   enddo
@@ -1130,19 +1133,24 @@ end subroutine
 ! =============================================================================
 ! only for debugging during developement
 ! =============================================================================
-subroutine parse_long_option(cmd_line_entry, version, cdate, program_calling)
+subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_calling)
   use mod_cmdline, only: cmd_line_arg
   use mod_utilities, only: version_split
 
   type(cmd_line_arg) :: cmd_line_entry
-  character(len=*), optional :: version, cdate, program_calling
+  character(len=*), optional :: version, cdate, gdate, program_calling
 
   select case (trim(cmd_line_entry%full))
 
   case ("--version")
     write(output%unit, '(a)') version_split(version,"major")
 
-  case ("--date")
+  case ("--date", "--gdate")
+    if (present(cdate)) then
+      write(output%unit, '(a)') gdate(1:4)//gdate(6:7)//gdate(9:10)
+    endif
+
+  case ("--cdate")
     if (present(cdate)) then
       write(output%unit, '(a)') cdate(1:4)//cdate(6:7)//cdate(9:10)
     endif
