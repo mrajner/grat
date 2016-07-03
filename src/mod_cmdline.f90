@@ -203,11 +203,13 @@ subroutine collect_args (dummy)
       do n = 1, count_separator(cmd_line(i)%field(j)%full,":")+1
 
         indeks_colon = index(dummy_aux2,":")
+
         if (indeks_colon.gt.0) then
           cmd_line(i)%field(j)%subfield(n)%name=dummy_aux2(1:indeks_colon-1)
         else
           cmd_line(i)%field(j)%subfield(n)%name=dummy_aux2
         endif
+
         dummy_aux2 = dummy_aux2(indeks_colon+1:)
         indeks_at = index(cmd_line(i)%field(j)%subfield(n)%name,"@")
 

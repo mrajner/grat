@@ -593,7 +593,7 @@ end subroutine
 
 ! ==============================================================================
 ! ==============================================================================
-real function mean (vec, i, nan)
+real(dp) function mean (vec, i, nan)
 
   integer :: i
   real(dp)  :: vec(i)
@@ -608,13 +608,14 @@ end function
 
 ! ==============================================================================
 ! ==============================================================================
-real function stdev (vec,i, nan)
+real(dp) function stdev (vec,i, nan)
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
 
   if (present(nan).and.nan) then
-    stdev = sqrt(sum((vec - mean(vec,i,nan=nan))**2,mask=.not.isnan(vec))/real(size(vec)))
+    stdev = sqrt(sum((vec - mean(vec,i,nan=nan))**2,mask=.not.isnan(vec)) &
+      /real(size(vec)))
   else
     stdev = sqrt(sum((vec - mean(vec,i))**2)/real(size(vec)))
   endif

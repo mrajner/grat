@@ -15,15 +15,12 @@ info.dat:
 %: %.txt
 	$(A2X) $<
 
-MANDIR := $$HOME/.local/share/man/
+MANDIR := $${HOME}/.local/share/man/
 
 install: $(MANPAGES)
 	echo $(MANPAGES)
 	echo $<
-
-ki:
-	#  $(MANDIR)
-	#  cp -uv $(MANPAGES) -t $(MANDIR)
+	 cp -uv $(MANPAGES) -t $(MANDIR)
 
 #  $(MANDIR):
 	#  mkdir -p $@
