@@ -40,6 +40,7 @@ real(dp) function geometry (psi, h, z, method)
     geometry = &
       ((earth%radius +z)*cos(psi) - (earth%radius + h))/l**3.
   endif
+
 end function
 
 ! =============================================================================
@@ -118,7 +119,7 @@ real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, heig
   real(dp) :: theta, lambda, height       ! atmosphere cell
   real(dp) :: r_s, r, aux
 
-  aux= &
+  aux=                                      &
     + sin(pi/2.-theta_s)*sin(pi/2.-theta)   &
     * (                                     &
     + cos(pi/2.-lambda_s)*cos(pi/2.-lambda) &
