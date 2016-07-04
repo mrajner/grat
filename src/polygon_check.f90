@@ -25,10 +25,10 @@ program polygon_check
   allocate(iok(size(polygon)))
 
   if (output%header) then
-    write (output%unit , '(a8,1x,2a10)' , advance="no" ) "name", "lat", "lon"
+    write (output%unit , '(a8,1x,2a10)' , advance="no") "name", "lat", "lon"
 
     if (allocated(polygon)) then
-      write (output%unit, '(*(2x,a1,i1))' ) ("p",i,i=1,size(iok))
+      write (output%unit, '(*(2x,a1,i1))') ("p",i,i=1,size(iok))
     else
       write(output%unit, *)
     endif
@@ -43,7 +43,7 @@ program polygon_check
         call chkgon (site(i)%lon, site(i)%lat, polygon(j), iok(j))
       enddo
 
-      write (output%unit, '(*(i4))' ) iok
+      write (output%unit, '(*(i4))') iok
 
     else
       write(output%unit, *)
