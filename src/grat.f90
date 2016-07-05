@@ -133,12 +133,12 @@ program grat
               write (output%unit,'(a13$)'), trim(green(i)%dataname)//"_NIB"
             endif
           else
-            write (output%unit,'(a13$)'), trim(green(i)%dataname)
+            write (output%unit,'(a13$)') trim(green(i)%dataname)
           endif
         enddo
 
         if (inverted_barometer.and.non_inverted_barometer.and.any(green%dataname.eq."GE")) then
-          write (output%unit,'(a13)' , advance = "no"), "GE_NIB"
+          write (output%unit,'(a13)' , advance = "no") "GE_NIB"
         endif
       endif
 

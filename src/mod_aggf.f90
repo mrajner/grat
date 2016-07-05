@@ -48,55 +48,63 @@ function aggfd ( &
   if (present(delta)) delta_ = delta
 
   if(present(aggfdh).and.aggfdh) then
-    aggfd = (                &
-      + aggf (psi,           &
-      h=+delta_,             &
-      dz=dz,                 &
-      method=method,         &
-      predefined=predefined, &
-      fels_type=fels_type,   &
-      rough=rough)           &
-      - aggf (psi,           &
-      h=-delta_,             &
-      dz=dz,                 &
-      method=method,         &
-      predefined=predefined, &
-      fels_type=fels_type,   &
-      rough=rough))          &
+    aggfd = (                  &
+      + aggf (                 &
+      psi,                     &
+      h          = +delta_,    &
+      dz         = dz,         &
+      method     = method,     &
+      predefined = predefined, &
+      fels_type  = fels_type,  &
+      rough      = rough)      &
+      - aggf (                 &
+      psi,                     &
+      h          = -delta_,    &
+      dz         = dz,         &
+      method     = method,     &
+      predefined = predefined, &
+      fels_type  = fels_type,  &
+      rough      = rough))     &
       / ( 2._dp * delta_)
-  else if(present(aggfdz).and.aggfdz) then
-    aggfd = (                &
-      + aggf (psi,           &
-      zmin = +delta_,        &
-      dz=dz,                 &
-      method = method,       &
-      predefined=predefined, &
-      fels_type=fels_type,   &
-      rough=rough)           &
-      - aggf (psi,           &
-      zmin = -delta_,        &
-      dz=dz,                 &
-      method = method,       &
-      predefined=predefined, &
-      fels_type=fels_type,   &
-      rough=rough))          &
+
+  elseif(present(aggfdz).and.aggfdz) then
+    aggfd = (                  &
+      + aggf (                 &
+      psi,                     &
+      zmin       = +delta_,    &
+      dz         = dz,         &
+      method     = method,     &
+      predefined = predefined, &
+      fels_type  = fels_type,  &
+      rough      = rough)      &
+      - aggf (                 &
+    psi,                       &
+      zmin       = -delta_,    &
+      dz         = dz,         &
+      method     = method,     &
+      predefined = predefined, &
+      fels_type  = fels_type,  &
+      rough      = rough))     &
       / ( 2._dp * delta_)
+
   else if(present(aggfdt).and.aggfdt) then
-    aggfd = (                &
-      + aggf (psi,           &
-      t_zero = +delta_,      &
-      dz=dz,                 &
-      method = method,       &
-      predefined=predefined, &
-      fels_type=fels_type,   &
-      rough=rough)           &
-      - aggf (psi,           &
-      t_zero = -delta_,      &
-      dz=dz,                 &
-      method = method,       &
-      predefined=predefined, &
-      fels_type=fels_type,   &
-      rough=rough))          &
+    aggfd = (                  &
+      + aggf (                 &
+      psi,                     &
+      t_zero     = +delta_,    &
+      dz         = dz,         &
+      method     = method,     &
+      predefined = predefined, &
+      fels_type  = fels_type,  &
+      rough      = rough)      &
+      - aggf (                 &
+      psi,                     &
+      t_zero     = -delta_,    &
+      dz         = dz,         &
+      method     = method,     &
+      predefined = predefined, &
+      fels_type  = fels_type,  &
+      rough      = rough))     &
       / ( 2._dp * delta_)
   endif
 end function
@@ -134,8 +142,9 @@ function aggf (         &
     zmin,                           &   ! minimum height, starting point [m]     (default = 0)
     zmax,                           &   ! maximum height, ending point   [m]     (default = 60000)
     dz,                             &   ! integration step               [m]     (default = 0.1 -> 10 cm)
-    t_zero,                         &   ! temperature at the surface     [K]     (default = 15°C i.e., 288.15=t0)
+    t_zero,                         &   ! temperature at the surface     [K]     (default = 15°C i.e., 288.15 = t0)
     h                                   ! station height                 [m]     (default = 0)
+
   logical, intent(in), optional :: &
     first_derivative_h, first_derivative_z, predefined, rough
   character (len=*), intent(in), optional  :: fels_type, method
@@ -219,7 +228,7 @@ function aggf (         &
           p_zero                   = pressures(i-1),                    &
           h_zero                   = heights(i-1),                      &
           method                   = method,                            &
-          dz                       = dz,                               &
+          dz                       = dz,                                &
           fels_type                = fels_type,                         &
           use_standard_temperature = .true.,                            &
           temperature              = standard_temperature(heights(i-1), &
@@ -231,7 +240,7 @@ function aggf (         &
     endif
   endif
 
-  old_method=method
+  old_method = method
 
   do i = 1, size(heights)
 
@@ -256,9 +265,12 @@ function aggf (         &
       ! first derivative (respective to station height)
       ! micro Gal height / m
       ! see equation 22, 23 in \cite Huang05
-      J_aux =  ((earth%radius + heights(i) )**2._dp)*(1._dp-3._dp*((cos(psi))**2._dp)) -2._dp*(earth%radius + h_)**2._dp  &
+      J_aux =                                                                &
+        ((earth%radius + heights(i) )**2._dp)                                &
+        *(1._dp-3._dp*((cos(psi))**2._dp)) -2._dp*(earth%radius + h_)**2._dp &
         + 4._dp*(earth%radius+h_)*(earth%radius+heights(i))*cos(psi)
-      aggf =  aggf + rho * (  J_aux  /  l**5._dp  ) * dz_
+
+      aggf = aggf + rho * (J_aux/l**5._dp) * dz_
 
     else if (present (first_derivative_z) .and. first_derivative_z) then
       ! first derivative (respective to column height)
@@ -309,12 +321,12 @@ function bouger (h, R)
   real(dp), intent(in), optional :: R !< height of point above the cylinder
   real(dp), intent(in) ::  h
 
-  if (present( R ) ) then
+  if (present(R)) then
     bouger = h + R - sqrt(R**2+H**2)
   else
     bouger = h
   endif
-  bouger = 2 * pi * gravity%constant * bouger
+  bouger = 2*pi*gravity%constant * bouger
   return
 end function
 
@@ -336,8 +348,8 @@ function simple_def (R)
     earth%gravity%mean / earth%radius * 1000._dp                        &
     * delta                                                             &
     * (                                                                 &
-    2. - 3./2. * earth%density%crust / earth%density%mean               &
-    -3./4. * earth%density%crust / earth%density%mean * sqrt (2* (1. )) &
+    2.-3./2. * earth%density%crust / earth%density%mean                 &
+    -3./4. * earth%density%crust / earth%density%mean * sqrt (2*(1.)) &
     )                                                                   &
     * 1000._dp
 end function

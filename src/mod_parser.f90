@@ -1029,7 +1029,7 @@ subroutine get_index()
   use mod_green,   only: green
   use mod_cmdline, only: ind, moreverbose
 
-  integer :: i
+  integer(2) :: i
 
   do i = 1, ubound(model,1)
     select case (model(i)%dataname)

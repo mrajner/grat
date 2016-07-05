@@ -1395,7 +1395,7 @@ subroutine convolve(site, date, results)
           if (header_p.and.output%header) then
 
             if(size(green_common).gt.1) then
-              write(moreverbose(ind%moreverbose%p)%unit, "(a2, x)", advance='no') "i"
+              write(moreverbose(ind%moreverbose%p)%unit, "(a2,1x)", advance='no') "i"
             endif
 
             write(moreverbose(ind%moreverbose%p)%unit, &
@@ -1434,8 +1434,7 @@ subroutine convolve(site, date, results)
 
             if (size(iok).gt.0) then
               write(moreverbose(ind%moreverbose%p)%unit, &
-                '(*(a3, i1))'),                          &
-                ("ok", i, i =1, ubound(iok, 1))
+                '(*(a3, i1))') ("ok", i, i =1, ubound(iok, 1))
             else
               write(moreverbose(ind%moreverbose%p)%unit, '(a)') 
             endif
@@ -1686,13 +1685,13 @@ subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, dista
   real(dp) ::  lat, lon, distancestart, distancestop
 
   call spher_trig (latin, lonin, distancestart, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)') r2d(lat), r2d(lon)
   call spher_trig (latin, lonin, distancestop, azimuth - azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)') r2d(lat), r2d(lon)
   call spher_trig (latin, lonin, distancestop, azimuth + azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)') r2d(lat), r2d(lon)
   call spher_trig (latin, lonin, distancestart, azimuth + azstep/2, lat, lon)
-  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)'), r2d(lat), r2d(lon)
+  write(moreverbose(ind%moreverbose%a)%unit, '(8f12.6)') r2d(lat), r2d(lon)
   write(moreverbose(ind%moreverbose%a)%unit, '(">")')
 end subroutine
 
