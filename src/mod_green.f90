@@ -1454,7 +1454,7 @@ subroutine convolve(site, date, results)
             endif
 
             write(moreverbose(ind%moreverbose%p)%unit,       &
-              '(a8, 6' // output%form //',2 en13.3, $)'),    &
+              '(a8, 6' // output%form //',2 en13.3, $)')     &
               trim(site%name), site%lat, site%lon,           &
               green_common(igreen)%distance(idist), azimuth, &
               r2d(lat), r2d(lon), area, tot_area
@@ -1462,7 +1462,7 @@ subroutine convolve(site, date, results)
             if (result_component) then
               do i =1, size(result)
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(' // output%form //'$)'),              &
+                  '(' // output%form //'$)')               &
                   (result(i))
               enddo
             endif
@@ -1471,7 +1471,7 @@ subroutine convolve(site, date, results)
 
               if (method(2)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(' // output%form //'$)'),              &
+                  '(' // output%form //'$)')               &
                   sum(result,                              &
                   mask=(                                   &
                   green%dataname.eq."GN"                   &
@@ -1485,7 +1485,7 @@ subroutine convolve(site, date, results)
 
               if (method(3)) then
                 write(moreverbose(ind%moreverbose%p)%unit, &
-                  '(' // output%form //'$)'),              &
+                  '(' // output%form //'$)')               &
                   sum(result,                              &
                   mask=(                                   &
                   green%dataname.eq."G3D"                  &
@@ -1523,7 +1523,7 @@ subroutine convolve(site, date, results)
             endif
 
             if (size(iok).gt.0) then
-              write(moreverbose(ind%moreverbose%p)%unit, '(*(i4))'), iok
+              write(moreverbose(ind%moreverbose%p)%unit, '(*(i4))')  iok
             else
               write(moreverbose(ind%moreverbose%p)%unit, '(a)' ) ''
             endif
@@ -1595,7 +1595,7 @@ subroutine convolve(site, date, results)
           ))
       else
         write(output%unit,              &
-          '(' // output%form //'$)'),   &
+          '(' // output%form //'$)')    &
           sum(result,                   &
           mask=(                        &
           green%dataname.eq."GN"        &
@@ -1609,7 +1609,7 @@ subroutine convolve(site, date, results)
 
       if (result_total_all) then
         write(output%unit,              &
-          '(' // output%form //'$)'),   &
+          '(' // output%form //'$)')    &
           sum(result,                   &
           mask=(                        &
           green%dataname.eq."GN"        &

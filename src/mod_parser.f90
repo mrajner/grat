@@ -366,7 +366,7 @@ subroutine intro (     &
     .and.if_accepted_switch("-v",accepted_switches)) then
 
     if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vv") then
-      write(output_unit,'(a)'), __GRAT_VERSION__
+      write(output_unit,'(a)') __GRAT_VERSION__
       call exit
     endif
 
@@ -736,7 +736,7 @@ subroutine parse_info (cmd_line_entry)
   if (present(cmd_line_entry)) then
     allocate (info(size(cmd_line_entry%field)))
     do i = 1, size(cmd_line_entry%field)
-      write(log%unit, form%i2), "Range:", i
+      write(log%unit, form%i2) "Range:", i
       call info_defaults(info(i))
 
       do j = 1, size(cmd_line_entry%field(i)%subfield)
@@ -945,7 +945,7 @@ subroutine print_help (program_calling, accepted_switches)
   enddo
   rewind(help_unit)
 
-  write(log%unit, form_60), 'Summary of available options for program '//program_calling
+  write(log%unit, form_60) 'Summary of available options for program '//program_calling
   ! second loop - print informations
   do
     read (help_unit, '(a)', iostat=io_stat) line

@@ -21,7 +21,7 @@ program value_check
   integer :: execution_time(3)
   integer    :: i, ii, j ,start, imodel, iprogress = 0, lprogress
   integer(2) :: iok
-  integer(2) :: ilevel, start_level
+  integer    :: ilevel, start_level
 
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
@@ -130,7 +130,7 @@ program value_check
     ! print only dates if no site given
     if (j.gt.0 .and. ubound(site,1).lt.1) then
       if (dryrun) then
-        write (output%unit , '(i4.4,5(i2.2),$)') date(j)%date
+        write (output%unit, '(i4.4,5(i2.2),$)') date(j)%date
         ! if (j.lt.size(date)) write (output%unit , '(", ",$)')
       else
         write (output%unit , '(f9.3,1x,i4.4,5(i2.2))'  ) date(j)%mjd , date(j)%date
@@ -165,7 +165,7 @@ program value_check
         if (allocated(polygon).and.polygon(1)%if) then
           call chkgon(site(i)%lon, site(i)%lat, polygon(1), iok)
         else
-          iok=1
+          iok = 1
         endif
 
         imodel = 0
