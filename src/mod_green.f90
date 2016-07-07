@@ -8,7 +8,7 @@ module mod_green
   !----------------------------------------------------
   type green_functions
     character (len=255) :: name
-    character (len=25) :: dataname
+    character (len=25)  :: dataname
     integer, dimension(2) :: column
     character(10), dimension(2) :: columndataname
     real(dp), allocatable,dimension(:) :: distance
@@ -1158,10 +1158,10 @@ subroutine convolve(site, date, results)
                       + val(ind%model%sp)                                &
                       * aggf(                                            &
                       d2r(green_common(igreen)%distance(idist)),         &
-                      zmin=val(ind%model%h),                             &
-                      t_zero=val(ind%model%t),                           &
-                      h=site%height,                                     &
-                      dz= gnc_looseness*10._dp                           &
+                      zmin   = val(ind%model%h),                         &
+                      t_zero = val(ind%model%t),                         &
+                      h      = site%height,                              &
+                      dz     = gnc_looseness*10._dp                      &
                       * merge(10._dp,                                    &
                       merge(0.1_dp,1._dp,                                &
                       green_common(igreen)%distance(idist).le.1e-5_dp ), &
