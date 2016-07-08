@@ -1154,20 +1154,21 @@ subroutine convolve(site, date, results)
                       ].eq.0))      &
                       call print_warning ("with @GNc you need to give @T @HP @H", error=.true.)
 
-                    result(ind%green%gnc) = result(ind%green%gnc)        &
-                      + val(ind%model%sp)                                &
-                      * aggf(                                            &
-                      d2r(green_common(igreen)%distance(idist)),         &
-                      zmin=val(ind%model%h),                             &
-                      t_zero=val(ind%model%t),                           &
-                      h=site%height,                                     &
-                      dz= gnc_looseness*10._dp                           &
-                      * merge(10._dp,                                    &
-                      merge(0.1_dp,1._dp,                                &
-                      green_common(igreen)%distance(idist).le.1e-5_dp ), &
-                      green_common(igreen)%distance(idist).ge.1e-2_dp ), &
-                      method="standard",                                 &
-                      predefined=.true.)                                 &
+                    result(ind%green%gnc) = result(ind%green%gnc)       &
+                      + val(ind%model%sp)                               &
+                      * aggf(                                           &
+                      d2r(green_common(igreen)%distance(idist)),        &
+                      zmin   = val(ind%model%h),                        &
+                      t_zero = val(ind%model%t),                        &
+                      h      = site%height,                             &
+                      dz     = gnc_looseness*10._dp                     &
+                      * merge(10._dp,                                   &
+                      merge(0.1_dp,1._dp,                               &
+                      green_common(igreen)%distance(idist).le.1e-5_dp), &
+                      green_common(igreen)%distance(idist).ge.1e-2_dp), &
+                      method     = "standard",                          &
+                      predefined = .true.                               &
+                      )                                                 &
                       * area * normalize
 
                     if (.not.quiet) then
@@ -1175,6 +1176,7 @@ subroutine convolve(site, date, results)
                         100*igreen*idist                                          &
                         /(size(green_common(igreen)%distance)*size(green_common)) &
                         .lt.100) then
+
                         call progress(                                               &
                           100*igreen*idist                                           &
                           /(size(green_common(igreen)%distance)*size(green_common)), &
@@ -1365,8 +1367,8 @@ subroutine convolve(site, date, results)
                 level=1, method = info(igreen)%interpolation, date=date)
 
               aux = (val(ind%model%ewt))                         &
-               * area/d2r(green_common(igreen)%distance(idist))  &
-               * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
+                * area/d2r(green_common(igreen)%distance(idist))  &
+                * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
               if (isnan(aux)) aux = 0
 
               if (ind%green%gr.ne.0) then
@@ -1726,34 +1728,34 @@ function green_newtonian (psi, h, z, method)
   endif
   if (present(method) &
     .and. (method.eq."spotl" .or. method.eq."olsson")) then
-      if(method.eq."spotl") then
-        eps = h_/ earth%radius
-        green_newtonian =                                      &
-          1. /earth%radius**2                                  &
-          *(eps + 2. * (sin(psi/2.))**2 )                      &
-          /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) &
-          * gravity%constant                                   &
-          * green_normalization("f",psi=psi)
-        return
-      else if (method.eq."olsson") then
-        t = earth%radius/(earth%radius +h_)
-        green_newtonian =                      &
-          1 / earth%radius**2 * t**2 *         &
-          (1. - t * cos (psi) ) /              &
-          ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) &
-          * gravity%constant                   &
-          * green_normalization("f",psi=psi)
-        return
-      endif
-    else
-      green_newtonian =                                               &
-        ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        &
-        / ((earth%radius + h_)**2 + (earth%radius + z_)**2            &
-        -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
-
-      green_newtonian = green_newtonian &
-        * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
+    if(method.eq."spotl") then
+      eps = h_/ earth%radius
+      green_newtonian =                                      &
+        1. /earth%radius**2                                  &
+        *(eps + 2. * (sin(psi/2.))**2 )                      &
+        /((4.*(1.+eps)* (sin(psi/2.))**2 + eps**2)**(3./2.)) &
+        * gravity%constant                                   &
+        * green_normalization("f",psi=psi)
+      return
+    else if (method.eq."olsson") then
+      t = earth%radius/(earth%radius +h_)
+      green_newtonian =                      &
+        1 / earth%radius**2 * t**2 *         &
+        (1. - t * cos (psi) ) /              &
+        ( (1-2*t*cos(psi) +t**2 )**(3./2.) ) &
+        * gravity%constant                   &
+        * green_normalization("f",psi=psi)
       return
     endif
-  end function
+  else
+    green_newtonian =                                               &
+      ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        &
+      / ((earth%radius + h_)**2 + (earth%radius + z_)**2            &
+      -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
+
+    green_newtonian = green_newtonian &
+      * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
+    return
+  endif
+end function
 end module
