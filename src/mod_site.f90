@@ -22,13 +22,13 @@ module mod_site
     character(20) :: name
     real(dp)                 :: lat,lon,height
     type(more_site_heights)  :: hp, h, hrsp
-    logical :: use_local_pressure=.false.
+    logical :: use_local_pressure = .false.
     type(lp_info) :: lp
   end type
 
   type(site_info), allocatable, dimension(:) :: site
 
-  logical :: site_height_from_model=.false.
+  logical :: site_height_from_model = .false.
 
   ! if using -S @LP substitute model values till this distance
   real(dp) :: local_pressure_distance = 0.25
@@ -282,7 +282,7 @@ subroutine parse_GMT_like_boundaries (field)
   do i = 1, 4
     indeks_slash=index(text,"/")
 
-    if (indeks_slash.eq.0) indeks_slash=len(text)+1
+    if (indeks_slash.eq.0) indeks_slash = len(text)+1
 
     if (is_numeric (text(1:indeks_slash-1))) then
       read (text(1:indeks_slash-1), *)  limits(i)
