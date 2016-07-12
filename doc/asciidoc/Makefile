@@ -18,9 +18,9 @@ info.dat:
 MANDIR := $${HOME}/.local/share/man/
 
 install: $(MANPAGES)
-	echo $(MANPAGES)
+	mkdir -p $(MANDIR)
 	echo $<
-	 cp -uv $(MANPAGES) -t $(MANDIR)
+	cp -uv $(MANPAGES) -t $(MANDIR)
 
 #  $(MANDIR):
 	#  mkdir -p $@

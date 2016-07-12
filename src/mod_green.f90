@@ -296,9 +296,8 @@ end subroutine
 ! =============================================================================
 subroutine green_unification ()
   use mod_utilities, only: size_ntimes_denser, spline_interpolation, d2r
-  use mod_cmdline,   only: info, moreverbose, ind, method3d_compute_reference
+  use mod_cmdline,   only: info, method3d_compute_reference
   use mod_printing
-  use mod_site, only: site
   use mod_aggf, only: aggf
 
   type(green_functions) :: tmpgreen

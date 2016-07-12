@@ -7,6 +7,8 @@
 ifeq ($(FC),f77)
 	FC := gfortran
 endif
+
+# TODO
 OPT=-O0
 
 # user definitions
@@ -38,7 +40,7 @@ endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
-	FFLAGS               := $(OPT) -Wall -pedantic
+	FFLAGS               := $(OPT) -Wall # -pedantic
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
 	MODULEDIR := -J$(FC)
