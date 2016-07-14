@@ -271,12 +271,12 @@ end function
 ! =============================================================================
 !> Compute virtual temperature using temperature and specific humidity
 ! =============================================================================
-function virtual_temperature(t, sh)
+pure function virtual_temperature(t, sh)
   use mod_constants, only: dp
   real(dp) :: virtual_temperature
   real(dp), intent(in) :: t, sh
 
-  virtual_temperature=t*(1._dp+0.608_dp*sh)
+  virtual_temperature = t*(1._dp+0.608_dp*sh)
 end function
 
 end module
