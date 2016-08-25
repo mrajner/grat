@@ -1131,7 +1131,8 @@ subroutine get_index()
 end subroutine
 
 ! =============================================================================
-! only for debugging during developement
+! git more information about executable
+! or use long version
 ! =============================================================================
 subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_calling)
   use mod_cmdline, only: cmd_line_arg
