@@ -345,7 +345,7 @@ subroutine intro (     &
 
   logical :: file_already_opened
 
-  if(present(cmdlineargs).and.cmdlineargs.and.iargc().eq.0) then
+  if(present(cmdlineargs).and.cmdlineargs.and.command_argument_count().eq.0) then
     call print_warning("args", program_calling=program_calling, error=.true.)
   endif
 

@@ -249,7 +249,7 @@ subroutine get_command_cleaned(dummy)
   dummy = ''
   arg   = ''
 
-  do i = 1, iargc()
+  do i = 1, command_argument_count()
     call get_command_argument(i,a)
     call get_command_argument(i+1,b)
 
@@ -259,7 +259,7 @@ subroutine get_command_cleaned(dummy)
         arg=trim(arg)//trim(a)
     endif
 
-    if(check_if_switch_or_minus(b).or.i.eq.iargc()) then
+    if(check_if_switch_or_minus(b).or.i.eq.command_argument_count()) then
 
       if(trim(dummy).eq."") then
         dummy = trim(arg)
