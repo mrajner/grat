@@ -75,7 +75,7 @@ real(dp) function potential (psi1, psi2, dazimuth, h, z1, z2)
     s1*n1-s2*n2-s3*n3+s4*n4 &
     -l1+l2+l3-l4
 
-  potential = -potential* dazimuth / (6.*r**2)
+  potential = -potential * dazimuth / (6.*r**2)
 end function
 
 ! =============================================================================
