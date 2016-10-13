@@ -194,6 +194,24 @@ subroutine parse_site(cmd_line_entry)
         site(start_index)%height = 0.
         continue
 
+      case("np")
+        ! notrh pole
+        call more_sites (1,start_index)
+        site(start_index)%name   = "north_pole"
+        site(start_index)%lat    = 90.0_dp
+        site(start_index)%lon    = 0.
+        site(start_index)%height = 0.
+        continue
+
+      case("sp")
+        ! south pole
+        call more_sites (1,start_index)
+        site(start_index)%name   = "south_pole"
+        site(start_index)%lat    = -90.
+        site(start_index)%lon    = 0.
+        site(start_index)%height = 0.
+        continue
+
       case ("g","m","pl")
         ! computing grid for whole world, model boundaries, or Poland
         call parse_GMT_like_boundaries (cmd_line_entry%field(i))
