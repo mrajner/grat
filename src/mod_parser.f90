@@ -1143,10 +1143,7 @@ subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_call
 
   select case (trim(cmd_line_entry%full))
 
-  case ("--version")
-    write(output%unit, '(a)') version_split(version,"major")
-
-  case ("--date", "--gdate")
+  case ("--date", "--gdate", "--version")
     if (present(cdate)) then
       write(output%unit, '(a)') gdate(1:4)//gdate(6:7)//gdate(9:10)
     endif
