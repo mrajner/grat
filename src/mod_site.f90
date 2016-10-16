@@ -31,7 +31,7 @@ module mod_site
   logical :: site_height_from_model = .false.
 
   ! if using -S @LP substitute model values till this distance
-  real(dp) :: local_pressure_distance = 0.25
+  rea(dp) :: local_pressure_distance = 0.25
 
 contains
 ! =============================================================================
@@ -397,7 +397,7 @@ end subroutine
 ! =============================================================================
 subroutine read_site_file (file_name)
   use mod_utilities, only: is_numeric, ntokens, skip_header
-  use mod_cmdline, only: method
+
   character(len=*), intent(in) ::  file_name
   integer :: io_status, i, good_lines, number_of_lines, nloop
   integer :: fileunit_site, start_index

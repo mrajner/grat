@@ -228,7 +228,7 @@ $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
 
 .PHONY: install 
 test: all install
-	make -C test FC=$(FC) OPT=$(OPT)
+	make -C test runtests FC=$(FC) OPT=$(OPT)
 
 #  module dependencies
 ifndef NODEP

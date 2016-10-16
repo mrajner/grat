@@ -7,12 +7,17 @@
 
 shopt -s nullglob
 
-for flags in O1 O0 O2  ; do
-  cd $GS ; make all OPT=-$flags FC=ifort link ; cd - ; make clean 
+for flags in O0 # O1 O2   
+do
+  cd $GS ; make all OPT=-$flags  link ; cd - ; make clean 
 
   VERSION=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/-[^-]*//2' -e 3p | tr "\n" " ")
-  OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 7p)
-  COMPILER=$(grat -v  | grep "compiler:" | sed 's/\(^.*compiler: \)\([^[[:space:]]*\).*/\2/')
+  OPT=$(grat -v  | sed -n  -e 's/#\s*//g' -e 7p)
+  COMPILER=$(grat -v  | sed -n  -e 's/#\s*//g' -e 's/compiler: //g' -e 's/\(.*-O\)\([0-9]\).*/\2/' -e 5p)
+
+  echo $VERSION
+  echo $OPT
+  echo $COMPILER
 
 
   {      \
@@ -25,8 +30,8 @@ for flags in O1 O0 O2  ; do
       -v version=$VERSION \
       -v opt=$OPT \
       -v date="$(date)" \
-      -v host=$HOSTNAME \
-      -v comp=$COMPILER \
+      -v host="$HOSTNAME" \
+      -v comp="$COMPILER" \
       ' 
     @include "/home/mrajner/.local/src/awk/color.awk"
     {
