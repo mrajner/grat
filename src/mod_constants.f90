@@ -7,15 +7,15 @@ module mod_constants
 
   implicit none
 
+  ! precision parameter
   integer, parameter :: dp = selected_real_kind(15)
   integer, parameter :: sp = selected_real_kind(6)
 
-  real(dp), parameter ::       & 
-    R_air  = 287.05_dp,        & ! dry air constant  [J/kg/K]
-    pi     = 4._dp*atan(1._dp)   ! 3.1415...
-
-  real(dp), parameter :: speed_of_light = 299792458._dp ! [m/s]
-  
+  ! various constants
+  real(dp), parameter ::                   &
+    pi             = 4._dp*atan(1._dp),    & ! 3.1415...
+    R_air          = 287.05_dp,            & ! dry air constant  [J/kg/K]
+    speed_of_light = 299792458._dp           ! [m/s]
 
   !---------------------------------------
   ! gravity
