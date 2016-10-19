@@ -31,7 +31,7 @@ module mod_site
   logical :: site_height_from_model = .false.
 
   ! if using -S @LP substitute model values till this distance
-  rea(dp) :: local_pressure_distance = 0.25
+  real(dp) :: local_pressure_distance = 0.25
 
 contains
 ! =============================================================================
