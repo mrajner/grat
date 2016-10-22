@@ -1,9 +1,10 @@
 FILES    := $(shell ls *.[0-9].txt)
 MANPAGES := $(FILES:.txt=)
+HTMLPAGES := $(FILES:.txt=.html)
 
-A2X := a2x --format=manpage
+A2X := a2x 
 
-all: info.dat $(MANPAGES) 
+all: info.dat $(MANPAGES) $(HTMLPAGES)
 	#  install
 
 info.dat:
@@ -13,7 +14,10 @@ info.dat:
 	echo ":grat:" $$(grat --date) >> $@
 
 %: %.txt
-	$(A2X) $<
+	$(A2X) --format=manpage $<
+
+%.html: %.txt
+	$(A2X) --format=xhtml $<
 
 MANDIR := $${HOME}/.local/share/man/
 
