@@ -220,7 +220,7 @@ subroutine model_aliases(model, dryrun, year, month)
     month_ = 99
   endif
 
-  if(.not. model%autoload) model%autoloadname=model%name
+  if (.not. model%autoload) model%autoloadname = model%name
   model%if=.true.
 
   select case (model%autoloadname)
