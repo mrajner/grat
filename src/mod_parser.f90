@@ -897,7 +897,7 @@ subroutine print_help (program_calling, accepted_switches)
 
   if_print_line=.false.
 
-  ! TODO make appropriate man documentation using 
+  ! TODO make appropriate man documentation using
   ! include for common switches
 
   ! change this path according to your settings
