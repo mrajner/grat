@@ -1,15 +1,15 @@
-all:                                           \
+all:                                            \
 	spher_area.pdf                                \
-  spher_area.svg                               \
+  spher_area.svg                                \
 	convolution_scheme.pdf convolution_scheme.pdf \
 	polygon_ilustration.pdf                       \
 	polygon_ilustration.png                       \
 	interpolation_ilustration.pdf                 \
 	interpolation_ilustration.svg                 \
 	logo_grat.pdf                                 \
+	logo_gr@.svg                                  \
 	logo_gr@.pdf                                  \
-	logo_grat.svg                                 \
-	logo_gr@.svg 
+	logo_grat.svg                                 
 
 %.pdf: %.tex
 	pdflatex $<
