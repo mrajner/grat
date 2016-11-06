@@ -52,9 +52,7 @@ subroutine invmjd (mjd, date)
     * 60 * 24 * 60
 
   if (date(6).ge.60) then
-    stop "routine invmjd"
-    date (6) = date(6) - 60
-    date (5) = date(5) + 1
+    stop "routine invmjd returned seconds ≥ 60"
   endif
 end subroutine
 
