@@ -1,17 +1,16 @@
-#  set fortranc compiler or export system wide $FC
+# set fortranc compiler or export system wide $FC
 # if not set use gfortran
-#  FC ?= gfortran
+FC ?= gfortran
 
 #  a:
 	#  make -f tmp.makefile xo
-ifeq ($(FC),f77)
-	FC := gfortran
-endif
-
+	#
 # TODO
+# optimalization
 OPT=-O0
 
 # user definitions
+# you may want to change this
 LIBDIR        := /usr/local/lib
 INCDIR        := /usr/local/include
 BINDIR        := /usr/local/bin
