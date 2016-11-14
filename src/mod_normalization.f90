@@ -6,6 +6,7 @@ module mod_normalization
 
 contains
 ! =============================================================================
+!> This function generate
 ! =============================================================================
 elemental function green_normalization(method, psi)
   use mod_constants, only: pi, earth, gravity, dp

@@ -27,4 +27,4 @@ set -o nounset                              # Treat unset variables as an error
 # grat -F ../file , file2: field1  :field2 , 
 # grat -F../file,file2:field1:field2, 
 
-# this is extreemly useful if one use <TAB> completion for path and filenames
+# this is very useful if one use <TAB> completion for path and filenames
