@@ -1351,20 +1351,20 @@ subroutine total_mass (model, date)
 	if (output%header)  then
 
 		if (present(date)) then
-			write (moreverbose(ind%moreverbose%t)%unit,'(a12,x,a14$)'), &
+			write (moreverbose(ind%moreverbose%t)%unit, '(a12,x,a14$)'), &
 				"mjd",  "date"
 		endif
 
-		write (moreverbose(ind%moreverbose%t)%unit,'(a12)'), "mean_val"
+		write (moreverbose(ind%moreverbose%t)%unit, '(a12)'), "mean_val"
 
 	endif
 
 	if (present(date)) then
-		write (moreverbose(ind%moreverbose%t)%unit,'(f12.3,x, i4.2,5i2.2$)'), &
+		write (moreverbose(ind%moreverbose%t)%unit, '(f12.3,x, i4.2,5i2.2$)'), &
 			mjd(date), date
 	endif
 
-	write (moreverbose(ind%moreverbose%t)%unit,'(f12.3)'), &
+	write (moreverbose(ind%moreverbose%t)%unit, '(f12.3)'), &
 		valarea/totalarea
 end subroutine
 

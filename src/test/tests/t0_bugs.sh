@@ -67,10 +67,10 @@ let counter++
 
 # 2014.09.02
 # FIXED 329259ae88ccc8c5b9cb241bf5d43c9a14920308
-value_check -F 10@SP -Sj -D 2010@~ > t_bugs.dat${counter}
+value_check -F 10@SP -Sj -D 2010@~ &> t_bugs.dat${counter}
 let counter++ 
 
 # 2015.05.07
 # fixed with 5795c272829b2a7de1a2b1474cb08afca7d8f360
-value_check -D 2010 :2011 : 5@M 2&>1 t_bugs.dat${counter}
+value_check -D 2010 :2011 : 5@M 2>&1 t_bugs.dat${counter}
 let counter++ 
