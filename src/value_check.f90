@@ -32,6 +32,7 @@ program value_check
     program_calling   = "value_check",         &
     accepted_switches = "VFoShvIDLPRqwHMJ!.-", &
     version           = __GRAT_VERSION__,      &
+    gdate             = __GDATE__,             &
     cdate             = __CDATE__,             &
     fflags            = __FFLAGS__,            &
     compiler          = __COMPILER__,          &

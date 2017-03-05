@@ -15,7 +15,6 @@ LIBDIR        := /usr/local/lib
 INCDIR        := /usr/local/include
 BINDIR        := /usr/local/bin
 LINKS_DIR     := ~/.local/bin
-SUFFIX        := $(OPT)
 
 # passing compilation info to program
 FC_INFO       := $(shell $(FC) --version | sed -n 1p )
@@ -24,7 +23,7 @@ DATE          := $(shell date "+%Y-%m-%d %H:%M:%S")
 VERSION       := $(shell git describe --match "v*")
 GIT_DATE      := $(shell git show -s --format=%ci HEAD)
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
-LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR)$(SUFFIX).a
+LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
 # ifort settings
 ifeq ($(FC),ifort)
@@ -75,17 +74,14 @@ PROGSSRCS :=                  \
 						value_check.f90   \
 						polygon_check.f90
 
-OBJS            := $(SRCS:.f90=$(SUFFIX).o)
+OBJS            := $(SRCS:.f90=.o)
 MOD             := $(SRCS:.f90=.mod)
 PROGS_DIR       := ../bin
 PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := $(PROGS_DIR)
 
-pp: value_check
-	$< --version
-
-all: $(DIRS) libgrat$(SUFFIX).a $(PROGS)
+all: $(DIRS) libgrat.a $(PROGS)
 
 forf: grat
 	grat \
@@ -95,27 +91,6 @@ forf: grat
 $(DIRS):
 	type $(FC) && mkdir -p $@
 
-<<<<<<< HEAD
-B:  ../bin/grat
-	make grat FC=$(FC) OPT=-O0
-	../bin/grat -D 2010 : 5@D : 22@H 
-
-A: value_check
-	../bin/value_check  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
-  
-
-BUG: grat
-	grat -! -H -F test/data/test_data.nc @SP : sp \
-		-M2 -G @GN -Sj -D2012:6@H
-
-timeele:
-	value_check     \
-		-F ERA@H      \
-		-V -Sj,b,g:10 \
-		-G@GN -D2010:4@D -L@p -H
-
-=======
->>>>>>> master
 exit:
 	-value_check                                                 \
 		-Sj                                                         \
@@ -144,7 +119,7 @@ xxx:
 
 F= -F ./test/data/test_data.nc @SP :sp 
 sdf:
-	#  @../bin/grat$(SUFFIX)      \
+	#  @../bin/grat      \
 		#  -S j                     \
 		#  -M1,2                    \
 		#  -F                       \
@@ -162,7 +137,7 @@ sdf:
 		#  -o : free -A  -H
 
 dgrat: grat value_check
-	../bin/grat_$(SUFFIX) -S o          \
+	../bin/grat -S o          \
 		-M1,2                             \
 		-F                                \
 		NCEP@SP ,                         \
@@ -178,15 +153,6 @@ dgrat: grat value_check
 clean:
 	rm -fv *{.o,.mod,.a,so} $(FC)/* fort??????
 	
-# local installation of executables
-LINKS := $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-$(LINKS_DIR)/%: $(PROGS_DIR)/% .FORCE
-	ln -sf $(realpath $<) $@
-link: $(LINKS) 
-	echo $(LINKS)
-unlink: 
-	-rm -f $(LINKS)
-
 INSTALL_FILES :=                             \
   $(addprefix $(INCDIR)/,$(MOD))             \
   $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
@@ -198,9 +164,9 @@ uninstall:
 	$(call colorecho,1,$@)
 	sudo rm -f $(INSTALL_FILES)
 
-$(LIBDIR)/libgrat.a: libgrat$(SUFFIX).a
+$(LIBDIR)/libgrat.a: libgrat.a
 	sudo cp -v $< $@
-$(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat$(SUFFIX).a
+$(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat.a
 	ln -sf $< $@
 
 $(INCDIR)/%.mod: %.mod
@@ -217,20 +183,20 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 $(PROGS_SHORTCUTS):
 	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@))
 
-$(PROGS_DIR)/%: %.f90 $(FC)/libgrat.a
+$(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 	$(call colorecho,3,$@)
 	$(FC)                            \
 		$(FFLAGS)                       \
 		$(FPP)                          \
 		$<                              \
 		-o $@                           \
-		-I$(FC) -L$(FC) -lgrat$(SUFFIX) \
+		-I$(FC) -L$(FC) -lgrat \
     $(NETCDFF)
 
-$(FC)/libgrat$(SUFFIX).a: $(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a 
+libgrat.a: libgrat$(VERSION_MAJOR).a 
 	ln -sf $(realpath $<) $@
 
-$(FC)/libgrat$(SUFFIX)$(VERSION_MAJOR).a: $(OBJS)
+libgrat$(VERSION_MAJOR).a: $(OBJS)
 	$(call colorecho,4,$@)
 	ar rusv $@ $(OBJS)
 
