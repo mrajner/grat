@@ -37,7 +37,7 @@ endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
-	FFLAGS               := $(OPT) -Wall # -pedantic
+	FFLAGS               := $(OPT)  #-Wall # -pedantic
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
 endif
@@ -81,12 +81,10 @@ PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := $(PROGS_DIR)
 
-all: $(DIRS) libgrat.a $(PROGS)
+# all: $(DIRS) libgrat.a $(PROGS)
 
-forf: grat
-	grat \
-		-Sj -M1 -F1@SP \
-		-D2010:2011:2@M 2>&1 a
+aaa: ../bin/grat
+	bash /home/mrajner/pub/2017_rlg_loading/t.sh
 
 $(DIRS):
 	type $(FC) && mkdir -p $@
@@ -185,12 +183,12 @@ $(PROGS_SHORTCUTS):
 
 $(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 	$(call colorecho,3,$@)
-	$(FC)                            \
-		$(FFLAGS)                       \
-		$(FPP)                          \
-		$<                              \
-		-o $@                           \
-		-I$(FC) -L$(FC) -lgrat \
+	$(FC)           \
+		$(FFLAGS)      \
+		$(FPP)         \
+		$<             \
+		-o $@          \
+		-L$(FC) -lgrat \
     $(NETCDFF)
 
 libgrat.a: libgrat$(VERSION_MAJOR).a 
