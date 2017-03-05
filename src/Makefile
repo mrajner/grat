@@ -87,9 +87,15 @@ pp: value_check
 
 all: $(DIRS) libgrat$(SUFFIX).a $(PROGS)
 
+forf: grat
+	grat \
+		-Sj -M1 -F1@SP \
+		-D2010:2011:2@M 2>&1 a
+
 $(DIRS):
 	type $(FC) && mkdir -p $@
 
+<<<<<<< HEAD
 B:  ../bin/grat
 	make grat FC=$(FC) OPT=-O0
 	../bin/grat -D 2010 : 5@D : 22@H 
@@ -108,6 +114,8 @@ timeele:
 		-V -Sj,b,g:10 \
 		-G@GN -D2010:4@D -L@p -H
 
+=======
+>>>>>>> master
 exit:
 	-value_check                                                 \
 		-Sj                                                         \
