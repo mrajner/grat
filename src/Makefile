@@ -84,28 +84,16 @@ PROGS           := $(addsuffix _$(FC)$(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGS
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := ./$(FC) $(PROGS_DIR)
 
+
+forf: grat
+	grat \
+		-Sj -M1 -F1@SP \
+		-D2010:2011:2@M 2>&1 a
+
 all: $(DIRS) $(FC)/libgrat$(SUFFIX).a $(PROGS)
 
 $(DIRS):
 	type $(FC) && mkdir -p $@
-
-B:  ../bin/grat_$(FC)-O0
-	make grat FC=$(FC) OPT=-O0
-	../bin/grat_$(FC)-O0 -D 2010 : 5@D : 22@H 
-
-A: value_check
-	../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
-  
-
-BUG: grat
-	grat -! -H -F test/data/test_data.nc @SP : sp \
-		-M2 -G @GN -Sj -D2012:6@H
-
-timeele:
-	value_check     \
-		-F ERA@H      \
-		-V -Sj,b,g:10 \
-		-G@GN -D2010:4@D -L@p -H
 
 exit:
 	-value_check                                                 \

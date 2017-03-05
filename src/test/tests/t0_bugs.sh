@@ -9,7 +9,8 @@ set -o nounset
 
 counter=0
 
-touch t_bugs.dat
+base=${0/.sh}
+touch ${base}.dat
 
 # value_check -F ../data/shum.2012.nc@VSH:shum -Ja -o:level -H -Sj,l 
 # exit
@@ -20,7 +21,7 @@ touch t_bugs.dat
 value_check -v -H
 value_check -FNCEP@SP -D1777 -Sj -H
 value_check -FNCEP@SP,NCEP -D2100,2014 -Sj -H -wn
-} &>t_bugs.dat${counter}
+} &>${base}.dat${counter}
 let counter++ 
 
 # 2014.09.16
@@ -29,19 +30,19 @@ let counter++
 {
 grat -D2000
 value_check -D1950
-} &>t_bugs.dat${counter}
+} &>${base}.dat${counter}
 let counter++ 
 
 # 2014.09.12
 # unnecessary header output when -BI,N but no @GE
 # FIXED 59a6cb55654b458fcfc048253723ede06f0970a1
-grat -F10@SP -M2 -G@GN -BI,N -Sj -H>t_bugs.dat${counter}
+grat -F10@SP -M2 -G@GN -BI,N -Sj -H>${base}.dat${counter}
 let counter++
 # 2014.09.04
 # problem  when -D before -S
 {
 value_check -Sj -D2009 -F10
-} &>t_bugs.dat${counter}
+} &>${base}.dat${counter}
 let counter++ 
 
 # 2014.09.02
@@ -49,7 +50,7 @@ let counter++
 value_check \
   -F ../data/test_data.nc:sp, :t,@LS:ls,@GP:gp,@LS:ls\
   -S j -D201201 : m \
-  -o :level -J1000,10 -H 2>/dev/null > t_bugs.dat${counter} 
+  -o :level -J1000,10 -H 2>/dev/null > ${base}.dat${counter} 
 let counter++ 
 
 # 2014.09.02
@@ -62,15 +63,15 @@ let counter++
   value_check not_starting_with_dash -Sj -F10
 	grat -starting_with_dash -Sj -F10@SP
 	grat not_starting_with_dash -Sj -F10@SP
-} &>t_bugs.dat${counter}
+} &>${base}.dat${counter}
 let counter++ 
 
 # 2014.09.02
 # FIXED 329259ae88ccc8c5b9cb241bf5d43c9a14920308
-value_check -F 10@SP -Sj -D 2010@~ &> t_bugs.dat${counter}
+value_check -F 10@SP -Sj -D 2010@~ &> ${base}.dat${counter}
 let counter++ 
 
 # 2015.05.07
 # fixed with 5795c272829b2a7de1a2b1474cb08afca7d8f360
-value_check -D 2010 :2011 : 5@M 2>&1 t_bugs.dat${counter}
+value_check -D 2010 :2011 : 5@M -- 2>&1 ${base}.dat${counter}
 let counter++ 

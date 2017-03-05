@@ -73,6 +73,7 @@ ok(){
   } || :
 }
 
+# echo ${test_what[*]}
 for test in ${test_what[*]} ; do
   # echo $test !
   [[ ! -f $test ]] && { echo $test not exist..;  continue ; }
@@ -114,45 +115,44 @@ for test in ${test_what[*]} ; do
       { 
         ok
       } || 
-      {
+			{
+				tput setaf 3 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
 
-        tput setaf 3 ;  echo "$is -- failed" ; tput sgr0 ; let bad++ ; : ;
+				[[ ${show_failed_diffs:-} == "true" ]] && 
+				{
+					echo ---
+					echo is: $is , should_be: $should_be
+					colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
 
-        [[ ${show_failed_diffs:-} == "true" ]] && 
-        {
-          echo ---
-          echo is: $is , should_be: $should_be
-          colordiff  -I "$do_not_compare_list"  $is $should_be  ${ignore_white_spaces:-}
+					${vimdiff:-false} && 
+					{
+						vimdiff $is $should_be
 
-          ${vimdiff:-false} && 
-          {
-            vimdiff $is $should_be
+						${onlyonediff:-false} && exit 0
+						${update:-false} || read
+					}
+				}
 
-            ${onlyonediff:-false} && exit 0
-            ${update:-false} || read
-          }
-        }
+				${update:-false} && cp -v ${interactive:-} $is $should_be
+				${delete_bad_results:-false} && rm -v ${interactive:-} $is ${is%%.dat*}.dat.?
 
-        ${update:-false} && cp -v ${interactive:-} $is $should_be
-        ${delete_bad_results:-false} && rm -v ${interactive:-} $is ${is%%.dat*}.dat.?
+				${onlyonediff:-false} && exit 0
+			}
+		} 
+		let counter++
 
-        ${onlyonediff:-false} && exit 0
-      }
-    } 
-    let counter++
-
-  done
+	done
 done
 
 echo -e "\npassed: $good of total $counter tests"
 [[ $bad -gt 0 ]] && 
 {
-  tput setaf 1
-  echo failed: $bad 
-  tput sgr0
+	tput setaf 1
+	echo failed: $bad 
+	tput sgr0
 } ||
-{
-  tput setaf 2
-  echo "Success"
-  tput sgr0
-}
+	{
+		tput setaf 2
+		echo "Success"
+		tput sgr0
+	}
