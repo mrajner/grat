@@ -34,7 +34,6 @@ ifeq ($(FC),ifort)
 		-I/usr/local/include -L/usr/local/lib64 -lnetcdf \
 		-I/home/mrajner/src/netcdf-fortran/fortran/      \
 		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
-	MODULEDIR := -module $(FC)
 endif
 
 #  gfortran settings
@@ -42,7 +41,6 @@ ifeq ($(FC),gfortran)
 	FFLAGS               := $(OPT) -Wall # -pedantic
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
-	MODULEDIR := -J$(FC)
 endif
 
 FPP :=                                             \
@@ -53,48 +51,51 @@ FPP :=                                             \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
-SRCS      :=                      \
-						mod_constants.f90     \
-						mod_utilities.f90     \
-						mod_cmdline.f90       \
-						mod_printing.f90      \
-						mod_spherical.f90     \
-						mod_mjd.f90           \
-						mod_normalization.f90 \
-						mod_atmosphere.f90    \
-						mod_aggf.f90          \
-						mod_polygon.f90       \
-						mod_data.f90          \
-						mod_date.f90          \
-						mod_site.f90          \
-						mod_3d.f90            \
-						mod_green.f90         \
-						mod_admit.f90         \
-						mod_parser.f90        
+SRCS :=                 \
+  mod_constants.f90     \
+  mod_utilities.f90     \
+  mod_cmdline.f90       \
+  mod_printing.f90      \
+  mod_spherical.f90     \
+  mod_mjd.f90           \
+  mod_normalization.f90 \
+  mod_atmosphere.f90    \
+  mod_aggf.f90          \
+  mod_polygon.f90       \
+  mod_data.f90          \
+  mod_date.f90          \
+  mod_site.f90          \
+  mod_3d.f90            \
+  mod_green.f90         \
+  mod_admit.f90         \
+  mod_parser.f90        
 
 PROGSSRCS :=                  \
 						grat.f90          \
 						value_check.f90   \
 						polygon_check.f90
 
-OBJS            := $(addprefix $(FC)/,$(SRCS:.f90=$(SUFFIX).o))
-MOD             := $(addprefix $(FC)/,$(SRCS:.f90=.mod))
+OBJS            := $(SRCS:.f90=$(SUFFIX).o)
+MOD             := $(SRCS:.f90=.mod)
 PROGS_DIR       := ../bin
-PROGS           := $(addsuffix _$(FC)$(SUFFIX),$(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=)))
+PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
-DIRS            := ./$(FC) $(PROGS_DIR)
+DIRS            := $(PROGS_DIR)
 
-all: $(DIRS) $(FC)/libgrat$(SUFFIX).a $(PROGS)
+pp: value_check
+	$< --version
+
+all: $(DIRS) libgrat$(SUFFIX).a $(PROGS)
 
 $(DIRS):
 	type $(FC) && mkdir -p $@
 
-B:  ../bin/grat_$(FC)-O0
+B:  ../bin/grat
 	make grat FC=$(FC) OPT=-O0
-	../bin/grat_$(FC)-O0 -D 2010 : 5@D : 22@H 
+	../bin/grat -D 2010 : 5@D : 22@H 
 
 A: value_check
-	../bin/value_check_$(FC)$(OPT)  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
+	../bin/value_check  -F /home/mrajner/dat/gldas/GLDAS_NOAH10_M.A200101_201501.totalH2O.nc : Water_Thickness : Longitude : Latitude  -V -Sj,b,l
   
 
 BUG: grat
@@ -171,16 +172,16 @@ clean:
 	
 # local installation of executables
 LINKS := $(addprefix $(LINKS_DIR)/,$(PROGSSRCS:.f90=))
-$(LINKS_DIR)/%: $(PROGS_DIR)/%_$(FC)$(SUFFIX) .FORCE
+$(LINKS_DIR)/%: $(PROGS_DIR)/% .FORCE
 	ln -sf $(realpath $<) $@
 link: $(LINKS) 
 	echo $(LINKS)
 unlink: 
 	-rm -f $(LINKS)
 
-INSTALL_FILES :=                                       \
-  $(addprefix $(INCDIR)/,$(patsubst $(FC)/%,%,$(MOD))) \
-  $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS))           \
+INSTALL_FILES :=                             \
+  $(addprefix $(INCDIR)/,$(MOD))             \
+  $(addprefix $(BINDIR)/,$(PROGS_SHORTCUTS)) \
   $(LIBDIR)/libgrat.a             
     
 install: $(INSTALL_FILES)
@@ -189,26 +190,26 @@ uninstall:
 	$(call colorecho,1,$@)
 	sudo rm -f $(INSTALL_FILES)
 
-$(LIBDIR)/libgrat.a: $(FC)/libgrat$(SUFFIX).a
+$(LIBDIR)/libgrat.a: libgrat$(SUFFIX).a
 	sudo cp -v $< $@
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat$(SUFFIX).a
 	ln -sf $< $@
 
-$(INCDIR)/%.mod: $(FC)/%.mod
+$(INCDIR)/%.mod: %.mod
 	sudo cp -v $< $@
 
-$(BINDIR)/%: $(PROGS_DIR)/%_$(FC)$(SUFFIX)
+$(BINDIR)/%: $(PROGS_DIR)/%
 	sudo cp -v $< $@
 
-$(FC)/%$(SUFFIX).o: %.f90
+%.o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< $(MODULEDIR) -c -o $@ $(FPP) $(NETCDFF) 
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFF) 
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
-	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@)_$(FC)$(SUFFIX))
+	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@))
 
-$(PROGS_DIR)/%_$(FC)$(SUFFIX):%.f90 $(FC)/libgrat$(SUFFIX).a
+$(PROGS_DIR)/%: %.f90 $(FC)/libgrat.a
 	$(call colorecho,3,$@)
 	$(FC)                            \
 		$(FFLAGS)                       \
@@ -267,4 +268,4 @@ OBSOLETE:
 #  @tput sgr0
 #  endef
 
-%.o: %.mod
+# %.o: %.mod

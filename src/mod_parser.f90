@@ -1145,7 +1145,9 @@ subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_call
 
   case ("--date", "--gdate", "--version")
     if (present(cdate)) then
-      write(output%unit, '(a)') gdate(1:4)//gdate(6:7)//gdate(9:10)
+      ! write(output%unit, '(a)') gdate(1:4)//gdate(6:7)//gdate(9:10)
+      write(output%unit, '(a)') gdate
+		stop 'xxx'
     endif
 
   case ("--cdate")
