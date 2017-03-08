@@ -188,7 +188,7 @@ $(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 		$(FPP)         \
 		$<             \
 		-o $@          \
-		-L$(FC) -lgrat \
+		-L. -lgrat \
     $(NETCDFF)
 
 libgrat.a: libgrat$(VERSION_MAJOR).a 

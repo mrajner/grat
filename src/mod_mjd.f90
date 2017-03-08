@@ -54,6 +54,7 @@ subroutine invmjd (mjd, date)
   if (date(6).ge.60) then
     stop "routine invmjd returned seconds ≥ 60"
   endif
+
 end subroutine
 
 ! ==============================================================================

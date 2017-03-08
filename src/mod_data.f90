@@ -589,23 +589,27 @@ subroutine get_dimension (model, i, print)
 	status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
 
 	if (status /=nf90_noerr) then
+
 		if(model%names(i).eq."lon") then
+
 			model%names(i)="longitude"
 
 			if (.not.(present(print).and..not.print)) then
-				write(log%unit, '(a)', advance='no') "longitude"
+				write(log%unit, '(a)', advance='no') model%names(i)
 			endif
 
-			status = nf90_inq_dimid(model%ncid,"longitude", dimid)
+			status = nf90_inq_dimid(model%ncid, model%names(i), dimid)
 
 		else if(model%names(i).eq."lat") then
+
 			model%names(i)="latitude"
+
 			if (.not. (present(print).and..not.print))then
-				write(log%unit, '(a)', advance='no') "latitude"
+				write(log%unit, '(a)', advance='no') model%names(i)
 			endif
 		endif
 
-		status = nf90_inq_dimid(model%ncid,model%names(i), dimid)
+		status = nf90_inq_dimid(model%ncid, model%names(i), dimid)
 	endif
 
 	if(status /= nf90_noerr.and.any(i.eq.[2,3])) then
