@@ -576,6 +576,7 @@ subroutine get_dimension (model, i, print)
 	use netcdf
 	use mod_printing
 	use mod_utilities, only: countsubstring
+
 	type(file) :: model
 	integer :: dimid, varid
 	integer, intent(in) :: i
