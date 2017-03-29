@@ -10,7 +10,7 @@ FC := gfortran
 OPT=-O0
 
 # user definitions
-# you may want to change this
+# you may want to change this settings
 LIBDIR        := /usr/local/lib
 INCDIR        := /usr/local/include
 BINDIR        := /usr/local/bin
@@ -29,9 +29,9 @@ LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR).a
 ifeq ($(FC),ifort)
 	FFLAGS               := $(OPT) -xHost -warn all
 	ENABLE_PREPROCESSING := -fpp
-	NETCDFF :=                                        \
-		-I/usr/local/include -L/usr/local/lib64 -lnetcdf \
-		-I/home/mrajner/src/netcdf-fortran/fortran/      \
+	NETCDFF :=                                            \
+		-I/usr/local/include -L/usr/local/lib64 -lnetcdf     \
+		-I/home/mrajner/src/netcdf-fortran/fortran/          \
 		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
 endif
 
@@ -42,10 +42,10 @@ ifeq ($(FC),gfortran)
 	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
 endif
 
-FPP :=                                             \
+FPP :=                                            \
 	$(ENABLE_PREPROCESSING)                          \
 	-D__CDATE__='"$(DATE)"'                          \
-	-D__GDATE__='"$(GIT_DATE)"'                          \
+	-D__GDATE__='"$(GIT_DATE)"'                      \
 	-D__GRAT_VERSION__='"$(VERSION)"'                \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
 	-D__COMPILER__='"$(FC_INFO)"' 
