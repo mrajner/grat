@@ -371,6 +371,11 @@ subroutine intro (     &
       call exit
     endif
 
+    if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vg") then
+      write(output_unit,'(a)'), __GDATE__
+      call exit
+    endif
+
     if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vd") then
       write(output_unit,'(a)'), __CDATE__
       call exit
@@ -1146,8 +1151,7 @@ subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_call
 
   case ("--date", "--gdate", "--version")
     if (present(cdate)) then
-      ! write(output%unit, '(a)') gdate(1:4)//gdate(6:7)//gdate(9:10)
-      write(output%unit, '(a)') gdate
+      write(output%unit, '(a)') gdate(1:4)//gdate(6:7)//gdate(9:10)
     endif
 
   case ("--cdate")
