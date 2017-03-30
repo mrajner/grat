@@ -1056,9 +1056,9 @@ end subroutine
 subroutine get_value(model, lat, lon, val, level, method, date)
 	use mod_cmdline, only: moreverbose, ind
 	use mod_utilities, only: r2d, bilinear
-	use netcdf
 	use mod_printing, only: print_warning, basename
 	use iso_fortran_env, only: error_unit
+	use netcdf
 
 	type(file), intent (in) :: model
 	real(dp) :: lat, lon
@@ -1182,8 +1182,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 		ilon2 = minloc(abs(model%lon-lon), 1, model%lon/=model%lon(ilon))
 		ilat2 = minloc(abs(model%lat-lat), 1, model%lat/=model%lat(ilat))
 
-		if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
-		else
+		if (.not.(lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon))) then
 			array_aux (1, :) = [ model%lon(ilon),  model%lat(ilat),  model%data(ilon,  ilat,  ilevel) ]
 			array_aux (2, :) = [ model%lon(ilon),  model%lat(ilat2), model%data(ilon,  ilat2, ilevel) ]
 			array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat),  model%data(ilon2, ilat,  ilevel) ]

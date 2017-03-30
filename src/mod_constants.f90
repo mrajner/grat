@@ -132,6 +132,9 @@ real(dp) function setnan()
   real(dp) :: minusone = -1._dp
 
   setnan = sqrt(minusone)
+
+	! use, intrinsic :: ieee_arithmetic
+	! setnan = ieee_value(setnan, ieee_quiet_nan)
 end function
 
 end module mod_constants

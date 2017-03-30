@@ -217,7 +217,7 @@ program grat
       if(model(i)%if) then
 
         select case (model(i)%dataname)
-        case ("SP", "T", "GP", "VT", "VSH")
+        case ("SP", "T", "GP", "VT", "VSH", "EWT")
           if (                                                   &
             model(i)%autoload                                    &
             .and..not.                                           &
@@ -228,10 +228,9 @@ program grat
             )                                                    &
             then
 
-            if (                                                      &
-              (idate.eq.1                                             &
+            if (idate.eq.1                                            &
               .or. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
-              )) then
+              ) then
 
               call model_aliases(model(i), year=date(idate)%date(1))
             endif
