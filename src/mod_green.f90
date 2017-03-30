@@ -367,26 +367,34 @@ subroutine green_unification ()
       allocate(green_common(iinfo)%distance(imax-imin+1))
       green_common(iinfo)%distance = tmpgreen%distance(imin:imax)
 
-      green_common(iinfo)%distance(1) =                                  &
-        (3/4.*info(iinfo)%distance%start+                                &
-        green_common(iinfo)%distance(2)/4)
+      green_common(iinfo)%distance(1) =  &
+        (3/4.*info(iinfo)%distance%start &
+        +green_common(iinfo)%distance(2)/4)
 
-      green_common(iinfo)%distance(size(green_common(iinfo)%distance)) = &
-        (3/4.*info(iinfo)%distance%stop                                 &
+      green_common(iinfo)%distance(size(green_common(iinfo)%distance)) =       &
+        (3/4.*info(iinfo)%distance%stop                                        &
         +green_common(iinfo)%distance(size(green_common(iinfo)%distance)-1)/4)
 
       allocate(green_common(iinfo)%start(size(green_common(iinfo)%distance)))
       allocate(green_common(iinfo)%stop(size(green_common(iinfo)%distance)))
 
-      green_common(iinfo)%start=(green_common(iinfo)%distance)
+      green_common(iinfo)%start = (green_common(iinfo)%distance)
 
       do i = 1, ubound(green_common(iinfo)%distance,1)
 
-        green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) &
-          + green_common(iinfo)%distance(i-1) ) / 2.
+        if (i.eq.1) then
+          green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i)) / 2.
+        else
+          green_common(iinfo)%start(i)=(green_common(iinfo)%distance(i) &
+            + green_common(iinfo)%distance(i-1) ) / 2.
+        endif
 
-        green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) &
-          + green_common(iinfo)%distance(i+1) ) / 2.
+        if (i.eq.ubound(green_common(iinfo)%distance,1)) then
+          green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i)) / 2.
+        else
+          green_common(iinfo)%stop(i)=(green_common(iinfo)%distance(i) &
+            + green_common(iinfo)%distance(i+1) ) / 2.
+        endif
 
       enddo
 
@@ -432,11 +440,11 @@ subroutine green_unification ()
         n2 = size(green_common(iinfo)%distance)          &
         )
 
-      where(                                                                         &
+      where(                                                                             &
           green_common(iinfo)%distance.gt.green(i)%distance(ubound(green(i)%distance,1)) &
-          .or.green_common(iinfo)%distance.lt.green(i)%distance(1)                   &
+          .or.green_common(iinfo)%distance.lt.green(i)%distance(1)                       &
           )
-        green_common(iinfo)%data(:, i)=0
+        green_common(iinfo)%data(:, i) = 0
       end where
 
       green_common(iinfo)%dataname(i) = green(i)%dataname
@@ -629,7 +637,6 @@ subroutine convolve(site, date, results)
             date   = date                        &
             )
         endif
-
 
         if (iok(1).eq.1 .and. int(val(ind%model%ls)).eq.1) then
           tot_area_used = tot_area_used +area

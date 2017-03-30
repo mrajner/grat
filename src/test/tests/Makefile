@@ -28,7 +28,7 @@ stat: $(RESULTS)
 	-bash $< 
 
 %.dat:%.f90 
-	$(FC) $(OPT) $< -o $(subst .dat,,$@) -L../../$(FC) -lgrat -I../../$(FC)
+	$(FC) $(OPT) $< -o $(subst .dat,,$@) -L../.. -lgrat -I../..
 	./$(subst .dat,,$@) | tee $@
 
 %.dat.s:%.sh
