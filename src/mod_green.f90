@@ -819,6 +819,7 @@ subroutine convolve(site, date, results)
                       nan_as_zero              = .false.              &
                       )
                   endif
+
                 endif
 
                 if (ind%model%rsp.ne.0) then
@@ -1374,13 +1375,21 @@ subroutine convolve(site, date, results)
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
             if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
 
-              call get_value (                                                &
-                model(ind%model%ewt), r2d(lat), r2d(lon), val(ind%model%ewt), &
-                level=1, method = info(igreen)%interpolation, date=date)
+              call get_value (                       &
+                model(ind%model%ewt),                &
+                r2d(lat),                            &
+                r2d(lon),                            &
+                val(ind%model%ewt),                  &
+                level  = 1,                          &
+                method = info(igreen)%interpolation, &
+                date   = date                        &
+                ) 
+              print*, lat,lon, val(ind%model%ls), val(ind%model%ewt)
 
               aux = (val(ind%model%ewt))                         &
-                * area/d2r(green_common(igreen)%distance(idist))  &
+                * area/d2r(green_common(igreen)%distance(idist)) &
                 * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
+
               if (isnan(aux)) aux = 0
 
               if (ind%green%gr.ne.0) then
@@ -1580,13 +1589,21 @@ subroutine convolve(site, date, results)
   if (present(results)) then
 
     if(result_total.and.result_component) then
+
       allocate(results(size(result)+1))
+
     elseif(.not.result_total.and.result_component) then
+
       allocate(results(size(result)))
+
     elseif(result_total.and..not.result_component) then
+
       allocate(results(1))
+
     elseif(.not.result_total.and..not.result_component) then
+
       allocate(results(0))
+
     endif
 
     results(1:size(result))=result 

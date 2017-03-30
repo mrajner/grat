@@ -1058,6 +1058,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 	use mod_utilities, only: r2d, bilinear
 	use mod_printing, only: print_warning, basename
 	use iso_fortran_env, only: error_unit
+	use mod_cmdline, only: warnings
 	use netcdf
 
 	type(file), intent (in) :: model
@@ -1104,9 +1105,11 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
 		if (warning) then
 
-			write(error_unit,                                                         &
-				'(/,"lon, lat", 2f10.3,/, "latrange", 2f10.3,/, "lonrange", 2f10.3,/)') &
-				lon , lat, model%latrange, model%lonrange
+			if (warnings%if) then
+				write(error_unit,                                                         &
+					'(/,"lon, lat", 2f10.3,/, "latrange", 2f10.3,/, "lonrange", 2f10.3,/)') &
+					lon , lat, model%latrange, model%lonrange
+			endif
 
 			call print_warning(                                 &
 				"outside lon|lat range "                          &
