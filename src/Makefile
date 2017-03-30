@@ -14,7 +14,6 @@ OPT=-O0
 LIBDIR        := /usr/local/lib
 INCDIR        := /usr/local/include
 BINDIR        := /usr/local/bin
-LINKS_DIR     := ~/.local/bin
 
 # passing compilation info to program
 FC_INFO       := $(shell $(FC) --version | sed -n 1p )
@@ -171,7 +170,7 @@ $(INCDIR)/%.mod: %.mod
 	sudo cp -v $< $@
 
 $(BINDIR)/%: $(PROGS_DIR)/%
-	sudo cp -v $< $@
+	sudo cp -uv $< $@
 
 %.o: %.f90
 	$(call colorecho,2,$@)

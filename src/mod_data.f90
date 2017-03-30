@@ -1194,7 +1194,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 				write(moreverbose(ind%moreverbose%l)%unit, '(">")')
 			endif
 
-			val = bilinear ( lon, lat, array_aux )
+			val = bilinear(lon, lat, array_aux)
 			return
 
 		endif

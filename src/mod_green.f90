@@ -142,14 +142,22 @@ subroutine read_green (green, print)
   logical, optional :: print
 
   ! change the paths accordingly
+
   if (.not.file_exists(green%name)       &
     .and. (.not. green%name.eq."merriam" &
     .and.  .not. green%name.eq."huang"   &
     .and.  .not. green%name.eq."rajner"  &
-    ! this will be feature added for hydrosphere loading later...
-  ! .and.  .not. green%name.eq."GB" &
   )) then
+
+  if (green%name .eq. "" ) then
     green%name="merriam"
+  else
+    call print_warning (                                &
+      "file: " // trim(green%name) // " do not exists", &
+      error = .true.                                    &
+      )
+  endif
+
   endif
 
   select case (green%name)
@@ -738,15 +746,15 @@ subroutine convolve(site, date, results)
                 )                       &
                 ) then
 
-                  call get_value (                      &
-                    model(ind%model%hp),                &
-                    r2d(lat),                           &
-                    r2d(lon),                           &
-                    val(ind%model%hp),                  &
-                    level = 1,                          &
-                    method = info(igreen)%interpolation &
-                    )
-                endif
+                call get_value (                      &
+                  model(ind%model%hp),                &
+                  r2d(lat),                           &
+                  r2d(lon),                           &
+                  val(ind%model%hp),                  &
+                  level = 1,                          &
+                  method = info(igreen)%interpolation &
+                  )
+              endif
 
               ! get H
               if (ind%model%h.ne.0 &
@@ -1442,7 +1450,7 @@ subroutine convolve(site, date, results)
               write(moreverbose(ind%moreverbose%p)%unit, &
                 '(*(a3, i1))') ("ok", i, i =1, ubound(iok, 1))
             else
-              write(moreverbose(ind%moreverbose%p)%unit, '(a)') 
+              write(moreverbose(ind%moreverbose%p)%unit, '(a)')
             endif
             header_p=.false.
           endif

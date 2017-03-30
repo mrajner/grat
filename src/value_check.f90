@@ -155,11 +155,9 @@ program value_check
         iprogress = iprogress + 1
 
         ! add time stamp if -D option was specified
-        if (j.gt.0) then
-          if (.not.output%prune) then
+        if (j.gt.0 .and. .not.output%prune) then
             write (output%unit, '(f9.3,1x,i4.4,5(i2.2),1x)', advance = "no" ) &
               date(j)%mjd, date(j)%date
-          endif
         endif
 
         ! if this point should not be used (polygon) leave as zero

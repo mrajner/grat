@@ -190,28 +190,29 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
     endif
 
   case ('-o')
-    output%if=.true.
-    output%name=cmd_line_entry%field(1)%subfield(1)%name
+    output%if = .true.
+    output%name = cmd_line_entry%field(1)%subfield(1)%name
 
     if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
       output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) &
-        // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
+        // "@" // trim(cmd_line_entry%field(1)%subfield(1)%dataname)
     endif
 
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
-      output%tee=.true.
+      output%tee = .true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
-      output%noclobber=.true.
+      output%noclobber = .true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."c")) then
-      output%noclobber=.false.
+      output%noclobber = .false.
     endif
+
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
-      output%form="f13.3"
+      output%form = "f13.3"
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."gp2h")) then
-      output%gp2h=.true.
+      output%gp2h = .true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."height")) then
       output%height=.true.
@@ -1147,7 +1148,6 @@ subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_call
     if (present(cdate)) then
       ! write(output%unit, '(a)') gdate(1:4)//gdate(6:7)//gdate(9:10)
       write(output%unit, '(a)') gdate
-		stop 'xxx'
     endif
 
   case ("--cdate")
