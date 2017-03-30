@@ -454,7 +454,7 @@ function variable_modifier (val, modifier, verbose, list_only)
 	logical, optional, intent(in) :: verbose, list_only
 
 	variable_modifier = val
-	modifier_=modifier
+	modifier_         = modifier
 	do i = 1, ntokens(modifier_,"@")
 		keyval=''
 
@@ -487,11 +487,11 @@ function variable_modifier (val, modifier, verbose, list_only)
 
 		case ("nan")
 			read(keyval,*) numerickeyval
-			if (isnan(variable_modifier)) variable_modifier=numerickeyval
+			if (isnan(variable_modifier)) variable_modifier = numerickeyval
 
 		case ("scale")
 			read(keyval,*) numerickeyval
-			variable_modifier=numerickeyval*variable_modifier
+			variable_modifier = numerickeyval*variable_modifier
 
 		case ("invscale")
 			read(keyval,*) numerickeyval

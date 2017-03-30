@@ -1211,25 +1211,25 @@ subroutine convolve(site, date, results)
                     ind%green%gndh   &
                     ].ne.0)          &
                     ) then
-                    val(ind%model%sp) = standard_pressure(         &
-                      height=site%height,                          &
-                      h_zero=val(ind%model%hp),                    &
-                      p_zero=old_val_sp,                           &
-                      method=transfer_sp%method,                   &
-                      temperature=val(ind%model%t),                &
-                      use_standard_temperature = ind%model%t.eq.0, &
-                      nan_as_zero=.false.                          &
+                    val(ind%model%sp) = standard_pressure(           &
+                      height                   = site%height,        &
+                      h_zero                   = val(ind%model%hp),  &
+                      p_zero                   = old_val_sp,         &
+                      method                   = transfer_sp%method, &
+                      temperature              = val(ind%model%t),   &
+                      use_standard_temperature = ind%model%t.eq.0,   &
+                      nan_as_zero              = .false.             &
                       )
 
                     if (all([ind%model%rsp, ind%model%hrsp].ne.0)) then
-                      val(ind%model%rsp) = standard_pressure(        &
-                        height=site%height,                          &
-                        h_zero=val(ind%model%hrsp),                  &
-                        p_zero=old_val_rsp,                          &
-                        method=transfer_sp%method,                   &
-                        temperature=val(ind%model%t),                &
-                        use_standard_temperature = ind%model%t.eq.0, &
-                        nan_as_zero=.false.                          &
+                      val(ind%model%rsp)       = standard_pressure(   &
+                      height                   = site%height,         &
+                      h_zero                   = val(ind%model%hrsp), &
+                      p_zero                   = old_val_rsp,         &
+                      method                   = transfer_sp%method,  &
+                      temperature              = val(ind%model%t),    &
+                      use_standard_temperature = ind%model%t.eq.0,    &
+                      nan_as_zero              = .false.              &
                         )
                     endif
 
@@ -1244,24 +1244,28 @@ subroutine convolve(site, date, results)
                       val(ind%model%sp)                                &
                       * green_common(igreen)%data(idist, ind%green%gn) &
                       * area * normalize
-                    result(ind%green%gn) = &
+
+                    result(ind%green%gn) =                                &
                       result(ind%green%gn) + result_partial(ind%green%gn)
                   endif
 
                   ! GNdt
                   if (ind%green%gndt.ne.0) then
+
                     if (any(                                               &
                       [ind%model%sp, ind%model%t, ind%model%rsp            &
                       ].eq.0))                                             &
                       call print_warning("not enough data model for GNdt", &
                       error=.true.)
-                    result_partial(ind%green%gndt) =       &
+
+                    result_partial(ind%green%gndt) =                       &
                       val(ind%model%sp)                                    &
                       * green_common(igreen)%data(idist, ind%green%gndt)   &
                       * (val(ind%model%t)-atmosphere%temperature%standard) &
                       *  area * normalize
-                    result(ind%green%gndt) = result(ind%green%gndt) +       &
+                    result(ind%green%gndt) = result(ind%green%gndt) +      &
                       result_partial(ind%green%gndt)
+
                   endif
 
                   ! GNdh
@@ -1366,14 +1370,20 @@ subroutine convolve(site, date, results)
         endif
 
         ! surface loads from EWT
-        if (                     &
-          ind%green%gr.ne.0      &
-          .or.ind%green%ghn.ne.0 &
-          .or.ind%green%ghe.ne.0 &
+        if (                      &
+          ind%green%gr.ne.0       &
+          .or. ind%green%ghn.ne.0 &
+          .or. ind%green%ghe.ne.0 &
           ) then
 
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
-            if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
+            if (                                                                &
+              .not. (                                                           &
+              ind%model%ls.ne.0                                                 &
+              .and.inverted_barometer                                           &
+              .and. (int(val(ind%model%ls)).eq.0 .or. isnan(val(ind%model%ls))) &
+              )                                                                 &
+              ) then
 
               call get_value (                       &
                 model(ind%model%ewt),                &
@@ -1384,10 +1394,9 @@ subroutine convolve(site, date, results)
                 method = info(igreen)%interpolation, &
                 date   = date                        &
                 ) 
-              print*, lat,lon, val(ind%model%ls), val(ind%model%ewt)
 
-              aux = (val(ind%model%ewt))                         &
-                * area/d2r(green_common(igreen)%distance(idist)) &
+              aux = (val(ind%model%ewt))                           &
+                * area / d2r(green_common(igreen)%distance(idist)) &
                 * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
 
               if (isnan(aux)) aux = 0
