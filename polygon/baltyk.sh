@@ -24,4 +24,4 @@ pscoast -Slightblue -O $R $J -Di -K -A1000 -W1  >> $PS
 #grdimage ./landmask.grd $R $J -O -K -Clandmask.cpt >> $PS
 psclip -C -O >> $PS
 
-ps2raster -Tf $PS -P -A
+psconvert -Tf $PS -P -A
