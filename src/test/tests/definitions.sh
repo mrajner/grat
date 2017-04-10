@@ -72,6 +72,7 @@ case ${1:-synthetic_data} in
     H="0@H"
     VSH="0@VSH"
     suffix=".c"
+    EWT="1000@EWT"
     ;;
 
   *)

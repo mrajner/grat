@@ -296,6 +296,12 @@ subroutine read_green (green, print)
       -green%data * green_normalization("f2m")
     write(log%unit, form_63) "conversion: farrell --> to merriam"
   endif
+
+  if (green%columndataname(2).eq."m2f") then
+    green%data= &
+      -green%data * green_normalization("f2m")
+    write(log%unit, form_63) "conversion: farrell --> to merriam"
+  endif
 end subroutine
 
 ! =============================================================================
