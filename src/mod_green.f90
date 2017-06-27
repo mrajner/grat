@@ -1371,7 +1371,7 @@ subroutine convolve(site, date, results)
             endif
 
           elseif(ind%model%ewt.eq.0) then
-            call print_warning("@SP is required with -M2D -G", error=.true.)
+            call print_warning("@SP or @EWT is required with -M2D -G", error=.true.)
           endif
         endif
 
