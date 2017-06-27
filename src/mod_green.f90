@@ -235,7 +235,6 @@ subroutine read_green (green, print)
       call skip_header (fileunit)
       read (fileunit, *, iostat = io_status) tmp
 
-
       if (io_status == iostat_end) exit
       if (io_status == 0) lines = lines + 1
     enddo

@@ -499,6 +499,7 @@ end function
 !>  p = rho h g
 ! converts mm of EWT to Pascal
 ! inverted: converts Pascal to mm EWT
+! magic number 1e3 is conversion factor from m to mm
 ! ==============================================================================
 function mmwater2pascal(mmwater, inverted)
   use mod_constants, only: density, earth
@@ -508,9 +509,9 @@ function mmwater2pascal(mmwater, inverted)
   logical, optional, intent(in) :: inverted
 
   if (present(inverted).and.inverted) then
-    mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water)
+    mmwater2pascal= mmwater * 1e3 / (earth%gravity%mean * density%water)
   else
-    mmwater2pascal=density%water * mmwater /1000 * earth%gravity%mean
+    mmwater2pascal=density%water * mmwater /1e3 * earth%gravity%mean
   endif
 end function
 
