@@ -866,9 +866,9 @@ subroutine convolve(site, date, results)
 
                     ! GG
                     if (ind%green%gg.ne.0) then
-                      aux = mmwater2pascal(val(ind%model%sp), inverted=.true.) &
-                        * area/ (d2r(green_common(igreen)%distance(idist)) *   &
-                        earth%radius*1e18)
+                      aux = mmwater2pascal(val(ind%model%sp), inverted = .true.) &
+                        * area/ (d2r(green_common(igreen)%distance(idist))       &
+                        * earth%radius*1e18)
 
                       result(ind%green%gg) = result(ind%green%gg) +      &
                         green_common(igreen)%data(idist, ind%green%gg) * &
