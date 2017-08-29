@@ -651,7 +651,7 @@ subroutine convolve(site, date, results)
             )
         endif
 
-        if (iok(1).eq.1 .and. int(val(ind%model%ls)).eq.1) then
+        if (iok(1).eq.1 .and. (.not.isnan(val(ind%model%ls)) .and. int(val(ind%model%ls)).ne.0)) then
           tot_area_used = tot_area_used +area
         endif
 
@@ -846,7 +846,9 @@ subroutine convolve(site, date, results)
                 ! and is not excluded by polygon
                 if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
                   !IB or NIB
-                  if (.not.(ind%model%ls.ne.0.and.inverted_barometer.and.int(val(ind%model%ls)).eq.0)) then
+                  if (.not.( &
+                    ind%model%ls.ne.0.and.inverted_barometer.and. &
+                    (isnan(val(ind%model%ls)) .or. int(val(ind%model%ls)).eq.0 ) )) then
                     ! GE
                     if (ind%green%ge.ne.0) then
                       result(ind%green%ge) = result(ind%green%ge)        &
