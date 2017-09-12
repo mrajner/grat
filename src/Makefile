@@ -80,7 +80,7 @@ PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := $(PROGS_DIR)
 
-# all: $(DIRS) libgrat.a $(PROGS)
+all: $(DIRS) libgrat.a $(PROGS)
 
 aaa: ../bin/grat
 	bash /home/mrajner/pub/2017_rlg_loading/t.sh
