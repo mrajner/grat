@@ -1408,7 +1408,7 @@ subroutine convolve(site, date, results)
 
               if (isnan(aux)) aux = 0
 
-              if (ind%green%gr.ne.0) then
+              if (ind%green%gr.ne.0 .or. ind%green%ghn.ne.0 .or. ind%green%ghe.ne.0) then
 
                 result(ind%green%gr) = result(ind%green%gr)        &
                   + green_common(igreen)%data(idist, ind%green%gr) &
@@ -1419,11 +1419,13 @@ subroutine convolve(site, date, results)
                     + green_common(igreen)%data(idist, ind%green%ghn) &
                     * aux * (-cos(d2r(azimuth)))
                 endif
+
                 if (ind%green%ghe.ne.0) then
                   result(ind%green%ghe) = result(ind%green%ghe)       &
                     + green_common(igreen)%data(idist, ind%green%ghe) &
                     * aux * (-sin(d2r(azimuth)))
                 endif
+
               endif
             endif
           endif

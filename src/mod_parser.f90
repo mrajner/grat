@@ -1121,6 +1121,8 @@ subroutine get_index()
       ind%green%gndz  = i
     case ("GNdz2")
       ind%green%gndz2 = i
+    case default
+      call print_warning("not recoginzed green type: "//green(i)%dataname)
     endselect
   enddo
 
