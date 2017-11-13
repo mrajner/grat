@@ -625,6 +625,11 @@ subroutine check_arguments (program_calling)
   if (.not.any(cmd_line%switch.eq.'-S')) then
     call print_warning("-S not given")
   endif
+
+  if ((ind%green%ghn.ne.0 .or. ind%green%ghe.ne.0) .and. ind%green%gr.eq.0) then
+    call print_warning("using @GHN or @GHE without @GR in green specification can cause seqfault")
+  endif
+
 end subroutine
 
 ! =============================================================================
