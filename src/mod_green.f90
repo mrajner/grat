@@ -69,7 +69,7 @@ subroutine parse_green (cmd_line_entry)
     call read_green(green(ind%green%g3d))
 
   else
-    allocate (green (size(cmd_line_entry%field)))
+    allocate(green(size(cmd_line_entry%field)))
 
   endif
 
