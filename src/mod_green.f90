@@ -9,7 +9,7 @@ module mod_green
   type green_functions
     character (len=255) :: name
     character (len=25)  :: dataname
-    integer, dimension(2) :: column
+    integer, dimension(2) :: column = [-1, -1]
     character(10), dimension(2) :: columndataname
     real(dp), allocatable,dimension(:) :: distance
     real(dp), allocatable,dimension(:) :: data
@@ -101,8 +101,10 @@ subroutine parse_green (cmd_line_entry)
       endif
 
       do ii=1, 2
+        if (i.ge.2) then
         green(i)%column(ii) = green(i-1)%column(ii)
         green(i)%columndataname(ii) = green(i-1)%columndataname(ii)
+      endif
 
         if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
           read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
