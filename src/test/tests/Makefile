@@ -1,6 +1,6 @@
 OPT:= -O2
 
-SHELL_TESTS   := $(wildcard t[0-9]*.sh)
+SHELL_TESTS   := $(wildcard t[1-9]*.sh)
 #temporary
 #  SHELL_TESTS   := $(wildcard t[1-6].sh)
 

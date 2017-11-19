@@ -1775,8 +1775,10 @@ function green_newtonian (psi, h, z, method)
   else
     z_=0.
   endif
-  if (present(method) &
-    .and. (method.eq."spotl" .or. method.eq."olsson")) then
+  if (                                                &
+    present(method)                                   &
+    .and. (method.eq."spotl" .or. method.eq."olsson") &
+    ) then
     if(method.eq."spotl") then
       eps = h_/ earth%radius
       green_newtonian =                                      &
@@ -1803,7 +1805,7 @@ function green_newtonian (psi, h, z, method)
       -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
 
     green_newtonian = green_newtonian &
-      * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
+      * gravity%constant / earth%gravity%mean * green_normalization("m", psi=psi)
     return
   endif
 end function

@@ -511,7 +511,7 @@ pure function mmwater2pascal(mmwater, inverted)
   if (present(inverted).and.inverted) then
     mmwater2pascal = mmwater * 1e3 / (earth%gravity%mean * density%water)
   else
-    mmwater2pascal = density%water * mmwater /1e3 * earth%gravity%mean
+    mmwater2pascal = density%water * mmwater / 1e3 * earth%gravity%mean
   endif
 end function
 
