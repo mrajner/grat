@@ -876,7 +876,7 @@ subroutine convolve(site, date, results)
 
                       result(ind%green%gg) = result(ind%green%gg) +      &
                         green_common(igreen)%data(idist, ind%green%gg) * &
-                        aux * 1e8 ! m s-2 -> microGal
+                        aux * 1.e8_dp ! m s-2 -> microGal
                     endif
                   endif
 
