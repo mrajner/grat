@@ -28,7 +28,7 @@ contains
 !! \warning All input angles in radians, output area on unit sphere or
 !! in square units of given (optionally) \c radius.
 ! =============================================================================
-function spher_area (distance, ddistance, azstp, radius, alternative_method)
+elemental function spher_area (distance, ddistance, azstp, radius, alternative_method)
   real(dp) :: spher_area
   real(dp), intent(in)  :: distance, ddistance
   real(dp), intent(in)  :: azstp
