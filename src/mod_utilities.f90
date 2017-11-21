@@ -261,7 +261,13 @@ subroutine skip_header (unit, comment_char)
     return
   endif
 
-  do while (dummy(1:1).eq.comment_char_)
+  do while (                                         &
+    dummy(1:1).eq.comment_char_                      &
+    .or. (                                           &
+    scan(dummy, comment_char_).gt.0                  &
+    .and. dummy(1:scan(dummy,comment_char_)-1) == '' &
+    )                                                &
+    )
 
     read (unit, *, iostat = io_stat) dummy
 
