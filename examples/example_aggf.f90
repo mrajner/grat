@@ -127,9 +127,9 @@ subroutine simple_atmospheric_model (filename)
     file_unit = output_unit
   endif
 
-  write(*,*), "simple_atmospheric_model ---> ",filename
+  write(*,*) "simple_atmospheric_model ---> ",filename
 
-  do R = 0., 25*8
+  do R = 0, 25*8
     write (file_unit, *) &
       R, &
       -100*bouger(h=h,R=R)/(earth%gravity%mean*h) * 1e8, & !conversion to microGal
@@ -173,7 +173,7 @@ subroutine compute_tabulated_green_functions ( &
     action  = 'write'    & 
     )
 
-  !print header
+  ! print header
   write (file_unit,*) '# This is set of AGGF computed using module ', & 
     'aggf from grat software'
   write (file_unit,*) '# Normalization according to Merriam92'
@@ -261,9 +261,11 @@ subroutine compare_fels_profiles (filename)
   character(*), intent (in),optional:: filename
 
   ! All possible optional arguments for standard_temperature
-  fels_types = (/ "US1976"             , "tropical",   &
-    "subtropical_summer" , "subtropical_winter" , &
-    "subarctic_summer"   , "subarctic_winter"    /)
+  fels_types = [                                &
+    "US1976            ", "tropical          ", &
+    "subtropical_summer", "subtropical_winter", &
+    "subarctic_summer  ", "subarctic_winter  "  &
+  ]
 
   if (present (filename)) then
     if (file_exists(filename)) return
@@ -452,9 +454,11 @@ subroutine standard1976(filename)
 
   if (present (filename)) then
     if (file_exists(filename)) return
-    open ( newunit = file_unit, &
-      file =filename, &
-      action  = 'write' )
+    open (                 &
+      newunit = file_unit, &
+      file    = filename,  &
+      action  = 'write'    &
+      )
   else
     file_unit = output_unit
   endif
@@ -547,14 +551,14 @@ subroutine aggf_thin_layer (filename)
     open (                 &
       newunit = file_unit, &
       file    = filename,  &
-      action  = 'write'
+      action  = 'write'    &
     )
   else
     file_unit = output_unit
   endif
   do i = 1, size (green(1)%distance)
     write(file_unit,*) green(1)%distance(i), green(1)%data(i), &
-      GN_thin_layer (d2r(green(1)%distance(i)))
+      GN_thin_layer(d2r(green(1)%distance(i)))
   enddo
 end subroutine
 
@@ -593,9 +597,10 @@ subroutine green_newtonian_compute(filenames)
   integer:: iun, n, i, j, k
   real (dp), allocatable, dimension(:) :: psi, h
   character(12), allocatable, dimension(:) :: column_name
-  character(*),  optional :: filenames(3)
+  character(*), optional :: filenames(3)
   character(20) :: method
   character(40) :: prefix
+  character(4) :: dummy
 
   prefix="/home/mrajner/src/grat/examples/"
 
