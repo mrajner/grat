@@ -82,8 +82,13 @@ DIRS            := $(PROGS_DIR)
 
 all: $(DIRS) libgrat.a $(PROGS)
 
-aaa: ../bin/grat
-	bash /home/mrajner/pub/2017_rlg_loading/t.sh
+# aaa: ../bin/grat
+# 	bash /home/mrajner/pub/2017_rlg_loading/t.sh
+#
+fdsf: grat
+	$(PROGS_DIR)/grat -F /home/mrajner/pub/2016_hornsund/load/aas/CMB_2003-2013_3km.nc.grd @EWT:TOTALMBACC  -M2 -G /home/mrajner/src/gotic2/data/grn1.data @GR:1:2,@GHN : 1: 3 -Sh  -wn -I4@DD
+	$(PROGS_DIR)/grat -F /home/mrajner/pub/2016_hornsund/load/aas/CMB_2003-2013_3km.nc.grd @EWT:TOTALMBACC  -M2 -G /home/mrajner/src/gotic2/data/grn1.data@GHN : 1: 3 -Sh  -ws  -I111@DD
+
 
 $(DIRS):
 	type $(FC) && mkdir -p $@
