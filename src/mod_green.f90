@@ -651,8 +651,14 @@ subroutine convolve(site, date, results)
             )
         endif
 
-        if (iok(1).eq.1 .and. (.not.isnan(val(ind%model%ls)) .and. int(val(ind%model%ls)).ne.0)) then
-          tot_area_used = tot_area_used +area
+
+        if (                                                                &
+          iok(1).eq.1                                                       &
+          .and. (                                                           &
+          (.not.isnan(val(ind%model%ls)) .and. int(val(ind%model%ls)).ne.0) &
+          .or. int(val(ind%model%ls)).eq.0)                                 &
+          ) then
+          tot_area_used = tot_area_used + area
         endif
 
         ! GE, GN, ...
