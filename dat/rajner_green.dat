@@ -2,7 +2,7 @@
  # Normalization according to Merriam92
  # Marcin Rajner
  # For detail see www.geo.republika.pl
-              #psi[deg]       GN[microGal/hPa]  GN/dT[microGal/hPa/K]  GN/dh[microGal/hPa/m]  GN/dz[microGal/hPa/m]
+                #psi[deg]   GN[microGal/hPa]   GN/dT[microGal/hPa/K]   GN/dh[microGal/hPa/m]   GN/dz[microGal/hPa/m]
        0.000010   -4916.120540      17.066235      45.509036     198.331860
        0.000050   -4899.029503      16.960303       0.747926       7.956012
        0.000100   -4882.191395      16.852598       0.471974       1.988894
