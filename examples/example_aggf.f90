@@ -150,8 +150,9 @@ end subroutine
 !! \date 2013-03-18
 ! ============================================================================
 subroutine compute_tabulated_green_functions ( &
-    filename, method, dz, &
-    predefined,fels_type, rough)
+    filename, method, dz,                      &
+    predefined,fels_type, rough                &
+    )
   use mod_constants, only: dp
   use mod_aggf,     only: aggf, aggfd
   use mod_green,     only: green
@@ -180,11 +181,11 @@ subroutine compute_tabulated_green_functions ( &
     )
 
   ! print header
-  write(file_unit, '(a)') '# This is set of AGGF computed using module ', &
-    'aggf from grat software'
+  write(file_unit, '(a)') '# This is set of AGGF computed using module ' &
+    //'aggf from grat software'
   write(file_unit, '(a)') '# Normalization according to Merriam92'
   write(file_unit, '(a)') '# Marcin Rajner'
-  write(file_unit,'(10(a23))')                       &
+  write(file_unit,'(10(a23))')                         &
     '#psi[deg]',                                       &
     'GN[microGal/hPa]'     , 'GN/dT[microGal/hPa/K]' , &
     'GN/dh[microGal/hPa/m]', 'GN/dz[microGal/hPa/m]'
