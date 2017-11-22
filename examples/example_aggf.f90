@@ -29,7 +29,6 @@ program example_aggf
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
   call aggf_thin_layer("/home/mrajner/src/grat/examples/aggf_thin_layer.dat")
   call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_full.dat'  , method     = "full"    , predefined = .false.)
-  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_rough.dat' , predefined = .false.   , rough      = .true.)
   call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method     = "simple"  , predefined = .false.)
   call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green.dat'       , method     = "standard", predefined = .false.)
   call aggf_resp_fels_profiles('/home/mrajner/src/grat/examples/aggf_resp_fels_profiles.dat')
