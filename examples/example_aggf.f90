@@ -606,7 +606,7 @@ subroutine green_newtonian_compute(filenames)
   use mod_green
   use mod_utilities, only: logspace, d2r
   integer:: iun, n, i, j, k
-  real (dp), allocatable, dimension(:) :: psi, h
+  real (dp), allocatable, dimension(:) :: psi, z
   character(12), allocatable, dimension(:) :: column_name
   character(*), optional :: filenames(3)
   character(20) :: method
@@ -621,28 +621,28 @@ subroutine green_newtonian_compute(filenames)
   allocate(psi(n))
   psi = logspace(real(1e-6,dp), real(180,dp),n)
 
-  allocate(h(11))
-  h = [0., 1., 10., 100., 1000., 10000., -1., -10., -100., -1000., -10000.]
+  allocate(z(11))
+  z = [0., 1., 10., 100., 1000., 10000., -1., -10., -100., -1000., -10000.]
 
-  allocate(column_name(size(h)))
-  write(column_name, '(f0.0)' ) (h(i),i=1,11)
+  allocate(column_name(size(z)))
+  write(column_name, '(f0.0)' ) (z(i),i=1,11)
 
   do k = 1, 3
-    if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
+    ! if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
     print *, "green_newtonian_compute ---> ", trim(prefix)//trim(filenames(k))
     open (newunit=iun, file=trim(prefix)//filenames(k), action = 'write')
 
     method = filenames(k)(17:index(filenames(k),".")-1)
 
-    write(dummy,'(i0)') size(h)
-    write(iun, '(a12,'//trim(dummy)//'a12)') "#psi", ("h"//trim(column_name(i)), i = 1, 11)
-    write(dummy,'(i0)') size(h)+1
+    write(dummy,'(i0)') size(z)
+    write(iun, '(a12,'//trim(dummy)//'a12)') "#psi", ("z"//trim(column_name(i)), i = 1, 11)
+    write(dummy,'(i0)') size(z)+1
     write(iun, '('//dummy//'en12.2)') (psi(i), &
       (                                        &
       green_newtonian(d2r(psi(i)),             &
-      h      = h(j),                           &
+      z      = z(j),                           &
       method = method),                        &
-      j = 1,size(h)                            &
+      j = 1,size(z)                            &
       ),                                       &
       i = 1,size(psi))
     close(iun)
