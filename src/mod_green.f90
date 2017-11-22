@@ -254,11 +254,14 @@ subroutine read_green (green, print)
         close(fileunit)
         exit
       endif
+
       if (io_status==0) then
-        green%distance(lines) = tmp (green%column(1))
-        green%data(lines)     = tmp (green%column(2))
+        green%distance(lines) = tmp(green%column(1))
+        green%data(lines)     = tmp(green%column(2))
       endif
+
     enddo
+
     deallocate(tmp)
   endif
 
@@ -1771,20 +1774,24 @@ function green_newtonian (psi, h, z, method)
   real(dp), intent (in), optional :: z
   character(*), optional :: method
   real(dp) :: h_, z_, eps, t
+
   if (present(h)) then
     h_=h
   else
     h_=0.
   endif
+
   if (present(z)) then
     z_=z
   else
     z_=0.
   endif
+
   if (                                                &
     present(method)                                   &
     .and. (method.eq."spotl" .or. method.eq."olsson") &
     ) then
+
     if(method.eq."spotl") then
       eps = h_/ earth%radius
       green_newtonian =                                      &
@@ -1794,6 +1801,7 @@ function green_newtonian (psi, h, z, method)
         * gravity%constant                                   &
         * green_normalization("f",psi=psi)
       return
+
     else if (method.eq."olsson") then
       t = earth%radius/(earth%radius +h_)
       green_newtonian =                      &
@@ -1803,6 +1811,7 @@ function green_newtonian (psi, h, z, method)
         * gravity%constant                   &
         * green_normalization("f",psi=psi)
       return
+
     endif
   else
     green_newtonian =                                               &
