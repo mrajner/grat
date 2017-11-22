@@ -628,7 +628,7 @@ subroutine green_newtonian_compute(filenames)
   write(column_name, '(f0.0)' ) (z(i),i=1,11)
 
   do k = 1, 3
-    ! if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
+    if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
     print *, "green_newtonian_compute ---> ", trim(prefix)//trim(filenames(k))
     open (newunit=iun, file=trim(prefix)//filenames(k), action = 'write')
 
