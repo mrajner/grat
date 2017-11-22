@@ -244,8 +244,8 @@ end function
 subroutine skip_header (unit, comment_char)
   integer, intent (in) :: unit
   character (len = 1), optional :: comment_char
-  character (len = 60 ) :: dummy
-  character (len = 1)  :: comment_char_
+  character (len = 256) :: dummy
+  character (len = 1)   :: comment_char_
   integer :: io_stat
 
   if (present ( comment_char) ) then
@@ -777,4 +777,48 @@ function length_pl(string)
   length_pl = length_pl + len_trim(string)
 end function
 
+subroutine colored(color)
+  use mod_printing, only: print_warning
+  character(*), intent(in) :: color
+  character(4) :: code
+
+  select case(color)
+  case('dark grey')
+    code =  "[90m"
+  case('peach')
+    code =  "[91m"
+  case('light green')
+    code =  "[92m"
+  case('light yellow')
+    code =  "[93m"
+  case('light blue')
+    code =  "[94m"
+  case('pink')
+    code =  "[95m"
+  case('light aqua')
+    code =  "[96m"
+  case('pearl white')
+    code =  "[97m"
+  case('black')
+    code =  "[30m"
+  case('red')
+    code =  "[31m"
+  case('green')
+    code =  "[32m"
+  case('yellow')
+    code =  "[33m"
+  case('blue')
+    code =  "[34m"
+  case('purple')
+    code =  "[35m"
+  case('aqua')
+    code =  "[36m"
+  case("reset")
+    code =  "[0m"
+  case default
+    call print_warning("color: "//color//" not known")
+    return
+  end select
+  print* , achar(27)//code
+end subroutine 
 end module
