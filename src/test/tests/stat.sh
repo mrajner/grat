@@ -99,6 +99,7 @@ for test in ${test_what[*]} ; do
       {
         echo updating ${should_be}
         cp ${is} ${should_be} -v
+				git add -N ${should_be}
       }
       continue
     }

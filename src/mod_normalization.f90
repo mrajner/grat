@@ -20,7 +20,7 @@ elemental function green_normalization(method, psi)
 
     green_normalization =                                                     &
         1e-3                                                                  &
-        / earth%gravity%mean  * earth%radius * 2 * pi * (1.- cos(d2r(1._dp)))
+        / earth%gravity%mean * earth%radius * 2 * pi * (1.- cos(d2r(1._dp)))
 
   else if (method.eq."m") then ! merriam normalization
 

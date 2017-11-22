@@ -7,7 +7,7 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-[[ -n ${SP:-} ]] && 
+[[ -n ${SP-} ]] && 
 {
   echo not sourcing definitions.sh...
 } || {

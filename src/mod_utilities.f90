@@ -507,17 +507,17 @@ end function
 ! inverted: converts Pascal to mm EWT
 ! magic number 1e3 is conversion factor from m to mm
 ! ==============================================================================
-function mmwater2pascal(mmwater, inverted)
+pure function mmwater2pascal(mmwater, inverted)
   use mod_constants, only: density, earth
 
-  real(dp) :: mmwater2pascal
-  real(dp), intent(in) :: mmwater
+  real(dp)                      :: mmwater2pascal
+  real(dp), intent(in)          :: mmwater
   logical, optional, intent(in) :: inverted
 
   if (present(inverted).and.inverted) then
-    mmwater2pascal= mmwater * 1e3 / (earth%gravity%mean * density%water)
+    mmwater2pascal = mmwater * 1e3 / (earth%gravity%mean * density%water)
   else
-    mmwater2pascal=density%water * mmwater /1e3 * earth%gravity%mean
+    mmwater2pascal = density%water * mmwater / 1e3 * earth%gravity%mean
   endif
 end function
 
@@ -676,10 +676,10 @@ END SUBROUTINE Bubble_Sort
 !! \author Marcin Rajner
 !! \date 2013-05-07
 ! =============================================================================
-function bilinear (x, y, aux)
-  real(dp) :: bilinear
-  real(dp) :: x, y, aux(4,3)
-  real(dp) :: a, b, c
+pure function bilinear (x, y, aux)
+	real(dp) :: bilinear
+	real(dp), intent(in) :: x, y, aux(4,3)
+	real(dp) :: a, b, c
 
   a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
   b = a * (aux(3,3) - aux(1,3)) + aux(1,3)

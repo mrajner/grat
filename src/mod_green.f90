@@ -9,7 +9,7 @@ module mod_green
   type green_functions
     character (len=255) :: name
     character (len=25)  :: dataname
-    integer, dimension(2) :: column
+    integer, dimension(2) :: column = [-1, -1]
     character(10), dimension(2) :: columndataname
     real(dp), allocatable,dimension(:) :: distance
     real(dp), allocatable,dimension(:) :: data
@@ -69,7 +69,7 @@ subroutine parse_green (cmd_line_entry)
     call read_green(green(ind%green%g3d))
 
   else
-    allocate (green (size(cmd_line_entry%field)))
+    allocate(green(size(cmd_line_entry%field)))
 
   endif
 
@@ -101,8 +101,10 @@ subroutine parse_green (cmd_line_entry)
       endif
 
       do ii=1, 2
+        if (i.ge.2) then
         green(i)%column(ii) = green(i-1)%column(ii)
         green(i)%columndataname(ii) = green(i-1)%columndataname(ii)
+      endif
 
         if(is_numeric (cmd_line_entry%field(i)%subfield(ii+1)%name ) ) then
           read(cmd_line_entry%field(i)%subfield(ii+1)%name, *) green(i)%column(ii)
@@ -880,7 +882,7 @@ subroutine convolve(site, date, results)
 
                       result(ind%green%gg) = result(ind%green%gg) +      &
                         green_common(igreen)%data(idist, ind%green%gg) * &
-                        aux * 1e8 ! m s-2 -> microGal
+                        aux * 1.e8_dp ! m s-2 -> microGal
                     endif
                   endif
 
@@ -1779,8 +1781,10 @@ function green_newtonian (psi, h, z, method)
   else
     z_=0.
   endif
-  if (present(method) &
-    .and. (method.eq."spotl" .or. method.eq."olsson")) then
+  if (                                                &
+    present(method)                                   &
+    .and. (method.eq."spotl" .or. method.eq."olsson") &
+    ) then
     if(method.eq."spotl") then
       eps = h_/ earth%radius
       green_newtonian =                                      &
@@ -1807,7 +1811,7 @@ function green_newtonian (psi, h, z, method)
       -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
 
     green_newtonian = green_newtonian &
-      * gravity%constant / earth%gravity%mean  * green_normalization("m", psi=psi)
+      * gravity%constant / earth%gravity%mean * green_normalization("m", psi=psi)
     return
   endif
 end function
