@@ -14,4 +14,4 @@ $(FC)/mod_polygon$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_printing$(S
 $(FC)/mod_printing$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o
 $(FC)/mod_site$(SUFFIX).o: $(FC)/mod_cmdline$(SUFFIX).o $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o $(FC)/mod_data$(SUFFIX).o $(FC)/mod_utilities$(SUFFIX).o $(FC)/mod_date$(SUFFIX).o
 $(FC)/mod_spherical$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o
-$(FC)/mod_utilities$(SUFFIX).o: $(FC)/mod_constants$(SUFFIX).o
+$(FC)/mod_utilities$(SUFFIX).o: $(FC)/mod_printing$(SUFFIX).o $(FC)/mod_constants$(SUFFIX).o
