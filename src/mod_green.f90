@@ -300,7 +300,7 @@ subroutine read_green (green, print)
 
   if (green%columndataname(2).eq."m2f") then
     green%data= &
-      -green%data * green_normalization("f2m")
+      -green%data / green_normalization("f2m")
     write(log%unit, form_63) "conversion: farrell --> to merriam"
   endif
 end subroutine
@@ -861,11 +861,13 @@ subroutine convolve(site, date, results)
 
                     ! GEGdt pressure part from Guo 2004
                     if (ind%green%gegdt.ne.0) then
-                      result(ind%green%gegdt) = result(ind%green%gegdt) +   &
-                        val(ind%model%sp) *                                 &
-                        val(ind%model%t) * 1e-4 *                           &
-                        green_common(igreen)%data(idist, ind%green%gegdt) * &
-                        area * normalize
+                      result(ind%green%gegdt) =                             &
+                        result(ind%green%gegdt)                             &
+                        + val(ind%model%sp)                                 &
+                        * val(ind%model%t)                                  &
+                        * 1e-4                                              &
+                        * green_common(igreen)%data(idist, ind%green%gegdt) &
+                        * area * normalize
                     endif
 
                     ! GG
