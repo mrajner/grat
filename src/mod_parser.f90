@@ -875,24 +875,24 @@ subroutine info_defaults(info)
   use mod_cmdline, only: info_info
   type(info_info),intent(inout) :: info
 
-  info%interpolation="n"
+  info%interpolation   = "n"
 
-  info%distance%start=0.
-  info%distance%stop=180.
-  info%distance%denser=1
-  info%distance%step=0
+  info%distance%start  = 0.
+  info%distance%stop   = 180.
+  info%distance%denser = 1
+  info%distance%step   = 0
 
-  info%azimuth%start=0.
-  info%azimuth%stop=360.
-  info%azimuth%step=0
-  info%azimuth%denser=1
+  info%azimuth%start   = 0.
+  info%azimuth%stop    = 360.
+  info%azimuth%step    = 0
+  info%azimuth%denser  = 1
 
-  info%height%start=0.
-  info%height%stop=60000.
-  info%height%step=25.
-  info%height%denser=1
+  info%height%start    = 0.
+  info%height%stop     = 60000.
+  info%height%step     = 25.
+  info%height%denser   = 1
 
-  info%distance%stop_3d=10.
+  info%distance%stop_3d = 10.
 
 end subroutine
 
