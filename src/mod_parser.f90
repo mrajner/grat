@@ -46,6 +46,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
 
   case ('-r')
     do i=1, size(cmd_line_entry%field)
+    do i = 1, size(cmd_line_entry%field)
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t" )) result_total     = .true.
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then
         result_total_all = .true.
