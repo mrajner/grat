@@ -778,7 +778,6 @@ function length_pl(string)
 end function
 
 subroutine colored(color)
-  use mod_printing, only: print_warning
   character(*), intent(in) :: color
   character(4) :: code
 
@@ -816,7 +815,7 @@ subroutine colored(color)
   case("reset")
     code =  "[0m"
   case default
-    call print_warning("color: "//color//" not known")
+    write (*,*)  "color: "//color//" not known"
     return
   end select
   print* , achar(27)//code
