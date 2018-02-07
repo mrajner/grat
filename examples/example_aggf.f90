@@ -165,11 +165,8 @@ subroutine compute_tabulated_green_functions ( &
   character(*), optional :: method
   logical, optional, intent(in) :: predefined, rough
 
-  if (file_exists(filename)) then
-    return
-  else
-    print '(a,a)', "compute_tabulated_green_functions --> ", trim(filename)
-  endif
+  if (file_exists(filename)) return
+  print '(a,a)', "compute_tabulated_green_functions --> ", trim(filename)
 
   call get_green_distances
 
@@ -318,9 +315,11 @@ subroutine aggf_resp_h (filename)
 
   if (present (filename)) then
     if (file_exists(filename)) return
-    open ( newunit = file_unit, &
-      file =filename, &
-      action  = 'write' )
+    open ( &
+      newunit = file_unit, &
+      file    = filename, &
+      action  = 'write' &
+      )
   else
     file_unit = output_unit
   endif
