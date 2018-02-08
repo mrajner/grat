@@ -163,8 +163,7 @@ subroutine read_green (green, print)
   endif
 
   select case (green%name)
-  case ("merriam", "compute", "/home/mrajner/src/grat/dat/merriam_green.dat")
-    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  case ("merriam", "compute")
 
     select case (green%dataname)
 
@@ -226,6 +225,12 @@ subroutine read_green (green, print)
       call print_warning (green%dataname //"not found in " // green%name, &
         error=.true.)
     endselect
+  endselect
+
+  select case (green%name)
+
+  case ("merriam", "compute")
+    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
   endselect
 
   if(green%column(1).ne.0 .and. green%column(2).ne.0) then
