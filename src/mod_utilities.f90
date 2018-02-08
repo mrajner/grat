@@ -818,6 +818,7 @@ subroutine colored(color)
     write (*,*)  "color: "//color//" not known"
     return
   end select
-  print* , achar(27)//code
+  write(*,'(a)', advance='no'), trim(achar(27)//code)
+
 end subroutine 
 end module
