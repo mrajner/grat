@@ -26,7 +26,7 @@ program value_check
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
 
-  quiet_step=50000
+  quiet_step = 50000
 
   call intro (                                 &
     program_calling   = "value_check",         &
