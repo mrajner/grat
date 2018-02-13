@@ -55,8 +55,8 @@ contains
 ! =============================================================================
 ! =============================================================================
 subroutine print_warning (warn, unit, more, error, program_calling)
-  use, intrinsic:: iso_fortran_env
-  use :: mod_cmdline, only: warnings, method, quiet
+  use, intrinsic :: iso_fortran_env
+  use            :: mod_cmdline, only: warnings, method, quiet
 
   integer, dimension(8):: execution_date
   character (len=*), intent(in)  :: warn

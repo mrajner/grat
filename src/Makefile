@@ -7,13 +7,13 @@ FC := gfortran
 	#
 # TODO
 # optimalization
-OPT=-O0
+OPT=-O2
 
 # user definitions
 # you may want to change this settings
-LIBDIR        := /usr/local/lib
-INCDIR        := /usr/local/include
-BINDIR        := /usr/local/bin
+LIBDIR := /usr/local/lib
+INCDIR := /usr/local/include
+BINDIR := /usr/local/bin
 
 # passing compilation info to program
 FC_INFO       := $(shell $(FC) --version | sed -n 1p )

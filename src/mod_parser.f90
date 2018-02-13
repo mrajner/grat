@@ -45,7 +45,6 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
     endif
 
   case ('-r')
-    do i=1, size(cmd_line_entry%field)
     do i = 1, size(cmd_line_entry%field)
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t" )) result_total     = .true.
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then
@@ -907,14 +906,14 @@ subroutine print_help (program_calling, accepted_switches)
   character(255)::syntax
   logical:: if_print_line = .false., if_optional=.true.
 
-  if_print_line=.false.
+  if_print_line = .false.
 
   ! TODO make appropriate man documentation using
   ! include for common switches
 
   ! change this path according to your settings
   open(                                         &
-    newunit=help_unit,                          &
+    newunit = help_unit,                          &
     file="/home/mrajner/src/grat/dat/help.hlp", &
     action="read",                              &
     status="old"                                &

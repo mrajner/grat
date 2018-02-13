@@ -1,5 +1,6 @@
-map <buffer> <F5> :call CompileAsync()<CR>
-function! CompileAsync()
+map <buffer> <F5> :call AsyncCompile()<CR>
+command! AsyncCompile :call AsyncCompile()<CR>
+function! AsyncCompile()
   let buf = {}
 
   let curbuf = bufnr("%")
@@ -36,6 +37,12 @@ function! MycloseHandler(channel)
   exec curbuf . "b"
   compiler gfortran_mr
   exec "bot cbuffer " . buf["errorbuffer"]
+
+  exec buf["errorbuffer"] ."b"
+  if line('$') == 1 && getline(1) == ''
+    bdelete
+  endif
+
   exec curbuf . "b"
   redraw!
 endfunction

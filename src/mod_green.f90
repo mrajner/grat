@@ -164,6 +164,7 @@ subroutine read_green (green, print)
 
   select case (green%name)
   case ("merriam", "compute")
+    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
 
     select case (green%dataname)
 
@@ -229,9 +230,10 @@ subroutine read_green (green, print)
 
   select case (green%name)
 
-  case ("merriam", "compute")
-    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
-  endselect
+  ! TODO
+  ! case ("merriam", "compute")
+  !   green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  ! endselect
 
   if(green%column(1).ne.0 .and. green%column(2).ne.0) then
     allocate(tmp(max(green%column(1), green%column(2))))
