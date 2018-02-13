@@ -228,9 +228,8 @@ subroutine read_green (green, print)
     endselect
   endselect
 
-  select case (green%name)
-
   ! TODO
+  ! select case (green%name)
   ! case ("merriam", "compute")
   !   green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
   ! endselect
