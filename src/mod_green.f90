@@ -163,8 +163,7 @@ subroutine read_green (green, print)
   endif
 
   select case (green%name)
-  case ("merriam", "compute", "/home/mrajner/src/grat/dat/merriam_green.dat")
-    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  case ("merriam", "compute")
 
     select case (green%dataname)
 
@@ -228,6 +227,12 @@ subroutine read_green (green, print)
     endselect
   endselect
 
+  select case (green%name)
+
+  case ("merriam", "compute")
+    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+  endselect
+
   if(green%column(1).ne.0 .and. green%column(2).ne.0) then
     allocate(tmp(max(green%column(1), green%column(2))))
     lines = 0
@@ -254,11 +259,14 @@ subroutine read_green (green, print)
         close(fileunit)
         exit
       endif
+
       if (io_status==0) then
-        green%distance(lines) = tmp (green%column(1))
-        green%data(lines)     = tmp (green%column(2))
+        green%distance(lines) = tmp(green%column(1))
+        green%data(lines)     = tmp(green%column(2))
       endif
+
     enddo
+
     deallocate(tmp)
   endif
 
@@ -653,8 +661,14 @@ subroutine convolve(site, date, results)
             )
         endif
 
-        if (iok(1).eq.1 .and. (.not.isnan(val(ind%model%ls)) .and. int(val(ind%model%ls)).ne.0)) then
-          tot_area_used = tot_area_used +area
+
+        if (                                                                &
+          iok(1).eq.1                                                       &
+          .and. (                                                           &
+          (.not.isnan(val(ind%model%ls)) .and. int(val(ind%model%ls)).ne.0) &
+          .or. int(val(ind%model%ls)).eq.0)                                 &
+          ) then
+          tot_area_used = tot_area_used + area
         endif
 
         ! GE, GN, ...
@@ -1767,20 +1781,24 @@ function green_newtonian (psi, h, z, method)
   real(dp), intent (in), optional :: z
   character(*), optional :: method
   real(dp) :: h_, z_, eps, t
+
   if (present(h)) then
     h_=h
   else
     h_=0.
   endif
+
   if (present(z)) then
     z_=z
   else
     z_=0.
   endif
+
   if (                                                &
     present(method)                                   &
     .and. (method.eq."spotl" .or. method.eq."olsson") &
     ) then
+
     if(method.eq."spotl") then
       eps = h_/ earth%radius
       green_newtonian =                                      &
@@ -1790,6 +1808,7 @@ function green_newtonian (psi, h, z, method)
         * gravity%constant                                   &
         * green_normalization("f",psi=psi)
       return
+
     else if (method.eq."olsson") then
       t = earth%radius/(earth%radius +h_)
       green_newtonian =                      &
@@ -1799,6 +1818,7 @@ function green_newtonian (psi, h, z, method)
         * gravity%constant                   &
         * green_normalization("f",psi=psi)
       return
+
     endif
   else
     green_newtonian =                                               &

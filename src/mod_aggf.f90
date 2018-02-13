@@ -31,7 +31,8 @@ function aggfd ( &
     aggfdt,      &
     predefined,  &
     fels_type,   &
-    rough)
+    rough        &
+    )
 
   use mod_constants, only: atmosphere, dp
 
@@ -174,7 +175,7 @@ function aggf (         &
   if(allocated(heights)) then
 
     if (                                                            &
-      ((zmin_ +dz_/2).ne.heights(1))                                &
+      ((zmin_+dz_/2).ne.heights(1))                                 &
       .or.abs((zmax_-dz_/2)-heights(size(heights))).gt.zmax_/1e6_dp &
       .or.nint((zmax_-zmin_)/dz_).ne.size(heights)                  &
       .or. (present(predefined))                                    &
@@ -306,7 +307,7 @@ function GN_thin_layer (psi)
   real(dp), intent(in) :: psi
   real(dp) :: GN_thin_layer
 
-  GN_thin_layer = 1.627 * psi / sin ( psi / 2. )
+  GN_thin_layer = 1.627*psi/sin(psi/2.)
 end function
 
 

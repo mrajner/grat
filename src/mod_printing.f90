@@ -126,7 +126,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
   if (warnings%time) then
     call date_and_time (values=execution_date)
     write(def_unit, &
-      '("[",i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)","]")'),&
+      '("[",i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)","]")') &
       execution_date (1:3), execution_date(5:7), execution_date(4)/60
   endif
 
