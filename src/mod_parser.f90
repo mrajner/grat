@@ -23,7 +23,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
   type(cmd_line_arg), intent(in):: cmd_line_entry
   character(len=*), optional :: accepted_switches
   character(len=*), optional :: version, cdate, gdate, program_calling
-  integer(2) :: i
+  integer :: i
   logical :: file_already_opened
 
   write(log%unit, form%i1) cmd_line_entry%switch, "{", trim(cmd_line_entry%full), "}"
@@ -111,7 +111,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
 
   case ('-!')
     all_huge=.true.
-    write(log%unit, form%i2), 'all model as huge'
+    write(log%unit, form%i2) 'all model as huge'
     if (ubound(model,1).ge.1) call print_warning("put -! before -F")
 
   case ("-G")
@@ -140,10 +140,10 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
          method3d=cmd_line_entry%field(i)%subfield(2)%name==method3dnames
 
         if (.not.any(method3d)) then
-          call print_warning (                                         &
-            "no explicit method3d given"//                             &
-            " - falling into point mass (for backward compability, not &
-            recomended, use -M3 : potential|cylinder)"                 &
+          call print_warning (                                        &
+            "no explicit method3d given"//                            &
+            " - falling into point mass (for backward compability,"// &
+            " not recomended, use -M3 : potential|cylinder)"          &
             )
           method3d(1)=.true.
         endif
@@ -171,7 +171,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
     enddo
 
     if (.not.log%sparse) then
-      write(log%unit, form_62, advance="no"), 'method was set:'
+      write(log%unit, form_62, advance="no") 'method was set:'
 
       do i=1,size(method)
         if (method(i)) write(log%unit, '(i1,"D ")' , advance = "no") i
@@ -180,7 +180,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
     endif
 
     if (method(3)) then
-      write(log%unit, form_62, advance="no"), "method refinment for near area using 3D"
+      write(log%unit, form_62, advance="no") "method refinment for near area using 3D"
       write(log%unit,'(a$)') pack(method3dnames,method3d)
       write(log%unit, '(g10.3)') method3d_refinment_distance
     endif
@@ -684,7 +684,6 @@ subroutine parse_moreverbose (cmd_line_entry)
           endif
         endif
 
-
         inquire(file = moreverbose(i)%name, opened = file_already_opened, number = j)
 
         if (file_already_opened) then
@@ -709,8 +708,10 @@ subroutine parse_moreverbose (cmd_line_entry)
       moreverbose(i)%sparse = .true.
     endif
 
-    write (log%unit, form_62), trim(moreverbose(i)%name), &
-      "<-", trim(dataname(moreverbose(i)%dataname)), "|sparse: ", moreverbose(i)%sparse
+    write (log%unit, form_62)                        &
+      trim(moreverbose(i)%name),                     &
+      "<-", trim(dataname(moreverbose(i)%dataname)), &
+      "|sparse: ", moreverbose(i)%sparse
 
   enddo
 end subroutine
