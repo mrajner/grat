@@ -79,16 +79,16 @@ module mod_constants
 
   type(earth_data), parameter ::           & 
     earth            = earth_data (        & 
-    mass             = 5.97219e24_dp,      & !kg
-    radius           = 6371000._dp,        & !m
-    gm               = 3.986004419e14_dp,  & ! ^3/s^2
+    mass             = 5.97219e24_dp,      & ! kg
+    radius           = 6371000._dp,        & ! m
+    gm               = 3.986004419e14_dp,  & ! m^3/s^2
     angular_velocity = 7.2921151467e-5_dp, & ! rad/s
     gravity          = earth_gravity(      & 
-    mean             = 9.80665_dp          & !m s-2
+    mean             = 9.80665_dp          & ! m s-2
     ),                                     & 
     density          = earth_density(      & 
-    crust            = 2670._dp,           & !kg m-3
-    mean             = 5500._dp            & !kg m-3
+    crust            = 2670._dp,           & ! kg m-3
+    mean             = 5500._dp            & ! kg m-3
     )                                      & 
     )
 
@@ -96,37 +96,36 @@ module mod_constants
   ! celestial bodies
   !---------------------------------------
   type celestial_object_data
-    real(dp)      :: mass
-    real(dp)      :: distance
+    real(dp) :: mass, distance
   end type
 
   type(celestial_object_data), parameter :: &
-    moon        = celestial_object_data (   &
-    distance    = 384.e6_dp,                & !m
-    mass        = 7.35e22_dp                & !kg
+    moon     = celestial_object_data (      &
+    distance = 384.e6_dp,                   & !m
+    mass     = 7.35e22_dp                   & !kg
     ),                                      &
-    sun         = celestial_object_data (   &
-    distance    = 149.6e9_dp,               & !m
-    mass        = 1.99e30_dp                & !kg
+    sun      = celestial_object_data (      &
+    distance = 149.6e9_dp,                  & !m
+    mass     = 1.99e30_dp                   & !kg
     )
 
   !---------------------------------------
   ! densities
-  !---------------------------------------
+  ! ---------------------------------------
   type density_info
     real(dp) :: water
   end type
 
-  type(density_info), parameter :: & 
-  density = density_info (         & 
-  water   = 1000._dp               & ! kg m-3
+  type(density_info), parameter :: &
+    density   = density_info (    &
+    water     = 1000._dp &
     )
-
 
 contains
 
 ! ==============================================================================
-!> naive method to force NaN for some compilers
+!> naive method to force NaN
+!  could not work with some compilers
 ! ==============================================================================
 real(dp) function setnan()
   real(dp) :: minusone = -1._dp

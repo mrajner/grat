@@ -325,8 +325,7 @@ function file_exists(string, double_check, verbose)
     file_exists=.false.
     return
   endif
-  inquire(file=string, exist=file_exists)
-
+  inquire(file=trim(string), exist=file_exists)
 
   if (present(verbose).and.verbose) then
     if (file_exists) then
@@ -669,12 +668,12 @@ END SUBROUTINE Bubble_Sort
 !! \author Marcin Rajner
 !! \date 2013-05-07
 ! =============================================================================
-function bilinear (x, y, aux)
+pure function bilinear (x, y, aux)
   real(dp) :: bilinear
-  real(dp) :: x, y, aux(4,3)
+  real(dp), intent(in) :: x, y, aux(4,3)
   real(dp) :: a, b, c
 
-  a  = ( x - aux(1,1) ) / (aux(4,1)-aux(1,1))
+  a = (x-aux(1,1))/(aux(4,1)-aux(1,1))
   b = a * (aux(3,3) - aux(1,3)) + aux(1,3)
   c = a * (aux(4,3) - aux(2,3)) + aux(2,3)
   bilinear = (y-aux(1,2))/(aux(4,2)-aux(1,2)) * (c-b) + b
