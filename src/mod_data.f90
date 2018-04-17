@@ -1147,15 +1147,15 @@ subroutine get_value(model, lat, lon, val, level, method, date)
       if(.not.success2) val = setnan()
 
     else
-      call nc_error (nf90_get_var(      &
-        model%ncid,                     &
-        varid,                          &
-        val,                            &
-        start = [                       &
-        ilon,                           &
-        ilat,                           &
-        get_time_index(model,date=date) &
-        ]),                             &
+      call nc_error (nf90_get_var(       &
+        model%ncid,                      &
+        varid,                           &
+        val,                             &
+        start = [                        &
+        ilon,                            &
+        ilat,                            &
+        get_time_index(model, date=date) &
+        ]),                              &
         success = success)
     endif
 

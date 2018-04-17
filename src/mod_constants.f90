@@ -127,10 +127,11 @@ contains
 !> naive method to force NaN
 !  could not work with some compilers
 ! ==============================================================================
-real(dp) function setnan()
-  real(dp) :: minusone = -1._dp
+pure real(dp) function setnan()
+  real(dp) :: minusone
 
-  setnan = sqrt(minusone)
+  minusone = -1._dp
+  setnan   = sqrt(minusone)
 end function
 
 end module mod_constants
