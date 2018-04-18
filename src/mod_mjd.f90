@@ -91,7 +91,7 @@ end function
 !! !integers. Seconds also as integers!
 !! \date 2013-03-04
 ! ==============================================================================
-function mjd (date)
+pure function mjd (date)
   integer, intent(in) :: date (6)
   integer  :: aux (6)
   integer  :: i, k
