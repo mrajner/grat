@@ -68,10 +68,10 @@ subroutine parse_date(cmd_line_entry)
       any(cmd_line_entry%field(i_)%subfield%dataname.eq."~") &
       ) then
 
-			if (.not. allocated (model)) then
-				call print_warning(                                              &
-					"cannot use m or ~ in data specifier (-D m ) if no model file" &
-					// " with dates given", error = .true.)
+      if (.not. allocated (model)) then
+        call print_warning(                                              &
+          "cannot use m or ~ in data specifier (-D m ) if no model file" &
+          // " with dates given", error = .true.)
 
       elseif (.not.allocated(model(1)%date)) then
         call print_warning(                                         &
