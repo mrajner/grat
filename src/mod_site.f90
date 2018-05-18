@@ -212,6 +212,15 @@ subroutine parse_site(cmd_line_entry)
         site(start_index)%height = 0.
         continue
 
+      case("onsala","os")
+        ! south pole
+        call more_sites (1,start_index)
+        site(start_index)%name   = "onsala"
+        site(start_index)%lat    = 57.3964
+        site(start_index)%lon    = 11.9260
+        site(start_index)%height = 0.
+        continue
+
       case ("g","m","pl")
         ! computing grid for whole world, model boundaries, or Poland
         call parse_GMT_like_boundaries (cmd_line_entry%field(i))
