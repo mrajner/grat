@@ -257,28 +257,27 @@ subroutine print_version ( &
     program_calling,       &
     version,               &
     cdate,                 &
+    gdate,                 &
     fflags,                &
     compiler               &
     )
   character(*) :: program_calling
-  character(*), optional :: version, cdate, fflags, compiler
+  character(*), optional :: version, cdate, gdate, fflags, compiler
   character(10) :: host
 
   call hostnm(host)
 
   write(log%unit, form_header)
   write(log%unit, form_inheader) trim(program_calling)
-  write(log%unit, form_inheader) version
+  write(log%unit, form_inheader) version // " (" //gdate // ")"
   write(log%unit, form_header)
   write(log%unit, form_inheader) "compiler: "// trim(compiler)
   write(log%unit, form_inheader) 'FFLAGS = '//fflags
   write(log%unit, form_inheader) "compiled on "//trim(host)//" "//cdate
   write(log%unit, form_inheader) ''
-  write(log%unit, form_inheader) 'Copyright 2013-2017 by Marcin Rajner'
-  write(log%unit, form_inheader) 'Warsaw University of Technology'
-  write(log%unit, form_inheader) ''
-  write(log%unit, form_inheader) 'Copyright 2017-2018 by Marcin Rajner'
-  write(log%unit, form_inheader) 'Chalmers University of Technology'
+  write(log%unit, form_inheader) 'Copyright 2013-2018 by Marcin Rajner'
+  write(log%unit, form_inheader) 'Warsaw University of Technology (2003-2017)'
+  write(log%unit, form_inheader) 'Chalmers University of Technology (2017-2018)'
   write(log%unit, form_inheader) ''
   write(log%unit, form_inheader) 'License: GPLv3 or later'
   write(log%unit, form_header)

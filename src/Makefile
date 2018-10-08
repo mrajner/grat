@@ -19,7 +19,7 @@ LINKS_DIR     := ~/.local/bin
 # passing compilation info to program
 FC_INFO       := $(shell $(FC) --version | sed -n 1p )
 HOST          := $(shell hostname ; uname -r)
-DATE          := $(shell date "+%Y-%m-%d %H:%M:%S")
+DATE          := $(shell date "+%Y-%m-%d %H:%M:%S %z")
 VERSION       := $(shell git describe --match "v*")
 GIT_DATE      := $(shell git show -s --format=%ci HEAD)
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))

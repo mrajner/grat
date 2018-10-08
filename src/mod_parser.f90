@@ -379,6 +379,7 @@ subroutine intro (     &
       program_calling = program_calling, &
       version         = version,         &
       cdate           = cdate,           &
+      gdate           = gdate,           &
       fflags          = fflags ,         &
       compiler        = compiler         &
       )
