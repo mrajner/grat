@@ -13,7 +13,7 @@ set -o pipefail
 
 {
   value_check                                         \
-    -o x
+    -o /dev/null
 
   grat -Sj -F$SP -L @p -M2 -G@GN -o /dev/null -I5@DE: 90@AS :-290 @DD -q
 
