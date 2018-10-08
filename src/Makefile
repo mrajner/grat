@@ -160,18 +160,18 @@ install: $(INSTALL_FILES)
 
 uninstall: 
 	$(call colorecho,1,$@)
-	sudo rm -f $(INSTALL_FILES)
+	rm -f $(INSTALL_FILES)
 
 $(LIBDIR)/libgrat.a: libgrat.a
-	sudo cp -v $< $@
+	cp -v $< $@
 $(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat.a
 	ln -sf $< $@
 
 $(INCDIR)/%.mod: %.mod
-	sudo cp -v $< $@
+	cp -v $< $@
 
 $(BINDIR)/%: $(PROGS_DIR)/%
-	sudo cp -v $< $@
+	cp -v $< $@
 
 %.o: %.f90
 	$(call colorecho,2,$@)
