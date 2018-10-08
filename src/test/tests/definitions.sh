@@ -41,6 +41,7 @@ case ${1:-synthetic_data} in
     HP="../data/hgt.sfc.nc        @HP  :hgt"
     H="../data/hgt.sfc.nc         @H   :hgt"
     VSH="../data/shum.2012.nc     @VSH :shum"
+    EWT="../data/pres.sfc.2012.nc  @EWT:pres"
     suffix=".r"
 
     ifdatafileexist
@@ -53,6 +54,7 @@ case ${1:-synthetic_data} in
     T="../data/test_data.nc @T: t"
     GP="../data/test_data.nc @GP : gp"
     SP="../data/test_data.nc @SP : sp"
+    EWT="../data/test_data.nc @EWT : sp"
     LS="../data/test_data.nc @LS : land"
     # HP="../data/test_data.nc @HP : hgt"
     # H="../data/test_data.nc @H  : hgt"
@@ -71,6 +73,7 @@ case ${1:-synthetic_data} in
     HP="0@HP"
     H="0@H"
     VSH="0@VSH"
+    EWT="124@EWT"
     suffix=".c"
     ;;
 
