@@ -12,6 +12,10 @@ module mod_constants
   !---------------------------------------
   integer, parameter :: dp = selected_real_kind(15)
   integer, parameter :: sp = selected_real_kind(6)
+  ! use, intrinsic :: iso_fortran_env
+  ! integer, parameter :: sp = REAL32
+  ! integer, parameter :: dp = REAL64
+  ! integer, parameter :: qp = REAL128
 
   !---------------------------------------
   ! various constants

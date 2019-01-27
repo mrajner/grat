@@ -5,7 +5,7 @@ FC ?= gfortran
 all: example_aggf run 
 
 example_aggf: example_aggf.f90
-	$(FC) $< -I/usr/local/include -lgrat -lnetcdf -lnetcdff -o $@ -openmp
+	$(FC) $< -I/usr/local/include -lgrat -lnetcdf -lnetcdff -o $@
 
 /usr/local/lib/libgrat.a:
 	make -C ../src/ install
