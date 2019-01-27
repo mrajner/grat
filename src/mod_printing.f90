@@ -275,9 +275,9 @@ subroutine print_version ( &
   write(log%unit, form_inheader) 'FFLAGS = '//fflags
   write(log%unit, form_inheader) "compiled on "//trim(host)//" "//cdate
   write(log%unit, form_inheader) ''
-  write(log%unit, form_inheader) 'Copyright 2013-2018 by Marcin Rajner'
-  write(log%unit, form_inheader) 'Warsaw University of Technology (2003-2017)'
-  write(log%unit, form_inheader) 'Chalmers University of Technology (2017-2018)'
+  write(log%unit, form_inheader) 'Copyright 2013-2019 by Marcin Rajner'
+  write(log%unit, form_inheader) 'Warsaw University of Technology (2003-2017, 2019-)'
+  write(log%unit, form_inheader) 'Chalmers University of Technology (2017-2019)'
   write(log%unit, form_inheader) ''
   write(log%unit, form_inheader) 'License: GPLv3 or later'
   write(log%unit, form_header)
