@@ -1,3 +1,8 @@
+automatically select variables if unambiogus: give information in log
+
+value_check -F file.nc -L@d - should give dates even if no variable found:
+e.g. value_check -F swvl_201602_1_era5.nc -L@d gives error
+
 2016.02.17 unnecesary computation, e.g. grat -Sj,l,m -FERA@H liczy wysokość 
 oddzielnie dla każdej stacji z modelu H i przelicza wielokrotnie. 
 
