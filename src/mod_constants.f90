@@ -128,14 +128,12 @@ module mod_constants
 contains
 
 ! ==============================================================================
-!> naive method to force NaN
+!> set nan value
 !  could not work with some compilers
 ! ==============================================================================
-pure real(dp) function setnan()
-  real(dp) :: minusone
-
-  minusone = -1._dp
-  setnan   = sqrt(minusone)
+elemental real(dp) function setnan()
+  use, intrinsic :: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
+  setnan = ieee_value(setnan, ieee_quiet_nan)
 end function
 
 end module mod_constants
