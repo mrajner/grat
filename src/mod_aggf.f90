@@ -306,7 +306,7 @@ function GN_thin_layer (psi)
   real(dp), intent(in) :: psi
   real(dp) :: GN_thin_layer
 
-  GN_thin_layer = 1.627 * psi / sin ( psi / 2. )
+  GN_thin_layer = 1.627_dp * psi / sin ( psi / 2._dp )
 end function
 
 

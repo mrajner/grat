@@ -1,10 +1,7 @@
-# set fortranc compiler or export system wide $FC
+# system wide $FC
 # if not set use gfortran
 FC := gfortran
 
-#  a:
-	#  make -f tmp.makefile xo
-	#
 # TODO
 # optimalization
 OPT=-O0
