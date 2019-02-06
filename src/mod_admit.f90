@@ -1,6 +1,7 @@
 !> \file
 module mod_admit
-  use mod_constants, only: dp, setnan
+  use mod_constants, only: dp
+  use mod_utilities, only: setnan
 
   implicit none
   real(dp), parameter :: default_admitance_value = -0.3_dp
