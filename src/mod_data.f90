@@ -1068,11 +1068,12 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   integer :: j, ilevel = 1
   integer :: ilon, ilat, ilon2, ilat2, varid, status
   real(dp), dimension(4,3) :: array_aux
+  integer, dimension(4,2) :: array_aux_ind
   real(dp) :: scale_factor, add_offset
   integer, intent(in), optional :: date(6)
   logical :: success, success2, warning=.true.
 
-  if (model%ncid==0 .and. .not. model%if_constant_value) return
+  if (model%ncid==0 .and. .not.model%if_constant_value) return
 
   val = setnan()
 
@@ -1126,43 +1127,33 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   ilat = minloc(abs(model%lat-lat),1)
   ilon = minloc(abs(model%lon-lon),1)
 
+  ! if linear interpolation was selected find auxikary lat and lon
+  if (present(method) .and. method .eq."l") then
+    ilon2 = minloc(abs(model%lon-lon), 1, model%lon/=model%lon(ilon))
+    ilat2 = minloc(abs(model%lat-lat), 1, model%lat/=model%lat(ilat))
+
+    if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
+      error stop "rare exception!"
+    endif
+
+  endif
+
   ! do not look into data array - get value directly
   if (model%huge) then
 
-    call nc_error (nf90_inq_varid (model%ncid, model%names(1), varid))
-
-    if (if_variable_use_dimension (model, 1, 4)) then
-      call nc_error (                             &
-        nf90_get_var(                             &
-        model%ncid,                               &
-        varid,                                    &
-        val,                                      &
-        start = [                                 &
-        ilon,                                     &
-        ilat,                                     &
-        get_level_index(model, ilevel, success2), &
-        get_time_index(model,date=date)           &
-        ]),                                       &
-        success = success)
-      if(.not.success2) val = setnan()
+    if (present(method) .and. method .eq."l") then
+      array_aux_ind(1, :) = [ ilon,  ilat  ]
+      array_aux_ind(2, :) = [ ilon,  ilat2 ]
+      array_aux_ind(3, :) = [ ilon2, ilat  ]
+      array_aux_ind(4, :) = [ ilon2, ilat2 ]
+      do j = 1,4
+        array_aux(j, 1:2) = [ model%lon(array_aux_ind(j,1)), model%lat(array_aux_ind(j,2))]
+        array_aux(j, 3)=  getrawsinglevaluebyindexfrommodel(model,array_aux_ind(j,2),array_aux_ind(j,1),ilevel=ilevel,date=date)
+      enddo
+      val = bilinear(lon, lat, array_aux)
 
     else
-      call nc_error (nf90_get_var(       &
-        model%ncid,                      &
-        varid,                           &
-        val,                             &
-        start = [                        &
-        ilon,                            &
-        ilat,                            &
-        get_time_index(model, date=date) &
-        ]),                              &
-        success = success)
-    endif
-
-    if(.not. success) then
-      call print_warning ("skipping get_value")
-      val = setnan()
-      return
+      val = getrawsinglevaluebyindexfrommodel(model,ilat,ilon,ilevel=ilevel,date=date)
     endif
 
     call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset, status)
@@ -1179,29 +1170,23 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   endif
 
   if (present(method) .and. method .eq."l") then
-    ilon2 = minloc(abs(model%lon-lon), 1, model%lon/=model%lon(ilon))
-    ilat2 = minloc(abs(model%lat-lat), 1, model%lat/=model%lat(ilat))
+    array_aux (1, :) = [ model%lon(ilon),  model%lat(ilat),  model%data(ilon,  ilat,  ilevel) ]
+    array_aux (2, :) = [ model%lon(ilon),  model%lat(ilat2), model%data(ilon,  ilat2, ilevel) ]
+    array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat),  model%data(ilon2, ilat,  ilevel) ]
+    array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
 
-    if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
-    else
-      array_aux (1, :) = [ model%lon(ilon),  model%lat(ilat),  model%data(ilon,  ilat,  ilevel) ]
-      array_aux (2, :) = [ model%lon(ilon),  model%lat(ilat2), model%data(ilon,  ilat2, ilevel) ]
-      array_aux (3, :) = [ model%lon(ilon2), model%lat(ilat),  model%data(ilon2, ilat,  ilevel) ]
-      array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
-
-      if (ind%moreverbose%l.ne.0) then
-        write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")'), &
-          (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
-        write(moreverbose(ind%moreverbose%l)%unit, '(">")')
-      endif
-
-      val = bilinear ( lon, lat, array_aux )
-      return
-
+    if (ind%moreverbose%l.ne.0) then
+      write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")'), &
+        (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
+      write(moreverbose(ind%moreverbose%l)%unit, '(">")')
     endif
+
+    val = bilinear(lon, lat, array_aux)
+    return
+
   endif
 
-  ! if the last element is the neares then check if the firt is not nearer
+  ! if the last element is the nearest then check if the first is not nearer
   ! i.e. search in 0-357.5E for 359E
   if (ilon .eq. size (model%lon) ) then
     if (abs(model%lon(ilon)-lon).gt.abs(model%lon(1)+360.-lon)) ilon = 1
@@ -1217,6 +1202,52 @@ subroutine get_value(model, lat, lon, val, level, method, date)
 
   if (.not.success2) val = setnan()
 end subroutine
+
+real(dp) function getrawsinglevaluebyindexfrommodel(model,ilat,ilon, ilevel, date)
+  use netcdf, only: nf90_inq_varid, nf90_get_var
+  use mod_printing, only: print_warning
+  type(file), intent (in) :: model
+  integer, intent(in) :: ilat, ilon
+  integer, optional, intent(in) :: ilevel
+  integer, intent(in), optional :: date(6)
+  integer :: varid
+  logical :: success, success2
+
+  call nc_error(nf90_inq_varid(model%ncid, model%names(1), varid))
+  if (if_variable_use_dimension (model, 1, 4)) then
+    call nc_error (                             &
+      nf90_get_var(                             &
+      model%ncid,                               &
+      varid,                                    &
+      getrawsinglevaluebyindexfrommodel,        &
+      start = [                                 &
+      ilon,                                     &
+      ilat,                                     &
+      get_level_index(model, ilevel, success2), &
+      get_time_index(model,date=date)           &
+      ]),                                       &
+      success = success)
+    if(.not.success2) getrawsinglevaluebyindexfrommodel = setnan()
+
+  else
+    call nc_error (nf90_get_var(         &
+      model%ncid,                        &
+      varid,                             &
+      getrawsinglevaluebyindexfrommodel, &
+      start = [                          &
+      ilon,                              &
+      ilat,                              &
+      get_time_index(model, date=date)   &
+      ]),                                &
+      success = success)
+  endif
+
+  if(.not. success) then
+    call print_warning("skipping getrawsinglevaluebyindexfrommodel")
+    getrawsinglevaluebyindexfrommodel = setnan()
+    return
+  endif
+endfunction
 
 ! =============================================================================
 !> Attach full dataname by abbreviation
