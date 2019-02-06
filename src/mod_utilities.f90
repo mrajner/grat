@@ -769,4 +769,13 @@ function length_pl(string)
   length_pl = length_pl + len_trim(string)
 end function
 
+! ==============================================================================
+!> set nan value
+!  could not work with some compilers
+! ==============================================================================
+elemental real(dp) function setnan()
+  use, intrinsic :: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
+  setnan = ieee_value(setnan, ieee_quiet_nan)
+end function
+
 end module
