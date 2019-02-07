@@ -1119,7 +1119,10 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     endif
 
     val = setnan()
-    return
+
+    if (.not.(size(model%lon) == 1 .and. size(model%lat) == 1)) then
+      return
+    endif
 
   endif
 
