@@ -1134,6 +1134,11 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     ilon2 = minloc(abs(model%lon-lon), 1, model%lon/=model%lon(ilon))
     ilat2 = minloc(abs(model%lat-lat), 1, model%lat/=model%lat(ilat))
 
+    if (ilon2 == 0 .or. ilat2 == 0) then
+      val = setnan()
+      return
+    endif
+
     if (lon.gt.model%lon(ilon2).and. lon.gt.model%lon(ilon)) then
       error stop "rare exception!"
     endif
