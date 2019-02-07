@@ -37,7 +37,7 @@ endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
-	FFLAGS               := $(OPT)  #-Wall # -pedantic
+	FFLAGS               := $(OPT)  # -Wall -pedantic -fcheck=all -fbounds-check -fcheck=bounds
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
 endif
