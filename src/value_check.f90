@@ -163,8 +163,10 @@ program value_check
         endif
 
         ! if this point should not be used (polygon) leave as zero
-        if (allocated(polygon).and.polygon(1)%if) then
-          call chkgon(site(i)%lon, site(i)%lat, polygon(1), iok)
+        if (allocated(polygon)) then
+          if(polygon(1)%if) then
+            call chkgon(site(i)%lon, site(i)%lat, polygon(1), iok)
+          endif
         else
           iok = 1
         endif
