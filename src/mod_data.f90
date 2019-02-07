@@ -1070,7 +1070,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   integer, dimension(4,2) :: array_aux_ind
   real(dp) :: scale_factor, add_offset
   integer, intent(in), optional :: date(6)
-  logical :: success, success2, warning=.true.
+  logical :: success, success2, first_warning=.false.
 
   if (model%ncid==0 .and. .not.model%if_constant_value) return
 
@@ -1102,7 +1102,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
     ) then
 
-    if (warning) then
+    if (.not.first_warning) then
 
       write(error_unit,                                                         &
         '(/,"lon, lat", 2f10.3,/, "latrange", 2f10.3,/, "lonrange", 2f10.3,/)') &
@@ -1114,7 +1114,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
         // basename(model%name)                           &
         )
 
-      warning = .false.
+      first_warning = .true.
 
     endif
 
