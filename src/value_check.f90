@@ -4,7 +4,7 @@
 !! \author M. Rajner
 ! =============================================================================
 program value_check
-  use mod_constants, only: dp, sp, R_air, earth, setnan
+  use mod_constants, only: dp, sp, R_air, earth
   use mod_cmdline,   only: info, quiet_step, ind, dryrun, moreverbose, quiet
   use mod_parser
   use mod_data
@@ -12,7 +12,7 @@ program value_check
   use mod_site
   use mod_polygon,    only: read_polygon, chkgon, polygon
   use mod_atmosphere, only: standard_pressure, standard_temperature, geop2geom
-  use mod_utilities,  only: d2r
+  use mod_utilities,  only: d2r, setnan
 
   implicit none
   real(dp) , allocatable , dimension(:) :: val

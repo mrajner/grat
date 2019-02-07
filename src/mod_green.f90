@@ -477,7 +477,7 @@ subroutine convolve(site, date, results)
   use mod_constants
   use mod_site, only : site_info, local_pressure_distance
   use mod_cmdline
-  use mod_utilities, only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace
+  use mod_utilities, only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace, setnan
   use mod_spherical
   use mod_data
   use mod_polygon

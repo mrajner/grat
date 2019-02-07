@@ -10,7 +10,8 @@
 !! \date 2013-03-04
 ! =============================================================================
 module mod_data
-  use mod_constants, only: dp, setnan
+  use mod_constants, only: dp
+  use mod_utilities, only: setnan
 
   implicit none
 

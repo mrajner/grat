@@ -115,6 +115,6 @@ program createdata
   call nc_error (nf90_put_var(ncid, gpvarid, gp))
 
   call nc_error (nf90_close(ncid=ncid))
-  call system("ncdump -h data/test_data.nc ")
+  call system("ncdump -hs data/test_data.nc ")
 
 end program

@@ -5,17 +5,15 @@
 ! ==============================================================================
 module mod_constants
 
+  use, intrinsic :: iso_fortran_env
   implicit none
 
   !---------------------------------------
   ! precision parameter
   !---------------------------------------
-  integer, parameter :: dp = selected_real_kind(15)
-  integer, parameter :: sp = selected_real_kind(6)
-  ! use, intrinsic :: iso_fortran_env
-  ! integer, parameter :: sp = REAL32
-  ! integer, parameter :: dp = REAL64
-  ! integer, parameter :: qp = REAL128
+  integer, parameter :: sp = REAL32
+  integer, parameter :: dp = REAL64
+  integer, parameter :: qp = REAL128
 
   !---------------------------------------
   ! various constants
@@ -126,14 +124,5 @@ module mod_constants
     )
 
 contains
-
-! ==============================================================================
-!> set nan value
-!  could not work with some compilers
-! ==============================================================================
-elemental real(dp) function setnan()
-  use, intrinsic :: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
-  setnan = ieee_value(setnan, ieee_quiet_nan)
-end function
 
 end module mod_constants
