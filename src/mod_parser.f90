@@ -45,7 +45,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
     endif
 
   case ('-r')
-    do i=1, size(cmd_line_entry%field)
+    do i = 1, size(cmd_line_entry%field)
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."t" )) result_total     = .true.
       if (any(cmd_line_entry%field(i)%subfield(:)%name.eq."T" )) then
         result_total_all = .true.
@@ -190,28 +190,29 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
     endif
 
   case ('-o')
-    output%if=.true.
-    output%name=cmd_line_entry%field(1)%subfield(1)%name
+    output%if = .true.
+    output%name = cmd_line_entry%field(1)%subfield(1)%name
 
     if(cmd_line_entry%field(1)%subfield(1)%dataname.ne."") then
       output%name=trim(cmd_line_entry%field(1)%subfield(1)%name) &
-        // "@"//trim(cmd_line_entry%field(1)%subfield(1)%dataname)
+        // "@" // trim(cmd_line_entry%field(1)%subfield(1)%dataname)
     endif
 
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."tee")) then
-      output%tee=.true.
+      output%tee = .true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."nc")) then
-      output%noclobber=.true.
+      output%noclobber = .true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."c")) then
-      output%noclobber=.false.
+      output%noclobber = .false.
     endif
+
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."free")) then
-      output%form="f13.3"
+      output%form = "f13.3"
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."gp2h")) then
-      output%gp2h=.true.
+      output%gp2h = .true.
     endif
     if (any(cmd_line_entry%field(1)%subfield(2:size(cmd_line_entry%field(1)%subfield))%name.eq."height")) then
       output%height=.true.
@@ -367,6 +368,11 @@ subroutine intro (     &
 
     if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vv") then
       write(output_unit,'(a)') __GRAT_VERSION__
+      call exit
+    endif
+
+    if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vg") then
+      write(output_unit,'(a)'), __GDATE__
       call exit
     endif
 
@@ -620,6 +626,11 @@ subroutine check_arguments (program_calling)
   if (.not.any(cmd_line%switch.eq.'-S')) then
     call print_warning("-S not given")
   endif
+
+  if ((ind%green%ghn.ne.0 .or. ind%green%ghe.ne.0) .and. ind%green%gr.eq.0) then
+    call print_warning("using @GHN or @GHE without @GR in green specification can cause seqfault")
+  endif
+
 end subroutine
 
 ! =============================================================================
@@ -866,24 +877,24 @@ subroutine info_defaults(info)
   use mod_cmdline, only: info_info
   type(info_info),intent(inout) :: info
 
-  info%interpolation="n"
+  info%interpolation   = "n"
 
-  info%distance%start=0.
-  info%distance%stop=180.
-  info%distance%denser=1
-  info%distance%step=0
+  info%distance%start  = 0.
+  info%distance%stop   = 180.
+  info%distance%denser = 1
+  info%distance%step   = 0
 
-  info%azimuth%start=0.
-  info%azimuth%stop=360.
-  info%azimuth%step=0
-  info%azimuth%denser=1
+  info%azimuth%start   = 0.
+  info%azimuth%stop    = 360.
+  info%azimuth%step    = 0
+  info%azimuth%denser  = 1
 
-  info%height%start=0.
-  info%height%stop=60000.
-  info%height%step=25.
-  info%height%denser=1
+  info%height%start    = 0.
+  info%height%stop     = 60000.
+  info%height%step     = 25.
+  info%height%denser   = 1
 
-  info%distance%stop_3d=10.
+  info%distance%stop_3d = 10.
 
 end subroutine
 
@@ -897,14 +908,14 @@ subroutine print_help (program_calling, accepted_switches)
   character(255)::syntax
   logical:: if_print_line = .false., if_optional=.true.
 
-  if_print_line=.false.
+  if_print_line = .false.
 
   ! TODO make appropriate man documentation using
   ! include for common switches
 
   ! change this path according to your settings
   open(                                         &
-    newunit=help_unit,                          &
+    newunit = help_unit,                          &
     file="/home/mrajner/src/grat/dat/help.hlp", &
     action="read",                              &
     status="old"                                &
@@ -1117,6 +1128,8 @@ subroutine get_index()
       ind%green%gndz  = i
     case ("GNdz2")
       ind%green%gndz2 = i
+    case default
+      call print_warning("not recoginzed green type: "//green(i)%dataname)
     endselect
   enddo
 
@@ -1137,7 +1150,7 @@ end subroutine
 ! or use long version
 ! =============================================================================
 subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_calling)
-  use mod_cmdline, only: cmd_line_arg
+  use mod_cmdline,   only: cmd_line_arg
   use mod_utilities, only: version_split
 
   type(cmd_line_arg) :: cmd_line_entry

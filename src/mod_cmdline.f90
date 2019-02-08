@@ -114,9 +114,9 @@ module mod_cmdline
       gr          = 0,  & ! green radial      - with EWT in mm
       ghn         = 0,  & ! green horizontal  - with EWT in mm
       ghe         = 0,  & ! green horizontal  - with EWT in mm
-      gg          = 0,  & ! green gravimetric - with SP  in Pa
-      ! (like elastic but uses green not normalized according to Merriam)
-    gndt        = 0,  & ! first derivative respect to temperature
+      gg          = 0,  & ! green gravimetric - with SP  in Pa 
+                          ! (like elastic but uses green not normalized according to Merriam)
+      gndt        = 0,  & ! first derivative respect to temperature
       gndh        = 0,  & ! first derivative respect to station height
       gndz        = 0,  & ! first derivative respect to column height
       gndz2       = 0,  & ! second derivative respect to column height

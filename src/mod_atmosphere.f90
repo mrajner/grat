@@ -137,12 +137,13 @@ function standard_pressure (  &
         **(earth%gravity%mean /R_air/alpha)
 
     case default
-      call print_warning ("standard pressure: method not known", error=.true.)
+      call print_warning("standard pressure: method not known", error=.true.)
 
     endselect
 
   else
-    call print_warning("standard_pressure: set method explicitly",error=.true.)
+    call print_warning("standard_pressure: set method explicitly", error=.true.)
+
   endif
 
   if (present(nan_as_zero).and.nan_as_zero) then

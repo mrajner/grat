@@ -79,7 +79,6 @@ program createdata
   call nc_error (nf90_put_var(ncid, levelvarid, levels ))
   call nc_error (nf90_put_var(ncid, timevarid, times ))
 
-
   do ilat  = 1 , nlat
     do ilon  = 1 , nlon
 
