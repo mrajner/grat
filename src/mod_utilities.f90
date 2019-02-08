@@ -785,48 +785,4 @@ elemental real(dp) function setnan()
   setnan = ieee_value(setnan, ieee_quiet_nan)
 end function
 
-subroutine colored(color)
-  character(*), intent(in) :: color
-  character(4) :: code
-
-  select case(color)
-  case('dark grey')
-    code =  "[90m"
-  case('peach')
-    code =  "[91m"
-  case('light green')
-    code =  "[92m"
-  case('light yellow')
-    code =  "[93m"
-  case('light blue')
-    code =  "[94m"
-  case('pink')
-    code =  "[95m"
-  case('light aqua')
-    code =  "[96m"
-  case('pearl white')
-    code =  "[97m"
-  case('black')
-    code =  "[30m"
-  case('red')
-    code =  "[31m"
-  case('green')
-    code =  "[32m"
-  case('yellow')
-    code =  "[33m"
-  case('blue')
-    code =  "[34m"
-  case('purple')
-    code =  "[35m"
-  case('aqua')
-    code =  "[36m"
-  case("reset")
-    code =  "[0m"
-  case default
-    write (*,*)  "color: "//color//" not known"
-    return
-  end select
-  write(*,'(a)', advance='no'), trim(achar(27)//code)
-
-end subroutine 
 end module
