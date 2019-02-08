@@ -11,7 +11,7 @@ program unit_tests
 
   print*, "count_separator", count_separator("dfdfsf ssf       dfdf,  fsdf,f,dsf,sdfsdfsdfs,,sdffsdf"," ")
   print*, "count_separator", count_separator("dfdfsf ssf       dfdf,  fsdf,f,dsf,sdfsdfsdfs,,sdffsdf"," ", &
-		consecutive_as_one=.true.)
+  consecutive_as_one=.true.)
 
   print*, "nt", ntokens("dfdfsf ssf       dfdf, fsdf,f,dsf,sdfsdfsdfs,,sdffsd f "," ")
   print*, "nt", ntokens("dfdfsf ssf       dfdf,  fsdf,f,dsf,sdfsdfsdfs,,sdffsdf"," ")

@@ -9,6 +9,8 @@ set -e
 set -o nounset 
 set -o pipefail
 
+
+counter=0
 . definitions.sh
 
 {
