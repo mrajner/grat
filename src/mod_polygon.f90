@@ -46,7 +46,7 @@ subroutine parse_polygon (cmd_line_entry)
   use mod_cmdline
   use mod_utilities, only: file_exists
 
-  type(cmd_line_arg),intent(in):: cmd_line_entry
+  type(cmd_line_arg), intent(in) :: cmd_line_entry
   integer :: i
 
   if (allocated(polygon)) then
@@ -241,9 +241,9 @@ end subroutine
 !! cords is x, y (lon, lat) 2 dimensional array
 ! ==============================================================================
 integer function if_inpoly(x,y,coords)
-  use mod_constants, only: dp, dp
-  real(dp) ,allocatable , dimension (:,:) , intent (in) :: coords
-  real(dp) , intent (in) :: x , y
+  use mod_constants, only: dp
+  real(dp), allocatable, dimension (:,:), intent (in) :: coords
+  real(dp), intent (in) :: x , y
   integer :: i , isc
   ! Returns 1 if point at (x,y) is inside polygon whose nv vertices
   ! Returns 0 if point is outside
@@ -264,11 +264,11 @@ integer function if_inpoly(x,y,coords)
     if_inpoly = if_inpoly + isc
   enddo
   ! check final segment
-  isc = ncross( &
-    coords (size(coords(:,1)) , 1 ) - x , &
-    coords (size(coords(:,2)) , 2 ) - y , &
-    coords (1 , 1 ) - x , &
-    coords (1 , 2 ) - y )
+  isc = ncross(                       &
+    coords(size(coords(:,1)), 1) - x, &
+    coords(size(coords(:,2)), 2) - y, &
+    coords(1, 1) - x,                 &
+    coords(1, 2) - y)
   if(isc.eq.4) then
     if_inpoly = 2
     return

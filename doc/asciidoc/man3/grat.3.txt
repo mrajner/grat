@@ -1,7 +1,7 @@
 grat(3)
 =========
-include::info.dat[]
-:Date: {My date out}
+include::../info.dat[]
+:Date: {date}
 :Author: Marcin Rajner
 
 NAME
@@ -13,8 +13,6 @@ SYNOPSIS
 --------
 {grat} <'operation'> ['options']
 {date} {revision}
-
-{my date out}
 
 {myname}
 

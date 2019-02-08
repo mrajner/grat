@@ -442,7 +442,7 @@ end subroutine
 function variable_modifier (val, modifier, verbose, list_only)
   use mod_atmosphere, only: geop2geom
   use mod_constants,  only: earth
-  use mod_utilities,  only: ntokens
+  use mod_utilities,  only: ntokens, mmwater2pascal
   use mod_printing,   only: print_warning, form, log, output
 
   real(dp) :: variable_modifier
@@ -455,7 +455,7 @@ function variable_modifier (val, modifier, verbose, list_only)
   logical, optional, intent(in) :: verbose, list_only
 
   variable_modifier = val
-  modifier_=modifier
+  modifier_         = modifier
   do i = 1, ntokens(modifier_,"@")
     keyval=''
 
@@ -488,11 +488,11 @@ function variable_modifier (val, modifier, verbose, list_only)
 
     case ("nan")
       read(keyval,*) numerickeyval
-      if (isnan(variable_modifier)) variable_modifier=numerickeyval
+      if (isnan(variable_modifier)) variable_modifier = numerickeyval
 
     case ("scale")
       read(keyval,*) numerickeyval
-      variable_modifier=numerickeyval*variable_modifier
+      variable_modifier = numerickeyval*variable_modifier
 
     case ("invscale")
       read(keyval,*) numerickeyval
@@ -501,6 +501,13 @@ function variable_modifier (val, modifier, verbose, list_only)
     case ("offset")
       read(keyval,*) numerickeyval
       variable_modifier=numerickeyval+variable_modifier
+
+    case ("mmwater2pascal")
+      variable_modifier= mmwater2pascal(variable_modifier)
+
+    case ("pascal2mmwater")
+      variable_modifier= mmwater2pascal(variable_modifier, &
+        inverted = .true.)
 
     case default
       call print_warning ("variable modifier not found " // key, error=.true.)

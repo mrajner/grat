@@ -244,8 +244,8 @@ end function
 subroutine skip_header (unit, comment_char)
   integer, intent (in) :: unit
   character (len = 1), optional :: comment_char
-  character (len = 60 ) :: dummy
-  character (len = 1)  :: comment_char_
+  character (len = 256) :: dummy
+  character (len = 1)   :: comment_char_
   integer :: io_stat
 
   if (present ( comment_char) ) then
@@ -261,7 +261,13 @@ subroutine skip_header (unit, comment_char)
     return
   endif
 
-  do while (dummy(1:1).eq.comment_char_)
+  do while (                                         &
+    dummy(1:1).eq.comment_char_                      &
+    .or. (                                           &
+    scan(dummy, comment_char_).gt.0                  &
+    .and. dummy(1:scan(dummy,comment_char_)-1) == '' &
+    )                                                &
+    )
 
     read (unit, *, iostat = io_stat) dummy
 
@@ -498,18 +504,19 @@ end function
 !>  p = rho h g
 ! converts mm of EWT to Pascal
 ! inverted: converts Pascal to mm EWT
+! magic number 1e3 is conversion factor from m to mm
 ! ==============================================================================
-function mmwater2pascal(mmwater, inverted)
+pure function mmwater2pascal(mmwater, inverted)
   use mod_constants, only: density, earth
 
-  real(dp) :: mmwater2pascal
-  real(dp), intent(in) :: mmwater
+  real(dp)                      :: mmwater2pascal
+  real(dp), intent(in)          :: mmwater
   logical, optional, intent(in) :: inverted
 
   if (present(inverted).and.inverted) then
-    mmwater2pascal= mmwater * 1000 / (earth%gravity%mean * density%water)
+    mmwater2pascal = mmwater * 1e3 / (earth%gravity%mean * density%water)
   else
-    mmwater2pascal=density%water * mmwater /1000 * earth%gravity%mean
+    mmwater2pascal = density%water * mmwater / 1e3 * earth%gravity%mean
   endif
 end function
 

@@ -114,9 +114,9 @@ program grat
     if (method(1)) then
       do i=1, max(1,ubound(admitance%value,1))
         if (i.gt.1) then
-          write (output%unit,'(a11,"_",i1)', advance='no'), "G1D", i
+          write (output%unit,'(a11,"_",i1)', advance='no') "G1D", i
         else
-          write (output%unit,'(a13)', advance='no'), "G1D"
+          write (output%unit,'(a13)', advance='no') "G1D"
         endif
 
       enddo
@@ -128,9 +128,9 @@ program grat
         do i = 1, size(green)
           if (green(i)%dataname.eq."GE") then
             if (inverted_barometer) then
-              write (output%unit,'(a13$)'), trim(green(i)%dataname)//"_IB"
+              write (output%unit,'(a13$)') trim(green(i)%dataname)//"_IB"
             else
-              write (output%unit,'(a13$)'), trim(green(i)%dataname)//"_NIB"
+              write (output%unit,'(a13$)') trim(green(i)%dataname)//"_NIB"
             endif
           else
             write (output%unit,'(a13$)') trim(green(i)%dataname)
@@ -148,10 +148,10 @@ program grat
             all([inverted_barometer, non_inverted_barometer]) &
             .and. result_total_all                            &
             ) then
-            write (output%unit,'(a13)',advance='no'), "G2D_t_IB"
-            write (output%unit,'(a13)',advance='no'), "G2D_t_NIB"
+            write (output%unit,'(a13)',advance='no') "G2D_t_IB"
+            write (output%unit,'(a13)',advance='no') "G2D_t_NIB"
           else
-            write (output%unit,'(a13)',advance='no'), "G2D_t"
+            write (output%unit,'(a13)',advance='no') "G2D_t"
           endif
         endif
 
@@ -161,11 +161,11 @@ program grat
             .and. result_total_all                            &
             ) then
 
-            write (output%unit,'(a13)',advance='no'), "G3D_t_IB"
-            write (output%unit,'(a13)',advance='no'), "G3D_t_NIB"
+            write (output%unit,'(a13)',advance='no') "G3D_t_IB"
+            write (output%unit,'(a13)',advance='no') "G3D_t_NIB"
 
           else
-            write (output%unit,'(a13)',advance='no'), "G3D_t"
+            write (output%unit,'(a13)',advance='no') "G3D_t"
 
           endif
         endif
@@ -217,7 +217,7 @@ program grat
       if(model(i)%if) then
 
         select case (model(i)%dataname)
-        case ("SP", "T", "GP", "VT", "VSH")
+        case ("SP", "T", "GP", "VT", "VSH", "EWT")
           if (                                                   &
             model(i)%autoload                                    &
             .and..not.                                           &
@@ -228,10 +228,9 @@ program grat
             )                                                    &
             then
 
-            if (                                                      &
-              (idate.eq.1                                             &
+            if (idate.eq.1                                            &
               .or. .not. date(idate)%date(1).eq.date(idate-1)%date(1) &
-              )) then
+              ) then
 
               call model_aliases(model(i), year=date(idate)%date(1))
             endif
@@ -303,7 +302,7 @@ program grat
           date(idate)%mjd, date(idate)%date
       endif
 
-      write (output%unit, '(a8,2(x,f9.4),x,f9.3)' , advance='no'), &
+      write (output%unit, '(a8,2(x,f9.4),x,f9.3)' , advance='no') &
         trim(site(isite)%name),                                    &
         site(isite)%lat,                                           &
         site(isite)%lon,                                           &
@@ -312,7 +311,7 @@ program grat
       if (method(1)) then
         do j=1, max(1,ubound(admitance%value(:),1))
 
-          write (output%unit, "("// output%form // ')' , advance = "no"), &
+          write (output%unit, "("// output%form // ')' , advance = "no") &
             admit(                                                         &
             site(isite),                                                   &
             date   = date(idate)%date,                                     &

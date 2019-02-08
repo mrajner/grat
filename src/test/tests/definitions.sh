@@ -7,7 +7,7 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-[[ -n ${SP:-} ]] && 
+[[ -n ${SP-} ]] && 
 {
   echo not sourcing definitions.sh...
 } || {
@@ -75,6 +75,7 @@ case ${1:-synthetic_data} in
     VSH="0@VSH"
     EWT="124@EWT"
     suffix=".c"
+    EWT="1000@EWT"
     ;;
 
   *)
