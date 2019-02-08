@@ -7,7 +7,7 @@ A2X := a2x
 all: info.dat $(MANPAGES) $(HTMLPAGES)
 
 info.dat:
-	echo ":Revision:" $$(git describe --tags ) > $@
+	echo ":Revision:" $$(git describe ) > $@
 	echo ":My date out:" $$(grat --date) >> $@
 	echo ":Date:" $$(grat --date) >> $@
 	echo ":grat:" $$(grat --date) >> $@

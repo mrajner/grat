@@ -8,6 +8,7 @@ module mod_green
   !----------------------------------------------------
   type green_functions
     character (len=255) :: name
+    character (len=255) :: filename
     character (len=25)  :: dataname
     integer, dimension(2) :: column = [-1, -1]
     character(10), dimension(2) :: columndataname
@@ -164,7 +165,7 @@ subroutine read_green (green, print)
 
   select case (green%name)
   case ("merriam", "compute")
-    green%name="/home/mrajner/src/grat/dat/merriam_green.dat"
+    green%filename="/home/mrajner/src/grat/dat/merriam_green.dat"
 
     select case (green%dataname)
 
@@ -191,8 +192,8 @@ subroutine read_green (green, print)
         )
     endselect
 
-  case ("huang", "/home/mrajner/src/grat/dat/huang_green.dat")
-    green%name="/home/mrajner/src/grat/dat/huang_green.dat"
+  case ("huang")
+    green%filename="/home/mrajner/src/grat/dat/huang_green.dat"
     select case (green%dataname)
     case("GN")
       green%column=[1, 2]
@@ -208,8 +209,8 @@ subroutine read_green (green, print)
         // trim(green%name), error=.true.)
     endselect
 
-  case ("rajner", "/home/mrajner/src/grat/dat/rajner_green.dat")
-    green%name="/home/mrajner/src/grat/dat/rajner_green.dat"
+  case ("rajner")
+    green%filename = "/home/mrajner/src/grat/dat/rajner_green.dat"
     select case (green%dataname)
     case("GN")
       green%column=[1, 2]
@@ -226,6 +227,8 @@ subroutine read_green (green, print)
       call print_warning (green%dataname //"not found in " // green%name, &
         error=.true.)
     endselect
+  case default
+    green%filename = green%name
   endselect
 
   ! TODO
@@ -237,7 +240,7 @@ subroutine read_green (green, print)
   if(green%column(1).ne.0 .and. green%column(2).ne.0) then
     allocate(tmp(max(green%column(1), green%column(2))))
     lines = 0
-    open (newunit =fileunit, file=green%name, action="read", status="old")
+    open(newunit =fileunit, file=green%filename, action="read", status="old")
 
     do
       call skip_header (fileunit)
