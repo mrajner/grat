@@ -4,7 +4,7 @@ FC := gfortran
 
 # TODO
 # optimalization
-OPT=-O2
+OPT=-O0
 
 # user definitions
 # you may want to change this settings

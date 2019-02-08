@@ -1,6 +1,8 @@
 program test2
   use mod_spherical
   use mod_utilities, only: d2r
+
+  real(dp) :: dtot, dtot2
   
   print * ,                     &
     spher_area(                 &
@@ -19,8 +21,8 @@ program test2
     ) - 4 * pi == 0.
 
 
-  dtot  = 0
-  dtot2  = 0
+  dtot  = 0.0_dp
+  dtot2  = 0.0_dp
   idlat = 60
   idlon = 120
   idlat = 1
@@ -49,7 +51,6 @@ program test2
     enddo
   enddo
 
-  print '(f20.12)', dtot  - 4*pi , dtot2 - 4*pi
-
+  print '(f20.12)', dtot  - 4*pi , dtot2 - 4._dp*pi
 
 end program

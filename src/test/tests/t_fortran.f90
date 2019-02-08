@@ -4,7 +4,7 @@ program testing_fortran_procedures
   use mod_aggf
 
   integer :: iunit
-  character(30) :: filename, my_method
+  character(30) :: filename
 
   print *, "output of: ./test"
 
@@ -21,10 +21,10 @@ program testing_fortran_procedures
   call test_standard_atmosphere("berg")
   call test_standard_atmosphere("simple")
 
-  write (*,10), aggf(psi=0.1_dp, method="simple", dz=2._dp)
+  write (*,10) aggf(psi=0.1_dp, method="simple", dz=2._dp)
 
-  write(*,10), aggf(psi = 1e-6_dp, method = "full")
-  write(*,10), aggf(psi = 1e-6_dp, method = "standard")
+  write(*,10) aggf(psi = 1e-6_dp, method = "full")
+  write(*,10) aggf(psi = 1e-6_dp, method = "standard")
 
 
 10 FORMAT (f14.7)

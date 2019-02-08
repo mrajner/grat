@@ -1,16 +1,18 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.2-17-ga1f0b4a #
+#                                                 v1.3-330-g43f9b28 () #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                                compiled on lidka 2015-05-15 14:01:52 #
+#                       compiled on chalmers 2019-02-08 14:16:31 +0100 #
 #                                                                      #
-#                                 Copyright 2013-2015 by Marcin Rajner #
-#                                      Warsaw University of Technology #
+#                                 Copyright 2013-2019 by Marcin Rajner #
+#                   Warsaw University of Technology (2003-2017, 2019-) #
+#                        Chalmers University of Technology (2017-2019) #
+#                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-05-15 14:01:59 (+02h UTC)
+Program started: 2019-02-08 14:22:55 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F ../data/test_data.nc @SP : sp -M2 -G@GN -Sj, r -I-1000@DD : 100@
@@ -30,7 +32,7 @@ Command parsing:
     method was set: 2D 
   -G { -G@GN }
     @GN
-      merriam_green.dat GN columns: 1 2 lines: 85
+      merriam GN columns: 1 2 lines: 85
   -S { -Sj,r }
     j
     r
@@ -78,20 +80,22 @@ Command parsing:
   rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -948.523E+09  102.06E+03
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.0s (proc time:   0.0 |% 97.8)
+Execution time:   0.0s (proc time:   0.0 |%  Inf)
 ########################################################################
 #                                                                 grat #
-#                                                     v1.2-17-ga1f0b4a #
+#                                                 v1.3-330-g43f9b28 () #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                                compiled on lidka 2015-05-15 14:01:52 #
+#                       compiled on chalmers 2019-02-08 14:16:31 +0100 #
 #                                                                      #
-#                                 Copyright 2013-2015 by Marcin Rajner #
-#                                      Warsaw University of Technology #
+#                                 Copyright 2013-2019 by Marcin Rajner #
+#                   Warsaw University of Technology (2003-2017, 2019-) #
+#                        Chalmers University of Technology (2017-2019) #
+#                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-05-15 14:01:59 (+02h UTC)
+Program started: 2019-02-08 14:22:55 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -F ../data/test_data.nc @SP : sp -M2 -G@GN -Sj, r -I-1000@DD : 100@
@@ -111,7 +115,7 @@ Command parsing:
     method was set: 2D 
   -G { -G@GN }
     @GN
-      merriam_green.dat GN columns: 1 2 lines: 85
+      merriam GN columns: 1 2 lines: 85
   -S { -Sj,r }
     j
     r
@@ -147,4 +151,4 @@ Command parsing:
   rysy_a   49.179E+00   20.088E+00  135.000E+00  200.000E+00  -75.805E+00  299.620E+00   97.952E+12  425.054E+12 -948.523E+09
  station npoints        area     area/R2 t_area_used
   rysy_a       9  425.05E+12   10.47E+00    0.00E+00
-Execution time:   0.0s (proc time:   0.0 |% 99.6)
+Execution time:   0.0s (proc time:   0.0 |%  Inf)

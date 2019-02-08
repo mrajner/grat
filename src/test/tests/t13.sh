@@ -9,8 +9,7 @@ set -e
 set -o nounset 
 set -o pipefail
 
-. definitions.sh r
-
+. definitions.sh
 
 {
   grat -F $SP, $LS -M2 -G@GN,@GE -Sj, r -I-1000@DD : 100@AS -H -rt

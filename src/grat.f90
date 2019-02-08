@@ -297,6 +297,9 @@ program grat
     do isite = 1, ubound(site,1)
       iprogress = iprogress + 1
 
+      ! I want to look into file what it is getting before finishing execution
+      flush(output%unit)
+
       if (idate.gt.0) then
         write(output%unit, '(f9.3,x,i4.4,5(i2.2),x)', advance="no") &
           date(idate)%mjd, date(idate)%date

@@ -1,16 +1,18 @@
 ########################################################################
 #                                                                 grat #
-#                                                     v1.2-24-g3b3db98 #
+#                                                 v1.3-330-g43f9b28 () #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 4.8.3 20140911 (Red Hat 4.8.3-7) #
+#         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                                     compiled on  2015-05-15 19:19:09 #
+#                       compiled on chalmers 2019-02-08 14:16:31 +0100 #
 #                                                                      #
-#                                 Copyright 2013-2015 by Marcin Rajner #
-#                                      Warsaw University of Technology #
+#                                 Copyright 2013-2019 by Marcin Rajner #
+#                   Warsaw University of Technology (2003-2017, 2019-) #
+#                        Chalmers University of Technology (2017-2019) #
+#                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-05-15 19:21:01 (+02h UTC)
+Program started: 2019-02-08 14:18:23 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F 1013.25 @ SP:@scale=100 -M1,2 -G rajner @GN -S joze:52:21:100
@@ -30,7 +32,7 @@ Command parsing:
     method was set: 1D 2D 
   -G { -Grajner@GN }
     rajner@GN
-      rajner_green.dat GN columns: 1 2 lines: 85
+      rajner GN columns: 1 2 lines: 85
   -S { -Sjoze:52:21:100 }
     joze:52:21:100
   -D { -D2012:20@H:3@H }

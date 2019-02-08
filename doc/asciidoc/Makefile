@@ -1,19 +1,22 @@
-FILES     := $(shell ls **/*.[0-9].txt)
-MANPAGES  := $(FILES:.txt=)
-HTMLPAGES := $(FILES:.txt=.html)
+# FILES     := $(shell ls **/*.[0-9].txt)
+# MANPAGES  := $(FILES:.txt=)
+# HTMLPAGES := $(FILES:.txt=.html)
 
-A2X := a2x
+ASCIIDOC := asciidoctor
 
-all: info.dat $(MANPAGES) $(HTMLPAGES)
+all:
+	$(ASCIIDOC) -b manpage ./grat.adoc
+	man ./grat.3
+# all: info.dat $(MANPAGES) $(HTMLPAGES)
 
-info.dat:
-	echo ":Revision:" $$(git describe --tags ) > $@
-	echo ":My date out:" $$(grat --date) >> $@
-	echo ":Date:" $$(grat --date) >> $@
-	echo ":grat:" $$(grat --date) >> $@
+# info.dat:
+# 	echo ":Revision:" $$(git describe ) > $@
+# 	echo ":My date out:" $$(grat --date) >> $@
+# 	echo ":Date:" $$(grat --date) >> $@
+# 	echo ":grat:" $$(grat --date) >> $@
 
-%: %.txt
-	$(A2X) --format=manpage $<
+# %: %.txt
+# 	$(A2X) --format=manpage $<
 
-%.html: %.txt
-	$(A2X) --format=xhtml $<
+# %.html: %.txt
+# 	$(A2X) --format=xhtml $<

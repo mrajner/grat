@@ -1,25 +1,28 @@
-grat(3)
-=========
-include::../info.dat[]
-:Date: {date}
-:Author: Marcin Rajner
+= grat(3)
+Marcin Rajner
+:doctype: manpage
+:manmanual: grat
+:mansource: grat
+:man-linkstyle: pass:[yellow R < >]
 
-NAME
-----
+== NAME
+
 grat - program for computing atmospheric gravity corrections using
        numerical weather models
 
-SYNOPSIS
---------
+== SYNOPSIS
 {grat} <'operation'> ['options']
 {date} {revision}
 
 {myname}
 
 
-DESCRIPTION
------------
-*grat*  is  a program
+== DESCRIPTION
+
+grat is a program to 
+
+It is written in fortran.
+The main repository *TODO*
 
 Since version 3.0.0, *pacman* has been the frontend to *libalpm*, the "Arch
 Linux Package Management"  library.  This  library  allows  alternative
@@ -29,7 +32,7 @@ front ends to be written (for instance, a GUI front end).
 
 OPERATIONS
 ----------
--h ::
+*-h* ::
   shows this help
 
 -v ::
