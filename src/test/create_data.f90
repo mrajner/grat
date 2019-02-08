@@ -2,8 +2,8 @@
 program createdata
   use netcdf
   use mod_data, only: nc_error
-  use mod_utilities, only: d2r, celcius_to_kelvin
-  use mod_constants, only: dp, setnan
+  use mod_utilities, only: d2r, celcius_to_kelvin, setnan
+  use mod_constants, only: dp
 
   implicit none
 
