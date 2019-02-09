@@ -36,7 +36,7 @@ module mod_constants
     )
 
   !---------------------------------------
-  ! Atmosphere
+  ! atmosphere
   !---------------------------------------
   type pressure_data
     real(dp) :: standard
@@ -62,7 +62,7 @@ module mod_constants
     )
 
   !---------------------------------------
-  ! Earth
+  ! earth
   !---------------------------------------
   type earth_gravity
     real(dp) :: mean

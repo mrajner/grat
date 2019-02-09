@@ -318,7 +318,7 @@ end function
 !> Check if file exists.
 !!
 !! Logical function checking if given file exists.
-!! \author M. Rajner (based on www)
+!! \author M. Rajner
 !! \date 2013-03-04
 ! =============================================================================
 function file_exists(string, verbose)
@@ -367,7 +367,7 @@ elemental function r2d ( radian )
   real(dp) :: r2d
   real(dp), intent (in) :: radian
 
-  r2d= 180. / pi * radian
+  r2d = 180. / pi * radian
 end function
 
 ! =============================================================================
@@ -501,17 +501,13 @@ end function
 
 ! ==============================================================================
 ! ==============================================================================
-function linspace(xmin, xmax, n)
+pure function linspace(xmin, xmax, n)
   real(dp), intent(in) :: xmin, xmax
   real(dp), dimension(:), allocatable :: linspace
-  integer, intent(in), optional :: n
+  integer, intent(in) :: n
   integer :: i
 
-  if (present(n)) then
-    allocate(linspace(n))
-  else
-    allocate(linspace(10))
-  endif
+  allocate(linspace(n))
   do i = 1, size(linspace)
     linspace(i) = xmin + (xmax-xmin) * real(i-1,dp) / real(size(linspace)-1,dp)
   end do
@@ -524,13 +520,8 @@ function logspace(xmin, xmax, n)
   real(dp), dimension(:), allocatable :: logspace
   integer, intent(in), optional :: n
 
-  if (present(n)) then
-    allocate(logspace(n))
-  else
-    allocate(logspace(10))
-  endif
-
-  logspace = 10._dp** linspace(log10(xmin), log10(xmax), n = n)
+  allocate(logspace(n))
+  logspace = 10._dp** linspace(log10(xmin), log10(xmax), n)
 end function
 
 ! ==============================================================================
