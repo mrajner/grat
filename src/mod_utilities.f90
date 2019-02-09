@@ -321,10 +321,9 @@ end function
 !! \author M. Rajner (based on www)
 !! \date 2013-03-04
 ! =============================================================================
-function file_exists(string, double_check, verbose)
+function file_exists(string, verbose)
   character(len=*), intent(in) :: string
-  logical, intent(in), optional :: double_check, verbose
-  real :: randomnumber
+  logical, intent(in), optional :: verbose
   logical :: file_exists
 
   if (string =="") then
@@ -338,26 +337,6 @@ function file_exists(string, double_check, verbose)
       write (error_unit, '(a,a)') trim(string), " exists"
     else
       write (error_unit, '(a,a)') trim(string), " not exists"
-    endif
-  endif
-
-  if (present(double_check).and.double_check.and..not.file_exists) then
-    call random_number(randomnumber)
-
-    if (present(verbose).and.verbose) then
-      print '(a,a,i3,"s...")', &
-        trim(string), " not exists, slepping", int(randomnumber*5+1)
-    endif
-
-    call sleep(int(randomnumber*5+1))
-    inquire(file=string, exist=file_exists)
-
-    if (present(verbose).and.verbose) then
-      if (file_exists) then
-        print '(a,a)', trim(string), " exists (indeed)"
-      else
-        print '(a,a)', trim(string), " not exists (still)"
-      endif
     endif
   endif
 end function

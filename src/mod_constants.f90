@@ -54,10 +54,10 @@ module mod_constants
   type(atmosphere_data) , parameter :: &
     atmosphere  = atmosphere_data (    &
     pressure    = pressure_data (      &
-    standard    = 101325._dp           & ! Pa (not hectopascal!)
+    standard    = 101325._dp           & ! Pa
     ),                                 &
     temperature = temperature_data (   &
-    standard    = 288.15_dp            & ! K (15°C)
+    standard    = 288.15_dp            & ! K (=15°C)
     )                                  &
     )
 
@@ -119,8 +119,8 @@ module mod_constants
   end type
 
   type(density_info), parameter :: &
-    density   = density_info (    &
-    water     = 1000._dp &
+    density   = density_info (     &
+    water     = 1000._dp           &
     )
 
 contains

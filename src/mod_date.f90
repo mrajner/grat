@@ -76,7 +76,7 @@ subroutine parse_date(cmd_line_entry)
       elseif (.not.allocated(model(1)%date)) then
         call print_warning(                                         &
           "cannot use m or ~ in data specifier if first model file" &
-          // " do not contains dates", error = .true.)
+          // " does not contains dates", error = .true.)
 
       endif
     endif
