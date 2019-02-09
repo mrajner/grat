@@ -33,7 +33,10 @@ endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
-	FFLAGS               := $(OPT)  # -Wall -pedantic -fcheck=all -fbounds-check -fcheck=bounds -Warray-bounds
+	FFLAGS               := $(OPT)
+ifdef PEDANTIC
+	FFLAGS += -Werror -Wno-character-truncation -std=f2008 -Wall -pedantic -fcheck=all -fbounds-check -fcheck=bounds -Warray-bounds
+endif
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
 endif
