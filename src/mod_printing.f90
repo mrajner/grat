@@ -73,7 +73,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
       write(def_unit,'(a)', advance='no') "error: "
     else
       write(def_unit,'(a)', advance='no') "warning: "
-      if (warnings%strict) write(def_unit,'(a$)') "[strict set] "
+      if (warnings%strict) write(def_unit,'(a)', advance = "no") "[strict set] "
     endif
 
     select case(warn)
@@ -133,7 +133,7 @@ subroutine print_warning (warn, unit, more, error, program_calling)
   if(.not.warnings%time.and.warnings%if) write(def_unit,*)
 
   if ((present(error).and.error).or.warnings%strict) then
-    call exit(1)
+    stop 1
   endif
 
 end subroutine
@@ -153,7 +153,7 @@ subroutine progress(j, time, cpu, every)
   integer :: every_
   integer, save :: step=0
   character(len=1) :: timeunit
-  logical :: logprinted
+  logical :: logprinted = .false.
   character(2) :: format
 
   if (present(every)) then
@@ -197,24 +197,20 @@ subroutine progress(j, time, cpu, every)
 
   if (.not.(quiet.or.output%unit.eq.output_unit)) then
 
-    write(                                     &
-      unit = output_unit,                      &
-      fmt="(a1,a27,                            &
-      f5.1,a1,1x,a,f5.1,a,1x,                  &
-      a,f5.1,1x,                               &
-      a,f5.1,a1,                               &
-      *(x,a))",                                &
-      advance="no"                             &
-      )                                        &
-      char(13), bar,                           &
-      time, timeunit, "[eta", 100.*time/j,"]", &
-      "(proc:",cpu,                            &
-      "| %:",cpu/time*100,")",                 &
-      trim(output%name),                       &
-      (                                        &
-      trim(moreverbose(ii)%name),              &
-      ii=1,                                    &
-      ubound(moreverbose,1)                    &
+    write(                                                                &
+      unit = output_unit,                                                 &
+      fmt="(a1,a27,f5.1,a1,1x,a,f5.1,a,1x, a,f5.1,1x,a,f5.1,a1,*(1x,a))", &
+      advance="no"                                                        &
+      )                                                                   &
+      char(13), bar,                                                      &
+      time, timeunit, "[eta", 100.*time/j,"]",                            &
+      "(proc:",cpu,                                                       &
+      "| %:",cpu/time*100,")",                                            &
+      trim(output%name),                                                  &
+      (                                                                   &
+      trim(moreverbose(ii)%name),                                         &
+      ii=1,                                                               &
+      ubound(moreverbose,1)                                               &
       )
 
     flush(output_unit)
@@ -265,7 +261,7 @@ subroutine print_version ( &
   character(*), optional :: version, cdate, gdate, fflags, compiler
   character(10) :: host
 
-  call hostnm(host)
+  call get_environment_variable('HOST',host)
 
   write(log%unit, form_header)
   write(log%unit, form_inheader) trim(program_calling)

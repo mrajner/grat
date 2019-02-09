@@ -580,12 +580,14 @@ end subroutine
 ! ==============================================================================
 real(dp) function mean (vec, i, nan)
 
+  use ieee_arithmetic, only: ieee_is_nan
+
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
 
   if (present(nan).and.nan) then
-    mean = sum(vec, mask = .not.(isnan(vec))) / real(count(.not.isnan(vec)))
+    mean = sum(vec, mask = .not.(ieee_is_nan(vec))) / real(count(ieee_is_nan(vec)))
   else
     mean = sum(vec) / real(i)
   endif
@@ -594,12 +596,15 @@ end function
 ! ==============================================================================
 ! ==============================================================================
 real(dp) function stdev (vec,i, nan)
+
+  use ieee_arithmetic, only: ieee_is_nan
+
   integer :: i
   real(dp)  :: vec(i)
   logical, intent(in), optional :: nan
 
   if (present(nan).and.nan) then
-    stdev = sqrt(sum((vec - mean(vec,i,nan=nan))**2,mask=.not.isnan(vec)) &
+    stdev = sqrt(sum((vec - mean(vec, i, nan=nan))**2,mask=.not.ieee_is_nan(vec)) &
       /real(size(vec)))
   else
     stdev = sqrt(sum((vec - mean(vec,i))**2)/real(size(vec)))
