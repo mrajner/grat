@@ -167,9 +167,7 @@ program grat
         endif
       endif
     endif
-  endif
 
-  if(output%header) then
     write (output%unit, '(a)')
   endif
 
