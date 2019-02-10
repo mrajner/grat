@@ -1,1 +1,2 @@
-t15.sh
+add warning when trailing comma is at the end of -I declaration
+mv bugs.sh to tests

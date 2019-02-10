@@ -86,7 +86,7 @@ for test in ${test_what[*]} ; do
     # echo $is
 
     # if both files are empty skip comparison
-    [[ ! -s $is && ! -s ${should_be}  ]] && 
+    [[ ! -s $is && ! -s ${should_be} && -f ${is} && -f ${should_be}  ]] && 
     {
       continue
     }

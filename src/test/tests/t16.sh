@@ -11,3 +11,4 @@
   value_check -! -F ${SP} -S onsala -In@I -o:free
   value_check -! -F ${SP} -S onsala -Il@I -o:free
 } | tee ${0/.sh/.dat}${suffix}
+
