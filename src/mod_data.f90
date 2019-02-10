@@ -793,8 +793,9 @@ function get_time_index(model,date)
   integer, intent(in), dimension(6), optional ::date
   integer :: i
 
+
   get_time_index=0
-  if (.not.present(date).or. size(model%date(:,1)).le.1) then
+  if (.not.present(date) .or. (.not.allocated(model%date)) .or. size(model%date(:,1)).le.1) then
     get_time_index=1
     return
   endif
