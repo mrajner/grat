@@ -665,7 +665,6 @@ subroutine convolve(site, date, results)
             )
         endif
 
-
         if (                                                                &
           iok(1).eq.1                                                       &
           .and. (                                                           &
@@ -1619,7 +1618,6 @@ subroutine convolve(site, date, results)
 
     result = result - reference_results
   endif
-
 
   ! results to output
   if (result_component.and..not.present(results)) then

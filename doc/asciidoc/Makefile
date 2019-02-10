@@ -6,6 +6,7 @@ ASCIIDOC := asciidoctor
 
 all:
 	$(ASCIIDOC) -b manpage ./grat.adoc
+	$(ASCIIDOC) -b html ./grat.adoc
 	man ./grat.3
 # all: info.dat $(MANPAGES) $(HTMLPAGES)
 

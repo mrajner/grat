@@ -232,7 +232,7 @@ end subroutine progress
 
 ! =============================================================================
 ! =============================================================================
-function basename (file)
+function basename(file)
   character(200) :: basename
   character(*) :: file
 
@@ -249,7 +249,7 @@ end function
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
-subroutine print_version ( &
+subroutine print_version( &
     program_calling,       &
     version,               &
     cdate,                 &

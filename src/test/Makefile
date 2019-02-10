@@ -25,7 +25,10 @@ ifeq ($(FC),gfortran)
 	NETCDFF := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
 endif
 
-df: data/test_data.nc
+all: data/test_data.nc data/gmtls.nc
+
+data/gmtls.nc:
+	gmt grdlandmask -Rg -I5 -Gdata/gmtls.nc
 
 ooo: $(NCEP_DATA_FILES)
 #  all: ask run data test

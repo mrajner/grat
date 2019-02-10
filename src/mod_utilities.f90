@@ -56,7 +56,7 @@ end subroutine
 !!  spline.f90 program is based on fortran version of program spline.f
 !!  the accompanying function fspline can be used for interpolation
 !! ==============================================================================
-subroutine spline (x, y, b, c, d, n)
+subroutine spline(x, y, b, c, d, n)
   integer n
   real(dp) :: x(n), y(n), b(n), c(n), d(n)
   integer i, j, gap
@@ -586,7 +586,7 @@ end function
 
 ! ==============================================================================
 ! ==============================================================================
-real(dp) function stdev (vec,i, nan)
+real(dp) function stdev(vec,i, nan)
 
   use ieee_arithmetic, only: ieee_is_nan
 
@@ -667,7 +667,7 @@ end function
 !! \author Marcin Rajner
 !! \date 2014-06-07
 ! =============================================================================
-function celcius_to_kelvin (celcius, inverted)
+function celcius_to_kelvin(celcius, inverted)
   real(dp) :: celcius_to_kelvin
   real(dp), intent(in) :: celcius
   logical, intent(in), optional :: inverted

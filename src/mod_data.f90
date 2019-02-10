@@ -888,6 +888,7 @@ subroutine get_variable(model, date, print, level)
   character (20) :: aux
   logical :: first_warning=.true.
 
+
   if (                          &
     model%huge                  &
     .or.model%if_constant_value &
@@ -895,7 +896,7 @@ subroutine get_variable(model, date, print, level)
 
   index_time = 0
 
-  status = nf90_inq_varid (model%ncid, model%names(1), varid)
+  status = nf90_inq_varid(model%ncid, model%names(1), varid)
 
   if (status /= nf90_noerr) then
     call nc_info(model)
@@ -1229,6 +1230,7 @@ real(dp) function getrawsinglevaluebyindexfrommodel(model,ilat,ilon, ilevel, dat
   logical :: success, success2
 
   call nc_error(nf90_inq_varid(model%ncid, model%names(1), varid))
+
   if (if_variable_use_dimension (model, 1, 4)) then
     call nc_error (                             &
       nf90_get_var(                             &
