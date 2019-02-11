@@ -206,12 +206,9 @@ libgrat$(VERSION_MAJOR).a: $(OBJS)
 test: all install
 	make -C test runtests FC=$(FC) OPT=$(OPT)
 
-#  module dependencies
-ifndef NODEP
--include mod_dep.makefile
+include mod_dep.makefile
 mod_dep.makefile: mod_dep.awk
 	awk -f $< > $@
-endif
 
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
