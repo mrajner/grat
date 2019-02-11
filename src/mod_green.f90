@@ -133,7 +133,7 @@ end subroutine
 !> This subroutine read  green file
 ! =============================================================================
 subroutine read_green (green, print)
-  use mod_utilities, only: file_exists, skip_header, r2d, d2r
+  use mod_utilities, only: file_exists, skip_header, r2d, d2r, ntokens
   use, intrinsic :: iso_fortran_env
   use mod_printing
   use mod_constants, only: earth, pi
@@ -143,6 +143,7 @@ subroutine read_green (green, print)
   real(dp), allocatable, dimension(:) :: tmp
   type(green_functions) :: green
   logical, optional :: print
+  character(999) :: dummyline
 
   ! change the paths accordingly
 
@@ -244,7 +245,12 @@ subroutine read_green (green, print)
 
     do
       call skip_header (fileunit)
-      read (fileunit, *, iostat = io_status) tmp
+      read (fileunit, '(a)', iostat = io_status) dummyline
+      if (lines.eq.0)  then
+        if(ntokens(dummyline) .lt. max(green%column(1),green%column(2))) then
+          call print_warning("not enough columns in green file")
+        endif
+      endif
 
       if (io_status == iostat_end) exit
       if (io_status == 0) lines = lines + 1
