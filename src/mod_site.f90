@@ -53,7 +53,7 @@ subroutine parse_site(cmd_line_entry)
   do i = 1, ubound(cmd_line_entry%field,1)
 
     if (.not.log%sparse) then
-      write(log%unit, form%i2), trim(cmd_line_entry%field(i)%full)
+      write(log%unit, form%i2) trim(cmd_line_entry%field(i)%full)
     endif
 
     if (file_exists (cmd_line_entry%field(i)%subfield(1)%name))  then
@@ -405,7 +405,7 @@ subroutine more_sites (number, start_index)
   type(site_info), allocatable, dimension(:) :: tmpsite
 
   if (allocated(site)) then
-    write(log%unit, form%i3), "added site(s):", number
+    write(log%unit, form%i3) "added site(s):", number
     start_index=size(site) + 1
     call move_alloc(site,tmpsite)
     allocate(site(size(tmpsite)+number))

@@ -338,7 +338,7 @@ subroutine more_dates (number, start_index)
 
   if (allocated(date)) then
 
-    write(log%unit, form%i3), "added date(s):", number
+    write(log%unit, form%i3) "added date(s):", number
     start_index=ubound(date,1) + 1
 
     call move_alloc(date, tmpdate)

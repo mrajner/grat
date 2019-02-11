@@ -232,7 +232,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
       output%rho=.true.
     endif
 
-    if (.not.log%sparse) write(log%unit, form_62), 'output file was set:', trim(basename(trim(output%name)))
+    if (.not.log%sparse) write(log%unit, form_62) 'output file was set:', trim(basename(trim(output%name)))
 
     if (file_exists(output%name).and.output%noclobber) then
       call print_warning ("nc", more=trim(output%name), error=.true.)
@@ -372,12 +372,12 @@ subroutine intro (     &
     endif
 
     if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vg") then
-      write(output_unit,'(a)'), __GDATE__
+      write(output_unit,'(a)') __GDATE__
       call exit
     endif
 
     if (size(cmd_line).eq.1 .and. cmd_line(1)%full == "-vd") then
-      write(output_unit,'(a)'), __CDATE__
+      write(output_unit,'(a)') __CDATE__
       call exit
     endif
 
@@ -512,7 +512,7 @@ subroutine intro (     &
 
   write(log%unit, &
     '("Program started:", &
-    1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")'),&
+    1x,i4,2("-",i2.2), 1x,i2.2,2(":",i2.2),1x,"(",dp,SP,i3.2,"h UTC)")') &
     execution_date (1:3),execution_date(5:7),execution_date(4)/60
   write(log%unit, form%separator)
 
@@ -829,7 +829,7 @@ subroutine parse_info (cmd_line_entry)
         '|HE:',    f8.1,               &
         '|HS:',    f7.2,               &
         '|'                            &
-        )"),                           &
+        )")                            &
         info(i)%distance%start,        &
         info(i)%distance%stop,         &
         info(i)%interpolation,         &
@@ -849,7 +849,7 @@ subroutine parse_info (cmd_line_entry)
           '|3:@DE',  f7.2,               &
           '|3::ref', l,                  &
           '|'                            &
-          )"),                           &
+          )")                            &
           info(i)%height_progressive,    &
           info(i)%distance%stop_3d,      &
           pack(method3dnames,method3d) , &

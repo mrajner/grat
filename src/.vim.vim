@@ -1,5 +1,5 @@
 "vim settings
-let b:quickrun_config = {
-      \ 'runner': 'terminal',
-      \ 'exec' : 'make -f tmp.makefile',
-      \ }
+" let b:quickrun_config = {
+      " \ 'exec' : 'make -f tmp.makefile',
+      " \ }
+"       \ 'runner': 'terminal',

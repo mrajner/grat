@@ -183,7 +183,7 @@ subroutine parse_admit(cmd_line_entry)
     do i=1,size(admitance%value)
       write(log%unit, '(f6.2$)')  admitance%value(i)
     enddo
-    write(log%unit, '(x,a)') , "uGal/hPa"
+    write(log%unit, '(x,a)') "uGal/hPa"
   endif
 
   ! not sure what trying to achive

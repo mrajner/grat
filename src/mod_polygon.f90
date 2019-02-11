@@ -64,7 +64,7 @@ subroutine parse_polygon (cmd_line_entry)
     endif
 
     polygon(i)%dataname=cmd_line_entry%field(i)%subfield(1)%dataname
-    write(log%unit, form%i2), 'polygon file:' , trim(polygon(i)%name)
+    write(log%unit, form%i2) 'polygon file:' , trim(polygon(i)%name)
 
     if (file_exists((polygon(i)%name))) then
 
@@ -73,7 +73,7 @@ subroutine parse_polygon (cmd_line_entry)
       if(cmd_line_entry%field(i)%subfield(2)%name.eq."+" &
         .or.cmd_line_entry%field(i)%subfield(2)%name.eq."-" ) then
         polygon(i)%pm = cmd_line_entry%field(i)%subfield(2)%name
-        write(log%unit, form%i3) , "global override:", polygon(i)%pm
+        write(log%unit, form%i3) "global override:", polygon(i)%pm
       endif
       call read_polygon (polygon(i))
 

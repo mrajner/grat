@@ -89,7 +89,7 @@ subroutine parse_model(cmd_line_entry)
     model(i)%exist = .true.
 
     if (.not.log%sparse) then
-      write(log%unit, form_62), trim(cmd_line_entry%field(i)%full)
+      write(log%unit, form_62) trim(cmd_line_entry%field(i)%full)
     endif
 
     model(i)%name = trim(cmd_line_entry%field(i)%subfield(1)%name)
@@ -134,10 +134,10 @@ subroutine parse_model(cmd_line_entry)
       enddo
 
       if (.not.log%sparse) then
-        write (log%unit, form%i3,advance = 'no'), &
+        write (log%unit, form%i3,advance = 'no') &
           trim (dataname(model(i)%dataname)), &
           "("//trim(model(i)%dataname)//")"
-        write(log%unit, '(5(a,x))', advance="no"), (trim(model(i)%names(j)), j=1,5)
+        write(log%unit, '(5(a,x))', advance="no") (trim(model(i)%names(j)), j=1,5)
         write(log%unit, *)
       endif
 
@@ -158,7 +158,7 @@ subroutine parse_model(cmd_line_entry)
     else if (is_numeric(model(i)%name)) then
 
       model(i)%if_constant_value=.true.
-      write (log%unit, form%i3),            &
+      write (log%unit, form%i3)            &
         trim (dataname(model(i)%dataname)), &
         "("//trim(model(i)%dataname)//")"
 
@@ -1193,7 +1193,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     array_aux (4, :) = [ model%lon(ilon2), model%lat(ilat2), model%data(ilon2, ilat2, ilevel) ]
 
     if (ind%moreverbose%l.ne.0) then
-      write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")'), &
+      write(moreverbose(ind%moreverbose%l)%unit, '(3f15.4," l")') &
         (array_aux(j,2),array_aux(j,1),array_aux(j,3), j = 1, 4)
       write(moreverbose(ind%moreverbose%l)%unit, '(">")')
     endif
@@ -1210,7 +1210,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   endif
 
   if (ind%moreverbose%n.ne.0) then
-    write(moreverbose(ind%moreverbose%n)%unit,  '(3f15.4," n")'), &
+    write(moreverbose(ind%moreverbose%n)%unit,  '(3f15.4," n")') &
       model%lat(ilat), model%lon(ilon), model%data(ilon,ilat,ilevel)
     write(moreverbose(ind%moreverbose%n)%unit,  '(">")')
   endif
@@ -1360,16 +1360,16 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   if (ind%moreverbose%o.ne.0) then
     if (output%header)  then
       if (present(date)) then
-        write (moreverbose(ind%moreverbose%o)%unit,'(a12,1x,a14)', advance='no'), "mjd", "date"
+        write (moreverbose(ind%moreverbose%o)%unit,'(a12,1x,a14)', advance='no') "mjd", "date"
       endif
-      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)'), "ocean[%]", "mean_val"
+      write (moreverbose(ind%moreverbose%o)%unit,'(2a12)') "ocean[%]", "mean_val"
     endif
 
     if (present(date)) then
-      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no'), mjd(date), date
+      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') mjd(date), date
     endif
 
-    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)'), &
+    write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') &
       ocean_area/total_area*100.,                                &
       valoceanarea/ocean_area
   endif
@@ -1405,20 +1405,20 @@ subroutine total_mass (model, date)
   if (output%header)  then
 
     if (present(date)) then
-      write (moreverbose(ind%moreverbose%t)%unit, '(a12,x,a14$)'), &
+      write (moreverbose(ind%moreverbose%t)%unit, '(a12,x,a14$)') &
         "mjd",  "date"
     endif
 
-    write (moreverbose(ind%moreverbose%t)%unit, '(a12)'), "mean_val"
+    write (moreverbose(ind%moreverbose%t)%unit, '(a12)') "mean_val"
 
   endif
 
   if (present(date)) then
-    write (moreverbose(ind%moreverbose%t)%unit, '(f12.3,x, i4.2,5i2.2$)'), &
+    write (moreverbose(ind%moreverbose%t)%unit, '(f12.3,x, i4.2,5i2.2$)') &
       mjd(date), date
   endif
 
-  write (moreverbose(ind%moreverbose%t)%unit, '(f12.3)'), &
+  write (moreverbose(ind%moreverbose%t)%unit, '(f12.3)') &
     valarea/totalarea
 end subroutine
 
@@ -1451,9 +1451,9 @@ subroutine parse_level (cmd_line_entry)
 
     write(log%unit, form%i2, advance="no") "level pressure:"
     if (allocated(level%level)) then
-      write (log%unit, '(*(i4))'), level%level
+      write (log%unit, '(*(i4))') level%level
     else if (level%all) then
-      write (log%unit, '(a)'), "all"
+      write (log%unit, '(a)') "all"
     endif
   else
     level%all=.true.

@@ -1700,7 +1700,7 @@ subroutine convolve(site, date, results)
     if (method(3)) then
 
       write(output%unit,            &
-        '(' // output%form //'$)'), &
+        '(' // output%form //'$)')  &
         sum(result,                 &
         mask=(                      &
         green%dataname.eq."G3D"     &
@@ -1709,7 +1709,7 @@ subroutine convolve(site, date, results)
 
       if (result_total_all) then
         write(output%unit,            &
-          '(' // output%form //'$)'), &
+          '(' // output%form //'$)')  &
           sum(result,                 &
           mask=(                      &
           green%dataname.eq."G3D"     &
@@ -1734,7 +1734,7 @@ subroutine convolve(site, date, results)
         "nr", "distance", "start", "stop", "data", "di(j)-di(j-1)"
 
       do j = 1, size(green_common(i)%distance)
-        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, *(f14.7))'), &
+        write(moreverbose(ind%moreverbose%g)%unit, '(i3,f14.6, *(f14.7))')  &
           j, green_common(i)%distance(j),                                   &
           green_common(i)%start(j),                                         &
           green_common(i)%stop(j),                                          &
