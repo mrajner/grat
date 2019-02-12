@@ -248,7 +248,7 @@ subroutine read_green (green, print)
       read (fileunit, '(a)', iostat = io_status) dummyline
       if (lines.eq.0)  then
         if(ntokens(dummyline) .lt. max(green%column(1),green%column(2))) then
-          call print_warning("not enough columns in green file")
+          call print_warning("not enough columns in green file", error = .true.)
         endif
       endif
 
