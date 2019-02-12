@@ -1564,8 +1564,8 @@ function if_variable_use_dimension (model, ivarname, idimname)
 
   dimids = 0
 
-  call nc_error (nf90_inq_varid(model%ncid, model%names(ivarname),i))
-  call nc_error (nf90_inquire_variable(model%ncid,i,dimids=dimids))
+  call nc_error(nf90_inq_varid(model%ncid, model%names(ivarname),i))
+  call nc_error(nf90_inquire_variable(model%ncid,i,dimids=dimids))
   status = nf90_inq_varid(model%ncid, model%names(idimname), i)
 
   if(any(dimids == i)) then
