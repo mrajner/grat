@@ -770,10 +770,30 @@ subroutine nctime2date (model, print)
     read(dummy,*) date(1:3)
 
     mjd_start  = mjd (date)
-    model%time = model%time *24
+    model%time = model%time*24
+
+  else if (index(dummy,"seconds since").eq.1 .or. index(dummy,"Seconds since").eq.1) then
+
+    do i=1,2
+      dummy = dummy(index(dummy, ' ')+1:)
+    enddo
+
+    do
+      ind=[index(dummy,'-'), index(dummy,':')]
+      do i=1,2
+        if (ind(i).ne.0) dummy = dummy(1:ind(i)-1)//" "//dummy(ind(i)+i:)
+      enddo
+      if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0) exit
+    enddo
+
+    dummy = dummy//" 0 0 0"
+    read(dummy,*) date(1:3)
+
+    mjd_start  = mjd(date)
+    model%time = model%time/3600
 
   else
-    write (log%unit, form%i4 ) "unknown time begining"
+    call print_warning("unknown time begining in ncfile")
 
   endif
 
