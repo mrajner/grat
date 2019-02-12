@@ -119,12 +119,10 @@ program value_check
           endif
         endif
 
-          print * , date
-          print*, "-"
         if (allocated(date).and.model(i)%exist) then
-          call get_variable (model(i), date = date(j)%date)
+          call get_variable(model(i), date = date(j)%date)
         elseif (model(i)%exist) then
-          call get_variable (model(i))
+          call get_variable(model(i))
         endif
 
       endif

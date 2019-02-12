@@ -909,7 +909,6 @@ subroutine get_variable(model, date, print, level)
   character (20) :: aux
   logical :: first_warning=.true.
 
-  print* ,date
   if (                          &
     model%huge                  &
     .or.model%if_constant_value &
@@ -982,12 +981,12 @@ subroutine get_variable(model, date, print, level)
     start = [1,1,index_time,1]
   endif
 
-  call nc_error  (nf90_get_var ( &
-    ncid   = model%ncid,         &
-    varid  = varid,              &
-    values = model%data,         &
-    start  = start               &
-    )                            &
+  call nc_error(nf90_get_var( &
+    ncid   = model%ncid,      &
+    varid  = varid,           &
+    values = model%data,      &
+    start  = start            &
+    )                         &
     )
 
   call get_scale_and_offset (model%ncid, model%names(1), scale_factor, add_offset, status)
@@ -1252,7 +1251,7 @@ real(dp) function getrawsinglevaluebyindexfrommodel(model,ilat,ilon, ilevel, dat
 
   call nc_error(nf90_inq_varid(model%ncid, model%names(1), varid))
 
-  if (if_variable_use_dimension (model, 1, 4)) then
+  if (if_variable_use_dimension(model, 1, 4)) then
     call nc_error (                             &
       nf90_get_var(                             &
       model%ncid,                               &
