@@ -909,7 +909,7 @@ subroutine get_variable(model, date, print, level)
   character (20) :: aux
   logical :: first_warning=.true.
 
-
+  print* ,date
   if (                          &
     model%huge                  &
     .or.model%if_constant_value &
