@@ -30,8 +30,8 @@ all: data/test_data.nc data/gmtls.nc data/ncks.nc
 data/gmtls.nc:
 	gmt grdlandmask -Rg -I5 -Gdata/gmtls.nc
 
-data/ncks.nc: data/test_data.nc
-	ncks -v sp $< $@
+data/ncks.nc: | data/test_data.nc
+	ncks -v sp data/test_data.nc $@
 
 ooo: $(NCEP_DATA_FILES)
 #  all: ask run data test
