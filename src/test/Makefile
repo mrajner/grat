@@ -31,7 +31,7 @@ data/gmtls.nc:
 	gmt grdlandmask -Rg -I5 -Gdata/gmtls.nc
 
 data/ncks.nc: | data/test_data.nc
-	ncks -v sp data/test_data.nc $@
+	ncks -v sp $| $@
 
 ooo: $(NCEP_DATA_FILES)
 #  all: ask run data test
