@@ -53,7 +53,6 @@ SRCS :=                 \
   mod_utilities.f90     \
   mod_cmdline.f90       \
   mod_printing.f90      \
-  mod_spherical.f90     \
   mod_mjd.f90           \
   mod_normalization.f90 \
   mod_atmosphere.f90    \
