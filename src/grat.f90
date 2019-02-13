@@ -192,20 +192,20 @@ program grat
 
   do idate = start, ubound(date,1)
 
-    if (idate.ge.1) then
-      if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
+    ! if (idate.ge.1) then
+      ! if(.not.(output%nan).and.modulo(date(idate)%date(4),6).ne.0) then
 
-        if (first_waning) then
-          call print_warning (                           &
-            "hours not matching model dates (0,6,12,18)" &
-            //" are rejecting and not shown in output"   &
-            )
-        endif
+      !   if (first_waning) then
+      !     call print_warning (                           &
+      !       "hours not matching model dates (0,6,12,18)" &
+      !       //" are rejecting and not shown in output"   &
+      !       )
+      !   endif
 
-        first_waning=.false.
-        cycle
-      endif
-    endif
+      !   first_waning=.false.
+      !   cycle
+      ! endif
+    ! endif
 
     do i = 1, ubound(model,1)
       if(model(i)%if) then
