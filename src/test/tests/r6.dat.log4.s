@@ -1,10 +1,10 @@
 ########################################################################
 #                                                                 grat #
-#                                                 v1.3-364-g8e2c1e4 () #
+#                                                 v1.3-363-gf045805 () #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
+#         compiler: GNU Fortran (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                               compiled on  2019-02-13 10:19:51 +0100 #
+#                               compiled on  2019-02-13 08:52:53 +0100 #
 #                                                                      #
 #                                 Copyright 2013-2019 by Marcin Rajner #
 #                   Warsaw University of Technology (2003-2017, 2019-) #
@@ -12,13 +12,12 @@
 #                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2019-02-13 12:48:44 (+01h UTC)
+Program started: 2019-02-13 20:04:51 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:52:
-21:100 -D2012:20@H : 3@H -I 40 @DE : 2@3D -o /home/mrajner/src/grat/src/
-test/tests/t6.dat.out4.s : free -V /home/mrajner/src/grat/src/test/tests
-                                                          /t6.dat.log4.s
+21:100 -D2012:20@H : 12@H -I 40 @DE : 2@3D -o t6.dat.out4.s : free -V t6
+                                                             .dat.log4.s
 #-----------------------------------------------------------------------
 Command parsing:
   -H { -H }
@@ -39,18 +38,18 @@ Command parsing:
       rajner GN columns: 1 2 lines: 85
   -S { -Sjoze:52:21:100 }
     joze:52:21:100
-  -D { -D2012:20@H:3@H }
-    2012:20@H:3@H
+  -D { -D2012:20@H:12@H }
+    2012:20@H:12@H
       start date: 2012 01 01 00 00 00
       stop  date: 2012 01 01 20 00 00
-      interval:  3.0H
-      dates total: 7
+      interval: 12.0H
+      dates total: 2
   -I { -I40@DE:2@3D }
     Range: 1
       DB:   0.00|DE:  40.000|I:n|DD: 1|DS:   0.00|HB:     0.0|HE: 60000.0|HS:  25.00|
-  -o { -o/home/mrajner/src/grat/src/test/tests/t6.dat.out4.s:free }
+  -o { -ot6.dat.out4.s:free }
     output file was set: t6.dat.out4.s
-  -V { -V/home/mrajner/src/grat/src/test/tests/t6.dat.log4.s }
+  -V { -Vt6.dat.log4.s }
     verbose mode
     the log file was set t6.dat.log4.s
 #-----------------------------------------------------------------------

@@ -1,10 +1,10 @@
 ########################################################################
 #                                                                 grat #
-#                                                 v1.3-330-g43f9b28 () #
+#                                                 v1.3-363-gf045805 () #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
+#         compiler: GNU Fortran (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                       compiled on chalmers 2019-02-08 14:16:31 +0100 #
+#                               compiled on  2019-02-13 08:52:53 +0100 #
 #                                                                      #
 #                                 Copyright 2013-2019 by Marcin Rajner #
 #                   Warsaw University of Technology (2003-2017, 2019-) #
@@ -12,12 +12,12 @@
 #                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2019-02-08 14:18:23 (+01h UTC)
+Program started: 2019-02-13 20:04:53 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -H -F 1013.25 @ SP:@scale=100 -M1,2 -G rajner @GN -S joze:52:21:
-100 -D2012:20@H : 3@H -I 40 @DE : 2@3D -o t6.dat.out9.c : free -V t6.dat
-                                                                 .log9.c
+100 -D2012:20@H : 12@H -I 40 @DE : 2@3D -o t6.dat.out9.c : free -V t6.da
+                                                                t.log9.c
 #-----------------------------------------------------------------------
 Command parsing:
   -! { -! }
@@ -37,12 +37,12 @@ Command parsing:
       rajner GN columns: 1 2 lines: 85
   -S { -Sjoze:52:21:100 }
     joze:52:21:100
-  -D { -D2012:20@H:3@H }
-    2012:20@H:3@H
+  -D { -D2012:20@H:12@H }
+    2012:20@H:12@H
       start date: 2012 01 01 00 00 00
       stop  date: 2012 01 01 20 00 00
-      interval:  3.0H
-      dates total: 7
+      interval: 12.0H
+      dates total: 2
   -I { -I40@DE:2@3D }
     Range: 1
       DB:   0.00|DE:  40.000|I:n|DD: 1|DS:   0.00|HB:     0.0|HE: 60000.0|HS:  25.00|
@@ -56,3 +56,4 @@ Command parsing:
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
       joze   52.0000   21.0000  100.0000        --        --        --
 #-----------------------------------------------------------------------
+Execution time:   0.0s (proc time:   0.0 |%  Inf)
