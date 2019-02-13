@@ -1,10 +1,10 @@
 ########################################################################
 #                                                                 grat #
-#                                                 v1.3-330-g43f9b28 () #
+#                                                 v1.3-364-g8e2c1e4 () #
 ########################################################################
 #         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                       compiled on chalmers 2019-02-08 14:16:31 +0100 #
+#                               compiled on  2019-02-13 10:19:51 +0100 #
 #                                                                      #
 #                                 Copyright 2013-2019 by Marcin Rajner #
 #                   Warsaw University of Technology (2003-2017, 2019-) #
@@ -12,12 +12,13 @@
 #                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2019-02-08 14:18:21 (+01h UTC)
+Program started: 2019-02-13 12:48:44 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:52:
-21:100 -D2012:20@H : 3@H -I 30 @DE : 2@3D -o t6.dat.out3.s : free -V t6.
-                                                              dat.log3.s
+21:100 -D2012:20@H : 3@H -I 30 @DE : 2@3D -o /home/mrajner/src/grat/src/
+test/tests/t6.dat.out3.s : free -V /home/mrajner/src/grat/src/test/tests
+                                                          /t6.dat.log3.s
 #-----------------------------------------------------------------------
 Command parsing:
   -H { -H }
@@ -47,9 +48,9 @@ Command parsing:
   -I { -I30@DE:2@3D }
     Range: 1
       DB:   0.00|DE:  30.000|I:n|DD: 1|DS:   0.00|HB:     0.0|HE: 60000.0|HS:  25.00|
-  -o { -ot6.dat.out3.s:free }
+  -o { -o/home/mrajner/src/grat/src/test/tests/t6.dat.out3.s:free }
     output file was set: t6.dat.out3.s
-  -V { -Vt6.dat.log3.s }
+  -V { -V/home/mrajner/src/grat/src/test/tests/t6.dat.log3.s }
     verbose mode
     the log file was set t6.dat.log3.s
 #-----------------------------------------------------------------------
@@ -57,3 +58,4 @@ Command parsing:
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
       joze   52.0000   21.0000  100.0000        --        --        --
 #-----------------------------------------------------------------------
+Execution time:   0.0s (proc time:   0.1 |%  Inf)

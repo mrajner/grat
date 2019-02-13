@@ -1,1 +1,3 @@
-warning: hours not matching model dates (0,6,12,18) are rejecting and not shown in output 
+warning: cannot find date: 20120101030000      var: pres in file: ../data/pres.sfc.2012.nc 
+warning: cannot find date: 20120101090000      var: pres in file: ../data/pres.sfc.2012.nc 
+warning: cannot find date: 20120101150000      var: pres in file: ../data/pres.sfc.2012.nc 
