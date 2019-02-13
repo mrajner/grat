@@ -3,7 +3,7 @@
 !! \date 2013.06.27
 ! =============================================================================
 module mod_mjd
-  use mod_constants, only: dp
+  use mr_constants, only: dp
 
   implicit none
 

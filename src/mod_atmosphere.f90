@@ -11,7 +11,7 @@ contains
 !! \warning all units in SI
 ! =============================================================================
 function standard_gravity (height)
-  use mod_constants, only: dp, earth
+  use mr_constants, only: dp, earth
 
   real(dp) :: standard_gravity
   real(dp), intent(in) :: height
@@ -40,7 +40,7 @@ function standard_pressure (  &
     nan_as_zero               &
     )
 
-  use mod_constants, only: dp, earth, atmosphere, R_air
+  use mr_constants, only: dp, earth, atmosphere, R_air
   use iso_fortran_env
   use mod_printing, only: print_warning
 
@@ -168,7 +168,7 @@ end function
 !! \li subarctic_winter
 ! ==============================================================================
 function standard_temperature (height, fels_type, t_zero)
-  use mod_constants, only: dp, earth, atmosphere
+  use mr_constants, only: dp, earth, atmosphere
 
   real(dp), intent(in) :: height
   real(dp) :: standard_temperature
@@ -251,7 +251,7 @@ end function
 !! \date 2013-03-19
 ! =============================================================================
 function geop2geom (geopotential_height, inverse)
-  use mod_constants, only: dp, earth
+  use mr_constants, only: dp, earth
 
   real(dp) :: geopotential_height
   logical, intent(in), optional:: inverse
@@ -273,7 +273,7 @@ end function
 !> Compute virtual temperature using temperature and specific humidity
 ! =============================================================================
 pure function virtual_temperature(t, sh)
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   real(dp) :: virtual_temperature
   real(dp), intent(in) :: t, sh
 

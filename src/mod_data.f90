@@ -10,7 +10,7 @@
 !! \date 2013-03-04
 ! =============================================================================
 module mod_data
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_utilities, only: setnan
 
   implicit none
@@ -441,7 +441,7 @@ end subroutine
 ! =============================================================================
 function variable_modifier (val, modifier, verbose, list_only)
   use mod_atmosphere, only: geop2geom
-  use mod_constants,  only: earth
+  use mr_constants,  only: earth
   use mod_utilities,  only: ntokens, mmwater2pascal
   use mod_printing,   only: print_warning, form, log, output
 
@@ -1488,7 +1488,7 @@ subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
     standard_pressure,      &
     standard_temperature,   &
     virtual_temperature
-  use mod_constants, only: R_air
+  use mr_constants, only: R_air
 
   character(*), intent(in) :: what
   real(dp), intent(in), optional :: sp,t, hp, sh, gp, vsh, vt

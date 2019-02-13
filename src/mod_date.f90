@@ -1,5 +1,5 @@
 module mod_date
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_printing
 
   implicit none

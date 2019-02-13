@@ -1,6 +1,6 @@
 !> \file
 module mod_admit
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_utilities, only: setnan
 
   implicit none

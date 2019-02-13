@@ -1,6 +1,6 @@
 module mod_parser
   use, intrinsic :: iso_fortran_env, only: iostat_end
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_printing
 
   implicit none

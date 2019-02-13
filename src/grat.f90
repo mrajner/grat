@@ -61,7 +61,7 @@ program grat
   use mod_cmdline
   use mod_admit,     only: admit
   use mod_utilities, only: Bubble_Sort, mean, stdev
-  use mod_constants, only: sp
+  use mr_constants, only: sp
 
   implicit none
   real(sp) :: cpu(2)

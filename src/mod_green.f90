@@ -1,6 +1,6 @@
 !> \file
 module mod_green
-  use mod_constants, only: dp
+  use mr_constants, only: dp
 
   implicit none
   !----------------------------------------------------
@@ -136,7 +136,7 @@ subroutine read_green (green, print)
   use mod_utilities, only: file_exists, skip_header, r2d, d2r, ntokens
   use, intrinsic :: iso_fortran_env
   use mod_printing
-  use mod_constants, only: earth, pi
+  use mr_constants, only: earth, pi
   use mod_normalization, only: green_normalization
 
   integer :: lines, fileunit, io_status, i
@@ -515,7 +515,7 @@ end subroutine
 ! =============================================================================
 subroutine convolve(site, date, results)
   use, intrinsic :: iso_fortran_env
-  use mod_constants
+  use mr_constants
   use mod_site, only : site_info, local_pressure_distance
   use mod_cmdline
   use mod_utilities, only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace, setnan
@@ -1781,7 +1781,7 @@ end subroutine
 !!   olssson see \cite olsson2009
 !! =============================================================================
 function green_newtonian (psi, h, z, method)
-  use mod_constants, only: earth, gravity
+  use mr_constants, only: earth, gravity
   use mod_normalization, only: green_normalization
   real(dp) :: green_newtonian
   real(dp), intent (in) :: psi

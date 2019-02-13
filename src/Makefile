@@ -22,14 +22,14 @@ VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
 # ifort settings
-ifeq ($(FC),ifort)
-	FFLAGS               := $(OPT) -xHost -warn all
-	ENABLE_PREPROCESSING := -fpp
-	NETCDFF :=                                            \
-		-I/usr/local/include -L/usr/local/lib64 -lnetcdf     \
-		-I/home/mrajner/src/netcdf-fortran/fortran/          \
-		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
-endif
+# ifeq ($(FC),ifort)
+# 	FFLAGS               := $(OPT) -xHost -warn all
+# 	ENABLE_PREPROCESSING := -fpp
+# 	NETCDFF :=                                            \
+# 		-I/usr/local/include -L/usr/local/lib64 -lnetcdf     \
+# 		-I/home/mrajner/src/netcdf-fortran/fortran/          \
+# 		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
+# endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
@@ -50,7 +50,6 @@ FPP :=                                            \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 SRCS :=                 \
-  mod_constants.f90     \
   mod_utilities.f90     \
   mod_cmdline.f90       \
   mod_printing.f90      \
@@ -179,7 +178,8 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 
 %.o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFF) 
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFF) \
+	 	-I/home/mrajner/bin/fortran/libmr/
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
@@ -193,7 +193,8 @@ $(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 		$<             \
 		-o $@          \
 		-L. -lgrat \
-    $(NETCDFF)
+    $(NETCDFF) \
+	 	-I/home/mrajner/bin/fortran/libmr/
 
 libgrat.a: libgrat$(VERSION_MAJOR).a 
 	ln -sf $(realpath $<) $@

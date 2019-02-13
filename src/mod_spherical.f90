@@ -1,6 +1,6 @@
 !> \file
 module mod_spherical
-  use mod_constants, only: dp, pi
+  use mr_constants, only: dp, pi
 
   implicit none
 

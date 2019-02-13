@@ -1,7 +1,7 @@
 ! =============================================================================
 ! =============================================================================
 module mod_3d
-  use mod_constants, only: dp
+  use mr_constants, only: dp
 
   implicit none
 
@@ -11,7 +11,7 @@ contains
 !> all values in radians
 ! =============================================================================
 real(dp) function geometry (psi, h, z, method)
-  use mod_constants, only: earth
+  use mr_constants, only: earth
 
   real(dp), intent(in) :: psi, h, z
   character(*), optional :: method
@@ -47,7 +47,7 @@ end function
 !> all values in radians
 ! =============================================================================
 real(dp) function potential (psi1, psi2, dazimuth, h, z1, z2)
-  use mod_constants, only: earth, pi
+  use mr_constants, only: earth, pi
 
   real(dp), intent(in) :: psi1, psi2, h, z1, z2, dazimuth
   real(dp) :: r1, r2, r , s1, s2, s3, s4, n1, n2, n3, n4, l1, l2, l3, l4
@@ -83,7 +83,7 @@ end function
 !! second improved version of cylinder, includes curvature of the earth
 ! =============================================================================
 real(dp) function cylinder (psi1, psi2, dazimuth, h, z1, z2)
-  use mod_constants, only: earth
+  use mr_constants, only: earth
 
   real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
   real(dp) :: psi, zz1, zz2
@@ -113,7 +113,7 @@ end function
 !! geographical coordinates
 !! =============================================================================
 real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, height)
-  use mod_constants, only: earth, pi
+  use mr_constants, only: earth, pi
 
   real(dp) :: theta_s, lambda_s, height_s ! site
   real(dp) :: theta, lambda, height       ! atmosphere cell

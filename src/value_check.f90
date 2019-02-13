@@ -4,7 +4,7 @@
 !! \author M. Rajner
 ! =============================================================================
 program value_check
-  use mod_constants, only: dp, sp, R_air, earth
+  use mr_constants, only: dp, sp, R_air, earth
   use mod_cmdline,   only: info, quiet_step, ind, dryrun, moreverbose, quiet
   use mod_parser
   use mod_data

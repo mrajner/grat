@@ -141,7 +141,7 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine progress(j, time, cpu, every)
-  use mod_constants,   only: sp
+  use mr_constants,   only: sp
   use mod_cmdline,     only: moreverbose, quiet, quiet_step
   use, intrinsic :: iso_fortran_env, only: output_unit
 

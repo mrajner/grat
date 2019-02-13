@@ -5,7 +5,7 @@
 !! convienient to use with auto completion of names
 ! =============================================================================
 module mod_cmdline
-  use mod_constants, only: dp
+  use mr_constants, only: dp
 
   implicit none
 

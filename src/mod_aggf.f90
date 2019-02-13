@@ -34,7 +34,7 @@ function aggfd ( &
     rough        &
     )
 
-  use mod_constants, only: atmosphere, dp
+  use mr_constants, only: atmosphere, dp
 
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: delta
@@ -132,7 +132,7 @@ function aggf (         &
     predefined,         &
     rough)
 
-  use mod_constants,     only: dp, pi, earth, gravity, atmosphere, R_air
+  use mr_constants,     only: dp, pi, earth, gravity, atmosphere, R_air
   use mod_utilities,     only: d2r
   use mod_atmosphere,    only: standard_pressure, standard_temperature
   use mod_normalization, only: green_normalization
@@ -303,7 +303,7 @@ end function
 !! \warning psi in radian
 ! ==============================================================================
 function GN_thin_layer (psi)
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   real(dp), intent(in) :: psi
   real(dp) :: GN_thin_layer
 
@@ -316,7 +316,7 @@ end function
 !!
 ! ==============================================================================
 function bouger (h, R)
-  use mod_constants, only: dp, gravity, pi
+  use mr_constants, only: dp, gravity, pi
 
   real(dp) :: bouger
   real(dp), intent(in), optional :: R !< height of point above the cylinder
@@ -339,7 +339,7 @@ end function
 !! \author M. Rajner
 ! ==============================================================================
 function simple_def (R)
-  use mod_constants, only: dp, earth
+  use mr_constants, only: dp, earth
   real(dp) :: R, delta
   real(dp) :: simple_def
 

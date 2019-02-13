@@ -3,7 +3,7 @@
 !
 module mod_utilities
   use, intrinsic :: iso_fortran_env
-  use mod_constants, only: dp, pi
+  use mr_constants, only: dp, pi
 
   implicit none
 
@@ -486,7 +486,7 @@ end function
 ! magic number 1e3 is conversion factor from m to mm
 ! ==============================================================================
 pure function mmwater2pascal(mmwater, inverted)
-  use mod_constants, only: density, earth
+  use mr_constants, only: density, earth
 
   real(dp)                      :: mmwater2pascal
   real(dp), intent(in)          :: mmwater

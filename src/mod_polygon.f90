@@ -8,7 +8,7 @@
 !!    added overriding of poly use by command line like in \cite spotl
 ! ==============================================================================
 module mod_polygon
-  use mod_constants, only : dp
+  use mr_constants, only : dp
 
   implicit none
 
@@ -241,7 +241,7 @@ end subroutine
 !! cords is x, y (lon, lat) 2 dimensional array
 ! ==============================================================================
 integer function if_inpoly(x,y,coords)
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   real(dp), allocatable, dimension (:,:), intent (in) :: coords
   real(dp), intent (in) :: x , y
   integer :: i , isc
