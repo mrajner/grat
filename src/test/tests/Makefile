@@ -28,7 +28,11 @@ stat: $(RESULTS)
 	-bash $< 
 
 %.dat:%.f90 
-	$(FC) $(OPT) -Wall -Werror $< -o $(subst .dat,,$@) -lgrat -I/usr/local/include
+	$(FC) $(OPT) -Wall -Werror $< -o $(subst .dat,,$@) \
+	 	-I/usr/local/include  \
+	 	-lgrat \
+		-I/home/mrajner/bin/fortran/libmr -lmr \
+		-L/home/mrajner/bin/fortran/libmr -lmr
 	./$(subst .dat,,$@) 2>&1 | tee $@
 
 %.dat.s:%.sh

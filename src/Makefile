@@ -193,7 +193,7 @@ $(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 		-o $@          \
 		-L. -lgrat \
     $(NETCDFF) \
-	 	-I/home/mrajner/bin/fortran/libmr/
+	 	-I/home/mrajner/bin/fortran/libmr/ -L/home/mrajner/bin/fortran/libmr/ -lmr
 
 libgrat.a: libgrat$(VERSION_MAJOR).a 
 	ln -sf $(realpath $<) $@

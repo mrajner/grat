@@ -519,7 +519,7 @@ subroutine convolve(site, date, results)
   use mod_site, only : site_info, local_pressure_distance
   use mod_cmdline
   use mod_utilities, only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace, setnan
-  use mod_spherical
+  use mr_spherical
   use mod_data
   use mod_polygon
   use mod_printing
@@ -1752,7 +1752,7 @@ end subroutine
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, distancestop)
-  use mod_spherical, only : spher_trig
+  use mr_spherical, only : spher_trig
   use mod_cmdline,   only : moreverbose, ind
   use mod_utilities, only : r2d
 

@@ -1,5 +1,5 @@
 program test2
-  use mod_spherical
+  use mr_spherical
   use mod_utilities, only: d2r
 
   real(dp) :: dtot, dtot2

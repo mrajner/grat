@@ -1,6 +1,6 @@
 program unit_tests
-  use mod_spherical
-  use mod_constants
+  use mr_spherical
+  use mr_constants
   real(dp) :: a, b
 
   print *, 'testing'
