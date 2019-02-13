@@ -12,13 +12,12 @@
 #                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2019-02-13 12:48:44 (+01h UTC)
+Program started: 2019-02-13 12:52:08 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:
-52:21:100 -D2012:20@H : 3@H -I 0 @DE : 2@3D -o /home/mrajner/src/grat/sr
-c/test/tests/t6.dat.out5.s : free -V /home/mrajner/src/grat/src/test/tes
-                                                        ts/t6.dat.log5.s
+52:21:100 -D2012:20@H : 3@H -I 0 @DE : 2@3D -o t6.dat.out5.s : free -V t
+                                                            6.dat.log5.s
 #-----------------------------------------------------------------------
 Command parsing:
   -! { -! }
@@ -50,9 +49,9 @@ Command parsing:
   -I { -I0@DE:2@3D }
     Range: 1
       DB:   0.00|DE:   0.000|I:n|DD: 1|DS:   0.00|HB:     0.0|HE: 60000.0|HS:  25.00|
-  -o { -o/home/mrajner/src/grat/src/test/tests/t6.dat.out5.s:free }
+  -o { -ot6.dat.out5.s:free }
     output file was set: t6.dat.out5.s
-  -V { -V/home/mrajner/src/grat/src/test/tests/t6.dat.log5.s }
+  -V { -Vt6.dat.log5.s }
     verbose mode
     the log file was set t6.dat.log5.s
 #-----------------------------------------------------------------------

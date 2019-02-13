@@ -12,13 +12,12 @@
 #                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2019-02-13 12:48:44 (+01h UTC)
+Program started: 2019-02-13 12:52:05 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:52:
-21:100 -D2012:20@H : 3@H -I 10 @DE : 2@3D -o /home/mrajner/src/grat/src/
-test/tests/t6.dat.out1.s : free -V /home/mrajner/src/grat/src/test/tests
-                                                          /t6.dat.log1.s
+21:100 -D2012:20@H : 3@H -I 10 @DE : 2@3D -o t6.dat.out1.s : free -V t6.
+                                                              dat.log1.s
 #-----------------------------------------------------------------------
 Command parsing:
   -H { -H }
@@ -48,9 +47,9 @@ Command parsing:
   -I { -I10@DE:2@3D }
     Range: 1
       DB:   0.00|DE:  10.000|I:n|DD: 1|DS:   0.00|HB:     0.0|HE: 60000.0|HS:  25.00|
-  -o { -o/home/mrajner/src/grat/src/test/tests/t6.dat.out1.s:free }
+  -o { -ot6.dat.out1.s:free }
     output file was set: t6.dat.out1.s
-  -V { -V/home/mrajner/src/grat/src/test/tests/t6.dat.log1.s }
+  -V { -Vt6.dat.log1.s }
     verbose mode
     the log file was set t6.dat.log1.s
 #-----------------------------------------------------------------------
@@ -58,4 +57,4 @@ Command parsing:
       Name lat [deg] lon [deg]     H [m]    Hp [m]    H* [m]   Hrsp[m]
       joze   52.0000   21.0000  100.0000        --        --        --
 #-----------------------------------------------------------------------
-Execution time:   0.0s (proc time:   0.1 |%  Inf)
+Execution time:   1.0s (proc time:   0.2 |% 16.8)
