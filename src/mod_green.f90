@@ -901,7 +901,9 @@ subroutine convolve(site, date, results)
 
                       result(ind%green%gg) = result(ind%green%gg) +      &
                         green_common(igreen)%data(idist, ind%green%gg) * &
-                        aux * 1.e8_dp ! m s-2 -> microGal
+                        aux * 1.e8_dp * (-1)
+                      ! m s-2 -> microGal
+                      ! -1 beacuase of sign is positive downward for gravity
                     endif
                   endif
 
