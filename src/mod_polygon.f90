@@ -44,7 +44,7 @@ contains
 subroutine parse_polygon (cmd_line_entry)
   use mod_printing
   use mod_cmdline
-  use mod_utilities, only: file_exists
+  use mr_utilities, only: file_exists
 
   type(cmd_line_arg), intent(in) :: cmd_line_entry
   integer :: i
@@ -92,7 +92,7 @@ end subroutine
 subroutine read_polygon (polygon)
 
   use, intrinsic :: iso_fortran_env
-  use mod_utilities, only: skip_header
+  use mr_utilities, only: skip_header
   use mod_printing
 
   type(polygon_info) :: polygon

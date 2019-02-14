@@ -165,7 +165,7 @@ contains
 !! \author Marcin Rajner
 ! =============================================================================
 subroutine collect_args (dummy)
-  use mod_utilities, only: ntokens, count_separator
+  use mr_utilities, only: ntokens, count_separator
 
   character(*) :: dummy
   character(455) :: dummy_aux, dummy_aux2
@@ -284,7 +284,7 @@ end subroutine
 !! \date 2013-03-19
 ! ==============================================================================
 pure function check_if_switch_or_minus(dummy)
-  use mod_utilities, only: is_numeric
+  use mr_utilities, only: is_numeric
 
   logical:: check_if_switch_or_minus
   character(*), intent(in) :: dummy

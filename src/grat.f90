@@ -60,7 +60,7 @@ program grat
   use mod_site,      only: print_site_summary, site
   use mod_cmdline
   use mod_admit,     only: admit
-  use mod_utilities, only: Bubble_Sort, mean, stdev
+  use mr_utilities, only: Bubble_Sort, mean, stdev
   use mr_constants, only: sp
 
   implicit none

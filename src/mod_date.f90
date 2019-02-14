@@ -22,7 +22,7 @@ contains
 ! convert date 2010-01-02 into grat format 20100102
 ! =============================================================================
 subroutine strip_hyphen_date_iso(string)
-  use mod_utilities, only: count_separator
+  use mr_utilities, only: count_separator
 
   character(*), intent(inout) :: string
   integer                     :: i
@@ -45,7 +45,7 @@ end subroutine
 subroutine parse_date(cmd_line_entry)
   use mod_cmdline
   use mod_mjd,       only: mjd, invmjd
-  use mod_utilities, only: is_numeric
+  use mr_utilities, only: is_numeric
   use mod_data,      only: model
 
   integer, dimension(6) :: start, stop, swap
@@ -362,7 +362,7 @@ end subroutine
 !! \warning decimal seconds are not allowed
 ! =============================================================================
 subroutine string2date (string, date, success)
-  use mod_utilities, only: is_numeric
+  use mr_utilities, only: is_numeric
 
   character (*), intent(in) :: string
   integer, dimension(6), intent(out):: date

@@ -17,7 +17,7 @@ subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdat
   use mod_polygon,   only: parse_polygon
   use mod_data,      only: parse_model, parse_level, all_huge, model
   use mod_green,     only: parse_green, green
-  use mod_utilities, only: file_exists, is_numeric
+  use mr_utilities, only: file_exists, is_numeric
   use mod_admit,     only: parse_admit
 
   type(cmd_line_arg), intent(in):: cmd_line_entry
@@ -334,7 +334,7 @@ subroutine intro (     &
     compiler           &
     )
   use mod_cmdline
-  use mod_utilities, only: file_exists
+  use mr_utilities, only: file_exists
 
   character(len=*), intent(in) :: program_calling
   character(len=*), intent (in), optional :: accepted_switches
@@ -667,7 +667,7 @@ end function
 ! =============================================================================
 subroutine parse_moreverbose (cmd_line_entry)
   use mod_cmdline
-  use mod_utilities, only: file_exists
+  use mr_utilities, only: file_exists
 
   type (cmd_line_arg) :: cmd_line_entry
   integer :: i, j
@@ -736,7 +736,7 @@ end subroutine
 !! \date 2013-05-17
 ! =============================================================================
 subroutine parse_info (cmd_line_entry)
-  use mod_utilities, only:is_numeric
+  use mr_utilities, only:is_numeric
   use mod_cmdline
   type (cmd_line_arg), intent(in),optional :: cmd_line_entry
   integer :: i,j
@@ -1151,7 +1151,7 @@ end subroutine
 ! =============================================================================
 subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_calling)
   use mod_cmdline,   only: cmd_line_arg
-  use mod_utilities, only: version_split
+  use mr_utilities, only: version_split
 
   type(cmd_line_arg) :: cmd_line_entry
   character(len=*), optional :: version, cdate, gdate, program_calling

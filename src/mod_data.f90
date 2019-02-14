@@ -11,7 +11,7 @@
 ! =============================================================================
 module mod_data
   use mr_constants, only: dp
-  use mod_utilities, only: setnan
+  use mr_utilities, only: setnan
 
   implicit none
 
@@ -73,7 +73,7 @@ contains
 subroutine parse_model(cmd_line_entry)
   use mod_cmdline
   use mod_printing
-  use mod_utilities, only: file_exists, is_numeric
+  use mr_utilities, only: file_exists, is_numeric
   type(cmd_line_arg)  :: cmd_line_entry
   integer :: i, j
 
@@ -202,7 +202,7 @@ end subroutine
 ! =============================================================================
 subroutine model_aliases(model, dryrun, year, month)
   use mod_printing
-  use mod_utilities, only: file_exists
+  use mr_utilities, only: file_exists
   use mod_cmdline,   only: warnings
 
   type(file) :: model
@@ -442,7 +442,7 @@ end subroutine
 function variable_modifier (val, modifier, verbose, list_only)
   use mod_atmosphere, only: geop2geom
   use mr_constants,  only: earth
-  use mod_utilities,  only: ntokens, mmwater2pascal
+  use mr_utilities,  only: ntokens, mmwater2pascal
   use mod_printing,   only: print_warning, form, log, output
 
   real(dp) :: variable_modifier
@@ -533,7 +533,7 @@ subroutine read_netCDF (model, print, force)
   use netcdf
   use mod_printing
   use mod_cmdline,   only: ind
-  use mod_utilities, only: file_exists
+  use mr_utilities, only: file_exists
 
   type (file) :: model
   logical, optional, intent(in) :: print, force
@@ -1083,7 +1083,7 @@ end subroutine
 ! =============================================================================
 subroutine get_value(model, lat, lon, val, level, method, date)
   use mod_cmdline, only: moreverbose, ind
-  use mod_utilities, only: r2d, bilinear
+  use mr_utilities, only: r2d, bilinear
   use netcdf
   use mod_printing, only: print_warning, basename
   use iso_fortran_env, only: error_unit
@@ -1329,7 +1329,7 @@ end function
 ! working only for regular grid!
 ! =============================================================================
 subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
-  use mod_utilities, only: d2r
+  use mr_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
   use mod_polygon
@@ -1400,7 +1400,7 @@ end subroutine
 ! working only for regular grid!
 ! =============================================================================
 subroutine total_mass (model, date)
-  use mod_utilities, only: d2r
+  use mr_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
   use mod_mjd

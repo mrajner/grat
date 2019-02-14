@@ -1,7 +1,7 @@
 !> \file
 module mod_admit
   use mr_constants, only: dp
-  use mod_utilities, only: setnan
+  use mr_utilities, only: setnan
 
   implicit none
   real(dp), parameter :: default_admitance_value = -0.3_dp
@@ -13,7 +13,7 @@ contains
 real(dp) function admit(site_, date, number)
   use mod_cmdline, only: ind, info, admitance, transfer_sp, center_data
   use mod_data, only: get_value, model
-  use mod_utilities, only: r2d
+  use mr_utilities, only: r2d
   use mod_atmosphere, only: standard_pressure
   use mod_site
 

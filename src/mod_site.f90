@@ -39,7 +39,7 @@ contains
 ! =============================================================================
 subroutine parse_site(cmd_line_entry)
   use mod_cmdline
-  use mod_utilities, only: file_exists, is_numeric
+  use mr_utilities, only: file_exists, is_numeric
 
   type(cmd_line_arg),intent(in):: cmd_line_entry
   integer :: start_index
@@ -292,7 +292,7 @@ end subroutine
 !>
 ! =============================================================================
 subroutine parse_GMT_like_boundaries (field)
-  use mod_utilities, only: is_numeric
+  use mr_utilities, only: is_numeric
   use mod_cmdline, only: field_info
   use mod_data, only: model
   type(field_info),intent(in) :: field
@@ -423,7 +423,7 @@ end subroutine
 !! checks for arguments and put it into array \c sites
 ! =============================================================================
 subroutine read_site_file (file_name)
-  use mod_utilities, only: is_numeric, ntokens, skip_header
+  use mr_utilities, only: is_numeric, ntokens, skip_header
 
   character(len=*), intent(in) ::  file_name
   integer :: io_status, i, good_lines, number_of_lines, nloop

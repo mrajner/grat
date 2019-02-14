@@ -50,7 +50,6 @@ FPP :=                                            \
 	-D__COMPILER__='"$(FC_INFO)"' 
 
 SRCS :=                 \
-  mod_utilities.f90     \
   mod_cmdline.f90       \
   mod_printing.f90      \
   mod_mjd.f90           \

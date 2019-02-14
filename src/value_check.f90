@@ -12,7 +12,7 @@ program value_check
   use mod_site
   use mod_polygon,    only: read_polygon, chkgon, polygon
   use mod_atmosphere, only: standard_pressure, standard_temperature, geop2geom
-  use mod_utilities,  only: d2r, setnan
+  use mr_utilities,  only: d2r, setnan
 
   implicit none
   real(dp) , allocatable , dimension(:) :: val

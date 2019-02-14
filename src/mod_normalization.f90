@@ -10,7 +10,7 @@ contains
 ! =============================================================================
 elemental function green_normalization(method, psi)
   use mr_constants, only: pi, earth, gravity, dp
-  use mod_utilities, only: d2r
+  use mr_utilities, only: d2r
 
   real(dp) :: green_normalization
   character(*), intent(in) :: method
