@@ -2,7 +2,7 @@ set -e
 set -o nounset 
 set -o pipefail
 
-. definitions.sh 
+. definitions.sh
 
 [[ ${EWT+x} == "x" ]] || 
 {
@@ -23,7 +23,7 @@ grat=$G/bin/grat
   $grat \
     -S j \
     -F 1000@SP:@mmwater2pascal -BN \
-    -M2 -G /home/mrajner/src/grat/dat/merriam_green.dat @GR  -I4@DD:4@AD
+    -M2 -G /home/mrajner/src/grat/dat/merriam_green.dat @GR : 1 : 2  -I2@DD:2@AD
 
 } | tee ${0/.sh/.dat}${suffix}
   exit
