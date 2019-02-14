@@ -21,7 +21,7 @@ for exclamation in "" "-!" ; do
       -M1,2                                        \
       -G rajner @GN                                \
       -S joze:52:21:100                            \
-      -D2012:20@H : 3@H                            \
+      -D2012:20@H : 12@H                            \
       -I $DE @DE : 2@3D                            \
       -o ${0/.sh/.dat.out}$counter${suffix} : free \
       -V ${0/.sh/.dat.log}$counter${suffix}        \
