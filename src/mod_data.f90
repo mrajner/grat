@@ -1000,10 +1000,6 @@ subroutine get_variable(model, date, print, level)
     end where
   end if
 
-  ! where(model%data.lt.-100.0)
-  !   model%data=setnan()
-  ! end where
-
   ! TODO make elemental function variable_modifier and use without loop
   ! test if any speed gain
   if (trim(model%datanames(1)).ne."") then
