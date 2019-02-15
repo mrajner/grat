@@ -697,7 +697,7 @@ end subroutine
 subroutine nctime2date (model, print)
   use netcdf
   use mod_printing
-  use mod_mjd,      only: mjd, invmjd
+  use mr_mjd,      only: mjd, invmjd
 
   type (file)        :: model
   real(dp)           :: mjd_start, mjd_
@@ -1333,7 +1333,7 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
   use mod_polygon
-  use mod_mjd
+  use mr_mjd
 
   type (file) :: model, landseamask
   logical, intent(in):: inverted_landsea_mask
@@ -1403,7 +1403,7 @@ subroutine total_mass (model, date)
   use mr_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
-  use mod_mjd
+  use mr_mjd
   type (file) :: model
   real(dp) ::  val, valarea, totalarea
   integer :: ilat, ilon
