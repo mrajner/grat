@@ -1,10 +1,10 @@
 ########################################################################
 #                                                                 grat #
-#                                                 v1.3-363-gf045805 () #
+#                                                 v1.3-364-g8e2c1e4 () #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6) #
+#         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                               compiled on  2019-02-13 08:52:53 +0100 #
+#                               compiled on  2019-02-13 10:19:51 +0100 #
 #                                                                      #
 #                                 Copyright 2013-2019 by Marcin Rajner #
 #                   Warsaw University of Technology (2003-2017, 2019-) #
@@ -12,7 +12,7 @@
 #                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2019-02-13 20:04:51 (+01h UTC)
+Program started: 2019-02-14 09:23:43 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 grat -! -H -F ../data/test_data.nc @SP : sp -M1,2 -G rajner @GN -S joze:

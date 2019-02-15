@@ -320,6 +320,13 @@ SEE ALSO
 --------
 See the grat website at <http://www.grat.gik.pw.edu.pl/grat> for more information.
 
+CAEVATS
+----
+
+Gravity is positive downword, so calculating gravity effect wih command
+  grat -F 1000 @ SP : sp @ pascal2mmwater -M2 -G .... @GR : sph_distance_col : gravity_green_col 
+you need to remember about sign using @GG gives proper results
+
 
 AUTHORS
 -------

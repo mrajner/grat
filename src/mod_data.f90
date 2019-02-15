@@ -994,7 +994,7 @@ subroutine get_variable(model, date, print, level)
 
   status = nf90_get_att(model%ncid, varid, "actual_range", model%varrange)
 
-  if (status == 0) then
+  if (status == nf90_noerr) then
     where(model%data.gt.model%varrange(2).or.model%data.lt.model%varrange(1))
       model%data=setnan()
     end where
