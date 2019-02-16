@@ -1,6 +1,6 @@
 program unit_tests
-  use mod_utilities
-  use mod_constants, only: density,earth
+  use mr_utilities
+  use mr_constants, only: density,earth
   implicit none
   print *, 'testing'
 

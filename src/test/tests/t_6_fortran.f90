@@ -1,5 +1,5 @@
 program test
-  use mod_utilities
+  use mr_utilities
 
   print*, linspace(1._dp,5._dp,-1)
   print*, linspace(1._dp,5._dp,-0)

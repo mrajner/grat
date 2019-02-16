@@ -1,5 +1,5 @@
 program unit_tests
-  use mod_utilities
+  use mr_utilities
  
   print*, "count_separator", count_separator("dfdfsffssfsff,fdfdfdf,fdfsdf,f,dsf,sdfsdfsdfs,,sdffsdf")
   print*, "count_separator", count_separator("-Fsp@SP:1:2:3:4:5:6")

@@ -52,7 +52,6 @@ FPP :=                                            \
 SRCS :=                 \
   mod_cmdline.f90       \
   mod_printing.f90      \
-  mod_mjd.f90           \
   mod_normalization.f90 \
   mod_atmosphere.f90    \
   mod_aggf.f90          \
@@ -205,9 +204,7 @@ libgrat$(VERSION_MAJOR).a: $(OBJS)
 test: all install
 	make -C test runtests FC=$(FC) OPT=$(OPT)
 
-include mod_dep.makefile
-mod_dep.makefile: mod_dep.awk
-	awk -f $< > $@
+include dep.makefile
 
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp

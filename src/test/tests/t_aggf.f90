@@ -1,5 +1,5 @@
 program test_aggf
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_aggf, only: aggf
   use mod_atmosphere , only: standard_pressure
 

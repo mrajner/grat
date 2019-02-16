@@ -44,7 +44,7 @@ end subroutine
 ! =============================================================================
 subroutine parse_date(cmd_line_entry)
   use mod_cmdline
-  use mod_mjd,       only: mjd, invmjd
+  use mr_mjd,       only: mjd, invmjd
   use mr_utilities, only: is_numeric
   use mod_data,      only: model
 

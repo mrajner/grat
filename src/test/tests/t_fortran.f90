@@ -1,5 +1,5 @@
 program testing_fortran_procedures
-  use mod_utilities
+  use mr_utilities
   use mod_cmdline
   use mod_aggf
 
