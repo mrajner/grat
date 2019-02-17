@@ -10,14 +10,14 @@ contains
 ! =============================================================================
 !> This subroutine counts the command line arguments and parse appropriately
 ! =============================================================================
-subroutine parse_option (cmd_line_entry, accepted_switches, version, cdate, gdate, program_calling)
+subroutine parse_option(cmd_line_entry, accepted_switches, version, cdate, gdate, program_calling)
   use mod_cmdline
   use mod_site,      only: parse_site
   use mod_date,      only: parse_date
   use mod_polygon,   only: parse_polygon
   use mod_data,      only: parse_model, parse_level, all_huge, model
   use mod_green,     only: parse_green, green
-  use mr_utilities, only: file_exists, is_numeric
+  use mr_utilities, only: file_exists, is_numeric, basename
   use mod_admit,     only: parse_admit
 
   type(cmd_line_arg), intent(in):: cmd_line_entry
@@ -331,7 +331,8 @@ subroutine intro (     &
     cdate,             &
     gdate,             &
     fflags,            &
-    compiler           &
+    compiler,          &
+    host               &
     )
   use mod_cmdline
   use mr_utilities, only: file_exists
@@ -339,7 +340,7 @@ subroutine intro (     &
   character(len=*), intent(in) :: program_calling
   character(len=*), intent (in), optional :: accepted_switches
   logical, intent (in), optional :: cmdlineargs
-  character(*), intent (in), optional :: version, cdate, gdate, fflags, compiler
+  character(*), intent (in), optional :: version, cdate, gdate, fflags, compiler, host
   integer :: i, j
   character(len = 855) :: dummy
   integer,dimension(8):: execution_date
@@ -387,7 +388,8 @@ subroutine intro (     &
       cdate           = cdate,           &
       gdate           = gdate,           &
       fflags          = fflags ,         &
-      compiler        = compiler         &
+      compiler        = compiler,        &
+      host            = host             &
       )
     call exit
 

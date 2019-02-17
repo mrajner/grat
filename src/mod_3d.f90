@@ -10,7 +10,7 @@ contains
 ! =============================================================================
 !> all values in radians
 ! =============================================================================
-real(dp) function geometry (psi, h, z, method)
+real(dp) function geometry(psi, h, z, method)
   use mr_constants, only: earth
 
   real(dp), intent(in) :: psi, h, z
@@ -46,7 +46,7 @@ end function
 ! =============================================================================
 !> all values in radians
 ! =============================================================================
-real(dp) function potential (psi1, psi2, dazimuth, h, z1, z2)
+real(dp) function potential(psi1, psi2, dazimuth, h, z1, z2)
   use mr_constants, only: earth, pi
 
   real(dp), intent(in) :: psi1, psi2, h, z1, z2, dazimuth
@@ -82,7 +82,7 @@ end function
 !> all values in radians
 !! second improved version of cylinder, includes curvature of the earth
 ! =============================================================================
-real(dp) function cylinder (psi1, psi2, dazimuth, h, z1, z2)
+real(dp) function cylinder(psi1, psi2, dazimuth, h, z1, z2)
   use mr_constants, only: earth
 
   real(dp), intent(in) :: psi1, psi2, dazimuth, h, z1, z2
@@ -112,7 +112,7 @@ end function
 !! this formula is identical as geometry in this module but is uses the
 !! geographical coordinates
 !! =============================================================================
-real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, height)
+real(dp) function point_mass_a(theta_s, lambda_s, height_s, theta, lambda, height)
   use mr_constants, only: earth, pi
 
   real(dp) :: theta_s, lambda_s, height_s ! site
@@ -133,7 +133,6 @@ real(dp) function point_mass_a (theta_s, lambda_s, height_s, theta, lambda, heig
   point_mass_a =                              &
     (r_s - r*aux)                             &
     /(r_s**2 + r**2 -2*(r_s)*r*aux)**(3./2.)
-
 end function
 
 end module mod_3d

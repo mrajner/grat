@@ -31,8 +31,6 @@ module mod_cmdline
 
   type(cmd_line_arg), allocatable, dimension(:) :: cmd_line
 
-  private :: check_if_switch_or_minus
-
   type moreverbose_info
     character(60) :: name
     character(30):: dataname
@@ -83,16 +81,6 @@ module mod_cmdline
   end type
   type(transfer_sp_info) transfer_sp
 
-  type warnings_info
-    logical ::              &
-      if         = .true.,  &
-      strict     = .false., &
-      time       = .false., &
-      all        = .false., &
-      file_exist = .false.
-  end type
-
-  type(warnings_info) warnings
 
   type model_index
     integer(2) :: sp, t, rsp, ewt, h, ls, hp, hrsp, gp, vt, vsh
@@ -242,6 +230,7 @@ end subroutine
 !! but  if -[\s,:] do not start next command line option
 ! ==============================================================================
 subroutine get_command_cleaned(dummy)
+  use mr_utilities, only: check_if_switch_or_minus
   character(*), intent(out) :: dummy
   character(355) :: a, b, arg
   integer :: i
@@ -271,31 +260,5 @@ subroutine get_command_cleaned(dummy)
 
   enddo
 end subroutine
-
-! ==============================================================================
-!> Check if `minus sign` starts new option in command line or is just a minus 
-!! in command line entry
-!!
-!! if after '-' is space or number or ',' or ':' (field separators) do not start
-!! next option for command line
-!! If switch return .true. otherwise return .false
-!!
-!! \author M. Rajner
-!! \date 2013-03-19
-! ==============================================================================
-pure function check_if_switch_or_minus(dummy)
-  use mr_utilities, only: is_numeric
-
-  logical:: check_if_switch_or_minus
-  character(*), intent(in) :: dummy
-
-  !TODO make select
-  check_if_switch_or_minus = .false.
-  if (dummy(1:1).eq."-") check_if_switch_or_minus      = .true.
-  if (dummy(2:2).eq." ") check_if_switch_or_minus      = .false.
-  if (dummy(2:2).eq.",") check_if_switch_or_minus      = .false.
-  if (dummy(2:2).eq.":") check_if_switch_or_minus      = .false.
-  if (is_numeric(dummy(2:2))) check_if_switch_or_minus = .false.
-end function
 
 end module

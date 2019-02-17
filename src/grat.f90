@@ -81,6 +81,7 @@ program grat
     gdate             = __GDATE__,                       &
     fflags            = __FFLAGS__,                      &
     compiler          = __COMPILER__,                    &
+    host              = __HOST__,                        &
     accepted_switches = 'VSBLGPqoFIDLvhRrMOAHUwJQ!n-mC', &
     cmdlineargs       = .true.                           &
     )

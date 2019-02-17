@@ -203,7 +203,7 @@ end subroutine
 subroutine model_aliases(model, dryrun, year, month)
   use mod_printing
   use mr_utilities, only: file_exists
-  use mod_cmdline,   only: warnings
+  use mod_printing,   only: warnings
 
   type(file) :: model
   logical, intent(in), optional :: dryrun
@@ -440,7 +440,7 @@ end subroutine
 ! or convert this routine as `elemental`
 ! =============================================================================
 function variable_modifier (val, modifier, verbose, list_only)
-  use mod_atmosphere, only: geop2geom
+  use mr_atmosphere, only: geop2geom
   use mr_constants,  only: earth
   use mr_utilities,  only: ntokens, mmwater2pascal
   use mod_printing,   only: print_warning, form, log, output
@@ -533,7 +533,7 @@ subroutine read_netCDF (model, print, force)
   use netcdf
   use mod_printing
   use mod_cmdline,   only: ind
-  use mr_utilities, only: file_exists
+  use mr_utilities, only: file_exists, basename
 
   type (file) :: model
   logical, optional, intent(in) :: print, force
@@ -831,7 +831,8 @@ end function
 !> get level index
 ! =============================================================================
 function get_level_index(model, level, sucess)
-  use mod_printing, only: print_warning, basename
+  use mod_printing, only: print_warning
+  use mr_utilities, only: basename
   use netcdf
 
   integer :: get_level_index
@@ -1083,9 +1084,9 @@ end subroutine
 ! =============================================================================
 subroutine get_value(model, lat, lon, val, level, method, date)
   use mod_cmdline, only: moreverbose, ind
-  use mr_utilities, only: r2d, bilinear
+  use mr_utilities, only: r2d, bilinear, basename
   use netcdf
-  use mod_printing, only: print_warning, basename
+  use mod_printing, only: print_warning
   use iso_fortran_env, only: error_unit
 
   type(file), intent (in) :: model
@@ -1484,10 +1485,8 @@ end subroutine
 ! =============================================================================
 subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   use mod_printing, only: print_warning
-  use mod_atmosphere, only: &
-    standard_pressure,      &
-    standard_temperature,   &
-    virtual_temperature
+  use mod_atmosphere, only: standard_pressure
+    use mr_atmosphere, only: standard_temperature, virtual_temperature
   use mr_constants, only: R_air
 
   character(*), intent(in) :: what

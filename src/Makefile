@@ -47,7 +47,8 @@ FPP :=                                            \
 	-D__GDATE__='"$(GIT_DATE)"'                      \
 	-D__GRAT_VERSION__='"$(VERSION)"'                \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
-	-D__COMPILER__='"$(FC_INFO)"' 
+	-D__COMPILER__='"$(FC_INFO)"'  \
+	-D__HOST__='"$(HOST)"' 
 
 SRCS :=                 \
   mod_cmdline.f90       \
@@ -205,6 +206,8 @@ test: all install
 	make -C test runtests FC=$(FC) OPT=$(OPT)
 
 include dep.makefile
+dep.makefile: 
+	makedepf90 *f90 > $@
 
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp

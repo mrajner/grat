@@ -3,6 +3,17 @@ module mod_printing
 
   implicit none
 
+  type warnings_info
+    logical ::              &
+      if         = .true.,  &
+      strict     = .false., &
+      time       = .false., &
+      all        = .false., &
+      file_exist = .false.
+  end type
+
+  type(warnings_info) warnings
+
   !----------------------------------------------------
   ! For preety printing
   !----------------------------------------------------
@@ -54,9 +65,8 @@ module mod_printing
 contains
 ! =============================================================================
 ! =============================================================================
-subroutine print_warning (warn, unit, more, error, program_calling)
+subroutine print_warning(warn, unit, more, error, program_calling)
   use, intrinsic:: iso_fortran_env
-  use :: mod_cmdline, only: warnings
 
   integer, dimension(8):: execution_date
   character (len=*), intent(in)  :: warn
@@ -231,37 +241,22 @@ subroutine progress(j, time, cpu, every)
 end subroutine progress
 
 ! =============================================================================
-! =============================================================================
-function basename(file)
-  character(200) :: basename
-  character(*) :: file
-
-  if (log%full) then
-    basename=file
-  else
-    basename=file(index(file,'/', back=.true.)+1:)
-  endif
-end function
-
-! =============================================================================
 !> Print version of program depending on program calling
 !!
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
 subroutine print_version( &
-    program_calling,       &
-    version,               &
-    cdate,                 &
-    gdate,                 &
-    fflags,                &
-    compiler               &
+    program_calling,      &
+    version,              &
+    cdate,                &
+    gdate,                &
+    fflags,               &
+    compiler,             &
+    host                  &
     )
   character(*) :: program_calling
-  character(*), optional :: version, cdate, gdate, fflags, compiler
-  character(10) :: host
-
-  call get_environment_variable('HOST',host)
+  character(*), optional :: version, cdate, gdate, fflags, compiler, host
 
   write(log%unit, form_header)
   write(log%unit, form_inheader) trim(program_calling)

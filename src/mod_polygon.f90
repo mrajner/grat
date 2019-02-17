@@ -41,7 +41,7 @@ contains
 !! \author M. Rajner
 !! \date 2013.05.20
 ! =============================================================================
-subroutine parse_polygon (cmd_line_entry)
+subroutine parse_polygon(cmd_line_entry)
   use mod_printing
   use mod_cmdline
   use mr_utilities, only: file_exists
@@ -89,7 +89,7 @@ end subroutine
 !!
 !! inspired by spotl \cite Agnew97
 ! ==============================================================================
-subroutine read_polygon (polygon)
+subroutine read_polygon(polygon)
 
   use, intrinsic :: iso_fortran_env
   use mr_utilities, only: skip_header
@@ -105,18 +105,18 @@ subroutine read_polygon (polygon)
 
     ! first get the number of polygon
     call skip_header(polygon%unit)
-    read (polygon%unit , * ) number_of_polygons
+    read(polygon%unit, *) number_of_polygons
     allocate (polygon%polygon(number_of_polygons))
 
     ! loop over all polygons in file
     do  i=1, number_of_polygons
 
       call skip_header(polygon%unit)
-      read (polygon%unit, * ) nvertex
+      read(polygon%unit, *) nvertex
       allocate (polygon%polygon(i)%coords(nvertex, 2 ))
 
       call skip_header(polygon%unit)
-      read (polygon%unit, * ) pm
+      read(polygon%unit, *) pm
 
       if (pm.eq."+") polygon%polygon(i)%use=.true.
       if (pm.eq."-") polygon%polygon(i)%use=.false.
@@ -184,12 +184,12 @@ end subroutine
 
 !! all values in decimal degrees
 ! ==============================================================================
-subroutine chkgon (rlong , rlat , polygon , iok)
+subroutine chkgon(rlong, rlat, polygon, iok)
   real(dp),intent (in) :: rlong, rlat
   integer :: i, ianyok
-  integer(2) , intent (out) :: iok
+  integer(2), intent (out) :: iok
   real(dp) :: rlong2
-  type(polygon_info) , intent (in) :: polygon
+  type(polygon_info), intent (in) :: polygon
 
   !  ! Check first if we need to use this soubroutine
   if (size(polygon%polygon).eq.0) then

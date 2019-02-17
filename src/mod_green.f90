@@ -43,7 +43,7 @@ contains
 !! \date 2013-03-06
 ! =============================================================================
 subroutine parse_green (cmd_line_entry)
-  use mr_utilities, only: file_exists, is_numeric
+  use mr_utilities, only: file_exists, is_numeric, basename
   use mod_cmdline
   use mod_printing
 
@@ -133,7 +133,7 @@ end subroutine
 !> This subroutine read  green file
 ! =============================================================================
 subroutine read_green (green, print)
-  use mr_utilities, only: file_exists, skip_header, r2d, d2r, ntokens
+  use mr_utilities, only: file_exists, skip_header, r2d, d2r, ntokens, basename
   use, intrinsic :: iso_fortran_env
   use mod_printing
   use mr_constants, only: earth, pi
@@ -525,7 +525,8 @@ subroutine convolve(site, date, results)
   use mod_printing
   use mod_normalization, only: green_normalization
   use mod_aggf, only: aggf
-  use mod_atmosphere, only: standard_pressure, standard_temperature, virtual_temperature
+  use mod_atmosphere, only: standard_pressure
+ use mr_atmosphere, only: standard_temperature, virtual_temperature
   use mod_3d
 
   type(site_info),  intent(in) :: site
