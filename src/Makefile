@@ -21,15 +21,15 @@ GIT_DATE      := $(shell git show -s --format=%ci HEAD)
 VERSION_MAJOR := $(shell awk '{gsub(/(v*|\..*)/,"");print}' <<< $(VERSION))
 LIBGRAT       := /usr/local/include/libgrat$(VERSION_MAJOR).a
 
-# ifort settings
-ifeq ($(FC),ifort)
-	FFLAGS               := $(OPT) -xHost -warn all
-	ENABLE_PREPROCESSING := -fpp
-	NETCDFF :=                                            \
-		-I/usr/local/include -L/usr/local/lib64 -lnetcdf     \
-		-I/home/mrajner/src/netcdf-fortran/fortran/          \
-		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
-endif
+# # ifort settings
+# ifeq ($(FC),ifort)
+# 	FFLAGS               := $(OPT) -xHost -warn all
+# 	ENABLE_PREPROCESSING := -fpp
+# 	NETCDFF :=                                            \
+# 		-I/usr/local/include -L/usr/local/lib64 -lnetcdf     \
+# 		-I/home/mrajner/src/netcdf-fortran/fortran/          \
+# 		-L/home/mrajner/src/netcdf-fortran/fortran -lnetcdff
+# endif
 
 #  gfortran settings
 ifeq ($(FC),gfortran)
@@ -38,7 +38,27 @@ ifdef PEDANTIC
 	FFLAGS += -Werror -Wno-character-truncation -std=f2008 -Wall -pedantic -fcheck=all -fbounds-check -fcheck=bounds -Warray-bounds
 endif
 	ENABLE_PREPROCESSING := -cpp
-	NETCDFF   := -I/usr/lib64/gfortran/modules/ -lnetcdf -lnetcdff
+	NETCDFFINC           := -I/usr/lib64/gfortran/modules/
+	NETCDFFLIB           := -lnetcdf -lnetcdff
+endif
+
+ifdef STATIC
+NETCDFFLIB      :=                           \
+	-static                                   \
+	-lnetcdff                                 \
+	-lnetcdf                                  \
+	-lhdf5_hl                                 \
+	-lhdf5                                    \
+	-L/home/mrajner/src/szip/src/.libs/  -lsz \
+	-L/home/mrajner/src/curl/lib -lcurl       \
+	-L/usr/lib64/hdf/ -lmfhdf                 \
+	-L/usr/lib64/hdf/ -ldf                    \
+	-L/home/mrajner/src/libjpeg-turbo/ -ljpeg \
+	-lm                                       \
+	-lz                                       \
+	-lpthread                                 \
+	-lssl -lcrypto                            \
+	-ldl
 endif
 
 FPP :=                                            \
@@ -179,7 +199,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 
 %.o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFF) 
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFFINC) 
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
@@ -193,7 +213,7 @@ $(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 		$<             \
 		-o $@          \
 		-L. -lgrat \
-    $(NETCDFF)
+    $(NETCDFFLIB)
 
 libgrat.a: libgrat$(VERSION_MAJOR).a 
 	ln -sf $(realpath $<) $@
