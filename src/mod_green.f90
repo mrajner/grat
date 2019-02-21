@@ -1435,7 +1435,7 @@ subroutine convolve(site, date, results)
                 * area / d2r(green_common(igreen)%distance(idist)) &
                 * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
 
-              if (isnan(aux)) aux = 0
+              if (isnan(aux)) aux = 0._dp
 
               if (ind%green%gr.ne.0 .or. ind%green%ghn.ne.0 .or. ind%green%ghe.ne.0) then
 
@@ -1834,7 +1834,7 @@ function green_newtonian (psi, h, z, method)
     green_newtonian =                                               &
       ((earth%radius + h_) - (earth%radius + z_) * cos(psi))        &
       / ((earth%radius + h_)**2 + (earth%radius + z_)**2            &
-      -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3./2.)
+      -2*(earth%radius + h_)*(earth%radius + z_)*cos(psi))**(3._dp/2.)
 
     green_newtonian = green_newtonian &
       * gravity%constant / earth%gravity%mean * green_normalization("m", psi=psi)
