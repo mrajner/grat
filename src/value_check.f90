@@ -11,8 +11,7 @@ program value_check
   use mod_date
   use mod_site
   use mod_polygon,    only: read_polygon, chkgon, polygon
-  use mod_atmosphere, only: standard_pressure
- use mr_atmosphere, only: standard_temperature, geop2geom
+  use mr_atmosphere, only: standard_temperature, geop2geom
   use mr_utilities,  only: d2r, setnan
 
   implicit none

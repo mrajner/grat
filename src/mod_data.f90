@@ -1485,8 +1485,7 @@ end subroutine
 ! =============================================================================
 subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   use mod_printing, only: print_warning
-  use mod_atmosphere, only: standard_pressure
-    use mr_atmosphere, only: standard_temperature, virtual_temperature
+    use mr_atmosphere, only: standard_temperature, virtual_temperature, standard_pressure
   use mr_constants, only: R_air
 
   character(*), intent(in) :: what

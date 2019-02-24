@@ -14,7 +14,7 @@ real(dp) function admit(site_, date, number)
   use mod_cmdline, only: ind, info, admitance, transfer_sp, center_data
   use mod_data, only: get_value, model
   use mr_utilities, only: r2d
-  use mod_atmosphere, only: standard_pressure
+  use mr_atmosphere, only: standard_pressure
   use mod_site
 
   real(dp) :: val, rsp, t !, hrsp

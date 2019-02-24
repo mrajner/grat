@@ -525,8 +525,7 @@ subroutine convolve(site, date, results)
   use mod_printing
   use mod_normalization, only: green_normalization
   use mod_aggf, only: aggf
-  use mod_atmosphere, only: standard_pressure
- use mr_atmosphere, only: standard_temperature, virtual_temperature
+  use mr_atmosphere, only: standard_temperature, virtual_temperature, standard_pressure
   use mod_3d
 
   type(site_info),  intent(in) :: site

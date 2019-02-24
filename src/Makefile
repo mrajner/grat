@@ -74,7 +74,6 @@ SRCS :=                 \
   mod_cmdline.f90       \
   mod_printing.f90      \
   mod_normalization.f90 \
-  mod_atmosphere.f90    \
   mod_aggf.f90          \
   mod_polygon.f90       \
   mod_data.f90          \
@@ -196,7 +195,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 
 %.o: %.f90
 	$(call colorecho,2,$@)
-	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFFINC) 
+	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFFINC) \
 	 	-I/home/mrajner/bin/fortran/libmr/
 
 .PHONY: $(PROGS_SHORTCUTS)
@@ -211,7 +210,7 @@ $(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 		$<             \
 		-o $@          \
 		-L. -lgrat \
-    $(NETCDFFLIB)
+    $(NETCDFFLIB) \
 	 	-I/home/mrajner/bin/fortran/libmr/ -L/home/mrajner/bin/fortran/libmr/ -lmr
 
 libgrat.a: libgrat$(VERSION_MAJOR).a 
