@@ -1045,7 +1045,7 @@ end subroutine
 !! \date 2013-03-04
 ! =============================================================================
 subroutine nc_error (status, success)
-  use netcdf
+  use netcdf, only: nf90_noerr, nf90_strerror
   use mod_printing
   use iso_fortran_env
 

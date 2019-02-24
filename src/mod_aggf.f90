@@ -21,7 +21,7 @@ contains
 !! \date 2013-03-19
 !! \warning psi in radians
 ! ==============================================================================
-function aggfd ( &
+function aggfd( &
     psi,         &
     delta,       &
     dz,          &
@@ -118,7 +118,7 @@ end function
 !! \warning psi in radians h in meter
 !! t_zero is actually delta_t so if t_zero=10 (t_zero=288.15+10)
 ! ==============================================================================
-function aggf (         &
+function aggf(          &
     psi,                &
     zmin,               &
     zmax,               &
@@ -303,7 +303,7 @@ end function
 !! \date 2013-03-19
 !! \warning psi in radian
 ! ==============================================================================
-function GN_thin_layer (psi)
+function GN_thin_layer(psi)
   use mr_constants, only: dp
   real(dp), intent(in) :: psi
   real(dp) :: GN_thin_layer
@@ -316,7 +316,7 @@ end function
 !> \brief Bouger plate computation
 !!
 ! ==============================================================================
-function bouger (h, R)
+function bouger(h, R)
   use mr_constants, only: dp, gravity, pi
 
   real(dp) :: bouger
@@ -339,7 +339,7 @@ end function
 !! \date 2013-03-18
 !! \author M. Rajner
 ! ==============================================================================
-function simple_def (R)
+function simple_def(R)
   use mr_constants, only: dp, earth
   real(dp) :: R, delta
   real(dp) :: simple_def
