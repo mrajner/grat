@@ -6,22 +6,10 @@
 !! \author Marcin Rajner\n
 !! Politechnika Warszawska | Warsaw University of Technology
 !!
-!! \warning This program is written in Fortran90 standard but uses some featerus
-!! of 2003 specification (e.g., \c 'newunit='). It was also written
-!! for <tt>Intel Fortran Compiler</tt> hence some commands can be unavailable
-!! for other compilers (e.g., \c <integer_parameter> for \c IO statements).
-!! This should be easily modifiable according to your output needs.
-!! Also you need to have \c iso_fortran_env module available to guess the number
-!! of output_unit for your compiler.
-!! When you don't want a \c log_file and you don't switch \c verbose all
-!! unnecesarry information whitch are normally collected goes to \c /dev/null
-!! file. This is *nix system default trash. For other system or file system
-!! organization, please change this value in \c mod_cmdline module.
-!!
 !! \attention
 !! \c grat and value_check needs a \c netCDF library \cite netcdf
 !> \copyright
-!! Copyright 2013–2015 by Marcin Rajner\n
+!! Copyright 2013–2019 by Marcin Rajner\n
 !! This program is free software: you can redistribute it and/or modify
 !! it under the terms of the GNU General Public License as published by
 !! the Free Software Foundation, either version 3 of the License, or
