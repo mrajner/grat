@@ -14,6 +14,6 @@
             14.9033543857
              1.9580805081
             -0.0000002939
-error: standard_pressure: set method explicitly 
+standard_pressure: set method explicitly
 Note: The following floating-point exceptions are signalling: IEEE_DENORMAL
 STOP 1
