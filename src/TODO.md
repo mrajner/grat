@@ -1,3 +1,5 @@
+correct handling of FillValue
+
 automatically select variables if unambiogus: give information in log
 
 value_check -F file.nc -L@d - should give dates even if no variable found:

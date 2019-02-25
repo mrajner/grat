@@ -73,7 +73,6 @@ FPP :=                                            \
 SRCS :=                 \
   mod_cmdline.f90       \
   mod_printing.f90      \
-  mod_normalization.f90 \
   mod_aggf.f90          \
   mod_polygon.f90       \
   mod_data.f90          \
