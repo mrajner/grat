@@ -26,80 +26,78 @@ program example_aggf
     ])
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
   call aggf_thin_layer("/home/mrajner/src/grat/examples/aggf_thin_layer.dat")
-  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_full.dat'  , method     = "full"    , predefined = .false.)
-  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method     = "simple"  , predefined = .false.)
-  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green.dat'       , method     = "standard", predefined = .false.)
+  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_full.dat',   method = "full",     predefined = .false.)
+  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method = "simple",   predefined = .false.)
+  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green.dat',        method = "standard", predefined = .false.)
   call aggf_resp_fels_profiles('/home/mrajner/src/grat/examples/aggf_resp_fels_profiles.dat')
-  call mass_vs_height('/home/mrajner/src/grat/examples/mass_vs_height.dat')
-  call aggf_resp_hmax('/home/mrajner/src/grat/examples/aggf_resp_zmax.dat')
-  call aggf_resp_dz('/home/mrajner/src/grat/examples/aggf_resp_dz.dat')
-  call aggf_resp_t('/home/mrajner/src/grat/examples/aggf_resp_t.dat')
+  ! call mass_vs_height('/home/mrajner/src/grat/examples/mass_vs_height.dat')
+  ! call aggf_resp_hmax('/home/mrajner/src/grat/examples/aggf_resp_zmax.dat')
+  ! call aggf_resp_dz('/home/mrajner/src/grat/examples/aggf_resp_dz.dat')
+  ! call aggf_resp_t('/home/mrajner/src/grat/examples/aggf_resp_t.dat')
   call aggf_resp_h('/home/mrajner/src/grat/examples/aggf_resp_h.dat')
 
   call cpu_time(cpu(2))
   call system_clock(execution_time(2),execution_time(3))
-  call colored('green')
   write(*,                                                                              &
     '("Execution time:",1x,f10.4," seconds (proc time:",1x,f6.2,1x,"s | %", f6.2,")")') &
     real(execution_time(2)-execution_time(1))/(execution_time(3)),                      &
     cpu(2)-cpu(1),                                                                      &
     100.*(cpu(2)-cpu(1))/ (real(execution_time(2)-execution_time(1))/(execution_time(3)) )
-  call colored('reset')
 
 contains
 ! =============================================================================
 !> Mass of atmosphere respect to height
 ! =============================================================================
-subroutine mass_vs_height (filename)
-  use, intrinsic:: iso_fortran_env
-  use mod_utilities, only: file_exists
-  use mod_constants, only: dp, pi, earth, R_air
-  use mod_atmosphere
-  character(*), intent (in), optional:: filename
-  real(dp) :: max_height,dh, percent
-  real(dp), allocatable, dimension(:):: mass, height
-  integer::i,j,file_unit
+!subroutine mass_vs_height(filename)
+!  use, intrinsic:: iso_fortran_env
+!  use mr_utilities, only: file_exists
+!  use mr_constants, only: dp, pi, earth, R_air
+!  use mr_atmosphere
+!  character(*), intent (in), optional:: filename
+!  real(dp) :: max_height,dh, percent
+!  real(dp), allocatable, dimension(:):: mass, height
+!  integer::i,j,file_unit
 
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    open ( &
-      newunit = file_unit, &
-      file    = filename,  &
-      action  = 'write'  &
-      )
-  else
-    file_unit = output_unit
-  endif
-  write(*,*) "mass_vs_height ---> ",filename
+!  if (present (filename)) then
+!    if (file_exists(filename)) return
+!    open ( &
+!      newunit = file_unit, &
+!      file    = filename,  &
+!      action  = 'write'  &
+!      )
+!  else
+!    file_unit = output_unit
+!  endif
+!  write(*,*) "mass_vs_height ---> ",filename
 
-  max_height=50000.
-  dh=10
+!  max_height=50000.
+!  dh=10
 
-  allocate(height(int(max_height/dh)+1))
-  allocate(mass(size(height)))
-  do i =1,size(height)
-    height(i) = dh*(i-1)
-    mass  (i) = standard_pressure ( &
-      height(i), &
-      method="standard", &
-      use_standard_temperature=.true., &
-      nan_as_zero=.true.) &
-      / (R_air * standard_temperature(height(i)))
-  enddo
+!  allocate(height(int(max_height/dh)+1))
+!  allocate(mass(size(height)))
+!  do i =1,size(height)
+!    height(i) = dh*(i-1)
+!    mass  (i) = standard_pressure ( &
+!      height(i), &
+!      method="standard", &
+!      use_standard_temperature=.true., &
+!      nan_as_zero=.true.) &
+!      / (R_air * standard_temperature(height(i)))
+!  enddo
 
-  do i =0,50000,1000
-    percent=0
-    do j = 1, size(height)
-      if (height(j).le.real(i,dp)) percent=percent+mass(j)
-    enddo
-    percent = percent / sum(mass)  * 100.
-    write(file_unit, '(i6,2f19.9,es10.3)' ) i, percent, &
-      100-(earth%radius+dble(1))**2 &
-      * standard_pressure(real(i,dp),method="standard", use_standard_temperature=.true.) &
-      / standard_gravity(real(i,dp))&
-      /earth%radius**2/standard_pressure(real(0,dp),method="standard") * standard_gravity(real(0,dp))*100
-  enddo
-end subroutine
+!  do i =0,50000,1000
+!    percent=0
+!    do j = 1, size(height)
+!      if (height(j).le.real(i,dp)) percent=percent+mass(j)
+!    enddo
+!    percent = percent / sum(mass)  * 100.
+!    write(file_unit, '(i6,2f19.9,es10.3)' ) i, percent, &
+!      100-(earth%radius+dble(1))**2 &
+!      * standard_pressure(real(i,dp),method="standard", use_standard_temperature=.true.) &
+!      / standard_gravity(real(i,dp))&
+!      /earth%radius**2/standard_pressure(real(0,dp),method="standard") * standard_gravity(real(0,dp))*100
+!  enddo
+!end subroutine
 
 ! =============================================================================
 !> Reproduces data to Fig.~3 in \cite Warburton77
@@ -199,9 +197,10 @@ end subroutine
 !> Compare different vertical temperature profiles impact on AGGF
 ! ============================================================================
 subroutine aggf_resp_fels_profiles (filename)
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_aggf,  only: aggf
   use mod_green, only: green
+  use mr_utilities, only: file_exists, d2r
   character (len=255), dimension (6) :: fels_types
   integer :: i, j, file_unit
   character(*), intent(in), optional :: filename
@@ -344,103 +343,103 @@ subroutine aggf_resp_h (filename)
   close (file_unit)
 end subroutine
 
-! ============================================================================
-!> This computes AGGF for different surface temperature
-!!
-!! \author M. Rajner
-!! \date 2013-03-18
-! ============================================================================
-subroutine aggf_resp_t (filename)
-  use mod_green, only: green
-  ! use mod_constants, only: dp, atmosphere
-  use mod_aggf, only: aggf
-  real(dp), dimension(:,:), allocatable :: results
-  integer :: i, j
-  character(*), intent(in), optional :: filename
-  integer :: file_unit
-  real(dp) :: temperatures(3)
+!! ============================================================================
+!!> This computes AGGF for different surface temperature
+!!!
+!!! \author M. Rajner
+!!! \date 2013-03-18
+!! ============================================================================
+!subroutine aggf_resp_t (filename)
+!  use mod_green, only: green
+!  ! use mr_constants, only: dp, atmosphere
+!  use mod_aggf, only: aggf
+!  real(dp), dimension(:,:), allocatable :: results
+!  integer :: i, j
+!  character(*), intent(in), optional :: filename
+!  integer :: file_unit
+!  real(dp) :: temperatures(3)
 
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    open ( newunit = file_unit, &
-      file =filename, &
-      action  = 'write' )
-  else
-    file_unit = output_unit
-  endif
-  call get_green_distances()
+!  if (present (filename)) then
+!    if (file_exists(filename)) return
+!    open ( newunit = file_unit, &
+!      file =filename, &
+!      action  = 'write' )
+!  else
+!    file_unit = output_unit
+!  endif
+!  call get_green_distances()
 
-  allocate(results(size(green(1)%distance), 3))
+!  allocate(results(size(green(1)%distance), 3))
 
-  temperatures = [0., 15., -45.]
+!  temperatures = [0., 15., -45.]
 
-  write(file_unit, '(4a12)') "distance","T0+0", "T0+15", "T0-45"
-  do i = 1, size(green(1)%distance)
-    write(file_unit, '(f12.5$)') green(1)%distance(i)
-    do j=1, size(temperatures)
-      write(file_unit, '(f12.5$)') &
-        aggf(d2r(green(1)%distance(i)), method="standard", t_zero=temperatures(j))
-    enddo
-    write(file_unit, *)
-  enddo
-  close (file_unit)
-end subroutine
+!  write(file_unit, '(4a12)') "distance","T0+0", "T0+15", "T0-45"
+!  do i = 1, size(green(1)%distance)
+!    write(file_unit, '(f12.5$)') green(1)%distance(i)
+!    do j=1, size(temperatures)
+!      write(file_unit, '(f12.5$)') &
+!        aggf(d2r(green(1)%distance(i)), method="standard", t_zero=temperatures(j))
+!    enddo
+!    write(file_unit, *)
+!  enddo
+!  close (file_unit)
+!end subroutine
 
-! ============================================================================
-!> \brief This computes AGGF for different height integration step
-! ============================================================================
-subroutine aggf_resp_dz (filename)
-  use mod_green, only: green
-  use mod_aggf, only: aggf
-  use mod_utilities, only: logspace
-  real(dp), dimension(:,:), allocatable :: results
-  real(dp), dimension(:), allocatable :: dzs
+!! ============================================================================
+!!> \brief This computes AGGF for different height integration step
+!! ============================================================================
+!subroutine aggf_resp_dz (filename)
+!  use mod_green, only: green
+!  use mod_aggf, only: aggf
+!  use mr_utilities, only: logspace
+!  real(dp), dimension(:,:), allocatable :: results
+!  real(dp), dimension(:), allocatable :: dzs
 
-  integer :: file_unit, i, j
-  integer, parameter :: n=10
-  character(*), intent (in), optional :: filename
-  character(6) :: dummy
+!  integer :: file_unit, i, j
+!  integer, parameter :: n=10
+!  character(*), intent (in), optional :: filename
+!  character(6) :: dummy
 
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    open ( newunit = file_unit, &
-      file =filename, &
-      action  = 'write' )
-  else
-    file_unit = output_unit
-  endif
+!  if (present (filename)) then
+!    if (file_exists(filename)) return
+!    open ( newunit = file_unit, &
+!      file =filename, &
+!      action  = 'write' )
+!  else
+!    file_unit = output_unit
+!  endif
 
-  call get_green_distances()
-  ! green(1)%distance(1:n)=logspace(green(1)%distance(1), green(1)%distance(10),n)
+!  call get_green_distances()
+!  ! green(1)%distance(1:n)=logspace(green(1)%distance(1), green(1)%distance(10),n)
 
-  allocate(dzs(5))
-  dzs=(/ 0.01, 0.1, 1., 10., 100./)
+!  allocate(dzs(5))
+!  dzs=(/ 0.01, 0.1, 1., 10., 100./)
 
-  allocate (results(size(green(1)%distance(1:n)),size(dzs)))
-  results = 0.
+!  allocate (results(size(green(1)%distance(1:n)),size(dzs)))
+!  results = 0.
 
-  do i = 1, size (results (:,1))
-    do j=1,size(dzs)
-      results(i,j) = i+j
-      results(i,j) =               &
-        aggf(                      &
-        d2r(green(1)%distance(i)), &
-        method = "standard",       &
-        dz     = 1._dp* dzs(j)            &
-        )
+!  do i = 1, size (results (:,1))
+!    do j=1,size(dzs)
+!      results(i,j) = i+j
+!      results(i,j) =               &
+!        aggf(                      &
+!        d2r(green(1)%distance(i)), &
+!        method = "standard",       &
+!        dz     = 1._dp* dzs(j)            &
+!        )
 
-      print *, results(i,j)
-    enddo
-    ! compute relative errors from column 2 for all dz with respect to column 1
-    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
-  enddo
+!      print *, results(i,j)
+!    enddo
+!    ! compute relative errors from column 2 for all dz with respect to column 1
+!    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
+!  enddo
 
-  write(dummy,"(i0)") size(dzs)
-  write(file_unit, '(a16,'//dummy//'f16.5)') "psi_dz", dzs
-  write(file_unit, '(f16.7,'//dummy//'e16.5)') &
-    (green(1)%distance(i), results(i,:), i=1,size(results(:,1)))
-  close(file_unit)
-end subroutine
+!  write(dummy,"(i0)") size(dzs)
+!  write(file_unit, '(a16,'//dummy//'f16.5)') "psi_dz", dzs
+!  write(file_unit, '(f16.7,'//dummy//'e16.5)') &
+!    (green(1)%distance(i), results(i,:), i=1,size(results(:,1)))
+!  close(file_unit)
+!end subroutine
 
 ! ============================================================================
 !> \brief This computes standard atmosphere parameters
@@ -485,55 +484,55 @@ subroutine standard1976(filename)
   close(file_unit)
 end subroutine
 
-! ============================================================================
-!> \brief This computes relative values of AGGF for different atmosphere
-!! height integration
-! ============================================================================
-subroutine aggf_resp_hmax (filename)
-  use mod_utilities, only: file_exists, logspace, d2r
-  use mod_aggf, only: aggf
-  real (dp), dimension (2) :: psi
-  real (dp), dimension (:), allocatable :: heights
-  real (dp), dimension (:,:), allocatable :: results
-  integer :: file_unit, n, i, j
-  character(*), intent (in), optional:: filename
+!! ============================================================================
+!!> \brief This computes relative values of AGGF for different atmosphere
+!!! height integration
+!! ============================================================================
+!subroutine aggf_resp_hmax (filename)
+!  use mr_utilities, only: file_exists, logspace, d2r
+!  use mod_aggf, only: aggf
+!  real (dp), dimension (2) :: psi
+!  real (dp), dimension (:), allocatable :: heights
+!  real (dp), dimension (:,:), allocatable :: results
+!  integer :: file_unit, n, i, j
+!  character(*), intent (in), optional:: filename
 
-  if (present (filename)) then
-    if (file_exists(filename)) return
-    open ( newunit = file_unit, &
-      file =filename, &
-      action  = 'write' )
-  else
-    file_unit = output_unit
-  endif
+!  if (present (filename)) then
+!    if (file_exists(filename)) return
+!    open ( newunit = file_unit, &
+!      file =filename, &
+!      action  = 'write' )
+!  else
+!    file_unit = output_unit
+!  endif
 
-  print *, "standard atmosphere ---> ", filename
-  psi=(/0.0001,10./)
+!  print *, "standard atmosphere ---> ", filename
+!  psi=(/0.0001,10./)
 
-  n = 90
-  allocate(heights(n))
+!  n = 90
+!  allocate(heights(n))
 
-  heights= logspace(real(1e-1,dp), real(60000,dp),n)
+!  heights= logspace(real(1e-1,dp), real(60000,dp),n)
 
-  allocate (results(size(heights), size(psi)))
-  results=0
+!  allocate (results(size(heights), size(psi)))
+!  results=0
 
-  do j=1, size(heights)
-    do i=1, size(psi)
-       results(j,i) =aggf(d2r(psi(i)),method="standard", zmax=heights(j))
-    enddo
-  enddo
+!  do j=1, size(heights)
+!    do i=1, size(psi)
+!       results(j,i) =aggf(d2r(psi(i)),method="standard", zmax=heights(j))
+!    enddo
+!  enddo
 
-  do i=1, size(psi)
-     results(:,i) = - ((results(:,i)-results(size(heights),i))/results(size(heights),i)) * 100. ! in %
-  enddo
+!  do i=1, size(psi)
+!     results(:,i) = - ((results(:,i)-results(size(heights),i))/results(size(heights),i)) * 100. ! in %
+!  enddo
 
-  write(file_unit, '(a14,SP,100f14.5)' ),"#heght\psi", (psi(j), j= 1,size(psi))
-  do i=1, size (results (:,1))
-    write(file_unit, '(100f14.4)' ) heights(i)/1000, (results(i,j), j = 1, size(psi) )
-  enddo
-  close(file_unit)
-end subroutine
+!  write(file_unit, '(a14,SP,100f14.5)' ),"#heght\psi", (psi(j), j= 1,size(psi))
+!  do i=1, size (results (:,1))
+!    write(file_unit, '(100f14.4)' ) heights(i)/1000, (results(i,j), j = 1, size(psi) )
+!  enddo
+!  close(file_unit)
+!end subroutine
 
 ! ============================================================================
 ! ============================================================================
