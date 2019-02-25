@@ -26,9 +26,9 @@ program example_aggf
     ])
   call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
   call aggf_thin_layer("/home/mrajner/src/grat/examples/aggf_thin_layer.dat")
-  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_full.dat'  , method     = "full"    , predefined = .false.)
-  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method     = "simple"  , predefined = .false.)
-  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green.dat'       , method     = "standard", predefined = .false.)
+  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_full.dat',   method = "full",     predefined = .false.)
+  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method = "simple",   predefined = .false.)
+  call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green.dat',        method = "standard", predefined = .false.)
   call aggf_resp_fels_profiles('/home/mrajner/src/grat/examples/aggf_resp_fels_profiles.dat')
   call mass_vs_height('/home/mrajner/src/grat/examples/mass_vs_height.dat')
   call aggf_resp_hmax('/home/mrajner/src/grat/examples/aggf_resp_zmax.dat')
@@ -38,23 +38,21 @@ program example_aggf
 
   call cpu_time(cpu(2))
   call system_clock(execution_time(2),execution_time(3))
-  call colored('green')
   write(*,                                                                              &
     '("Execution time:",1x,f10.4," seconds (proc time:",1x,f6.2,1x,"s | %", f6.2,")")') &
     real(execution_time(2)-execution_time(1))/(execution_time(3)),                      &
     cpu(2)-cpu(1),                                                                      &
     100.*(cpu(2)-cpu(1))/ (real(execution_time(2)-execution_time(1))/(execution_time(3)) )
-  call colored('reset')
 
 contains
 ! =============================================================================
 !> Mass of atmosphere respect to height
 ! =============================================================================
-subroutine mass_vs_height (filename)
+subroutine mass_vs_height(filename)
   use, intrinsic:: iso_fortran_env
-  use mod_utilities, only: file_exists
-  use mod_constants, only: dp, pi, earth, R_air
-  use mod_atmosphere
+  use mr_utilities, only: file_exists
+  use mr_constants, only: dp, pi, earth, R_air
+  use mr_atmosphere
   character(*), intent (in), optional:: filename
   real(dp) :: max_height,dh, percent
   real(dp), allocatable, dimension(:):: mass, height
@@ -146,7 +144,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine compute_tabulated_green_functions ( &
+subroutine compute_tabulated_green_functions( &
     filename, method, dz,                      &
     predefined,fels_type, rough                &
     )
@@ -199,9 +197,10 @@ end subroutine
 !> Compare different vertical temperature profiles impact on AGGF
 ! ============================================================================
 subroutine aggf_resp_fels_profiles (filename)
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_aggf,  only: aggf
   use mod_green, only: green
+  use mr_utilities, only: file_exists, d2r
   character (len=255), dimension (6) :: fels_types
   integer :: i, j, file_unit
   character(*), intent(in), optional :: filename
@@ -235,7 +234,7 @@ subroutine aggf_resp_fels_profiles (filename)
   ! print results
   do i = 1, size(green(1)%distance)
     write(dummy,'(i0)') size(fels_types)+1
-    write(file_unit, '('//dummy//'f20.5)'), &
+    write(file_unit, '('//dummy//'f20.5)')           &
       green(1)%distance(i),                          &
       (aggf(                                         &
       d2r(green(1)%distance(i)),                     &
@@ -334,7 +333,7 @@ subroutine aggf_resp_h (filename)
     do ii = 0,8
       aux  = green(1)%distance(i) + ii * (green(1)%distance(i+1) - green(1)%distance(i)) / 9.
       if (aux.gt.0.2 ) exit
-      write (file_unit, '(F12.6$)'), aux
+      write (file_unit, '(F12.6$)') aux
       do j =  1, size(heights)
         write (file_unit,'(f12.4,1x,$)') aggf(d2r(aux), method="standard", h=heights(j))
       enddo
@@ -350,10 +349,10 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine aggf_resp_t (filename)
+subroutine aggf_resp_t(filename)
   use mod_green, only: green
-  ! use mod_constants, only: dp, atmosphere
   use mod_aggf, only: aggf
+  use mr_utilities, only: file_exists, d2r
   real(dp), dimension(:,:), allocatable :: results
   integer :: i, j
   character(*), intent(in), optional :: filename
@@ -368,6 +367,9 @@ subroutine aggf_resp_t (filename)
   else
     file_unit = output_unit
   endif
+  
+  print *, "aggf_resp_t --> ", filename
+
   call get_green_distances()
 
   allocate(results(size(green(1)%distance), 3))
@@ -389,10 +391,10 @@ end subroutine
 ! ============================================================================
 !> \brief This computes AGGF for different height integration step
 ! ============================================================================
-subroutine aggf_resp_dz (filename)
+subroutine aggf_resp_dz(filename)
   use mod_green, only: green
   use mod_aggf, only: aggf
-  use mod_utilities, only: logspace
+  use mr_utilities, only: logspace, d2r, file_exists
   real(dp), dimension(:,:), allocatable :: results
   real(dp), dimension(:), allocatable :: dzs
 
@@ -410,8 +412,9 @@ subroutine aggf_resp_dz (filename)
     file_unit = output_unit
   endif
 
+  print *, "aggf_resp_dz --> ", filename
+
   call get_green_distances()
-  ! green(1)%distance(1:n)=logspace(green(1)%distance(1), green(1)%distance(10),n)
 
   allocate(dzs(5))
   dzs=(/ 0.01, 0.1, 1., 10., 100./)
@@ -426,10 +429,9 @@ subroutine aggf_resp_dz (filename)
         aggf(                      &
         d2r(green(1)%distance(i)), &
         method = "standard",       &
-        dz     = 1._dp* dzs(j)            &
+        dz     = 1._dp* dzs(j)     &
         )
 
-      print *, results(i,j)
     enddo
     ! compute relative errors from column 2 for all dz with respect to column 1
     results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
@@ -490,7 +492,7 @@ end subroutine
 !! height integration
 ! ============================================================================
 subroutine aggf_resp_hmax (filename)
-  use mod_utilities, only: file_exists, logspace, d2r
+  use mr_utilities, only: file_exists, logspace, d2r
   use mod_aggf, only: aggf
   real (dp), dimension (2) :: psi
   real (dp), dimension (:), allocatable :: heights
@@ -528,7 +530,7 @@ subroutine aggf_resp_hmax (filename)
      results(:,i) = - ((results(:,i)-results(size(heights),i))/results(size(heights),i)) * 100. ! in %
   enddo
 
-  write(file_unit, '(a14,SP,100f14.5)' ),"#heght\psi", (psi(j), j= 1,size(psi))
+  write(file_unit, '(a14,SP,100f14.5)') "#heght\psi", (psi(j), j= 1,size(psi))
   do i=1, size (results (:,1))
     write(file_unit, '(100f14.4)' ) heights(i)/1000, (results(i,j), j = 1, size(psi) )
   enddo
@@ -586,7 +588,6 @@ subroutine admit_niebauer(filename)
   f = earth%radius/9500
   theta = 0.5
   do while(theta.le.180)
-    print*, theta
     b = 2*f*sin(d2r(theta/2))
     a = 2*pi * gravity%constant / earth%gravity%mean* &
       (1 - b/(2*f) -1/b + 2/f)
