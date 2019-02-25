@@ -5,22 +5,20 @@
 !! \date 20121108
 ! ============================================================================
 program example_aggf
-  use mod_atmosphere
-  use mod_constants, only: dp
-  use mod_utilities
-  use mod_printing, only: log
+  use, intrinsic :: iso_fortran_env, only: output_unit
+  use mr_constants, only: dp
+  ! use mr_utilities
+  ! use mod_printing, only: log
   implicit none
   real(dp) :: cpu(2)
   integer :: execution_time(3)
-
 
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
 
   call standard1976('/home/mrajner/src/grat/examples/standard1976.dat')
-
-  call compare_fels_profiles ('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
-  call simple_atmospheric_model ("/home/mrajner/pub/dr/rysunki/simple_approach.dat")
+  call compare_fels_profiles('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
+  call simple_atmospheric_model("/home/mrajner/pub/dr/rysunki/simple_approach.dat")
   call green_newtonian_compute([  &
     "green_newtonian_olsson.dat", &
     "green_newtonian_spotl.dat ", &
@@ -112,11 +110,11 @@ end subroutine
 ! =============================================================================
 subroutine simple_atmospheric_model (filename)
   use, intrinsic:: iso_fortran_env
-  use mod_utilities, only: file_exists
-  use mod_constants
+  use mr_utilities, only: file_exists
+  use mr_constants
   use mod_aggf, only:simple_def, bouger
 
-  real(dp) :: R ! km
+  integer :: R ! km
   integer :: file_unit
   character(*), intent(in), optional:: filename
   real(dp) :: h =9.
@@ -137,8 +135,8 @@ subroutine simple_atmospheric_model (filename)
   do R = 0, 25*8
     write (file_unit, *) &
       R, &
-      -100*bouger(h=h,R=R)/(earth%gravity%mean*h) * 1e8, & !conversion to microGal
-      -simple_def(R) * 1e8
+      -100*bouger(h=h,R=real(R,dp))/(earth%gravity%mean*h) * 1e8, & !conversion to microGal
+      -simple_def(real(R,dp)) * 1e8
   enddo
 end subroutine
 
@@ -152,10 +150,10 @@ subroutine compute_tabulated_green_functions ( &
     filename, method, dz,                      &
     predefined,fels_type, rough                &
     )
-  use mod_constants, only: dp
+  use mr_constants, only: dp
   use mod_aggf,     only: aggf, aggfd
   use mod_green,     only: green
-  use mod_utilities, only: d2r, file_exists
+  use mr_utilities, only: d2r, file_exists
   use mod_atmosphere
 
   integer :: i, file_unit
@@ -257,24 +255,16 @@ end subroutine
 ! ============================================================================
 subroutine compare_fels_profiles (filename)
   use iso_fortran_env
-  use mod_utilities, only: file_exists
-  use mod_constants, only: dp
-  use mod_atmosphere, only: standard_temperature
+  use mr_utilities, only: file_exists
+  use mr_constants, only: dp
+  use mr_atmosphere, only: standard_temperature
   character (len=255), dimension (6) :: fels_types
   real (dp) :: height
   integer :: i, file_unit, i_height
   character(*), intent (in),optional:: filename
 
-  ! All possible optional arguments for standard_temperature
-  fels_types = [                                &
-    "US1976            ", "tropical          ", &
-    "subtropical_summer", "subtropical_winter", &
-    "subarctic_summer  ", "subarctic_winter  "  &
-  ]
-
   if (present (filename)) then
     if (file_exists(filename)) return
-
     open (                 &
       newunit = file_unit, &
       file    = filename,  &
@@ -283,6 +273,13 @@ subroutine compare_fels_profiles (filename)
   else
     file_unit = output_unit
   endif
+
+  ! All possible optional arguments for standard_temperature
+  fels_types = [                                &
+    "US1976            ", "tropical          ", &
+    "subtropical_summer", "subtropical_winter", &
+    "subarctic_summer  ", "subarctic_winter  "  &
+  ]
 
   print *, "compare_fels_profiles --->", filename
 
@@ -308,6 +305,7 @@ end subroutine
 subroutine aggf_resp_h (filename)
   use mod_green, only: green
   use mod_aggf, only: aggf
+  use mr_utilities, only: file_exists, d2r
   real(dp) :: heights(6)
   character(*), intent(in), optional :: filename
   integer :: file_unit, i, ii, j
@@ -452,13 +450,13 @@ end subroutine
 ! ============================================================================
 subroutine standard1976(filename)
   use, intrinsic :: iso_fortran_env
-  use mod_utilities, only: file_exists
-  use mod_constants, only: dp, R_air
-  use mod_atmosphere, only: &
+  use mr_utilities, only: file_exists
+  use mr_constants, only: dp, R_air
+  use mr_atmosphere, only: &
     standard_temperature, standard_pressure, standard_gravity
 
   integer  :: file_unit
-  real(dp) :: height
+  integer :: height
   character(*), intent (in), optional :: filename
 
   if (present (filename)) then
@@ -473,18 +471,16 @@ subroutine standard1976(filename)
   endif
 
   print *, "standard atmosphere --->", filename
-  ! print header
   write ( file_unit, '(6(a15))' ) &
     'height', 'T', 'g', 'p', 'rho'
   do height = 0, 68000, 1000
-    ! print results to file
-    write( file_unit,'(5f15.5, e12.3)')                                      &
-      height/1000.,                                                          &
-      standard_temperature(height),                                          &
-      standard_gravity(height),                                              &
-      standard_pressure(height, method="standard", nan_as_zero=.true.)/100., &
-      standard_pressure(height, method="standard", nan_as_zero=.true.)       &
-      /(R_air*standard_temperature(height))
+    write( file_unit,'(5f15.5, e12.3)')                                               &
+      height/1000.,                                                                   &
+      standard_temperature(real(height,dp)),                                          &
+      standard_gravity(real(height,dp)),                                              &
+      standard_pressure(real(height,dp), method="standard", nan_as_zero=.true.)/100., &
+      standard_pressure(real(height,dp), method="standard", nan_as_zero=.true.)       &
+      /(R_air*standard_temperature(real(height,dp)))
   enddo
   close(file_unit)
 end subroutine
@@ -543,9 +539,9 @@ end subroutine
 ! ============================================================================
 subroutine aggf_thin_layer (filename)
   use, intrinsic:: iso_fortran_env
-  use mod_constants, only: dp, pi
+  use mr_constants, only: dp, pi
   use mod_aggf, only: GN_thin_layer
-  use mod_utilities, only: d2r, file_exists
+  use mr_utilities, only: d2r, file_exists
   use mod_green
 
   integer :: file_unit, i
@@ -566,7 +562,7 @@ subroutine aggf_thin_layer (filename)
     file_unit = output_unit
   endif
   do i = 1, size (green(1)%distance)
-    write(file_unit,*) green(1)%distance(i), green(1)%data(i), &
+    write(file_unit,'(3(g20.10,x))') green(1)%distance(i), green(1)%data(i), &
       GN_thin_layer(d2r(green(1)%distance(i)))
   enddo
 end subroutine
@@ -574,8 +570,8 @@ end subroutine
 ! =============================================================================
 ! =============================================================================
 subroutine admit_niebauer(filename)
-  use mod_constants
-  use mod_utilities
+  use mr_constants
+  use mr_utilities
   real(dp) :: a
   real(dp) :: theta
   real(dp) :: b, f
@@ -588,11 +584,14 @@ subroutine admit_niebauer(filename)
   open (newunit=iun, file=filename, action = 'write')
 
   f = earth%radius/9500
-  do theta = 0.5, 180, 0.01
+  theta = 0.5
+  do while(theta.le.180)
+    print*, theta
     b = 2*f*sin(d2r(theta/2))
     a = 2*pi * gravity%constant / earth%gravity%mean* &
       (1 - b/(2*f) -1/b + 2/f)
     write(iun, *) theta, a*1e10
+    theta = theta + 0.01
   enddo
 end subroutine
 
@@ -600,9 +599,9 @@ end subroutine
 !> compute green newtonian function
 ! =============================================================================
 subroutine green_newtonian_compute(filenames)
-  use mod_utilities, only: file_exists
+  use mr_utilities, only: file_exists
   use mod_green
-  use mod_utilities, only: logspace, d2r
+  use mr_utilities, only: logspace, d2r
   integer:: iun, n, i, j, k
   real (dp), allocatable, dimension(:) :: psi, z
   character(12), allocatable, dimension(:) :: column_name
