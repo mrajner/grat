@@ -584,7 +584,6 @@ subroutine admit_niebauer(filename)
   f = earth%radius/9500
   theta = 0.5
   do while(theta.le.180)
-    print*, theta
     b = 2*f*sin(d2r(theta/2))
     a = 2*pi * gravity%constant / earth%gravity%mean* &
       (1 - b/(2*f) -1/b + 2/f)
