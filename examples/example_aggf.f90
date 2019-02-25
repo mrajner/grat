@@ -234,7 +234,7 @@ subroutine aggf_resp_fels_profiles (filename)
   ! print results
   do i = 1, size(green(1)%distance)
     write(dummy,'(i0)') size(fels_types)+1
-    write(file_unit, '('//dummy//'f20.5)'), &
+    write(file_unit, '('//dummy//'f20.5)')           &
       green(1)%distance(i),                          &
       (aggf(                                         &
       d2r(green(1)%distance(i)),                     &
@@ -333,7 +333,7 @@ subroutine aggf_resp_h (filename)
     do ii = 0,8
       aux  = green(1)%distance(i) + ii * (green(1)%distance(i+1) - green(1)%distance(i)) / 9.
       if (aux.gt.0.2 ) exit
-      write (file_unit, '(F12.6$)'), aux
+      write (file_unit, '(F12.6$)') aux
       do j =  1, size(heights)
         write (file_unit,'(f12.4,1x,$)') aggf(d2r(aux), method="standard", h=heights(j))
       enddo
@@ -530,7 +530,7 @@ subroutine aggf_resp_hmax (filename)
      results(:,i) = - ((results(:,i)-results(size(heights),i))/results(size(heights),i)) * 100. ! in %
   enddo
 
-  write(file_unit, '(a14,SP,100f14.5)' ),"#heght\psi", (psi(j), j= 1,size(psi))
+  write(file_unit, '(a14,SP,100f14.5)') "#heght\psi", (psi(j), j= 1,size(psi))
   do i=1, size (results (:,1))
     write(file_unit, '(100f14.4)' ) heights(i)/1000, (results(i,j), j = 1, size(psi) )
   enddo
