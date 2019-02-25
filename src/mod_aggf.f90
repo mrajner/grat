@@ -302,12 +302,12 @@ end function
 !! \date 2013-03-19
 !! \warning psi in radian
 ! ==============================================================================
-function GN_thin_layer(psi)
+pure function GN_thin_layer(psi)
   use mr_constants, only: dp
   real(dp), intent(in) :: psi
   real(dp) :: GN_thin_layer
 
-  GN_thin_layer = 1.627_dp * psi / sin ( psi / 2._dp )
+  GN_thin_layer = 1.627_dp * psi / sin(psi/2._dp)
 end function
 
 
