@@ -349,7 +349,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-18
 ! ============================================================================
-subroutine aggf_resp_t (filename)
+subroutine aggf_resp_t(filename)
   use mod_green, only: green
   use mod_aggf, only: aggf
   use mr_utilities, only: file_exists, d2r
@@ -367,6 +367,9 @@ subroutine aggf_resp_t (filename)
   else
     file_unit = output_unit
   endif
+  
+  print *, "aggf_resp_t --> ", filename
+
   call get_green_distances()
 
   allocate(results(size(green(1)%distance), 3))
@@ -409,8 +412,9 @@ subroutine aggf_resp_dz(filename)
     file_unit = output_unit
   endif
 
+  print *, "aggf_resp_dz --> ", filename
+
   call get_green_distances()
-  ! green(1)%distance(1:n)=logspace(green(1)%distance(1), green(1)%distance(10),n)
 
   allocate(dzs(5))
   dzs=(/ 0.01, 0.1, 1., 10., 100./)
