@@ -212,7 +212,7 @@ subroutine parse_site(cmd_line_entry)
         site(start_index)%height = 0.
         continue
 
-      case("onsala","os")
+      case("onsala","os", "oso")
         ! south pole
         call more_sites (1,start_index)
         site(start_index)%name   = "onsala"
