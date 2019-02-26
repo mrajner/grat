@@ -1,7 +1,7 @@
 program test_aggf
   use mr_constants, only: dp
   use mod_aggf, only: aggf
-  use mod_atmosphere , only: standard_pressure
+  use mr_atmosphere , only: standard_pressure
 
   write(*, 10) aggf(psi = 1e-0_dp, method="full")
   write(*, 10) aggf(0._dp, zmax = 10._dp,    method="full")+epsilon(0._dp)

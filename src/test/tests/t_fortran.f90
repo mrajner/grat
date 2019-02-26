@@ -31,7 +31,7 @@ program testing_fortran_procedures
 contains
 
 subroutine test_standard_atmosphere (method)
-  use mod_atmosphere, only: standard_pressure
+  use mr_atmosphere, only: standard_pressure
   character(*),optional,intent(in)  :: method
   write(*,10) standard_pressure(         &
     height                   = 6000._dp, &
