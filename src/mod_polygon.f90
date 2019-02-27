@@ -96,7 +96,7 @@ subroutine read_polygon(polygon)
 
   if (polygon%if) then
     ! polygon file
-    open (newunit = polygon%unit , action = "read", file = polygon%name )
+    open (newunit=polygon%unit, action="read", file=polygon%name)
 
     ! first get the number of polygon
     call skip_header(polygon%unit)
@@ -128,7 +128,7 @@ subroutine read_polygon(polygon)
           .or.polygon%polygon(i)%coords(j,1).gt.360.        &
           .or.polygon%polygon(i)%coords(j,2).lt.-90.        &
           .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then
-          write (error_unit , form_63) "Somethings wrong with coords in polygon file"
+          write (error_unit, form_63) "Somethings wrong with coords in polygon file"
           polygon%if=.false.
           return
 

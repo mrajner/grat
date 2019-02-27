@@ -610,7 +610,7 @@ subroutine read_local_pressure(file)
   do
     read (unit,*, iostat=io_stat) dates, val
     if (io_stat.eq.iostat_end) exit
-    call string2date(dates, datei)
+    datei = string2date(dates)
     if (modulo(datei(4),6).ne.0) then
       continue
     else
@@ -625,7 +625,7 @@ subroutine read_local_pressure(file)
   ilines=0
   do
     read (unit,*, iostat=io_stat) dates, val
-    call string2date(dates, datei)
+    datei = string2date(dates)
 
     if (io_stat.eq.iostat_end) exit
 
