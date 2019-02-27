@@ -126,7 +126,7 @@ subroutine parse_date(cmd_line_entry)
         start = model(1)%date(lbound(model(1)%date, 1), 1:6)
       endif
     else
-      call string2date(cmd_line_entry%field(i_)%subfield(1)%name, start, success=success)
+      start = string2date(cmd_line_entry%field(i_)%subfield(1)%name, success=success)
       if (.not.success) cycle
     endif
 
@@ -194,7 +194,7 @@ subroutine parse_date(cmd_line_entry)
         endselect
 
       else
-        call string2date(cmd_line_entry%field(i_)%subfield(2)%name, stop)
+        stop = string2date(cmd_line_entry%field(i_)%subfield(2)%name)
       endif
 
     else
@@ -331,7 +331,7 @@ end subroutine
 ! =============================================================================
 !> Expand the array with date input
 ! =============================================================================
-subroutine more_dates (number, start_index)
+subroutine more_dates(number, start_index)
   integer, intent(in)  :: number
   integer, intent(out) :: start_index
   type(dateandmjd), allocatable, dimension(:) :: tmpdate
@@ -361,18 +361,18 @@ end subroutine
 !! you can omit
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine string2date (string, date, success)
+function string2date(string, success)
   use mr_utilities, only: is_numeric
 
   character (*), intent(in) :: string
-  integer, dimension(6), intent(out):: date
+  integer, dimension(6) :: string2date
   integer :: start_char, end_char, j
   logical, optional :: success
 
   if (present(success)) success=.true.
 
   ! this allow to specify !st Jan of year simple as -Dyyyy
-  date = [2000, 1, 1, 0, 0, 0]
+  string2date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
   do j = 1, 6
@@ -383,7 +383,7 @@ subroutine string2date (string, date, success)
     endif
 
     if (is_numeric(string(start_char : end_char) )) then
-      read(string(start_char : end_char), *) date(j)
+      read(string(start_char : end_char), *) string2date(j)
     else
       call print_warning ("bad date " // string)
       if (present(success)) success=.false.
@@ -393,7 +393,7 @@ subroutine string2date (string, date, success)
     start_char=end_char+1
     if (end_char.eq.len(trim(string))) exit
   enddo
-end subroutine
+end function
 
 
 end module mod_date

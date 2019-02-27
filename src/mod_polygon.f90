@@ -84,11 +84,6 @@ subroutine parse_polygon(cmd_line_entry)
 
 end subroutine
 
-! ==============================================================================
-!> Reads polygon data
-!!
-!! inspired by spotl \cite Agnew97
-! ==============================================================================
 subroutine read_polygon(polygon)
 
   use, intrinsic :: iso_fortran_env
@@ -101,7 +96,7 @@ subroutine read_polygon(polygon)
 
   if (polygon%if) then
     ! polygon file
-    open (newunit = polygon%unit , action = "read", file = polygon%name )
+    open (newunit=polygon%unit, action="read", file=polygon%name)
 
     ! first get the number of polygon
     call skip_header(polygon%unit)
@@ -133,7 +128,7 @@ subroutine read_polygon(polygon)
           .or.polygon%polygon(i)%coords(j,1).gt.360.        &
           .or.polygon%polygon(i)%coords(j,2).lt.-90.        &
           .or.polygon%polygon(i)%coords(j,2).gt. 90. ) then
-          write (error_unit , form_63) "Somethings wrong with coords in polygon file"
+          write (error_unit, form_63) "Somethings wrong with coords in polygon file"
           polygon%if=.false.
           return
 
@@ -240,11 +235,12 @@ end subroutine
 !! adopted and slightly modified M. Rajner
 !! cords is x, y (lon, lat) 2 dimensional array
 ! ==============================================================================
-integer function if_inpoly(x,y,coords)
+pure function if_inpoly(x,y,coords)
   use mr_constants, only: dp
   real(dp), allocatable, dimension (:,:), intent (in) :: coords
   real(dp), intent (in) :: x , y
   integer :: i , isc
+  integer :: if_inpoly
   ! Returns 1 if point at (x,y) is inside polygon whose nv vertices
   ! Returns 0 if point is outside
   ! Returns 2 if point is on edge or vertex
@@ -298,9 +294,10 @@ end function
 !! taken from spotl \cite Agnew97
 !! slightly modified
 ! ==============================================================================
-integer function ncross(x1,y1,x2,y2)
+pure function ncross(x1,y1,x2,y2)
   real(dp) , intent(in) :: x1 , y1, x2 , y2
   real(dp) :: c12 , c21
+  integer :: ncross
 
   ! all above (or below) axis
   if(y1*y2.gt.0) then

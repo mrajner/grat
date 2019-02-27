@@ -212,7 +212,7 @@ subroutine parse_site(cmd_line_entry)
         site(start_index)%height = 0.
         continue
 
-      case("onsala","os")
+      case("onsala","os", "oso")
         ! south pole
         call more_sites (1,start_index)
         site(start_index)%name   = "onsala"
@@ -291,7 +291,7 @@ end subroutine
 ! =============================================================================
 !>
 ! =============================================================================
-subroutine parse_GMT_like_boundaries (field)
+subroutine parse_GMT_like_boundaries(field)
   use mr_utilities, only: is_numeric
   use mod_cmdline, only: field_info
   use mod_data, only: model
@@ -399,7 +399,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine more_sites (number, start_index)
+subroutine more_sites(number, start_index)
   integer, intent(in)  :: number
   integer, intent(out) :: start_index
   type(site_info), allocatable, dimension(:) :: tmpsite
@@ -422,7 +422,7 @@ end subroutine
 !!
 !! checks for arguments and put it into array \c sites
 ! =============================================================================
-subroutine read_site_file (file_name)
+subroutine read_site_file(file_name)
   use mr_utilities, only: is_numeric, ntokens, skip_header
 
   character(len=*), intent(in) ::  file_name
@@ -610,7 +610,7 @@ subroutine read_local_pressure(file)
   do
     read (unit,*, iostat=io_stat) dates, val
     if (io_stat.eq.iostat_end) exit
-    call string2date(dates, datei)
+    datei = string2date(dates)
     if (modulo(datei(4),6).ne.0) then
       continue
     else
@@ -625,7 +625,7 @@ subroutine read_local_pressure(file)
   ilines=0
   do
     read (unit,*, iostat=io_stat) dates, val
-    call string2date(dates, datei)
+    datei = string2date(dates)
 
     if (io_stat.eq.iostat_end) exit
 

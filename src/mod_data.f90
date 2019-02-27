@@ -439,11 +439,11 @@ end subroutine
 ! TODO do not modify all matrices, only values used in output or computation
 ! or convert this routine as `elemental`
 ! =============================================================================
-function variable_modifier (val, modifier, verbose, list_only)
+function variable_modifier(val, modifier, verbose, list_only)
   use mr_atmosphere, only: geop2geom
   use mr_constants,  only: earth
   use mr_utilities,  only: ntokens, mmwater2pascal
-  use mod_printing,   only: print_warning, form, log, output
+  use mod_printing,  only: print_warning, form, log, output
 
   real(dp) :: variable_modifier
   real(dp), intent(in) :: val
@@ -529,10 +529,10 @@ end function
 ! =============================================================================
 !> Read netCDF file into memory
 ! =============================================================================
-subroutine read_netCDF (model, print, force)
+subroutine read_netCDF(model, print, force)
   use netcdf
   use mod_printing
-  use mod_cmdline,   only: ind
+  use mod_cmdline,  only: ind
   use mr_utilities, only: file_exists, basename
 
   type (file) :: model
@@ -540,12 +540,12 @@ subroutine read_netCDF (model, print, force)
   integer :: i
 
   if (present(force) .and. force) then
-    if (allocated(model%data))  deallocate(model%data)
-    if (allocated(model%lat))   deallocate(model%lat)
-    if (allocated(model%lon))   deallocate(model%lon)
-    if (allocated(model%date))  deallocate(model%date)
-    if (allocated(model%level)) deallocate(model%level)
-    if (allocated(model%time))  deallocate(model%time)
+    if(allocated(model%data))  deallocate(model%data)
+    if(allocated(model%lat))   deallocate(model%lat)
+    if(allocated(model%lon))   deallocate(model%lon)
+    if(allocated(model%date))  deallocate(model%date)
+    if(allocated(model%level)) deallocate(model%level)
+    if(allocated(model%time))  deallocate(model%time)
   endif
 
   if (.not.file_exists(model%name)) &
@@ -566,7 +566,7 @@ subroutine read_netCDF (model, print, force)
       model%huge
   endif
 
-  call nc_error  (nf90_open (model%name, nf90_nowrite, model%ncid))
+  call nc_error (nf90_open(model%name, nf90_nowrite, model%ncid))
 
   do i = 2,5
     call get_dimension (model, i, print=.not.log%sparse)
@@ -580,7 +580,7 @@ end subroutine
 !! \author Marcin Rajner
 !! \date 2013.05.24
 ! =============================================================================
-subroutine get_dimension (model, i, print)
+subroutine get_dimension(model, i, print)
   use netcdf
   use mod_printing
 
@@ -694,7 +694,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-04
 ! =============================================================================
-subroutine nctime2date (model, print)
+subroutine nctime2date(model, print)
   use netcdf
   use mod_printing
   use mr_mjd,      only: mjd, invmjd
@@ -713,10 +713,10 @@ subroutine nctime2date (model, print)
   call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
 
   ! not working with old gfortran
-  ! allocate(character(len=length):: dummy)
+  allocate(character(len=length):: dummy)
 
   ! working 
-  dummy=repeat(" ",length)
+  ! dummy=repeat(" ",length)
 
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
@@ -1044,7 +1044,7 @@ end subroutine
 !! \author From netcdf website \cite netcdf
 !! \date 2013-03-04
 ! =============================================================================
-subroutine nc_error (status, success)
+subroutine nc_error(status, success)
   use netcdf, only: nf90_noerr, nf90_strerror
   use mod_printing
   use iso_fortran_env
@@ -1325,11 +1325,11 @@ end function
 
 
 ! =============================================================================
-!> If inverted barometer is set then averaga all pressure above the oceans
+!> If inverted barometer is set then average all pressure above the oceans
 !
 ! working only for regular grid!
 ! =============================================================================
-subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
+subroutine conserve_mass(model, landseamask, date, inverted_landsea_mask)
   use mr_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
@@ -1390,7 +1390,7 @@ subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
     endif
 
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') &
-      ocean_area/total_area*100.,                                &
+      ocean_area/total_area*100.,                               &
       valoceanarea/ocean_area
   endif
 end subroutine
@@ -1400,9 +1400,9 @@ end subroutine
 !
 ! working only for regular grid!
 ! =============================================================================
-subroutine total_mass (model, date)
+subroutine total_mass(model, date)
   use mr_utilities, only: d2r
-  use mod_cmdline,   only: ind, moreverbose
+  use mod_cmdline,  only: ind, moreverbose
   use mod_printing
   use mr_mjd
   type (file) :: model
@@ -1444,7 +1444,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine parse_level (cmd_line_entry)
+subroutine parse_level(cmd_line_entry)
   use mod_cmdline,  only: cmd_line_arg
   use mod_printing, only: print_warning, form, log
 
@@ -1483,7 +1483,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
+subroutine customfile_value(what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   use mod_printing, only: print_warning
     use mr_atmosphere, only: standard_temperature, virtual_temperature, standard_pressure
   use mr_constants, only: R_air
@@ -1551,7 +1551,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-function if_variable_use_dimension (model, ivarname, idimname)
+function if_variable_use_dimension(model, ivarname, idimname)
   use netcdf
 
   logical :: if_variable_use_dimension

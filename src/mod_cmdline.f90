@@ -152,7 +152,7 @@ contains
 !! \date 2013.05.21
 !! \author Marcin Rajner
 ! =============================================================================
-subroutine collect_args (dummy)
+subroutine collect_args(dummy)
   use mr_utilities, only: ntokens, count_separator
 
   character(*) :: dummy

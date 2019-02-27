@@ -1,7 +1,7 @@
 program barometric_formula
   use mr_constants
-  use mr_utilities ,only: linspace, spline, ispline
-  use mod_atmosphere
+  use mr_utilities, only: linspace, spline, ispline
+  use mr_atmosphere, only: standard_pressure
   use mod_aggf
   implicit none
 

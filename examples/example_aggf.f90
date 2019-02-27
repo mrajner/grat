@@ -106,7 +106,7 @@ end subroutine
 !! \author M. Rajner
 !!
 ! =============================================================================
-subroutine simple_atmospheric_model (filename)
+subroutine simple_atmospheric_model(filename)
   use, intrinsic:: iso_fortran_env
   use mr_utilities, only: file_exists
   use mr_constants
@@ -196,7 +196,7 @@ end subroutine
 ! ============================================================================
 !> Compare different vertical temperature profiles impact on AGGF
 ! ============================================================================
-subroutine aggf_resp_fels_profiles (filename)
+subroutine aggf_resp_fels_profiles(filename)
   use mr_constants, only: dp
   use mod_aggf,  only: aggf
   use mod_green, only: green
@@ -252,7 +252,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-19
 ! ============================================================================
-subroutine compare_fels_profiles (filename)
+subroutine compare_fels_profiles(filename)
   use iso_fortran_env
   use mr_utilities, only: file_exists
   use mr_constants, only: dp
@@ -301,7 +301,7 @@ end subroutine
 ! ============================================================================
 !> Computes AGGF for different site height (h)
 ! ============================================================================
-subroutine aggf_resp_h (filename)
+subroutine aggf_resp_h(filename)
   use mod_green, only: green
   use mod_aggf, only: aggf
   use mr_utilities, only: file_exists, d2r
@@ -491,7 +491,7 @@ end subroutine
 !> \brief This computes relative values of AGGF for different atmosphere
 !! height integration
 ! ============================================================================
-subroutine aggf_resp_hmax (filename)
+subroutine aggf_resp_hmax(filename)
   use mr_utilities, only: file_exists, logspace, d2r
   use mod_aggf, only: aggf
   real (dp), dimension (2) :: psi
@@ -539,7 +539,7 @@ end subroutine
 
 ! ============================================================================
 ! ============================================================================
-subroutine aggf_thin_layer (filename)
+subroutine aggf_thin_layer(filename)
   use, intrinsic:: iso_fortran_env
   use mr_constants, only: dp, pi
   use mod_aggf, only: GN_thin_layer
