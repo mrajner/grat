@@ -540,12 +540,12 @@ subroutine read_netCDF(model, print, force)
   integer :: i
 
   if (present(force) .and. force) then
-    if (allocated(model%data))  deallocate(model%data)
-    if (allocated(model%lat))   deallocate(model%lat)
-    if (allocated(model%lon))   deallocate(model%lon)
-    if (allocated(model%date))  deallocate(model%date)
-    if (allocated(model%level)) deallocate(model%level)
-    if (allocated(model%time))  deallocate(model%time)
+    if(allocated(model%data))  deallocate(model%data)
+    if(allocated(model%lat))   deallocate(model%lat)
+    if(allocated(model%lon))   deallocate(model%lon)
+    if(allocated(model%date))  deallocate(model%date)
+    if(allocated(model%level)) deallocate(model%level)
+    if(allocated(model%time))  deallocate(model%time)
   endif
 
   if (.not.file_exists(model%name)) &
