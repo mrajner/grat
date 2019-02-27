@@ -323,7 +323,7 @@ end subroutine
 !!    (-S -11... was previously treated as two cmmand line entries, now only -?
 !!    non-numeric terminates input argument)
 ! =============================================================================
-subroutine intro (     &
+subroutine intro(      &
     program_calling,   &
     accepted_switches, &
     cmdlineargs,       &
@@ -546,7 +546,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine check_arguments (program_calling)
+subroutine check_arguments(program_calling)
   use mod_date, only: date
   use mod_data, only: model, parse_level
   use mod_cmdline, only: cmd_line, method, quiet, ind, transfer_sp, &
@@ -639,7 +639,7 @@ end subroutine
 !> This function is true if switch is used by calling program or false if it
 !! is not
 ! =============================================================================
-logical function if_accepted_switch (switch, accepted_switches)
+pure logical function if_accepted_switch(switch, accepted_switches)
   character(len= *), intent (in) :: switch
   character(len= *), intent (in), optional :: accepted_switches
   integer :: i
@@ -653,7 +653,7 @@ logical function if_accepted_switch (switch, accepted_switches)
   if_accepted_switch=.false.
 
   ! loop trough accepted switches
-  do i =1, len(accepted_switches)
+  do i = 1, len(accepted_switches)
     if (switch(2:2).eq.accepted_switches(i:i)) then
       if_accepted_switch=.true.
       return
@@ -667,7 +667,7 @@ end function
 !! \author M. Rajner
 !! \date 2013.05.24
 ! =============================================================================
-subroutine parse_moreverbose (cmd_line_entry)
+subroutine parse_moreverbose(cmd_line_entry)
   use mod_cmdline
   use mr_utilities, only: file_exists
 
@@ -730,14 +730,13 @@ subroutine parse_moreverbose (cmd_line_entry)
   enddo
 end subroutine
 
-
 ! =============================================================================
 !> This subroutine parse -I option.
 !!
 !! \author M. Rajner
 !! \date 2013-05-17
 ! =============================================================================
-subroutine parse_info (cmd_line_entry)
+subroutine parse_info(cmd_line_entry)
   use mr_utilities, only:is_numeric
   use mod_cmdline
   type (cmd_line_arg), intent(in),optional :: cmd_line_entry
@@ -902,7 +901,7 @@ end subroutine
 
 !! =============================================================================
 !! =============================================================================
-subroutine print_help (program_calling, accepted_switches)
+subroutine print_help(program_calling, accepted_switches)
   character(*), intent(in) :: program_calling
   character(*), intent(in),optional :: accepted_switches
   integer :: help_unit, io_stat

@@ -1,7 +1,11 @@
 testspeed: .FORCE
 	@$(MAKE)
-	time ../bin/grat  -F ERA @SP : @ offset=-101325 -D 20140205 -S j -!
-	time ../bin/grat -! -F ERA @SP : @ offset=-101325 -D 20140205 -S j
+	# time ../bin/grat  -F ERA @SP  -D 20140205 -S j -!
+	# time ../bin/grat  -F ERA @SP : @ offset=-101325 -D 20140205 -S j -!
+	# time ../bin/grat -! -F ERA @SP : @ offset=-101325 -D 20140205 -S j
+	# time ../bin/grat  -F   /home/mrajner/dat/erainterim/sp.2014.nc_d6d0 @SP : sp  -D 20140205 -S j -!
+	time ../bin/grat  -F   /home/mrajner/dat/erainterim/sp.2014.nc_d6d0 @SP : sp @ offset=-101325 -D 20140205 -S j -!
+	# time ../bin/grat -! -F /home/mrajner/dat/erainterim/sp.2014.nc_d6d0 @SP : sp @ offset=-101325 -D 20140205 -S j
 
 .FORCE:
 # ~/.local/bin/value_check: .FORCE

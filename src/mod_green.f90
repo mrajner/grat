@@ -42,7 +42,7 @@ contains
 !! \author M. Rajner
 !! \date 2013-03-06
 ! =============================================================================
-subroutine parse_green (cmd_line_entry)
+subroutine parse_green(cmd_line_entry)
   use mr_utilities, only: file_exists, is_numeric, basename
   use mod_cmdline
   use mod_printing
@@ -132,7 +132,7 @@ end subroutine
 ! =============================================================================
 !> This subroutine read  green file
 ! =============================================================================
-subroutine read_green (green, print)
+subroutine read_green(green, print)
   use mr_utilities, only: file_exists, skip_header, r2d, d2r, ntokens, basename
   use, intrinsic :: iso_fortran_env
   use mod_printing
@@ -326,7 +326,7 @@ end subroutine
 ! =============================================================================
 !> Unification:
 ! =============================================================================
-subroutine green_unification ()
+subroutine green_unification()
   use mr_utilities, only: size_ntimes_denser, spline_interpolation, d2r
   use mod_cmdline,   only: info, method3d_compute_reference
   use mod_printing
@@ -1753,7 +1753,7 @@ end subroutine
 !! \date 2013.07.03
 !! \author Marcin Rajner
 ! =============================================================================
-subroutine printmoreverbose (latin, lonin, azimuth, azstep, distancestart, distancestop)
+subroutine printmoreverbose(latin, lonin, azimuth, azstep, distancestart, distancestop)
   use mr_spherical, only : spher_trig
   use mod_cmdline,   only : moreverbose, ind
   use mr_utilities, only : r2d
@@ -1782,7 +1782,7 @@ end subroutine
 !!   spotl   see \cite spotl manual
 !!   olssson see \cite olsson2009
 !! =============================================================================
-function green_newtonian (psi, h, z, method)
+function green_newtonian(psi, h, z, method)
   use mr_constants, only: earth, gravity
   use mod_normalization, only: green_normalization
   real(dp) :: green_newtonian

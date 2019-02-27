@@ -443,7 +443,7 @@ function variable_modifier(val, modifier, verbose, list_only)
   use mr_atmosphere, only: geop2geom
   use mr_constants,  only: earth
   use mr_utilities,  only: ntokens, mmwater2pascal
-  use mod_printing,   only: print_warning, form, log, output
+  use mod_printing,  only: print_warning, form, log, output
 
   real(dp) :: variable_modifier
   real(dp), intent(in) :: val
@@ -532,7 +532,7 @@ end function
 subroutine read_netCDF(model, print, force)
   use netcdf
   use mod_printing
-  use mod_cmdline,   only: ind
+  use mod_cmdline,  only: ind
   use mr_utilities, only: file_exists, basename
 
   type (file) :: model
@@ -1325,7 +1325,7 @@ end function
 
 
 ! =============================================================================
-!> If inverted barometer is set then averaga all pressure above the oceans
+!> If inverted barometer is set then average all pressure above the oceans
 !
 ! working only for regular grid!
 ! =============================================================================
@@ -1390,7 +1390,7 @@ subroutine conserve_mass(model, landseamask, date, inverted_landsea_mask)
     endif
 
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') &
-      ocean_area/total_area*100.,                                &
+      ocean_area/total_area*100.,                               &
       valoceanarea/ocean_area
   endif
 end subroutine
@@ -1402,7 +1402,7 @@ end subroutine
 ! =============================================================================
 subroutine total_mass(model, date)
   use mr_utilities, only: d2r
-  use mod_cmdline,   only: ind, moreverbose
+  use mod_cmdline,  only: ind, moreverbose
   use mod_printing
   use mr_mjd
   type (file) :: model
@@ -1551,7 +1551,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-function if_variable_use_dimension (model, ivarname, idimname)
+function if_variable_use_dimension(model, ivarname, idimname)
   use netcdf
 
   logical :: if_variable_use_dimension
