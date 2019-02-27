@@ -1,3 +1,8 @@
+testspeed: .FORCE
+	@$(MAKE)
+	time ../bin/grat  -F ERA @SP : @ offset=-101325 -D 20140205 -S j -!
+	time ../bin/grat -! -F ERA @SP : @ offset=-101325 -D 20140205 -S j
+
 .FORCE:
 # ~/.local/bin/value_check: .FORCE
 # 	# $(MAKE) PEDANTIC=1 

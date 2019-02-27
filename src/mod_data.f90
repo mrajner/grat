@@ -439,7 +439,7 @@ end subroutine
 ! TODO do not modify all matrices, only values used in output or computation
 ! or convert this routine as `elemental`
 ! =============================================================================
-function variable_modifier (val, modifier, verbose, list_only)
+function variable_modifier(val, modifier, verbose, list_only)
   use mr_atmosphere, only: geop2geom
   use mr_constants,  only: earth
   use mr_utilities,  only: ntokens, mmwater2pascal
@@ -529,7 +529,7 @@ end function
 ! =============================================================================
 !> Read netCDF file into memory
 ! =============================================================================
-subroutine read_netCDF (model, print, force)
+subroutine read_netCDF(model, print, force)
   use netcdf
   use mod_printing
   use mod_cmdline,   only: ind
@@ -566,7 +566,7 @@ subroutine read_netCDF (model, print, force)
       model%huge
   endif
 
-  call nc_error  (nf90_open (model%name, nf90_nowrite, model%ncid))
+  call nc_error (nf90_open(model%name, nf90_nowrite, model%ncid))
 
   do i = 2,5
     call get_dimension (model, i, print=.not.log%sparse)
@@ -580,7 +580,7 @@ end subroutine
 !! \author Marcin Rajner
 !! \date 2013.05.24
 ! =============================================================================
-subroutine get_dimension (model, i, print)
+subroutine get_dimension(model, i, print)
   use netcdf
   use mod_printing
 
@@ -694,7 +694,7 @@ end subroutine
 !! \author M. Rajner
 !! \date 2013-03-04
 ! =============================================================================
-subroutine nctime2date (model, print)
+subroutine nctime2date(model, print)
   use netcdf
   use mod_printing
   use mr_mjd,      only: mjd, invmjd
@@ -713,10 +713,10 @@ subroutine nctime2date (model, print)
   call nc_error  (nf90_inquire_attribute (model%ncid, varid, "units", len=length))
 
   ! not working with old gfortran
-  ! allocate(character(len=length):: dummy)
+  allocate(character(len=length):: dummy)
 
   ! working 
-  dummy=repeat(" ",length)
+  ! dummy=repeat(" ",length)
 
   call nc_error  (nf90_get_att (model%ncid, varid, "units", dummy))
 
@@ -1044,7 +1044,7 @@ end subroutine
 !! \author From netcdf website \cite netcdf
 !! \date 2013-03-04
 ! =============================================================================
-subroutine nc_error (status, success)
+subroutine nc_error(status, success)
   use netcdf, only: nf90_noerr, nf90_strerror
   use mod_printing
   use iso_fortran_env
@@ -1329,7 +1329,7 @@ end function
 !
 ! working only for regular grid!
 ! =============================================================================
-subroutine conserve_mass (model, landseamask, date, inverted_landsea_mask)
+subroutine conserve_mass(model, landseamask, date, inverted_landsea_mask)
   use mr_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
@@ -1400,7 +1400,7 @@ end subroutine
 !
 ! working only for regular grid!
 ! =============================================================================
-subroutine total_mass (model, date)
+subroutine total_mass(model, date)
   use mr_utilities, only: d2r
   use mod_cmdline,   only: ind, moreverbose
   use mod_printing
@@ -1444,7 +1444,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine parse_level (cmd_line_entry)
+subroutine parse_level(cmd_line_entry)
   use mod_cmdline,  only: cmd_line_arg
   use mod_printing, only: print_warning, form, log
 
@@ -1483,7 +1483,7 @@ end subroutine
 
 ! =============================================================================
 ! =============================================================================
-subroutine customfile_value (what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
+subroutine customfile_value(what, sp, t, hp, sh, gp, vsh, vt, level, val, rho)
   use mod_printing, only: print_warning
     use mr_atmosphere, only: standard_temperature, virtual_temperature, standard_pressure
   use mr_constants, only: R_air
