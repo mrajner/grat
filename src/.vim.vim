@@ -1,7 +1,11 @@
 "vim settings
 let b:quickrun_config = {
-      \ 'exec' : 'make -f tmp.makefile',
-      \ 'outputter/buffer/split' : 'botright vertical',
-      \ }
-      " \ 'runner': 'terminal',
-      " \ }
+       \ 'exec' : 'make -s ; bash problem.sh',
+       \ 'outputter/buffer/split' : 'botright vertical',
+       \ }
+" let b:quickrun_config = {
+"       \ 'exec' : 'make -f tmp.makefile',
+"       \ 'outputter/buffer/split' : 'botright vertical',
+"       \ }
+"       " \ 'runner': 'terminal',
+"       " \ }
