@@ -1082,7 +1082,7 @@ end subroutine
 !! lat and lon in decimal degree
 ! =============================================================================
 subroutine get_value(model, lat, lon, val, level, method, date)
-  use mod_cmdline, only: moreverbose, ind
+  use mod_cmdline, only: moreverbose, ind, warnings
   use mod_utilities, only: r2d, bilinear
   use netcdf
   use mod_printing, only: print_warning, basename
@@ -1131,7 +1131,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
     ) then
 
-    if (.not.first_warning) then
+    if (.not.first_warning .and. warnings%if) then
 
       write(error_unit,                                                         &
         '(/,"lon, lat", 2f10.3,/, "latrange", 2f10.3,/, "lonrange", 2f10.3,/)') &
