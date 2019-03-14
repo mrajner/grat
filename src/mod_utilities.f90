@@ -143,8 +143,6 @@ end subroutine spline
 !! output:
 !! ispline = interpolated value at point u
 !!
-!! \date 2013-03-10
-!! \author M. Rajner
 !! added optional parameter method
 !!=======================================================================
 real (dp) function ispline(u, x, y, b, c, d, n, method)
