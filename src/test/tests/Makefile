@@ -30,9 +30,11 @@ stat: $(RESULTS)
 %.dat:%.f90 
 	$(FC) $(OPT) -Wall -Werror $< -o $(subst .dat,,$@) \
 	 	-I/usr/local/include  \
+	 	-L/usr/local/lib  \
 	 	-lgrat \
-		-I/home/mrajner/bin/fortran/libmr -lmr \
-		-L/home/mrajner/bin/fortran/libmr -lmr
+		-I/home/mrajner/bin/fortran/libmr \
+		-L/home/mrajner/bin/fortran/libmr -lmr \
+		-lnetcdf -lnetcdff
 	./$(subst .dat,,$@) 2>&1 | tee $@
 
 %.dat.s:%.sh

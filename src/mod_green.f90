@@ -137,7 +137,7 @@ subroutine read_green(green, print)
   use, intrinsic :: iso_fortran_env
   use mod_printing
   use mr_constants, only: earth, pi
-  use mod_normalization, only: green_normalization
+  use mr_conversion, only: green_normalization
 
   integer :: lines, fileunit, io_status, i
   real(dp), allocatable, dimension(:) :: tmp
@@ -328,9 +328,9 @@ end subroutine
 ! =============================================================================
 subroutine green_unification()
   use mr_utilities, only: size_ntimes_denser, spline_interpolation, d2r
-  use mod_cmdline,   only: info, method3d_compute_reference
+  use mod_cmdline,  only: info, method3d_compute_reference
   use mod_printing
-  use mod_aggf, only: aggf
+  use mod_aggf,     only: aggf
 
   type(green_functions) :: tmpgreen
   integer :: i, iinfo, imin, imax, j, ii
@@ -518,15 +518,16 @@ subroutine convolve(site, date, results)
   use mr_constants
   use mod_site, only : site_info, local_pressure_distance
   use mod_cmdline
-  use mr_utilities, only: d2r, r2d, datanameunit, mmwater2pascal, countsubstring, logspace, setnan
+  use mr_utilities, only: d2r, r2d, datanameunit, countsubstring, logspace, setnan
+  use mr_conversion, only: mmwater2pascal
   use mr_spherical
   use mod_data
   use mod_polygon
   use mod_printing
-  use mod_normalization, only: green_normalization
   use mod_aggf, only: aggf
   use mr_atmosphere, only: standard_temperature, virtual_temperature, standard_pressure
   use mod_3d
+  use mr_conversion, only: green_normalization
 
   type(site_info),  intent(in) :: site
   integer, intent(in), optional :: date(6)
@@ -1784,7 +1785,7 @@ end subroutine
 !! =============================================================================
 function green_newtonian(psi, h, z, method)
   use mr_constants, only: earth, gravity
-  use mod_normalization, only: green_normalization
+  use mr_conversion, only: green_normalization
   real(dp) :: green_newtonian
   real(dp), intent (in) :: psi
   real(dp), intent (in), optional :: h
@@ -1839,37 +1840,6 @@ function green_newtonian(psi, h, z, method)
     green_newtonian = green_newtonian &
       * gravity%constant / earth%gravity%mean * green_normalization("m", psi=psi)
     return
-  endif
-end function
-
-! =============================================================================
-!> This function generate
-! =============================================================================
-elemental function green_normalization(method, psi)
-  use mr_constants, only: pi, earth, gravity, dp
-  use mr_utilities, only: d2r
-
-  real(dp) :: green_normalization
-  character(*), intent(in) :: method
-  real(dp), intent(in), optional :: psi
-
-  if (method.eq."f2m") then
-
-    green_normalization =                               &
-        1e-3                                            &
-        / earth%gravity%mean                            &
-        * earth%radius &
-        * 2. * pi * (1.- cos(d2r(1._dp)))
-
-  else if (method.eq."m") then ! merriam normalization
-
-    green_normalization =                                             &
-        psi * 1e15 * earth%radius**2 * 2 * pi * (1.- cos(d2r(1._dp)))
-
-  else if (method.eq."f") then ! farrell normalization
-
-    green_normalization = psi * 1e18 * earth%radius
-
   endif
 end function
 

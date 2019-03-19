@@ -1,6 +1,6 @@
 program unit_tests
-  use mr_utilities
-  use mr_constants, only: density,earth
+  use mr_constants, only: density,earth, dp
+  use mr_conversion, only: mmwater2pascal
   implicit none
   print *, 'testing'
 

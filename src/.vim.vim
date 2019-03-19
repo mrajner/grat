@@ -1,7 +1,2 @@
-"vim settings
-let b:quickrun_config = {
-      \ 'exec' : 'make -f tmp.makefile',
-      \ 'outputter/buffer/split' : 'botright vertical',
-      \ }
-      " \ 'runner': 'terminal',
-      " \ }
+if !exists("b:quickrun_config") | let b:quickrun_config = {} | endif
+let b:quickrun_config.exec =  'make -f tmp.makefile' 

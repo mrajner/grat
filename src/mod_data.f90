@@ -442,7 +442,8 @@ end subroutine
 function variable_modifier(val, modifier, verbose, list_only)
   use mr_atmosphere, only: geop2geom
   use mr_constants,  only: earth
-  use mr_utilities,  only: ntokens, mmwater2pascal
+  use mr_utilities,  only: ntokens
+  use mr_conversion, only: mmwater2pascal
   use mod_printing,  only: print_warning, form, log, output
 
   real(dp) :: variable_modifier
@@ -799,8 +800,8 @@ subroutine nctime2date(model, print)
 
   do i = 1, size(model%time)
     mjd_= model%time(i) / 24 + mjd_start
-    call invmjd(mjd_,date)
-    model%date(i,:) = date
+    
+    model%date(i,:) = invmjd(mjd_)
   enddo
 end subroutine
 

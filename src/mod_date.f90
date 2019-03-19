@@ -178,13 +178,13 @@ subroutine parse_date(cmd_line_entry)
           endif
 
         case('D')
-          call invmjd (mjd(start)+stop(1), stop)
+          stop = invmjd(mjd(start)+stop(1))
 
         case('H')
-          call invmjd (mjd(start)+stop(1)/24._dp, stop)
+          stop = invmjd(mjd(start)+stop(1)/24._dp)
 
         case('s')
-          call invmjd (mjd(start)+stop(1)/24._dp/3600._dp, stop)
+          stop = invmjd(mjd(start)+stop(1)/24._dp/3600._dp)
 
         case('')
 
@@ -275,8 +275,8 @@ subroutine parse_date(cmd_line_entry)
 
           endif
 
-          date(i)%mjd = mjd(date(i)%date)
-          call invmjd(date(i)%mjd, date(i)%date)
+          date(i)%mjd  = mjd(date(i)%date)
+          date(i)%date = invmjd(date(i)%mjd) 
 
         enddo
       endif
@@ -315,7 +315,7 @@ subroutine parse_date(cmd_line_entry)
 
         do i = start_index, ubound(date,1)
           date(i)%mjd = mjd(start) + (i-start_index)*step/24.
-          call invmjd (date(i)%mjd, date(i)%date)
+          date(i)%date = invmjd(date(i)%mjd)
         enddo
 
       endif
