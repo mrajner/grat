@@ -674,10 +674,12 @@ subroutine convolve(site, date, results)
           ! so -128 in byte is NaN and not -128
           ! this is just workaround
           ! run problem.sh in commit e948744 to see the real problem
-          if (val(ind%model%ls) + epsilon(1._dp).gt.1 &
-            .or. (val(ind%model%ls) - epsilon(1._dp) ).lt.0 &
-           .or. isnan(val(ind%model%ls)) ) then
-           call print_warning("mask need to be <0,1> or NaN", error =  .true.)
+          if (((val(ind%model%ls) - epsilon(1._dp)).gt.1._dp &
+            .or. (val(ind%model%ls) + epsilon(1._dp) ).lt.0._dp) &
+            .and..not.isnan(val(ind%model%ls)) &
+            ) then
+           print*, "mask value:", val(ind%model%ls)
+           call print_warning("mask need to be <0,1> or NaN", error = .true.)
           endif
         endif
 
