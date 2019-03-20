@@ -1,16 +1,18 @@
 ########################################################################
 #                                                          value_check #
-#                                                     v1.2-15-g4392bc1 #
+#                                                 v1.3-397-g7b6d6e0 () #
 ########################################################################
-#         compiler: GNU Fortran (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6) #
+#         compiler: GNU Fortran (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) #
 #                                                         FFLAGS = -O0 #
-#                                compiled on lidka 2015-05-15 13:12:17 #
+#                               compiled on  2019-03-20 18:04:30 +0100 #
 #                                                                      #
-#                                 Copyright 2013-2015 by Marcin Rajner #
-#                                      Warsaw University of Technology #
+#                                 Copyright 2013-2019 by Marcin Rajner #
+#                   Warsaw University of Technology (2003-2017, 2019-) #
+#                        Chalmers University of Technology (2017-2019) #
+#                                                                      #
 #                                              License: GPLv3 or later #
 ########################################################################
-Program started: 2015-05-15 13:23:03 (+02h UTC)
+Program started: 2019-03-20 18:06:42 (+01h UTC)
 #-----------------------------------------------------------------------
 Command invoked:
 value_check -F ../data/test_data.nc @GP : gp -S 10,j , r -J 1000,100, 66
@@ -47,16 +49,10 @@ Command parsing:
   rysy_a   49.1794   20.0883          NaN
   joze_a   52.0000   21.0000          NaN
   rysy_a   49.1794   20.0883          NaN
-Execution time:   0.0s (proc time:   0.0 |% 87.7)
+Execution time: *****h (proc time:   0.0 |%  0.0)
 #-----------------------------------------------------------------------
      out   90.0000  200.0000  100.623E+03
      out   90.0000   -5.0000          NaN
 55927.000 20120101000000   joze_a   52.0000   21.0000   99.257E+03
 54832.000 20090101000000   joze_a   52.0000   21.0000          NaN
 53005.000 20040101000000   joze_a   52.0000   21.0000          NaN
-    name       lat       lon           NN           NN
-  balt_a   57.0000   21.0000          NaN          NaN
-     out   90.0000  200.0000  100.623E+03  280.000E+00
-  balt_a   57.0000   21.0000   99.512E+03   80.000E+00
-     out   90.0000  200.0000  100.623E+03          NaN
-  balt_a   57.0000   21.0000   99.512E+03          NaN

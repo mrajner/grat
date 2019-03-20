@@ -190,7 +190,7 @@ subroutine parse_model(cmd_line_entry)
         call print_warning (                                   &
           "model",                                             &
           more  = trim(model(i)%name)//" : file do not exist", &
-          error = .false.                                      &
+          error = .true.                                       &
           )
       endif
 
