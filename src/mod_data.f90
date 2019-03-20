@@ -1087,7 +1087,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
   use mod_cmdline, only: moreverbose, ind
   use mr_utilities, only: r2d, bilinear, basename
   use netcdf
-  use mod_printing, only: print_warning
+  use mod_printing, only: warnings, print_warning
   use iso_fortran_env, only: error_unit
 
   type(file), intent (in) :: model
