@@ -15,5 +15,5 @@
              1.9580805081
             -0.0000002939
 standard_pressure: set method explicitly
-Note: The following floating-point exceptions are signalling: IEEE_DENORMAL
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DENORMAL
 STOP 1
