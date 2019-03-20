@@ -1133,7 +1133,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
     .or.lon.gt.max(model%lonrange(1), model%lonrange(2)) &
     ) then
 
-    if (.not.first_warning) then
+    if (.not.first_warning .and. warnings%if) then
 
       write(error_unit,                                                         &
         '(/,"lon, lat", 2f10.3,/, "latrange", 2f10.3,/, "lonrange", 2f10.3,/)') &
