@@ -1,9 +1,7 @@
 #!/bin/bash - 
 # Make map of polygon(s)
 
-# \author Marcin Rajner
-# \date 03.11.2012
-# This scripts need GMT to be installed \cite Wessel98
+# This script needs GMT to be installed \cite Wessel98
 # The \c .pdf suffix will be given for output file
 #===============================================================================
 
@@ -143,13 +141,7 @@ pscoast $R -Slightblue -Glightgray  -K -Di $A -J${J}  > $output.ps
 
   pscoast $R -O -Di $A -J -W -N1thin >> $output.ps
 
-ps2raster $output.ps -Tf -P -A
+psconvert $output.ps -Tf -P -A
 rm $output.ps 
 #evince $output.ps
-
-
-
-
-
-
 exit 0
