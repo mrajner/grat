@@ -336,6 +336,7 @@ subroutine intro(      &
     )
   use mod_cmdline
   use mr_utilities, only: file_exists
+  use mr_parser, only: get_command_cleaned
 
   character(len=*), intent(in) :: program_calling
   character(len=*), intent (in), optional :: accepted_switches

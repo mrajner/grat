@@ -464,12 +464,12 @@ subroutine green_unification()
     allocate(green_common(iinfo)%dataname(size(green)))
 
     do i = 1,  size(green_common(iinfo)%data, 2)
-      call spline_interpolation(                       &
+      green_common(iinfo)%data(:, i) =  &
+        spline_interpolation(                       &
         x = green(i)%distance,                           &
         y = green(i)%data,                               &
         n = size(green(i)%distance),                     &
         x_interpolated = green_common(iinfo)%distance,   &
-        y_interpolated = green_common(iinfo)%data(:, i), &
         n2 = size(green_common(iinfo)%distance)          &
         )
 
@@ -679,8 +679,8 @@ subroutine convolve(site, date, results)
             .or. (val(ind%model%ls) + epsilon(1._dp) ).lt.0._dp) &
             .and..not.isnan(val(ind%model%ls)) &
             ) then
-           print*, "mask value:", val(ind%model%ls)
-           call print_warning("mask need to be <0,1> or NaN", error = .true.)
+            print*, "mask value:", val(ind%model%ls)
+            call print_warning("mask need to be <0,1> or NaN", error = .true.)
           endif
         endif
 
@@ -1272,13 +1272,13 @@ subroutine convolve(site, date, results)
 
                     if (all([ind%model%rsp, ind%model%hrsp].ne.0)) then
                       val(ind%model%rsp)       = standard_pressure(   &
-                      height                   = site%height,         &
-                      h_zero                   = val(ind%model%hrsp), &
-                      p_zero                   = old_val_rsp,         &
-                      method                   = transfer_sp%method,  &
-                      temperature              = val(ind%model%t),    &
-                      use_standard_temperature = ind%model%t.eq.0,    &
-                      nan_as_zero              = .false.              &
+                        height                   = site%height,         &
+                        h_zero                   = val(ind%model%hrsp), &
+                        p_zero                   = old_val_rsp,         &
+                        method                   = transfer_sp%method,  &
+                        temperature              = val(ind%model%t),    &
+                        use_standard_temperature = ind%model%t.eq.0,    &
+                        nan_as_zero              = .false.              &
                         )
                     endif
 

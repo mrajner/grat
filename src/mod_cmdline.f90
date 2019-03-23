@@ -220,45 +220,4 @@ subroutine collect_args(dummy)
 
 end subroutine
 
-! ==============================================================================
-!> This subroutine removes unnecesary blank spaces from cmdline entry
-!!
-!! Marcin Rajner
-!! \date 2013-05-13
-!! allows specification like '-F file' and '-Ffile'
-!! but  if -[0,9] it is treated as number belonging to switch (-S -2)
-!! but  if -[\s,:] do not start next command line option
-! ==============================================================================
-subroutine get_command_cleaned(dummy)
-  use mr_utilities, only: check_if_switch_or_minus
-  character(*), intent(out) :: dummy
-  character(355) :: a, b, arg
-  integer :: i
-
-  dummy = ''
-  arg   = ''
-
-  do i = 1, command_argument_count()
-    call get_command_argument(i,a)
-    call get_command_argument(i+1,b)
-
-    if (check_if_switch_or_minus(a)) then
-      arg = trim(a)
-    else
-        arg=trim(arg)//trim(a)
-    endif
-
-    if(check_if_switch_or_minus(b).or.i.eq.command_argument_count()) then
-
-      if(trim(dummy).eq."") then
-        dummy = trim(arg)
-      else
-        dummy = trim(dummy)//" "//trim(arg)
-      endif
-
-    endif
-
-  enddo
-end subroutine
-
 end module
