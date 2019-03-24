@@ -1153,7 +1153,6 @@ end subroutine
 ! =============================================================================
 subroutine parse_long_option(cmd_line_entry, version, cdate, gdate, program_calling)
   use mod_cmdline,   only: cmd_line_arg
-  use mr_utilities, only: version_split
 
   type(cmd_line_arg) :: cmd_line_entry
   character(len=*), optional :: version, cdate, gdate, program_calling
