@@ -56,7 +56,7 @@ do
     #  >> ${NAME}.ps
 
 
-  ps2raster\
+  psconvert \
     -P -Tf -A ${NAME_out}.ps
 
   rm ${NAME_out}.ps

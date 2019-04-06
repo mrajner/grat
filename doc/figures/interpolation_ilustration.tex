@@ -3,64 +3,67 @@
 \pgfplotsset{compat=newest}
 \usetikzlibrary{pgfplots.groupplots}
 \begin{document}
-  \begin{tikzpicture}
-    \pgfplotsset{
-      table/x index={1},
-      table/y index={2},
-      table/header={true},
-    }
-    \begin{groupplot}
+\begin{tikzpicture}
+  \pgfplotsset{
+    table/x index={1},
+    table/y index={2},
+    table/header={true},
+  }
+  \begin{groupplot}
+    [
+      group style = {group size=2 by 1},
+      colormap/jet,
+      enlargelimits=false,
+      grid = major,
+      xtick=\empty,
+      ytick=\empty,
+      %      xtick={2.5,5},
+      %      ytick={0,2.5,...,5},
+      %      x unit = {\deg}
+    ]
+    \nextgroupplot
+    [
+      only marks, 
+      scatter,
+      scatter src=explicit,
+      clip = false,
+    ]
+
+    \addplot
+      table 
+      [point meta=\thisrowno{3}/100]
+      {/home/mrajner/src/grat/doc/figures/interpn1.dat};
+
+    \addplot+
+      [ mark size=0.41em ]
+      table 
       [
-        group style = {group size=2 by 1},
-        colormap/jet,
-        enlargelimits=false,
-        grid = major,
-        xtick=\empty,
-        ytick=\empty,
-        %      xtick={2.5,5},
-        %      ytick={0,2.5,...,5},
-        %      x unit = {\deg}
+        point meta=\thisrowno{2}/100,
+        x index=0,
+        y index=1,
+        header = false,
       ]
-      \nextgroupplot
+      {/home/mrajner/src/grat/doc/figures/interp1.dat};
+
+    \nextgroupplot
+    [only marks, 
+      scatter,
+      colorbar,
+    scatter src=explicit,]
+    \addplot
+      table
+      [point meta=\thisrowno{3}/100 ] 
+      {/home/mrajner/src/grat/doc/figures/interpl1.dat};
+    \addplot+
+      [mark size=0.41em]
+      table
       [
-        only marks, 
-        scatter,
-        scatter src=explicit,
-        clip = false,
+        point meta=\thisrowno{2}/100,
+        x index=0,
+        y index=1,
+        header = false,
       ]
-      \addplot
-        table 
-        [point meta=\thisrowno{3}/100]
-        {/home/mrajner/src/grat/doc/figures/interpn1.dat};
-      \addplot+
-        [ mark size=0.41em ]
-        table 
-        [
-          point meta=\thisrowno{2}/100,
-          x index=0,
-          y index=1,
-          header = false,
-        ]
-        {/home/mrajner/src/grat/doc/figures/interp1.dat};
-      \nextgroupplot
-      [only marks, 
-        scatter,
-        colorbar,
-        scatter src=explicit,]
-      \addplot
-        table
-        [point meta=\thisrowno{3}/100 ] 
-        {/home/mrajner/src/grat/doc/figures/interpl1.dat};
-      \addplot+
-        [mark size=0.41em]
-        table
-        [
-          point meta=\thisrowno{2}/100,
-          x index=0,
-          y index=1,
-          header = false,
-        ]
-        {/home/mrajner/src/grat/doc/figures/interp1.dat};
+      {/home/mrajner/src/grat/doc/figures/interp1.dat};
     \end{groupplot}
   \end{tikzpicture}
-\end{document}
+  \end{document}
