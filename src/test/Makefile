@@ -23,6 +23,9 @@ ifeq ($(FC),gfortran)
 	FFLAGS  := $(OPT)
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFF := -I/usr/lib64/gfortran/modules/  -lnetcdf -lnetcdff
+ifeq ($(shell hostname),mrajnerpw)
+	NETCDFF := -I/usr/include -lnetcdf -lnetcdff
+endif
 endif
 
 all: data/test_data.nc data/gmtls.nc data/ncks.nc
