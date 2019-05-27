@@ -40,6 +40,9 @@ endif
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFFINC           := -I/usr/lib64/gfortran/modules/
 	NETCDFFLIB           := -lnetcdf -lnetcdff
+ifneq ($(shell hostname),lenovo)
+	NETCDFFINC           := -I/usr/include
+endif
 endif
 
 ifdef STATIC
