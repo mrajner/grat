@@ -40,7 +40,7 @@ endif
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFFINC           := -I/usr/lib64/gfortran/modules/
 	NETCDFFLIB           := -lnetcdf -lnetcdff
-ifeq ($(shell hostname),mrajnerpw)
+ifneq ($(shell hostname),lenovo)
 	NETCDFFINC           := -I/usr/include
 endif
 endif
