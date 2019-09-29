@@ -38,11 +38,8 @@ ifdef PEDANTIC
 	FFLAGS += -Werror -Wno-character-truncation -std=f2008 -Wall -pedantic -fcheck=all -fbounds-check -fcheck=bounds -Warray-bounds
 endif
 	ENABLE_PREPROCESSING := -cpp
-	NETCDFFINC           := -I/usr/lib64/gfortran/modules/
-	NETCDFFLIB           := -lnetcdf -lnetcdff
-ifeq ($(shell hostname),mrajnerpw)
 	NETCDFFINC           := -I/usr/include
-endif
+	NETCDFFLIB           := -lnetcdf -lnetcdff
 endif
 
 ifdef STATIC
