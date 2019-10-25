@@ -40,9 +40,6 @@ endif
 	ENABLE_PREPROCESSING := -cpp
 	NETCDFFINC           := -I/usr/include
 	NETCDFFLIB           := -lnetcdf -lnetcdff
-ifneq ($(shell hostname),lenovo)
-	NETCDFFINC           := -I/usr/include
-endif
 endif
 
 ifdef STATIC
