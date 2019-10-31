@@ -137,7 +137,7 @@ subroutine parse_model(cmd_line_entry)
         write (log%unit, form%i3,advance = 'no') &
           trim (dataname(model(i)%dataname)), &
           "("//trim(model(i)%dataname)//")"
-        write(log%unit, '(5(a,x))', advance="no") (trim(model(i)%names(j)), j=1,5)
+        write(log%unit, '(5(a,1x))', advance="no") (trim(model(i)%names(j)), j=1,5)
         write(log%unit, *)
       endif
 
@@ -1387,7 +1387,7 @@ subroutine conserve_mass(model, landseamask, date, inverted_landsea_mask)
     endif
 
     if (present(date)) then
-      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,x, i4.2,5i2.2)', advance='no') mjd(date), date
+      write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,1x, i4.2,5i2.2)', advance='no') mjd(date), date
     endif
 
     write (moreverbose(ind%moreverbose%o)%unit,'(f12.3,f12.3)') &
@@ -1426,7 +1426,7 @@ subroutine total_mass(model, date)
   if (output%header)  then
 
     if (present(date)) then
-      write (moreverbose(ind%moreverbose%t)%unit, '(a12,x,a14$)') &
+      write (moreverbose(ind%moreverbose%t)%unit, '(a12,1x,a14)', advance='no') &
         "mjd",  "date"
     endif
 
@@ -1435,7 +1435,7 @@ subroutine total_mass(model, date)
   endif
 
   if (present(date)) then
-    write (moreverbose(ind%moreverbose%t)%unit, '(f12.3,x, i4.2,5i2.2$)') &
+    write (moreverbose(ind%moreverbose%t)%unit, '(f12.3,1x,i4.2,5i2.2)', advance='no') &
       mjd(date), date
   endif
 
