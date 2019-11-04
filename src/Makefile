@@ -4,7 +4,7 @@ FC := gfortran
 
 # TODO
 # optimalization
-OPT=-O0
+OPT=-O0 -g
 
 # user definitions
 # you may want to change this settings
@@ -95,6 +95,9 @@ PROGS           := $(addprefix $(PROGS_DIR)/,$(PROGSSRCS:.f90=))
 PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := $(PROGS_DIR)
 
+pall: $(PROGS)
+	../bin/grat -
+	../bin/grat -v
 all: $(DIRS) libgrat.a $(PROGS)
 
 # aaa: ../bin/grat
