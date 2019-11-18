@@ -192,10 +192,10 @@ $(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat.a
 	install $< $@
 
 $(INCDIR)/%.mod: %.mod
-	cp -v $< $@
+	install -m 444 $< $@
 
 $(BINDIR)/%: $(PROGS_DIR)/%
-	cp -v $< $@
+	install $< $@
 
 %.o: %.f90
 	$(call colorecho,2,$@)
