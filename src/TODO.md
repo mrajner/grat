@@ -1,3 +1,5 @@
+sea-level problem with scale if -! is given
+
 correct handling of FillValue
 
 automatically select variables if unambiogus: give information in log
