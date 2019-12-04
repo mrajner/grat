@@ -2,7 +2,7 @@ FC  ?= gfortran
 OPT := -O2
 
 # GRATLIB := -I../$(FC) -L../$(FC) -lgrat
-GRATLIB := -I/usr/local/include/ -L/usr/local/lib -lgrat
+GRATLIB := -I/usr/local/include/ -lgrat
 
 # ifort settings
 ifeq ($(FC),ifort)
