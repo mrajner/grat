@@ -186,16 +186,16 @@ uninstall:
 	$(call colorecho,1,$@)
 	rm -f $(INSTALL_FILES)
 
-$(LIBDIR)/libgrat.a: $(LIBDIR)/libgrat$(VERSION_MAJOR).a
+$(LIBDIR)/libgrat.a: libgrat.a
+	cp -v $< $@
+$(LIBDIR)/libgrat$(VERSION_MAJOR).a: $(LIBDIR)/libgrat.a
 	ln -sf $< $@
-$(LIBDIR)/libgrat$(VERSION_MAJOR).a: libgrat.a
-	install $< $@
 
 $(INCDIR)/%.mod: %.mod
-	install -m 444 $< $@
+	cp -v $< $@
 
 $(BINDIR)/%: $(PROGS_DIR)/%
-	install $< $@
+	cp -v $< $@
 
 %.o: %.f90
 	$(call colorecho,2,$@)
