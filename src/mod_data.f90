@@ -1,5 +1,5 @@
 ! =============================================================================
-!> This modele gives routines to read, and write data
+!> This module gives routines to read, and write data
 !!
 !! The netCDF format is widely used in geoscienses. Moreover it is
 !! self-describing and machine independent. It also allows for reading and
