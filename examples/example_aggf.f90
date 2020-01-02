@@ -1,8 +1,5 @@
 ! ============================================================================
 !! This program shows some example of using AGGF module
-!!
-!! \author Marcin Rajner
-!! \date 20121108
 ! ============================================================================
 program example_aggf
   use, intrinsic :: iso_fortran_env, only: output_unit
