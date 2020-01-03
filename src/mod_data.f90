@@ -693,6 +693,8 @@ end subroutine
 !!
 !! \author M. Rajner
 !! \date 2013-03-04
+! TODO make it more generic, too many repetition in code
+! strip T in isodate (only made ones)
 ! =============================================================================
 subroutine nctime2date (model, print)
   use netcdf
@@ -701,7 +703,7 @@ subroutine nctime2date (model, print)
 
   type (file)        :: model
   real(dp)           :: mjd_start, mjd_
-  integer            :: varid, i, ind(2), date(6), status, length
+  integer            :: varid, i, ind(3), date(6), status, length
   character(:), allocatable :: dummy
   logical, optional :: print
 
@@ -736,7 +738,7 @@ subroutine nctime2date (model, print)
     dummy = trim (dummy(len("hours since")+1:))
 
     do
-      ind=[index(dummy,'-'), index(dummy,':')]
+      ind=[index(dummy,'-'), index(dummy,':'), index(dummy,'T')]
       do i=1,2
         if (ind(i).ne.0) dummy = trim(dummy(1:ind(i)-1))//" "//trim(dummy(ind(i)+i:))
       enddo
@@ -759,15 +761,16 @@ subroutine nctime2date (model, print)
     enddo
 
     do
-      ind=[index(dummy,'-'), index(dummy,':')]
-      do i=1,2
+      ind=[index(dummy,'-'), index(dummy,':'), index(dummy,'T')]
+      do i=1, 3
         if (ind(i).ne.0) dummy = dummy(1:ind(i)-1)//" "//dummy(ind(i)+i:)
       enddo
-      if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0) exit
+      if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0 .and. index(dummy,'T').eq.0) exit
     enddo
 
     dummy = dummy//" 0 0 0"
-    read(dummy,*) date(1:3)
+
+    read(dummy,*) date
 
     mjd_start  = mjd (date)
     model%time = model%time*24
@@ -779,7 +782,7 @@ subroutine nctime2date (model, print)
     enddo
 
     do
-      ind=[index(dummy,'-'), index(dummy,':')]
+      ind=[index(dummy,'-'), index(dummy,':'), index(dummy,'T')]
       do i=1,2
         if (ind(i).ne.0) dummy = dummy(1:ind(i)-1)//" "//dummy(ind(i)+i:)
       enddo
@@ -787,7 +790,7 @@ subroutine nctime2date (model, print)
     enddo
 
     dummy = dummy//" 0 0 0"
-    read(dummy,*) date(1:3)
+    read(dummy,*) date
 
     mjd_start  = mjd(date)
     model%time = model%time/3600
