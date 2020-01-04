@@ -331,7 +331,7 @@ end subroutine
 ! =============================================================================
 !> Expand the array with date input
 ! =============================================================================
-subroutine more_dates (number, start_index)
+subroutine more_dates(number, start_index)
   integer, intent(in)  :: number
   integer, intent(out) :: start_index
   type(dateandmjd), allocatable, dimension(:) :: tmpdate
@@ -361,7 +361,7 @@ end subroutine
 !! you can omit
 !! \warning decimal seconds are not allowed
 ! =============================================================================
-subroutine string2date (string, date, success)
+subroutine string2date(string, date, success)
   use mod_utilities, only: is_numeric
 
   character (*), intent(in) :: string
@@ -371,7 +371,7 @@ subroutine string2date (string, date, success)
 
   if (present(success)) success=.true.
 
-  ! this allow to specify !st Jan of year simple as -Dyyyy
+  ! this allow to specify 1st Jan of year simple as -Dyyyy
   date = [2000, 1, 1, 0, 0, 0]
 
   start_char = 1
