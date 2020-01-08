@@ -768,6 +768,12 @@ subroutine nctime2date (model, print)
       if (index(dummy,'-').eq.0 .and. index(dummy,':').eq.0 .and. index(dummy,'T').eq.0) exit
     enddo
 
+    !TODO "remove time zone"
+    if ( dummy(len(dummy):len(dummy)).eq."Z") then
+      dummy = dummy(1:len(dummy)-1)
+    endif
+
+
     dummy = dummy//" 0 0 0"
 
     read(dummy,*) date

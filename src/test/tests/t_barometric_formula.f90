@@ -1,8 +1,8 @@
+! TODO mv to mrlib
 program barometric_formula
   use mod_constants
-  use mod_utilities ,only: linspace, spline, ispline
+  use mod_utilities, only: linspace
   use mod_atmosphere
-  use mod_aggf
   implicit none
 
   real (dp), allocatable, dimension(:) :: heights , pressures, pressures2
