@@ -9,9 +9,9 @@
 "         \ 'outputter/buffer/split' : 'botright vertical',
 "         \ }
 " endif
-" let b:quickrun_config = {
-"       \ 'exec' : 'make -f tmp.makefile',
-"       \ 'outputter/buffer/split' : 'botright vertical',
-"       \ }
-"       " \ 'runner': 'terminal',
-"       " \ }
+let b:quickrun_config = {
+      \ 'exec' : 'make -f tmp.makefile',
+      \ 'outputter/buffer/split' : 'botright vertical',
+      \ }
+      " \ 'runner': 'terminal',
+      " \ }

@@ -24,28 +24,12 @@ all:
 			-G \
 			~/src/gotic2/data/grn1.data@GR : 1 : 4  \
 			-M 2D -Dm  \
-				 -I10@DE -L /tmp/p @ p  -H
+			-I10@DE -L /tmp/p @ p  -H
 	$G/bin/grat \
 			-S onsala \
 			-F /home/mrajner/dat/CopernicusOcean/BAL_all.nc @ EWT: sla \
 			-G \
 			~/src/gotic2/data/grn1.data@GR : 1 : 4  \
 			-M 2D -Dm  \
-				 -I1.4@DE -L /tmp/p2 @ p  -H
+			-I1.4@DE -L /tmp/p2 @ p  -H
 
-
-tmp:
-	$G/bin/grat \
-			-S onsala \
-			-F /home/mrajner/dat/CopernicusOcean/CMEMS_all.nc @ EWT: sla \
-			-G \
-			~/src/gotic2/data/grn1.data@GR : 1 : 4  \
-			-M 2D -Dm  \
-				 -I10@DE -L /tmp/p @ p  -H
-	$G/bin/grat \
-			-S onsala \
-			-F /home/mrajner/dat/CopernicusOcean/CMEMS_all.nc @ EWT: sla \
-			-G \
-			~/src/gotic2/data/grn1.data@GR : 1 : 4  \
-			-M 2D -Dm  \
-				 -I20@DE -L /tmp/p2 @ p  -H
