@@ -198,7 +198,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 %.o: %.f90
 	$(call colorecho,2,$@)
 	$(FC) $(FFLAGS) $< -c -o $@ $(FPP) $(NETCDFFINC) \
-	 	-I/home/mrajner/bin/fortran/libmr/
+		-I$(INCDIR) 
 
 .PHONY: $(PROGS_SHORTCUTS)
 $(PROGS_SHORTCUTS):
@@ -213,7 +213,8 @@ $(PROGS_DIR)/%: %.f90 libgrat.a Makefile
 		-o $@          \
 		-L. -lgrat \
     $(NETCDFFLIB) \
-	 	-I/home/mrajner/bin/fortran/libmr/ -L/home/mrajner/bin/fortran/libmr/ -lmr
+		-I$(INCDIR) \
+		-lmr
 
 libgrat.a: libgrat$(VERSION_MAJOR).a 
 	ln -sf $(realpath $<) $@
