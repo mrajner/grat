@@ -329,6 +329,7 @@ subroutine model_aliases(model, dryrun, year, month)
           model%datanames(1) = "gp2h"
         endif
       endif
+
     case ("VT")
       model%names(1)="t"
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"t_l.",year_,month_,".nc"
