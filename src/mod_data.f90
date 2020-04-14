@@ -1204,6 +1204,7 @@ subroutine get_value(model, lat, lon, val, level, method, date)
       val = getrawsinglevaluebyindexfrommodel(model,ilat,ilon,ilevel=ilevel,date=date)
     endif
 
+    ! todo problem z sea sla global
     call get_scale_and_offset(model%ncid, model%names(1), scale_factor, add_offset, status)
 
     if (status==nf90_noerr) then
