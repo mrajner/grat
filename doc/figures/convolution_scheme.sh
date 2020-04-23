@@ -1,14 +1,5 @@
 #!/bin/bash - 
-#===============================================================================
-# 
-#       OPTIONS: ---
-#  REQUIREMENTS: ---
-#        AUTHOR: mrajner
-#       CREATED: 27.04.2013 14:09:47 CEST
-#===============================================================================
-
-set -o nounset                              # Treat unset variables as an error
-
+set -o nounset
 
 R=0/3/0/3
 I=1.0
@@ -17,11 +8,16 @@ NAME=convolution_scheme ;
 for i in 1 2
 do
   if [[ $i -eq 1 ]];then
-    NAME_out=$NAME;E=""; Z=""
+    NAME_out=$NAME
+    E="" 
+    Z=""
   else
-    NAME_out=${NAME}2; E=-E200;Z="-I0.01 -nn"
+    NAME_out=${NAME}2
+    E=-E200
+    Z="-I0.01 -nn"
   fi
-  grdmath           \
+
+  grdmath         \
       -r            \
       -R${R} -I${I} \
       0 1 RAND      \
