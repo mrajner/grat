@@ -4,6 +4,7 @@
 !!    \include polygon_check.hlp
 
 program polygon_check
+  use iso_fortran_env
   use mod_polygon
   use mod_parser
   use mod_site
@@ -12,14 +13,14 @@ program polygon_check
   integer(2) :: i , j
   integer(2) , allocatable , dimension (:) :: iok
 
-  call intro  (                           &
-    program_calling   = "polygon_check",  &
-    accepted_switches = "VfABLPoShvIiRw", &
-    version           = __GRAT_VERSION__, &
-    cdate             = __CDATE__,        &
+  call intro  (                             &
+    program_calling   = "polygon_check",    &
+    accepted_switches = "VfABLPoShvIiRw",   &
+    version           = __GRAT_VERSION__,   &
+    cdate             = __CDATE__,          &
     fflags            = __FFLAGS__,       &
-    compiler          = __COMPILER__,     &
-    cmdlineargs       = .true.            &
+    compiler          = compiler_version(), &
+    cmdlineargs       = .true.              &
     )
 
   allocate(iok(size(polygon)))

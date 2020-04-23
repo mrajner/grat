@@ -4,6 +4,7 @@
 !! \author M. Rajner
 ! =============================================================================
 program value_check
+  use iso_fortran_env
   use mr_constants, only: dp, sp, R_air, earth
   use mod_cmdline,   only: info, quiet_step, ind, dryrun, moreverbose, quiet
   use mod_parser
@@ -35,7 +36,7 @@ program value_check
     gdate             = __GDATE__,             &
     cdate             = __CDATE__,             &
     fflags            = __FFLAGS__,            &
-    compiler          = __COMPILER__,          &
+    compiler          = compiler_version(),    &
     cmdlineargs       = .true.                 &
     )
 
