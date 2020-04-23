@@ -13,7 +13,6 @@ INCDIR := /usr/local/include
 BINDIR := /usr/local/bin
 
 # passing compilation info to program
-FC_INFO       := $(shell $(FC) --version | sed -n 1p )
 HOST          := $(shell hostname ; uname -r)
 DATE          := $(shell date "+%Y-%m-%d %H:%M:%S %z")
 VERSION       := $(shell git describe --match "v*")
@@ -67,7 +66,6 @@ FPP :=                                            \
 	-D__GDATE__='"$(GIT_DATE)"'                      \
 	-D__GRAT_VERSION__='"$(VERSION)"'                \
 	-D__FFLAGS__='"$(filter-out -L% -I%,$(FFLAGS))"' \
-	-D__COMPILER__='"$(FC_INFO)"'  \
 	-D__HOST__='"$(HOST)"' 
 
 SRCS :=                 \

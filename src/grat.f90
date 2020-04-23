@@ -41,6 +41,7 @@
 !! \example grat_usage.sh
 ! ==============================================================================
 program grat
+  use iso_fortran_env
   use mod_parser,    only: intro
   use mod_data
   use mod_date
@@ -62,13 +63,13 @@ program grat
   call system_clock(execution_time(1))
 
   ! gather cmd line option decide where to put output
-  call intro (                                           &
+  call intro(                                            &
     program_calling   = "grat",                          &
     version           = __GRAT_VERSION__,                &
     cdate             = __CDATE__,                       &
     gdate             = __GDATE__,                       &
     fflags            = __FFLAGS__,                      &
-    compiler          = __COMPILER__,                    &
+    compiler          = compiler_version(),              &
     host              = __HOST__,                        &
     accepted_switches = 'VSBLGPqoFIDLvhRrMOAHUwJQ!n-mC', &
     cmdlineargs       = .true.                           &
