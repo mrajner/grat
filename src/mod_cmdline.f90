@@ -146,7 +146,7 @@ module mod_cmdline
 contains
 
 ! =============================================================================
-!> This routine collect command line arguments to one matrix depending on
+!> This routine collects command line arguments to one matrix depending on
 !! given switches and separators
 !!
 !! \date 2013.05.21

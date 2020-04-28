@@ -527,7 +527,7 @@ subroutine convolve(site, date, results)
   use mod_aggf, only: aggf
   use mr_atmosphere, only: standard_temperature, virtual_temperature, standard_pressure
   use mod_3d
-  use mr_conversion, only: green_normalization
+  use mr_conversion, only: green_normalization, conversion
 
   type(site_info),  intent(in) :: site
   integer, intent(in), optional :: date(6)
@@ -1446,7 +1446,7 @@ subroutine convolve(site, date, results)
 
               aux = (val(ind%model%ewt))                           &
                 * area / d2r(green_common(igreen)%distance(idist)) &
-                * 1._dp/earth%radius/1.e12_dp * 1.e3_dp ! m -> mm
+                * 1._dp/earth%radius/1.e12_dp / conversion%m2mm
 
               if (isnan(aux)) aux = 0._dp
 
