@@ -12,8 +12,6 @@ module mod_date
     integer, dimension(6) :: date
   end type
 
-  real(dp) :: cpu_start, cpu_finish
-
   type(dateandmjd), allocatable, dimension (:) :: date
 
 contains
