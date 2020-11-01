@@ -223,7 +223,7 @@ libgrat$(VERSION_MAJOR).a: $(OBJS)
 
 .PHONY: install 
 test: all install
-	make -C test runtests FC=$(FC) OPT=$(OPT)
+	make -C test runtests FC=$(FC) OPT="$(OPT)"
 
 include dep.makefile
 dep.makefile: 

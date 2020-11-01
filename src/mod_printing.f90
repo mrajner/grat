@@ -74,13 +74,19 @@ subroutine print_warning(warn, unit, more, error, program_calling)
   integer, optional :: unit
   integer :: def_unit
   logical, intent(in), optional :: error
+  logical :: error_
 
-  if (present(error).and.error.or.warnings%if) then
+  error_ = .false.
+  if (present(error)) then
+    if(error) error_ = .true.
+  endif
+
+  if (error_.or.warnings%if) then
     def_unit = error_unit
-    if (present (unit) ) def_unit=unit
+    if (present(unit)) def_unit=unit
 
-    if ((present(error).and.error)) then
-      write(def_unit,'(a)', advance='no') "error: "
+    if (present(error)) then
+      if (error) write(def_unit,'(a)', advance='no') "error: "
     else
       write(def_unit,'(a)', advance='no') "warning: "
       if (warnings%strict) write(def_unit,'(a)', advance = "no") "[strict set] "
@@ -142,7 +148,7 @@ subroutine print_warning(warn, unit, more, error, program_calling)
 
   if(.not.warnings%time.and.warnings%if) write(def_unit,*)
 
-  if ((present(error).and.error).or.warnings%strict) then
+  if (error_.or.warnings%strict) then
     stop 1
   endif
 

@@ -347,9 +347,10 @@ subroutine intro(      &
   integer,dimension(8):: execution_date
 
   logical :: file_already_opened
+  
 
-  if(present(cmdlineargs).and.cmdlineargs.and.command_argument_count().eq.0) then
-    call print_warning("args", program_calling=program_calling, error=.true.)
+  if(present(cmdlineargs).and.command_argument_count().eq.0) then
+    if (cmdlineargs) call print_warning("args", program_calling=program_calling, error=.true.)
   endif
 
   call get_command_cleaned(dummy)
@@ -396,9 +397,9 @@ subroutine intro(      &
 
   endif
 
-    if (any(cmd_line%switch.eq.'-w')                   &
-      .and.if_accepted_switch("-w",accepted_switches)) &
-      then
+  if (any(cmd_line%switch.eq.'-w')                   &
+    .and.if_accepted_switch("-w",accepted_switches)) &
+    then
 
     do i=1,size(cmd_line)
       if (cmd_line(i)%switch.eq."-w") then
@@ -554,8 +555,10 @@ subroutine check_arguments(program_calling)
     inverted_barometer
   use mod_site, only: gather_site_model_info
   use mod_green, only: parse_green
+
   character(len=*), intent(in) :: program_calling
   integer :: i
+  logical :: ls_in_model
 
   if (program_calling.eq."grat") then
 
@@ -585,13 +588,18 @@ subroutine check_arguments(program_calling)
       endif
     endif
 
+    if (ind%model%ls.eq.0) then
+      ls_in_model = .false.
+    elseif (.not.model(ind%model%ls)%if                 &
+      .and..not.model(ind%model%ls)%if_constant_value) then
+      ls_in_model = .false.
+    else
+      ls_in_model = .true.
+    endif
 
-    if (((method(2).or.method(3))                      &
-      .and. inverted_barometer)                        &
-      .and. (ind%model%ls.eq.0                         &
-      .or.(.not.model(ind%model%ls)%if                 &
-      .and..not.model(ind%model%ls)%if_constant_value) &
-      )                                                &
+    if (((method(2).or.method(3))                  &
+      .and. inverted_barometer)                    &
+      .and. .not.ls_in_model                       &
       .and. ind%green%ge.ne.0) then
       call print_warning(                          &
         "inverted barometer, but no landsea mask", &

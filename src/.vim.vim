@@ -11,7 +11,7 @@
 " endif
 let b:quickrun_config = {
       \ 'exec' : 'make -f tmp.makefile',
-      \ 'outputter/buffer/split' : 'botright vertical',
+      \ 'outputter/buffer/split':    '%{"botright vertical" . winwidth(0)*2/5}',
       \ }
       " \ 'runner': 'terminal',
       " \ }
