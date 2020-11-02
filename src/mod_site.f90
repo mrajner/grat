@@ -247,7 +247,7 @@ end subroutine
 subroutine print_site_summary(site_parsing)
   use mod_data
   integer :: j
-  logical, optional :: site_parsing
+  logical :: site_parsing
 
   if (ubound(site,1).ge.1) then
     write(log%unit, form%i2 ) "Processing:", size(site), "site(s)"
@@ -260,7 +260,7 @@ subroutine print_site_summary(site_parsing)
         write(log%unit, '(t1,a10,3f10.4)', advance="no")               &
           trim(site(j)%name), site(j)%lat, site(j)%lon, site(j)%height
 
-        if(present(site_parsing).and.site_parsing)                     &
+        if(site_parsing)                     &
           write(output%unit, '(t6,a10,3f10.4)')                        &
           trim(site(j)%name), site(j)%lat, site(j)%lon, site(j)%height
 
@@ -518,6 +518,7 @@ end subroutine
 subroutine gather_site_model_info()
   use mod_cmdline, only: ind, info
   use mod_data,    only: get_value, model, get_variable
+
   integer :: i
 
   if (site_height_from_model.and. ind%model%h.eq.0) then
@@ -530,7 +531,7 @@ subroutine gather_site_model_info()
       call get_variable(model(ind%model%hp))
       site(i)%hp%if=.true.
 
-      call get_value (                   &
+      call get_value (                 &
         model=model(ind%model%hp),     &
         lat=site(i)%lat,               &
         lon=site(i)%lon,               &
@@ -578,7 +579,7 @@ subroutine gather_site_model_info()
   write(log%unit, form%separator)
 
   if(.not.log%sparse) then
-    call print_site_summary()
+    call print_site_summary(.false.)
     write(log%unit, form%separator)
   endif
 end subroutine
