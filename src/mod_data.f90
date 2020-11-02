@@ -210,6 +210,10 @@ subroutine model_aliases(model, dryrun, year, month)
   integer, intent(in), optional :: year, month
   character(150) :: prefix
   integer :: year_, month_
+  logical :: if_dryrun
+
+  if_dryrun = .false.
+  if(present(dryrun)) if_dryrun = dryrun
 
   if (present(year)) then
     year_=year
@@ -246,7 +250,7 @@ subroutine model_aliases(model, dryrun, year, month)
     case ("GP")
       model%names(1)="hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.",year_,".nc"
-      if (present(dryrun) .and. dryrun) then
+      if (if_dryrun) then
         if (model%datanames(1).eq."") then
           model%datanames(1) = "gh2h"
         else
@@ -293,7 +297,7 @@ subroutine model_aliases(model, dryrun, year, month)
       model%names(1) = "hgt"
       write(model%name,'(a,a,i4,a)') trim(prefix),"hgt.sfc.nc"
       model%autoload=.false.
-      if (present(dryrun) .and. dryrun) then
+      if (if_dryrun) then
         if (model%datanames(1).eq."") then
           model%datanames(1) = "gh2h"
         else
@@ -322,7 +326,7 @@ subroutine model_aliases(model, dryrun, year, month)
       write(model%name,'(a,a,i4,a)') trim(prefix),"sp.",year_,".nc"
     case ("GP")
       write(model%name,'(a,a,i4,i2.2,a)') trim(prefix),"gp_l.",year_,month_,".nc"
-      if (present(dryrun) .and. dryrun) then
+      if (if_dryrun) then
         if (model%datanames(1).ne."") then
           model%datanames(1) = "gp2h@"// trim(model%datanames(1))
         else
@@ -344,7 +348,7 @@ subroutine model_aliases(model, dryrun, year, month)
       model%names(1)="z"
       write(model%name,'(a,a,i4,a)') trim(prefix),"gp.nc"
       model%autoload=.false.
-      if (present(dryrun) .and. dryrun) then
+      if (if_dryrun) then
         if (model%datanames(1).ne."") then
           model%datanames(1) = "gp2h@"// trim(model%datanames(1))
         else
@@ -419,7 +423,7 @@ subroutine model_aliases(model, dryrun, year, month)
     call read_netCDF(model, print=.not.log%sparse)
   endif
 
-  if(present(dryrun).and.dryrun) return
+  if(if_dryrun) return
 
   if (.not.file_exists(model%name)) then
     call print_warning (                                &
@@ -433,7 +437,7 @@ subroutine model_aliases(model, dryrun, year, month)
     model%exist=.true.
   endif
 
-  call read_netCDF(model, force=.true., print=.not.log%sparse)
+  call read_netCDF(model, print=.not.log%sparse, force=.true.)
 end subroutine
 
 ! =============================================================================
@@ -455,6 +459,10 @@ function variable_modifier(val, modifier, verbose, list_only)
   real(dp) :: numerickeyval
   integer :: i
   logical, optional, intent(in) :: verbose, list_only
+  logical :: if_verbose
+
+  if_verbose = .false.
+  if (present(verbose)) if_verbose = verbose
 
   variable_modifier = val
   modifier_         = modifier
@@ -472,7 +480,7 @@ function variable_modifier(val, modifier, verbose, list_only)
       key    = trim(key(1:index(key,"=")-1))
     endif
 
-    if (present(verbose).and.verbose) then
+    if (if_verbose) then
       write(log%unit, "("//form%t3//"3(a,x)$)" ) &
         "var modifier:", trim(key), trim(keyval)
     endif
@@ -517,11 +525,11 @@ function variable_modifier(val, modifier, verbose, list_only)
     endselect
 
     if (.not.present(list_only)) then
-      if(present(verbose).and.verbose) then
+      if(if_verbose) then
         write (log%unit, '('// output%form // ')') variable_modifier
       endif
     else
-      if(present(verbose).and.verbose) write (log%unit, *)
+      if(if_verbose) write (log%unit, *)
     endif
 
     modifier_ = modifier_(index(modifier_, "@")+1:)
@@ -540,8 +548,14 @@ subroutine read_netCDF(model, print, force)
   type (file) :: model
   logical, optional, intent(in) :: print, force
   integer :: i
+  logical :: if_force, if_print
 
-  if (present(force) .and. force) then
+  if_force = .false.
+  if_print = .false.
+  if (present(force)) if_force = force
+  if (present(print)) if_print = print
+
+  if (if_force) then
     if(allocated(model%data))  deallocate(model%data)
     if(allocated(model%lat))   deallocate(model%lat)
     if(allocated(model%lon))   deallocate(model%lon)
@@ -560,7 +574,7 @@ subroutine read_netCDF(model, print, force)
       "closing file:", trim(basename(trim(model%name)))
   endif
 
-  if (.not. (present(print).and. .not. print)) then
+  if (print) then
     write (log%unit, form%i3)           &
       "Opening file:",                  &
       trim(basename(trim(model%name))), &
@@ -590,9 +604,9 @@ subroutine get_dimension(model, i, print)
   integer :: dimid, varid
   integer, intent(in) :: i
   integer :: length, status
-  logical, optional :: print
+  logical :: print
 
-  if (.not. (present(print).and..not.print))then
+  if (print)then
     write (log%unit, form%i4, advance='no') "Getting dim:",trim(model%names(i)), ".."
   endif
 
@@ -604,7 +618,7 @@ subroutine get_dimension(model, i, print)
 
       model%names(i)="longitude"
 
-      if (.not.(present(print).and..not.print)) then
+      if (print) then
         write(log%unit, '(a)', advance='no') model%names(i)
       endif
 
@@ -614,7 +628,7 @@ subroutine get_dimension(model, i, print)
 
       model%names(i)="latitude"
 
-      if (.not. (present(print).and..not.print))then
+      if (print)then
         write(log%unit, '(a)', advance='no') model%names(i)
       endif
     endif
@@ -629,7 +643,7 @@ subroutine get_dimension(model, i, print)
 
   elseif(status /= nf90_noerr) then
 
-    if (.not.(present(print).and..not.print))then
+    if (print)then
       write (log%unit, '(a6,1x,a)') &
         trim(model%names(i)),"not found, allocating (1)..."
       call nc_info(model)
@@ -638,7 +652,7 @@ subroutine get_dimension(model, i, print)
     length=1
   else
 
-    if (.not. (present(print).and..not.print))then
+    if (print)then
       write (log%unit, '(a6,1x,a)') "ok"
     endif
 

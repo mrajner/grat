@@ -22,16 +22,16 @@ contains
 !! \warning psi in radians
 ! ==============================================================================
 function aggfd( &
-    psi,         &
-    delta,       &
-    dz,          &
-    method,      &
-    aggfdh,      &
-    aggfdz,      &
-    aggfdt,      &
-    predefined,  &
-    fels_type,   &
-    rough        &
+    psi,        &
+    delta,      &
+    dz,         &
+    method,     &
+    aggfdh,     &
+    aggfdz,     &
+    aggfdt,     &
+    predefined, &
+    fels_type,  &
+    rough       &
     )
 
   use mr_constants, only: atmosphere, dp
@@ -43,12 +43,20 @@ function aggfd( &
   real(dp) :: aggfd
   real(dp) :: delta_
   character (len=*), intent(in), optional :: method, fels_type
+  logical :: if_aggfdh, if_aggfdz, if_aggfdt
+
+  if_aggfdh = .false.
+  if_aggfdz = .false.
+  if_aggfdt = .false.
+  if(present(aggfdh)) if_aggfdh = aggfdh
+  if(present(aggfdz)) if_aggfdz = aggfdz
+  if(present(aggfdt)) if_aggfdt = aggfdt
 
   delta_ = 10._dp ! Default value
 
   if (present(delta)) delta_ = delta
 
-  if(present(aggfdh).and.aggfdh) then
+  if(if_aggfdh) then
     aggfd = (                  &
       + aggf (                 &
       psi,                     &
@@ -68,7 +76,7 @@ function aggfd( &
       rough      = rough))     &
       / ( 2._dp * delta_)
 
-  elseif(present(aggfdz).and.aggfdz) then
+  elseif(if_aggfdz) then
     aggfd = (                  &
       + aggf (                 &
       psi,                     &
@@ -88,7 +96,7 @@ function aggfd( &
       rough      = rough))     &
       / ( 2._dp * delta_)
 
-  else if(present(aggfdt).and.aggfdt) then
+  else if(if_aggfdt) then
     aggfd = (                  &
       + aggf (                 &
       psi,                     &
