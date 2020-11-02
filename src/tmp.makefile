@@ -1,5 +1,8 @@
 testspeed: .FORCE
 	@$(MAKE)
+	../bin/grat  -F 10 @SP -Sj -M1
+
+dddx:
 	# time ../bin/grat  -F ERA @SP  -D 20140205 -S j -!
 	# time ../bin/grat  -F ERA @SP : @ offset=-101325 -D 20140205 -S j -!
 	# time ../bin/grat -! -F ERA @SP : @ offset=-101325 -D 20140205 -S j

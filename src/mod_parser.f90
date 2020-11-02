@@ -12,17 +12,17 @@ contains
 ! =============================================================================
 subroutine parse_option(cmd_line_entry, accepted_switches, version, cdate, gdate, program_calling)
   use mod_cmdline
-  use mod_site,      only: parse_site
-  use mod_date,      only: parse_date
-  use mod_polygon,   only: parse_polygon
-  use mod_data,      only: parse_model, parse_level, all_huge, model
-  use mod_green,     only: parse_green, green
-  use mr_utilities, only: file_exists, is_numeric, basename
-  use mod_admit,     only: parse_admit
+  use mod_site,     only: parse_site
+  use mod_date,     only: parse_date
+  use mod_polygon,  only: parse_polygon
+  use mod_data,     only: parse_model, parse_level, all_huge, model
+  use mod_green,    only: parse_green, green
+  use mr_utilities, only: file_exists, is_numeric,  basename
+  use mod_admit,    only: parse_admit
 
-  type(cmd_line_arg), intent(in):: cmd_line_entry
-  character(len=*), optional :: accepted_switches
-  character(len=*), optional :: version, cdate, gdate, program_calling
+  type(cmd_line_arg), intent(in) :: cmd_line_entry
+  character(len=*), optional     :: accepted_switches
+  character(len=*), optional     :: version, cdate, gdate, program_calling
   integer :: i
   logical :: file_already_opened
 

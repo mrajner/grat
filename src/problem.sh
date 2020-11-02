@@ -2,7 +2,7 @@ mask=/tmp/mask.nc
 echo a
 gmt grdmath -Rg -I2 0 0 NAN = ${mask}=nb
 mask2=/tmp/mask2.nc
-grdmath $mask 0 DENAN = $mask2=nb
+gmt grdmath $mask 0 DENAN = $mask2=nb
 
 echo  exclamation
 $G/bin/value_check -! -F $mask -Sj , os

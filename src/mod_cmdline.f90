@@ -217,7 +217,6 @@ subroutine collect_args(dummy)
 
     dummy = dummy(indeks_space+1:)
   enddo
-
 end subroutine
 
 end module

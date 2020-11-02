@@ -94,8 +94,8 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := $(PROGS_DIR)
 
 pall: $(PROGS)
-	../bin/grat -
-	../bin/grat -v
+	../bin/grat -F 10 @    SP -M  1 -S j, o  -H -V 
+
 all: $(DIRS) libgrat.a $(PROGS)
 
 # aaa: ../bin/grat
