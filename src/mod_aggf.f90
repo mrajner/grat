@@ -157,20 +157,27 @@ function aggf(          &
 
   real(dp), dimension(:), allocatable, save :: heights, pressures
   integer :: i
+  logical :: if_rough, if_first_derivative_h, if_first_derivative_z
 
-  zmin_  = 0._dp
-  zmax_  = 60000._dp
-  dz_    = 0.1_dp
-  h_     = 0._dp
-  deltat = 0._dp
+  zmin_    = 0._dp
+  zmax_    = 60000._dp
+  dz_      = 0.1_dp
+  h_       = 0._dp
+  deltat   = 0._dp
+  if_rough = .false.
+  if_first_derivative_h = .false.
+  if_first_derivative_z = .false.
 
   aggf   = 0._dp
 
-  if (present(zmin))   zmin_  = zmin
-  if (present(zmax))   zmax_  = zmax
-  if (present(  dz))     dz_  = dz
-  if (present(   h))      h_  = h
-  if (present(t_zero)) deltat = t_zero
+  if (present(zmin))   zmin_    = zmin
+  if (present(zmax))   zmax_    = zmax
+  if (present(  dz))   dz_      = dz
+  if (present(   h))   h_       = h
+  if (present(t_zero)) deltat   = t_zero
+  if (present(rough))  if_rough = rough
+  if (present(first_derivative_h))  if_first_derivative_h = first_derivative_h
+  if (present(first_derivative_z))  if_first_derivative_z = first_derivative_z
 
   if(allocated(heights)) then
 
@@ -199,7 +206,7 @@ function aggf(          &
       heights(i) = zmin_ + dz_/2._dp + (i-1) * dz_
     enddo
 
-    if (present(rough).and.rough) then
+    if (if_rough) then
       ! do not use rough! it is only for testing
       call print_warning("obsolete rough", error = .true.)
       do i = 1, size(heights)
@@ -262,7 +269,7 @@ function aggf(          &
 
     rho = pressures(i)/ R_air / (deltat+standard_temperature(heights(i), fels_type=fels_type))
 
-    if (present(first_derivative_h) .and. first_derivative_h) then
+    if (if_first_derivative_h) then
       ! first derivative (respective to station height)
       ! micro Gal height / m
       ! see equation 22, 23 in \cite Huang05
@@ -273,7 +280,7 @@ function aggf(          &
 
       aggf = aggf + rho * (J_aux/l**5._dp) * dz_
 
-    else if (present (first_derivative_z) .and. first_derivative_z) then
+    else if (if_first_derivative_z) then
       ! first derivative (respective to column height)
       ! according to equation 26 in \cite Huang05
       ! micro Gal / hPa / m
