@@ -531,16 +531,16 @@ subroutine intro(      &
 
   write (log%unit, form%i0) "Command parsing:"
 
-  ! do i = 1, size(cmd_line)
-  !   call parse_option(                  &
-  !     cmd_line(i),                      &
-  !     accepted_switches,                &
-  !     version = version,                &
-  !     cdate   = cdate,                  &
-  !     gdate   = gdate,                  &
-  !     program_calling = program_calling &
-  !     )
-  ! enddo
+  do i = 1, size(cmd_line)
+    call parse_option(                  &
+      cmd_line(i),                      &
+      accepted_switches,                &
+      version = version,                &
+      cdate   = cdate,                  &
+      gdate   = gdate,                  &
+      program_calling = program_calling &
+      )
+  enddo
 
   call get_index()
   call check_arguments(program_calling = program_calling)
