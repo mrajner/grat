@@ -110,7 +110,7 @@ for test in ${test_what[*]} ; do
     } || 
     {
 
-      do_not_compare_list='com\|FF\|^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|[Ee]xecution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#.*#$\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]'
+      do_not_compare_list='com\|FF\|^\(real\|user\|sys\)\|\(Unknown[[:space:]]*\)\{3\}\|Program started\|eta *[[:digit:]]\|[Ee]xecution time\|^#[[:space:]]\+v[[:digit:]]\|^#[[:space:]]\+compiled on\|^#.*#$\|^#[[:space:]]\+compiler:\|FFLAGS\|| %: *[[:digit:]]\|Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_DENORMAL'
 
       diff -I "$do_not_compare_list"  $is $should_be -q ${ignore_white_spaces:-} >/dev/null && 
       { 

@@ -2,7 +2,8 @@
 program createdata
   use netcdf
   use mod_data, only: nc_error
-  use mr_utilities, only: d2r, celcius_to_kelvin, setnan
+  use mr_utilities, only: d2r, setnan
+  use mr_conversion, only: celsius_to_kelvin
   use mr_constants, only: dp
 
   implicit none
@@ -90,7 +91,7 @@ program createdata
 
         sp(ilon,ilat,itime) = 101325  + 5000*mix
 
-        t(ilon,ilat,itime) =  celcius_to_kelvin(15.0_dp)  + 30 * mix
+        t(ilon,ilat,itime) =  celsius_to_kelvin(15.0_dp)  + 30 * mix
 
 
 
