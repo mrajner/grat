@@ -203,7 +203,7 @@ $(BINDIR)/%: $(PROGS_DIR)/%
 $(PROGS_SHORTCUTS):
 	make --no-print-directory $(addprefix $(PROGS_DIR)/,$(@))
 
-$(PROGS_DIR)/%: %.f90 libgrat.a Makefile
+$(PROGS_DIR)/%: %.f90 libgrat.a 
 	$(call colorecho,3,$@)
 	$(FC)           \
 		$(FFLAGS)      \

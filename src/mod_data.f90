@@ -935,7 +935,7 @@ subroutine get_variable(model, date, print, level)
   character (20) :: aux
   logical :: first_warning=.true., ifprint
 
-  ifprint = .false.
+  ifprint = .true.
   if (present(print)) ifprint = print
 
   if (                          &
