@@ -1449,7 +1449,8 @@ subroutine convolve(site, date, results)
 
               aux = (val(ind%model%ewt))                           &
                 * area / d2r(green_common(igreen)%distance(idist)) &
-                * 1._dp/earth%radius/1.e12_dp / conversion%m2mm
+                * 1._dp/earth%radius/1.e12_dp
+              aux = aux * conversion%m2mm
 
               if (isnan(aux)) aux = 0._dp
 
