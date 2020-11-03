@@ -684,13 +684,15 @@ subroutine convolve(site, date, results)
           endif
         endif
 
-        if (                                                                &
-          iok(1).eq.1                                                       &
-          .and. (                                                           &
-          (.not.isnan(val(ind%model%ls)) .and. int(val(ind%model%ls)).ne.0) &
-          .or. int(val(ind%model%ls)).eq.0)                                 &
-          ) then
-          tot_area_used = tot_area_used + area
+        if(size(iok).gt.0) then
+          if (                                                                &
+            iok(1).eq.1                                                       &
+            .and. (                                                           &
+            (.not.isnan(val(ind%model%ls)) .and. int(val(ind%model%ls)).ne.0) &
+            .or. int(val(ind%model%ls)).eq.0)                                 &
+            ) then
+            tot_area_used = tot_area_used + area
+          endif
         endif
 
         ! GE, GN, ...
@@ -1419,10 +1421,11 @@ subroutine convolve(site, date, results)
         endif
 
         ! surface loads from EWT
-        if (                      &
-          ind%green%gr.ne.0       &
-          .or. ind%green%ghn.ne.0 &
-          .or. ind%green%ghe.ne.0 &
+        if (                         &
+          (ind%green%gr.ne.0         &
+          .or. ind%green%ghn.ne.0    &
+          .or. ind%green%ghe.ne.0    &
+          ) .and. ind%model%ewt.ne.0 &
           ) then
 
           if ((ind%polygon%e.ne.0.and.iok(ind%polygon%e).ne.0).or.(ind%polygon%e.eq.0)) then
