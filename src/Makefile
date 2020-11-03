@@ -94,7 +94,8 @@ PROGS_SHORTCUTS := $(PROGSSRCS:.f90=)
 DIRS            := $(PROGS_DIR)
 
 pall: $(PROGS)
-	../bin/grat  -I2@DD:2@AD -S j -F 1000@SP:@mmwater2pascal -M2 -G /home/mrajner/src/grat/dat/merriam_green.dat @GR : 1 : 2
+	../bin/value_check -F test/data/pres.sfc.2012.nc  @SP  :pres , test/data/ncks.nc @SP : sp -S j -M1 -Dm:m
+
 
 all: $(DIRS) libgrat.a $(PROGS)
 

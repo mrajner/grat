@@ -933,7 +933,10 @@ subroutine get_variable(model, date, print, level)
   logical, optional :: print
   integer, optional :: level
   character (20) :: aux
-  logical :: first_warning=.true.
+  logical :: first_warning=.true., ifprint
+
+  ifprint = .false.
+  if (present(print)) ifprint = print
 
   if (                          &
     model%huge                  &
@@ -978,7 +981,7 @@ subroutine get_variable(model, date, print, level)
 
     if (index_time.eq.0) then
 
-      if (.not. (present(print).and..not.print))then
+      if (ifprint)then
         if (.not.log%sparse) then
           write(aux, '(i4.4,5i2.2)') date
           call print_warning("cannot find date: "// aux &
