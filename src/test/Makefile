@@ -3,6 +3,7 @@ OPT := -O2
 
 # GRATLIB := -I../$(FC) -L../$(FC) -lgrat
 GRATLIB := -I/usr/local/include/ -lgrat
+MRLIB   := -I/usr/local/include/ -lmr
 
 # ifort settings
 ifeq ($(FC),ifort)
@@ -57,9 +58,7 @@ test:
 	cd tests/ && ./stat.sh
 
 create_data: create_data.f90
-	$(FC) $< -o $@ $(FFLAGS)  $(GRATLIB) $(NETCDFF) \
-	 	-I /home/mrajner/bin/fortran/libmr/ \
-	 	-L /home/mrajner/bin/fortran/libmr/ -lmr
+	$(FC) $< -o $@ $(FFLAGS)  $(GRATLIB) $(MRLIB) $(NETCDFF) 
 
 data/test_data.nc: create_data data
 	./$< 

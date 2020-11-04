@@ -1,7 +1,7 @@
 . definitions.sh 
 
-a="grat  -F$SP -G /home/mrajner/src/gotic2/data/grn1.data @ GG : 1 : 4 -S j -M2D"
-b="grat  -F${SP/SP/EWT} @ pascal2mmwater -G /home/mrajner/src/gotic2/data/grn1.data @ GR : 1 : 4 -M2 -S j "
+a="grat -F$SP -G /home/mrajner/src/gotic2/data/grn1.data @ GG : 1 : 4 -S j -M2D"
+b="grat -F${SP/SP/EWT} @ pascal2mmwater -G /home/mrajner/src/gotic2/data/grn1.data @ GR : 1 : 4 -M2 -S j "
 
 {
   $a
@@ -25,8 +25,7 @@ b="grat  -F${SP/SP/EWT} @ pascal2mmwater -G /home/mrajner/src/gotic2/data/grn1.d
 
   echo
   echo "Difference is similar, but values are completely rescalled"
-  grat -F$SP -M2 -G@GN -Sj,r         | tee >(awk '{a[NR] = $NF}END{print a[2]-a[1]}')
+  grat -F$SP -M2 -G@GN -Sj,r          | tee >(awk '{a[NR] = $NF}END{print a[2]-a[1]}')
   grat -F$SP -M2 -G@GN -Sj,r -I100@DE | tee >(awk '{a[NR] = $NF}END{print a[2]-a[1]}')
-  grat -F$SP -M2 -G@GN -Sj,r -I10@DE | tee >(awk '{a[NR] = $NF}END{print a[2]-a[1]}')
+  grat -F$SP -M2 -G@GN -Sj,r -I10@DE  | tee >(awk '{a[NR] = $NF}END{print a[2]-a[1]}')
 } | tee ${0/.sh/.dat}${suffix}
-

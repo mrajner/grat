@@ -32,8 +32,7 @@ stat: $(RESULTS)
 	 	-I/usr/local/include  \
 	 	-L/usr/local/lib  \
 	 	-lgrat \
-		-I/home/mrajner/bin/fortran/libmr \
-		-L/home/mrajner/bin/fortran/libmr -lmr \
+		-lmr \
 		-lnetcdf -lnetcdff
 	./$(subst .dat,,$@) 2>&1 | tee $@
 
