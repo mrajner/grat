@@ -224,7 +224,7 @@ test: all install
 
 include dep.makefile
 dep.makefile: 
-	makedepf90 *f90 > $@
+	type makedepf90 >/dev/null 2>&1 && makedepf90 *f90 > $@ || touch $@
 
 #  # help files
 #  HELP_NAMES=grat.hlp polygon_check.hlp value_check.hlp
@@ -232,7 +232,7 @@ dep.makefile:
 #  helps: $(HELPS)
 #  $(HELPS): $(PROGS)
 #  %.hlp:
-	#  $(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
+#  $(patsubst ../dat%,../bin%,$(@:.hlp=)) -h  > $@
 
 .FORCE:
 
