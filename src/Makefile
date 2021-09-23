@@ -40,6 +40,7 @@ endif
 	NETCDFFINC           := -I/usr/include
 	NETCDFFLIB           := -lnetcdf -lnetcdff
 endif
+# FFLAGS += -std=f2018
 
 ifdef STATIC
 NETCDFFLIB      :=                           \

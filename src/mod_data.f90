@@ -12,6 +12,7 @@
 module mod_data
   use mr_constants, only: dp
   use mr_utilities, only: setnan
+  use ieee_arithmetic
 
   implicit none
 
@@ -498,7 +499,7 @@ function variable_modifier(val, modifier, verbose, list_only)
 
     case ("nan")
       read(keyval,*) numerickeyval
-      if (isnan(variable_modifier)) variable_modifier = numerickeyval
+      if (ieee_is_nan(variable_modifier)) variable_modifier = numerickeyval
 
     case ("scale")
       read(keyval,*) numerickeyval

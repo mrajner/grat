@@ -20,7 +20,7 @@ module mod_site
 
   type site_info
     character(20) :: name
-    real(dp)                 :: lat,lon,height
+    real(dp)                 :: lat, lon, height
     type(more_site_heights)  :: hp, h, hrsp
     logical :: use_local_pressure = .false.
     type(lp_info) :: lp
@@ -96,10 +96,10 @@ subroutine parse_site(cmd_line_entry)
       read (cmd_line_entry%field(i)%subfield(3)%name,*) site(start_index)%lon
 
       if (site(start_index)%lon.ge.360.) &
-        site(start_index)%lon = mod(site(start_index)%lon,360.)
+        site(start_index)%lon = mod(site(start_index)%lon, 360._dp)
 
       if (site(start_index)%lon.lt.-180.) &
-        site(start_index)%lon = mod(site(start_index)%lon-180,360.)+180
+        site(start_index)%lon = mod(site(start_index)%lon-180,360._dp)+180
 
       if (is_numeric(cmd_line_entry%field(i)%subfield(4)%name)) then
         read (cmd_line_entry%field(i)%subfield(4)%name, * ) &
@@ -277,7 +277,7 @@ subroutine print_site_summary(site_parsing)
         endif
 
         if (site(j)%hrsp%if) then
-          write(log%unit, "(f10.4$)") site(j)%hrsp%val
+          write(log%unit, "(f10.4)", advance = "no") site(j)%hrsp%val
         else
           write(log%unit, "(a10)", advance ="no") "--"
         endif
@@ -597,9 +597,9 @@ subroutine read_local_pressure(file)
 
   if (size(site).ne.1) then
     call print_warning( &
-      "something wrong with @LP. &
-      There should be oneand only one station declared prior to &
-      local file pressure @LP [e.x. -S j , lp_joze@LS ...]" , &
+      "something wrong with @LP." &
+      // "There should be oneand only one station declared prior to" &
+      // "local file pressure @LP [e.x. -S j , lp_joze@LS ...]" , &
       error=.true. &
       )
   endif

@@ -17,42 +17,42 @@ do
     Z="-I0.01 -nn"
   fi
 
-  grdmath         \
-      -r            \
-      -R${R} -I${I} \
-      0 1 RAND      \
-      = ${NAME}_F.grd
+  gmt grdmath         \
+    -r            \
+    -R${R} -I${I} \
+    0 1 RAND      \
+    = ${NAME}_F.grd
 
-  grdsample ${NAME}_F.grd ${Z} -G${NAME}.grd
+  gmt grdsample ${NAME}_F.grd ${Z} -G${NAME}.grd
 
-  grd2xyz ${NAME}.grd > ${NAME}.dat
+  gmt grd2xyz ${NAME}.grd > ${NAME}.dat
 
-  grd2cpt ${NAME}.grd -E8 > ${NAME}.cpt
+  gmt grd2cpt ${NAME}.grd -E8 > ${NAME}.cpt
 
-  makecpt -Chaxby -T-0.7/1.3/.1 > ${NAME}.cpt
+  gmt makecpt -Chaxby -T-0.7/1.3/.1 > ${NAME}.cpt
 
-  grdimage             \
+  gmt grdimage             \
     ${NAME}.grd        \
     -C${NAME}.cpt      \
     $E \
     -JX3c > ${NAME_out}.ps
 
   #grdview             \
-    #  ${NAME}.grd        \
-    #  -C${NAME}.cpt      \
-    #  -K -O -X11 \
-    #  -JM10c \
-    #  -T \
-    #>> ${NAME}.ps
+  #  ${NAME}.grd        \
+  #  -C${NAME}.cpt      \
+  #  -K -O -X11 \
+  #  -JM10c \
+  #  -T \
+  #>> ${NAME}.ps
 
   #psscale \
-    #  -C${NAME}.cpt      \
-    #  -D10/2/4/1 \
-    #  -O \
-    #  >> ${NAME}.ps
+  #  -C${NAME}.cpt      \
+  #  -D10/2/4/1 \
+  #  -O \
+  #  >> ${NAME}.ps
 
 
-  psconvert \
+  gmt psconvert \
     -P -Tf -A ${NAME_out}.ps
 
   rm ${NAME_out}.ps
