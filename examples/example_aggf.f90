@@ -391,7 +391,7 @@ subroutine aggf_resp_dz(filename)
   use mod_aggf, only: aggf
   use mr_utilities, only: logspace, d2r, file_exists
   real(dp), dimension(:,:), allocatable :: results
-  real(dp), dimension(:), allocatable :: dzs
+  real(dp), dimension(:),   allocatable :: dzs
 
   integer :: file_unit, i, j
   integer, parameter :: n=10
@@ -401,7 +401,7 @@ subroutine aggf_resp_dz(filename)
   if (present (filename)) then
     if (file_exists(filename)) return
     open ( newunit = file_unit, &
-      file =filename, &
+      file =filename,           &
       action  = 'write' )
   else
     file_unit = output_unit
@@ -424,12 +424,12 @@ subroutine aggf_resp_dz(filename)
         aggf(                      &
         d2r(green(1)%distance(i)), &
         method = "standard",       &
-        dz     = 1._dp* dzs(j)     &
+        dz     = dzs(j)            &
         )
 
     enddo
     ! compute relative errors from column 2 for all dz with respect to column 1
-    results(i,2:) = abs((results(i,2:) - results (i,1)) / results (i,1)*100.  )
+    results(i,2:) = abs((results(i, 2:) - results(i, 1)) / results(i, 1)*100.)
   enddo
 
   write(dummy,"(i0)") size(dzs)
