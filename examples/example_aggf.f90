@@ -15,7 +15,7 @@ program example_aggf
 
   call standard1976('/home/mrajner/src/grat/examples/standard1976.dat')
   call compare_fels_profiles('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
-  call simple_atmospheric_model("/home/mrajner/pub/dr/rysunki/simple_approach.dat")
+  call simple_atmospheric_model("simple_approach.dat")
   call green_newtonian_compute([  &
     "green_newtonian_olsson.dat", &
     "green_newtonian_spotl.dat ", &
@@ -51,9 +51,9 @@ subroutine mass_vs_height(filename)
   use mr_constants, only: dp, pi, earth, R_air
   use mr_atmosphere
   character(*), intent (in), optional:: filename
-  real(dp) :: max_height,dh, percent
+  real(dp) :: max_height, dh, percent
   real(dp), allocatable, dimension(:):: mass, height
-  integer::i,j,file_unit
+  integer:: i, j, file_unit
 
   if (present (filename)) then
     if (file_exists(filename)) return
@@ -98,25 +98,21 @@ end subroutine
 
 ! =============================================================================
 !> Reproduces data to Fig.~3 in \cite Warburton77
-!!
-!! \date 2013-03-18
-!! \author M. Rajner
-!!
 ! =============================================================================
 subroutine simple_atmospheric_model(filename)
   use, intrinsic:: iso_fortran_env
   use mr_utilities, only: file_exists
-  use mr_constants
-  use mod_aggf, only:simple_def, bouger
+  use mr_constants, only: earth
+  use mod_aggf,     only: simple_def, bouger
 
-  integer :: R ! km
-  integer :: file_unit
+  real(dp) :: R ! km
+  integer  :: file_unit
   character(*), intent(in), optional:: filename
-  real(dp) :: h =9.
+  real(dp) :: h = 9
 
   if (present (filename)) then
     if (file_exists(filename)) return
-    open ( &
+    open (                 &
       newunit = file_unit, &
       file    = filename,  &
       action  = 'write'    &
@@ -127,11 +123,13 @@ subroutine simple_atmospheric_model(filename)
 
   write(*,*) "simple_atmospheric_model ---> ",filename
 
-  do R = 0, 25*8
-    write (file_unit, *) &
-      R, &
+  R = 0
+  do while (R.le. 25*8)
+    write (file_unit, *)                                          &
+      int(R),                                                     &
       -100*bouger(h=h,R=real(R,dp))/(earth%gravity%mean*h) * 1e8, & !conversion to microGal
       -simple_def(real(R,dp)) * 1e8
+    R = R + 1
   enddo
 end subroutine
 
@@ -584,12 +582,12 @@ subroutine admit_niebauer(filename)
 
   f = earth%radius/9500
   theta = 0.5
-  do while(theta.le.180)
+  do while(theta.le.180._dp)
     b = 2*f*sin(d2r(theta/2))
     a = 2*pi * gravity%constant / earth%gravity%mean* &
       (1 - b/(2*f) -1/b + 2/f)
-    write(iun, *) theta, a*1e10
-    theta = theta + 0.01
+    write(iun, '(f10.6,x,f14.9)') theta, a*1e10
+    theta = theta + 0.01_dp
   enddo
 end subroutine
 
@@ -610,11 +608,9 @@ subroutine green_newtonian_compute(filenames)
 
   prefix="/home/mrajner/src/grat/examples/"
 
-  iun = 6
-
   n = 9 * 50
   allocate(psi(n))
-  psi = logspace(real(1e-6,dp), real(180,dp),n)
+  psi = logspace(1e-6_dp, 180._dp,n)
 
   allocate(z(11))
   z = [0., 1., 10., 100., 1000., 10000., -1., -10., -100., -1000., -10000.]
@@ -637,9 +633,9 @@ subroutine green_newtonian_compute(filenames)
       green_newtonian(d2r(psi(i)),             &
       z      = z(j),                           &
       method = method),                        &
-      j = 1,size(z)                            &
+      j      = 1, size(z)                      &
       ),                                       &
-      i = 1,size(psi))
+      i = 1, size(psi))
     close(iun)
   enddo
 end subroutine
