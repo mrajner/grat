@@ -356,11 +356,11 @@ subroutine parse_GMT_like_boundaries(field)
     endif
   endif
   if (text.eq."m" ) then
-    limits = [ &
+    limits = [              &
       minval(model(1)%lon), &
       maxval(model(1)%lon), &
       minval(model(1)%lat), &
-      maxval(model(1)%lat) &
+      maxval(model(1)%lat)  &
       ]
     if (size(field%subfield).eq.1) then
       call more_sites (size(model(1)%lon) * size(model(1)%lat), start_index)

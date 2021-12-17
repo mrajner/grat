@@ -2,9 +2,9 @@
 !> This module gives routines to read, and write data
 ! =============================================================================
 module mod_data
-  use mr_constants, only: dp
-  use mr_utilities, only: setnan
-  use ieee_arithmetic
+  use :: mr_constants, only: dp
+  use :: mr_utilities, only: setnan
+  use, intrinsic :: ieee_arithmetic
 
   implicit none
 
