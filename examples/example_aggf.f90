@@ -4,8 +4,7 @@
 program example_aggf
   use, intrinsic :: iso_fortran_env, only: output_unit
   use mr_constants, only: dp
-  ! use mr_utilities
-  ! use mod_printing, only: log
+
   implicit none
   real(dp) :: cpu(2)
   integer :: execution_time(3)
@@ -13,28 +12,28 @@ program example_aggf
   call cpu_time(cpu(1))
   call system_clock(execution_time(1))
 
-  call standard1976('/home/mrajner/src/grat/examples/standard1976.dat')
-  call compare_fels_profiles('/home/mrajner/src/grat/examples/compare_fels_profiles.dat')
+  call standard1976('standard1976.dat')
+  call compare_fels_profiles('compare_fels_profiles.dat')
   call simple_atmospheric_model("simple_approach.dat")
   call green_newtonian_compute([  &
     "green_newtonian_olsson.dat", &
     "green_newtonian_spotl.dat ", &
     "green_newtonian.dat       "  &
     ])
-  call admit_niebauer("/home/mrajner/src/grat/examples/admit_niebauer.dat")
-  call aggf_thin_layer("/home/mrajner/src/grat/examples/aggf_thin_layer.dat")
+  call admit_niebauer("admit_niebauer.dat")
+  call aggf_thin_layer("aggf_thin_layer.dat")
   call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_full.dat',   method = "full",     predefined = .false.)
   call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green_simple.dat', method = "simple",   predefined = .false.)
   call compute_tabulated_green_functions('/home/mrajner/src/grat/dat/rajner_green.dat',        method = "standard", predefined = .false.)
-  call aggf_resp_fels_profiles('/home/mrajner/src/grat/examples/aggf_resp_fels_profiles.dat')
-  call mass_vs_height('/home/mrajner/src/grat/examples/mass_vs_height.dat')
-  call aggf_resp_hmax('/home/mrajner/src/grat/examples/aggf_resp_zmax.dat')
-  call aggf_resp_dz('/home/mrajner/src/grat/examples/aggf_resp_dz.dat')
-  call aggf_resp_t('/home/mrajner/src/grat/examples/aggf_resp_t.dat')
-  call aggf_resp_h('/home/mrajner/src/grat/examples/aggf_resp_h.dat')
+  call aggf_resp_fels_profiles('aggf_resp_fels_profiles.dat')
+  call mass_vs_height('mass_vs_height.dat')
+  call aggf_resp_hmax('aggf_resp_zmax.dat')
+  call aggf_resp_dz('aggf_resp_dz.dat')
+  call aggf_resp_t('aggf_resp_t.dat')
+  call aggf_resp_h('aggf_resp_h.dat')
 
   call cpu_time(cpu(2))
-  call system_clock(execution_time(2),execution_time(3))
+  call system_clock(execution_time(2), execution_time(3))
   write(*,                                                                              &
     '("Execution time:",1x,f10.4," seconds (proc time:",1x,f6.2,1x,"s | %", f6.2,")")') &
     real(execution_time(2)-execution_time(1))/(execution_time(3)),                      &
@@ -147,7 +146,7 @@ subroutine compute_tabulated_green_functions( &
   use mod_aggf,     only: aggf, aggfd
   use mod_green,     only: green
   use mr_utilities, only: d2r, file_exists
-  use mod_atmosphere
+  use mr_atmosphere
 
   integer :: i, file_unit
   character(*), intent(in) :: filename
