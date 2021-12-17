@@ -73,11 +73,11 @@ subroutine mass_vs_height(filename)
   allocate(mass(size(height)))
   do i =1,size(height)
     height(i) = dh*(i-1)
-    mass  (i) = standard_pressure ( &
-      height(i), &
-      method="standard", &
+    mass  (i) = standard_pressure (    &
+      height(i),                       &
+      method="standard",               &
       use_standard_temperature=.true., &
-      nan_as_zero=.true.) &
+      nan_as_zero=.true.)              &
       / (R_air * standard_temperature(height(i)))
   enddo
 
@@ -602,10 +602,7 @@ subroutine green_newtonian_compute(filenames)
   character(12), allocatable, dimension(:) :: column_name
   character(*), optional :: filenames(3)
   character(20) :: method
-  character(40) :: prefix
   character(4) :: dummy
-
-  prefix="/home/mrajner/src/grat/examples/"
 
   n = 9 * 50
   allocate(psi(n))
@@ -618,9 +615,9 @@ subroutine green_newtonian_compute(filenames)
   write(column_name, '(f0.0)' ) (z(i),i=1,11)
 
   do k = 1, 3
-    if (file_exists(trim(prefix)//trim(filenames(k)))) cycle
-    print *, "green_newtonian_compute ---> ", trim(prefix)//trim(filenames(k))
-    open (newunit=iun, file=trim(prefix)//filenames(k), action = 'write')
+    if (file_exists(trim(filenames(k)))) cycle
+    print *, "green_newtonian_compute ---> ", trim(filenames(k))
+    open (newunit=iun, file=filenames(k), action = 'write')
 
     method = filenames(k)(17:index(filenames(k),".")-1)
 
