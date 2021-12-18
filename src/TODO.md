@@ -1,3 +1,5 @@
+grat -Sm crashes
+
 sea-level problem with scale if -! is given
 
 correct handling of FillValue
