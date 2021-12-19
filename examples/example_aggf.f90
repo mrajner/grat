@@ -416,7 +416,7 @@ subroutine aggf_resp_dz(filename)
   dzs = [ 0.01_dp, 0.1_dp, 1._dp, 10._dp, 100._dp]
 
   allocate (results(size(green(1)%distance(1:n)),size(dzs)))
-  results = 0.
+  results = 0._dp
 
   do i = 1, size (results (:,1))
     do j=1, size(dzs)
