@@ -430,7 +430,7 @@ subroutine aggf_resp_dz(filename)
 
     enddo
     ! compute relative errors from column 2 for all dz with respect to column 1
-    results(i,2:) = abs((results(i, 2:) - results(i, 1)) / results(i, 1)*100.)
+    results(i,2:) = abs((results(i, 2:) - results(i, 1)) / results(i, 1)*100._dp)
   enddo
 
   write(dummy,"(i0)") size(dzs)
