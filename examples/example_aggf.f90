@@ -389,18 +389,20 @@ subroutine aggf_resp_dz(filename)
   use mod_green, only: green
   use mod_aggf, only: aggf
   use mr_utilities, only: logspace, d2r, file_exists
+
   real(dp), dimension(:,:), allocatable :: results
   real(dp), dimension(:),   allocatable :: dzs
 
   integer :: file_unit, i, j
-  integer, parameter :: n=10
+  integer, parameter :: n = 10
   character(*), intent (in), optional :: filename
   character(6) :: dummy
 
   if (present (filename)) then
     if (file_exists(filename)) return
-    open ( newunit = file_unit, &
-      file =filename,           &
+    open (                 &
+      newunit = file_unit, &
+      file    = filename,  &
       action  = 'write' )
   else
     file_unit = output_unit
@@ -411,13 +413,13 @@ subroutine aggf_resp_dz(filename)
   call get_green_distances()
 
   allocate(dzs(5))
-  dzs=(/ 0.01, 0.1, 1., 10., 100./)
+  dzs = [ 0.01_dp, 0.1_dp, 1._dp, 10._dp, 100._dp]
 
   allocate (results(size(green(1)%distance(1:n)),size(dzs)))
   results = 0.
 
   do i = 1, size (results (:,1))
-    do j=1,size(dzs)
+    do j=1, size(dzs)
       results(i,j) = i+j
       results(i,j) =               &
         aggf(                      &
