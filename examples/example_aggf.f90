@@ -66,32 +66,35 @@ subroutine mass_vs_height(filename)
   endif
   write(*,*) "mass_vs_height ---> ",filename
 
-  max_height=50000.
-  dh=10
+  max_height = 50000._dp
+  dh         = 10._dp
 
   allocate(height(int(max_height/dh)+1))
   allocate(mass(size(height)))
-  do i =1,size(height)
+
+  do i = 1, size(height)
     height(i) = dh*(i-1)
-    mass  (i) = standard_pressure (    &
+    mass(i) = standard_pressure (      &
       height(i),                       &
-      method="standard",               &
+      method = "standard",             &
       use_standard_temperature=.true., &
       nan_as_zero=.true.)              &
       / (R_air * standard_temperature(height(i)))
   enddo
 
-  do i =0,50000,1000
-    percent=0
+  do i =0, 50000, 1000
+    percent = 0
     do j = 1, size(height)
       if (height(j).le.real(i,dp)) percent=percent+mass(j)
     enddo
-    percent = percent / sum(mass)  * 100.
-    write(file_unit, '(i6,2f19.9,es10.3)' ) i, percent, &
-      100-(earth%radius+dble(1))**2 &
-      * standard_pressure(real(i,dp),method="standard", use_standard_temperature=.true.) &
-      / standard_gravity(real(i,dp))&
-      /earth%radius**2/standard_pressure(real(0,dp),method="standard") * standard_gravity(real(0,dp))*100
+
+    percent = percent / sum(mass) * 100._dp
+    write(file_unit, '(i6,2f19.9)' ) i, percent,                                 &
+      100                                                                               &
+      - (earth%radius+dble(i))**2                                                       &
+      *standard_pressure(real(i,dp),method="standard", use_standard_temperature=.true.) &
+      /standard_gravity(real(i,dp))                                                     &
+      /earth%radius**2/standard_pressure(real(0,dp),method="standard") * standard_gravity(0._dp)*100
   enddo
 end subroutine
 
